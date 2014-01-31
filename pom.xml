@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.sf.cssbox</groupId>
+	<artifactId>scriptbox</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>ScriptBox</name>
+	<url>http://maven.apache.org</url>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License 3.0</name>
+			<url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Radek Burget</name>
+			<roles>
+				<role>Main developer &amp; project leader</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Radim Loskot</name>
+			<roles>
+				<role>Former developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/ITman1/ScriptBox</url>
+		<connection>scm:git:git@github.com:ITman1/ScriptBox.git</connection>
+		<developerConnection>scm:git:git@github.com:ITman1/ScriptBox.git</developerConnection>
+	</scm>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.cssbox</groupId>
+			<artifactId>swingbox</artifactId>
+			<version>0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.inject</groupId>
+		    <artifactId>guice</artifactId>
+		    <version>3.0</version>
+		</dependency>
+	    <dependency>
+	      <groupId>net.sourceforge.nekohtml</groupId>
+	      <artifactId>nekohtml</artifactId>
+	      <version>1.9.7</version>
+	    </dependency>
+		<dependency>
+		  <groupId>org.apache.cxf</groupId>
+		  <artifactId>cxf-rt-rs-security-cors</artifactId>
+		  <version>2.6.1</version>
+		</dependency>
+	</dependencies>
+
+	<description>ScriptBox is an extension for an experimental HTML/CSS rendering engine CSSBox. 
+It introduces general API for adding scripting support into CSSBox which follows JSR 223.
+
+Currently is added support of scripting in JavaScript.</description>
+</project>
