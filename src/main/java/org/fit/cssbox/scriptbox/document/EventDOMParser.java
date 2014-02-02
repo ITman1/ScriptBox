@@ -5,6 +5,8 @@ import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.cyberneko.html.parsers.DOMParser;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 public class EventDOMParser extends DOMParser implements EventParserProcessingProvider {
 	protected XMLDocumentHandler superXMLDocumentHandler;
@@ -30,6 +32,21 @@ public class EventDOMParser extends DOMParser implements EventParserProcessingPr
 		eventXMLDocumentHandler = new EventDocumentHandlerDecorator(superXMLDocumentHandler, this);
 	    
 	    getConfiguration().setDocumentHandler(eventXMLDocumentHandler);
+	}
+	
+	@Override
+	public void reset() throws XNIException {
+		super.reset();
+		
+		try {
+			setProperty("http://apache.org/xml/properties/dom/document-class-name", "org.apache.xerces.dom.DocumentImpl");
+		} catch (SAXNotRecognizedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
