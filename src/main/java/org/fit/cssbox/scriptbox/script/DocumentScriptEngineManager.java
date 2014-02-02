@@ -10,89 +10,95 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.script.exceptions.DocumentScriptException;
-import org.w3c.dom.Document;
 
 public class DocumentScriptEngineManager {
 	static private DocumentScriptEngineManager instance;
 	
-	private Map<String, Set<DocumentScriptRunner>> engineMimeTypes;
+	private Map<String, Set<DocumentScriptEngineFactory>> engineMimeTypes;
+
+	private Object runnerClass;
 	
-	private DocumentScriptEngineManager() {}
+	private DocumentScriptEngineManager() {
+		engineMimeTypes = new HashMap<String, Set<DocumentScriptEngineFactory>>();
+	}
 	
 	public static synchronized DocumentScriptEngineManager getInstance() {
 		if (instance == null) {
 			instance = new DocumentScriptEngineManager();
-			instance.engineMimeTypes = new HashMap<String, Set<DocumentScriptRunner>>();
 		}
 		
 		return instance;
 	}
 	
-	public void registerDocumentScriptEngine(Class<? extends DocumentScriptRunner> runnerClass) throws DocumentScriptException {	
+	public void registerDocumentScriptEngine(Class<? extends DocumentScriptEngineFactory> factoryClass) throws DocumentScriptException {	
 		synchronized (this) {
 
-			DocumentScriptRunner runner = instantizeFactory(runnerClass);
-			List<String> mimeTypes = runner.getMimeTypes();
+			DocumentScriptEngineFactory factory = instantizeFactory(factoryClass);
+			List<String> mimeTypes = factory.getMimeTypes();
 			
 			for (String mimeType : mimeTypes) {
-				Set<DocumentScriptRunner> runners = engineMimeTypes.get(mimeType);
+				Set<DocumentScriptEngineFactory> factories = engineMimeTypes.get(mimeType);
 				
-				if (runners == null) {
-					runners = new HashSet<DocumentScriptRunner>();
+				if (factories == null) {
+					factories = new HashSet<DocumentScriptEngineFactory>();
 				}
 				
-				runners.add(runner);
-				engineMimeTypes.put(mimeType, runners);		
+				factories.add(factory);
+				engineMimeTypes.put(mimeType, factories);		
 			}
 			
 		}
 	}
 	
-	public void unregisterDocumentScriptEngine(Class<? extends DocumentScriptRunner> runnerClass) {
+	public void unregisterDocumentScriptEngine(Class<? extends DocumentScriptEngineFactory> runnerClass) {
 		synchronized (this) {
-			Set<Entry<String, Set<DocumentScriptRunner>>> runnersEntrySet = engineMimeTypes.entrySet();
+			Set<Entry<String, Set<DocumentScriptEngineFactory>>> factoriesEntrySet = engineMimeTypes.entrySet();
 			
 			List<String> mimeTypesToRemove = new ArrayList<String>();
-			for (Entry<String, Set<DocumentScriptRunner>> entry : runnersEntrySet) {
-				Set<DocumentScriptRunner> runners = entry.getValue();
-				DocumentScriptRunner runnerToRemove = null;
+			for (Entry<String, Set<DocumentScriptEngineFactory>> entry : factoriesEntrySet) {
+				Set<DocumentScriptEngineFactory> factories = entry.getValue();
+				DocumentScriptEngineFactory factoryToRemove = null;
 				
-				for (DocumentScriptRunner runner : runners) {
-					if (runner.getClass().equals(runnerClass)) {
-						runnerToRemove = runner;
+				for (DocumentScriptEngineFactory factory : factories) {
+					if (factory.getClass().equals(runnerClass)) {
+						factoryToRemove = factory;
 					}
 				}
 				
-				if (runners.size() == 1 && runnerToRemove != null) {
+				if (factories.size() == 1 && factoryToRemove != null) {
 					mimeTypesToRemove.add(entry.getKey());
 				}
 				
-				runners.remove(runnerToRemove);
+				factories.remove(factoryToRemove);
 			}
 		}
 	}
 	
-	public Set<DocumentScriptRunner> getEnginerunnersByMimeType(String mimeType) {
-		Set<DocumentScriptRunner> runners = engineMimeTypes.get(mimeType);
+	public Set<DocumentScriptEngineFactory> getEnginefactoriesByMimeType(String mimeType) {
+		Set<DocumentScriptEngineFactory> factories = engineMimeTypes.get(mimeType);
 		
-		return (runners == null)? null : Collections.unmodifiableSet(runners);
+		return (factories == null)? null : Collections.unmodifiableSet(factories);
 	}
 	
-	public DocumentScriptRunner getEngineByMimeType(String mimeType, Document document) {
-		Set<DocumentScriptRunner> runners = engineMimeTypes.get(mimeType);
+	public DocumentScriptEngineFactory getEngineByMimeType(String mimeType) {
+		Set<DocumentScriptEngineFactory> factories = engineMimeTypes.get(mimeType);
 		
-		return (runners == null)? null : runners.iterator().next();
+		return (factories == null)? null : factories.iterator().next();
 	}
 	
-	private DocumentScriptRunner instantizeFactory(Class<? extends DocumentScriptRunner> runnerClass) throws DocumentScriptException {
-		DocumentScriptRunner runner = null;
+	public boolean isSupported(String mimeType) {
+		return engineMimeTypes.containsKey(mimeType);
+	}
+	
+	private DocumentScriptEngineFactory instantizeFactory(Class<? extends DocumentScriptEngineFactory> factoryClass) throws DocumentScriptException {
+		DocumentScriptEngineFactory factory = null;
 		
 		try {
-			runnerClass.getConstructor().newInstance();
+			factory = factoryClass.getConstructor().newInstance();
 		} catch (Exception e) {
 			throw new DocumentScriptException("Unable to instantize runner from engine runner class!", e.getCause());
 		}
 		
-		return runner;
+		return factory;
 	}
 }

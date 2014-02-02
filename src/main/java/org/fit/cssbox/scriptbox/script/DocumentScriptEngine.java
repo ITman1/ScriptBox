@@ -8,17 +8,15 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-import org.w3c.dom.Document;
-
 public abstract class DocumentScriptEngine implements ScriptEngine {
-	protected Document document;
+	protected DocumentContext documentContext;
 	
-	protected DocumentScriptEngine(Document document) {
-		this.document = document;
+	protected DocumentScriptEngine(DocumentContext documentContext) {
+		this.documentContext = documentContext;
 	}
 	
-	public Document getDocument() {
-		return document;
+	public DocumentContext getDocumentContext() {
+		return documentContext;
 	}
 	
 	@Override

@@ -431,5 +431,13 @@ public class EventDocument implements Document {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void addDocumentEventListener(DocumentEventListener listener) {
+		
+	}
+	
+	public void removeDocumentEventListener(DocumentEventListener listener) {
+		
+	}
 
 }
