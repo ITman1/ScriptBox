@@ -6,20 +6,10 @@ import java.util.Set;
 import org.w3c.dom.Node;
 
 public class DocumentEventDispatcher {
-	private static DocumentEventDispatcher instance;
-	
 	private Set<DocumentEventListener> listeners;
 	
-	private DocumentEventDispatcher() {
+	public DocumentEventDispatcher() {
 		listeners = new HashSet<DocumentEventListener>();
-	}
-	
-	public static synchronized DocumentEventDispatcher getInstance() {
-		if (instance == null) {
-			instance = new DocumentEventDispatcher();
-		}
-		
-		return instance;
 	}
 	
 	public void addDocumentEventListener(DocumentEventListener listener) {
