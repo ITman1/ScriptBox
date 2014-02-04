@@ -3,10 +3,8 @@ package org.fit.cssbox.scriptbox.script;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.fit.cssbox.scriptbox.document.DocumentEventListener;
-import org.fit.cssbox.scriptbox.document.EventDocument;
-import org.fit.cssbox.scriptbox.script.document.dom.ContextScriptElement;
-import org.w3c.dom.Document;
+import org.fit.cssbox.scriptbox.document.script.ContextScriptElement;
+import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -15,37 +13,11 @@ public class DocumentScriptExecutor {
 	//private static String SCRIPT_ELEMENT_NAME = "script";
 	private static String DEFAULT_SCRIPT_MIME_TYPE = "text/javascript";
 	
-	private Map<EventDocument, DocumentContext> documentContexts;
+	private Map<ScriptableDocument, DocumentContext> documentContexts;
 	private DocumentScriptEngineManager documentScriptEngineManager;
 	
-	class DocumentEventHandler extends DocumentEventListener {
-		
-		DocumentEventHandler(Document document) {
-			super(document);
-		}
-		
-		@Override
-		public void nodeLoaded(Node node) {			
-			if (node instanceof ContextScriptElement) {
-				prepareScriptElement((ContextScriptElement)node);
-			}
-		}
-
-		@Override
-		public void nodeInserted(Node node) {}
-
-		@Override
-		public void nodeRemoved(Node node) {}
-
-		@Override
-		public void nodeCreated(Node node) {
-			
-		}
-		
-	};
-	
 	private DocumentScriptExecutor() {
-		documentContexts = new HashMap<EventDocument, DocumentContext>();
+		documentContexts = new HashMap<ScriptableDocument, DocumentContext>();
 		documentScriptEngineManager = DocumentScriptEngineManager.getInstance();
 	}
 	
@@ -58,7 +30,7 @@ public class DocumentScriptExecutor {
 	}
 	
 	public void registerDocumentContext(DocumentContext documentContext) {
-		EventDocument document = documentContext.getDocument();
+		ScriptableDocument document = documentContext.getDocument();
 		DocumentContext storedDocumentContext = documentContexts.get(document);
 		
 		if (storedDocumentContext == null && storedDocumentContext != documentContext) {
@@ -67,18 +39,11 @@ public class DocumentScriptExecutor {
 		
 		if (storedDocumentContext != documentContext) {
 			documentContexts.put(document, documentContext);
-			documentContext.setExecutorHandler(new DocumentEventHandler(document));
-			document.addDocumentEventListener(documentContext.getExecutorHandler());
 		}
 	}
 	
 	public void unregisterDocumentContext(DocumentContext documentContext) {
 		documentContexts.remove(documentContext.getDocument());
-		
-		EventDocument document = documentContext.getDocument();
-		document.removeDocumentEventListener(documentContext.getExecutorHandler());
-		
-		documentContext.setExecutorHandler(null);
 	}
 		
 	protected boolean prepareScriptElement(ContextScriptElement scriptElement) {		

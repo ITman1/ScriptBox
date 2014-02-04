@@ -4,24 +4,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.xerces.util.URI;
-import org.fit.cssbox.scriptbox.document.DocumentEventListener;
-import org.fit.cssbox.scriptbox.document.EventDocument;
+import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
 
 public class DocumentContext {
 	private boolean destroyed;
 	private URI baseURI;
-	private DocumentEventListener executorHandler;
 	
-	private EventDocument document;
+	private ScriptableDocument document;
 	private Map<Class<? extends DocumentScriptEngine>, DocumentScriptEngine> scriptEngines;
 	
-	private DocumentContext(EventDocument document) {
+	private DocumentContext(ScriptableDocument document) {
 		this.document = document;
 
 		scriptEngines = new HashMap<Class<? extends DocumentScriptEngine>, DocumentScriptEngine>();
 	}
 	
-	public static DocumentContext createContext(EventDocument document) {
+	public static DocumentContext createContext(ScriptableDocument document) {
 		return new DocumentContext(document);
 	}
 
@@ -29,7 +27,7 @@ public class DocumentContext {
 		destroyed = true;
 	}
 	
-	public EventDocument getDocument() {
+	public ScriptableDocument getDocument() {
 		if (destroyed) {
 			return null;
 		} else {
@@ -51,13 +49,5 @@ public class DocumentContext {
 	
 	public void setBaseURI(URI baseURI) {
 		this.baseURI = baseURI;
-	}
-
-	public DocumentEventListener getExecutorHandler() {
-		return executorHandler;
-	}
-
-	public void setExecutorHandler(DocumentEventListener executorHandler) {
-		this.executorHandler = executorHandler;
 	}
 }

@@ -15,8 +15,6 @@ public class DocumentScriptEngineManager {
 	static private DocumentScriptEngineManager instance;
 	
 	private Map<String, Set<DocumentScriptEngineFactory>> engineMimeTypes;
-
-	private Object runnerClass;
 	
 	private DocumentScriptEngineManager() {
 		engineMimeTypes = new HashMap<String, Set<DocumentScriptEngineFactory>>();

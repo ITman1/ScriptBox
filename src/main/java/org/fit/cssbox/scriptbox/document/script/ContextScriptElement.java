@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.document.dom;
+package org.fit.cssbox.scriptbox.document.script;
 
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.html.dom.HTMLScriptElementImpl;
