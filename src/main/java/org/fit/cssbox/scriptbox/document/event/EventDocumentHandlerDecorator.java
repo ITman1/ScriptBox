@@ -123,4 +123,8 @@ public class EventDocumentHandlerDecorator implements XMLDocumentHandler {
 	public XMLDocumentSource getDocumentSource() {
 		return oldHandler.getDocumentSource();
 	}
+	
+	public void reset() {
+		
+	}
 }

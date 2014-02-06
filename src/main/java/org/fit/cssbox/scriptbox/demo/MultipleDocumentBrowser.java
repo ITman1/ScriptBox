@@ -7,6 +7,7 @@ import org.fit.cssbox.io.DefaultDocumentSource;
 import org.fit.cssbox.scriptbox.document.event.EventDOMSource;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMSource;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.mozilla.javascript.Script;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
@@ -51,7 +52,8 @@ public class MultipleDocumentBrowser {
 		
 		Element paragraph = document.createElement("p");
 		Element script = document.getElementById("first");
-		document.insertBefore(paragraph, script);
+		script.getParentNode().appendChild(paragraph);
+
 		
 		return;
 	}
