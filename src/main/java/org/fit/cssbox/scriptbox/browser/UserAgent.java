@@ -2,7 +2,7 @@ package org.fit.cssbox.scriptbox.browser;
 
 import java.net.URI;
 
-public class WebBrowser extends Window {
+public class UserAgent {
 	public boolean scriptsSupported() {
 		return true;
 	}
@@ -12,6 +12,10 @@ public class WebBrowser extends Window {
 	}
 	
 	public boolean cookiesEnabled() {
+		return true;
+	}
+	
+	public boolean createBrowsingContext(URI page) {
 		return true;
 	}
 }

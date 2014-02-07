@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.apache.xerces.xni.XMLDocumentHandler;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLInputSource;
-import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.document.event.EventDOMParser;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -18,12 +17,10 @@ import org.xml.sax.SAXNotSupportedException;
  */
 public class ScriptDOMParser extends EventDOMParser {
 	
-	BrowsingContext _browsingContext;
-	ScriptableDocument _document;
+	private ScriptableDocument _document;
 	
-	ScriptDOMParser(BrowsingContext browsingContext) {
-		_browsingContext = browsingContext;
-		_document = new ScriptableDocument(_browsingContext);
+	public ScriptDOMParser(ScriptableDocument document) {
+		_document = document;
 	}
 	
 	@Override

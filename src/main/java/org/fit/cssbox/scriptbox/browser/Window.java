@@ -1,55 +1,55 @@
 package org.fit.cssbox.scriptbox.browser;
 
-public abstract class Window {
-/*
-[Global]
-interface Window : EventTarget {
-  // the current browsing context
-  [Unforgeable] readonly attribute WindowProxy window;
-  [Replaceable] readonly attribute WindowProxy self;
-  [Unforgeable] readonly attribute Document document;
-           attribute DOMString name; 
-  [PutForwards=href, Unforgeable] readonly attribute Location location;
-  readonly attribute History history;
-  [Replaceable] readonly attribute BarProp locationbar;
-  [Replaceable] readonly attribute BarProp menubar;
-  [Replaceable] readonly attribute BarProp personalbar;
-  [Replaceable] readonly attribute BarProp scrollbars;
-  [Replaceable] readonly attribute BarProp statusbar;
-  [Replaceable] readonly attribute BarProp toolbar;
-           attribute DOMString status;
-  void close();
-  readonly attribute boolean closed;
-  void stop();
-  void focus();
-  void blur();
+import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
 
-  // other browsing contexts
-  [Replaceable] readonly attribute WindowProxy frames;
-  [Replaceable] readonly attribute unsigned long length;
-  [Unforgeable] readonly attribute WindowProxy top;
-           attribute WindowProxy? opener;
-  readonly attribute WindowProxy parent;
-  readonly attribute Element? frameElement;
-  WindowProxy open(optional DOMString url = "about:blank", optional DOMString target = "_blank", optional DOMString features = "", optional boolean replace = false);
-  getter WindowProxy (unsigned long index);
-  getter object (DOMString name);
+public class Window extends AbstractWindow {
 
-  // the user agent
-  readonly attribute Navigator navigator; 
-  readonly attribute External external;
-  readonly attribute ApplicationCache applicationCache;
+	public Window(ScriptableDocument document) {
+		super(document);
+		// TODO Auto-generated constructor stub
+	}
 
-  // user prompts
-  void alert(optional DOMString message = "");
-  boolean confirm(optional DOMString message = "");
-  DOMString? prompt(optional DOMString message = "", optional DOMString default = "");
-  void print();
-  any showModalDialog(DOMString url, optional any argument);
+	@Override
+	protected void close() {
+		// TODO Auto-generated method stub
+		
+	}
 
+	@Override
+	protected void stop() {
+		// TODO Auto-generated method stub
+		
+	}
 
-};
-Window implements GlobalEventHandlers;
-Window implements WindowEventHandlers;
- */
+	@Override
+	protected void focus() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void blur() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected WindowProxy open(String url, String target, String features,
+			boolean replace) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected WindowProxy getter(long index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Object getter(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
