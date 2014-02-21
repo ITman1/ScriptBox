@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.document.script;
+package org.fit.cssbox.scriptbox.dom;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -15,7 +15,9 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
+import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.security.origins.OriginContainer;
@@ -23,23 +25,22 @@ import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
-public class ScriptableDocument extends HTMLDocumentImpl {
+public class Html5DocumentImpl extends HTMLDocumentImpl {
 	final public static String DEFAULT_URL = "about:blank";
 	final public static String JAVASCRIPT_SCHEME_NAME = "javascript";
 	final public static String DATA_SCHEME_NAME = "data";
-	
+
+	private static final long serialVersionUID = -352261593104316623L;
+	private static final String SCRIPT_TAG_NAME = "script";
+
     private static List<String> SERVER_BASED_SCHEMES;
-	
     static {       
     	SERVER_BASED_SCHEMES = new ArrayList<String>(3);
     	SERVER_BASED_SCHEMES.add("http");
     	SERVER_BASED_SCHEMES.add("https");
     	SERVER_BASED_SCHEMES.add("file");
     }
-	
-	private static final long serialVersionUID = 1L;
-	private static String SCRIPT_TAG_NAME = "script";
-	
+		
 	private BrowsingContext _browsingContext;
 	
 	// Every Document has an active sandboxing flag set
@@ -50,7 +51,7 @@ public class ScriptableDocument extends HTMLDocumentImpl {
 	private String _referrer;
 	private Window _window;
 	
-	private ScriptableDocument(BrowsingContext browsingContext, URI address, Set<SandboxingFlag> sandboxingFlagSet, String referrer) {
+	private Html5DocumentImpl(BrowsingContext browsingContext, URI address, Set<SandboxingFlag> sandboxingFlagSet, String referrer) {
 		_browsingContext = browsingContext;
 		_address = address;
 		_referrer = referrer;
@@ -78,7 +79,7 @@ public class ScriptableDocument extends HTMLDocumentImpl {
 		} else if (address != null && address.getScheme().equals(DATA_SCHEME_NAME)) {
 			// TODO: If a Document was generated from a data: URL found in another Document or in a script
 		} else if (address != null && address.toASCIIString().equals(DEFAULT_URL)) {
-			ScriptableDocument creatorDocument = browsingContext.getCreatorDocument();
+			Html5DocumentImpl creatorDocument = browsingContext.getCreatorDocument();
 			if (creatorDocument != null) {
 				OriginContainer<?> originContainer = creatorDocument.getOriginContainer();
 				documentOrigin = DocumentOrigin.create(this, originContainer.getOrigin());
@@ -101,18 +102,18 @@ public class ScriptableDocument extends HTMLDocumentImpl {
 		_window = new Window(this);
 	}
 	
-	public static ScriptableDocument createDocument(BrowsingContext browsingContext, URI address) {
-		return new ScriptableDocument(browsingContext, address, null, null);
+	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URI address) {
+		return new Html5DocumentImpl(browsingContext, address, null, null);
 	}
 	
-	public static ScriptableDocument createBlankDocument(BrowsingContext browsingContext) {
+	public static Html5DocumentImpl createBlankDocument(BrowsingContext browsingContext) {
 		String refferer = null;
 		
 		if (browsingContext.hasCreatorDocument()) {
 			refferer = browsingContext.getCreatorDocument().getURL();
 		}
 		
-		ScriptableDocument document = new ScriptableDocument(browsingContext, URI.create(DEFAULT_URL), null, refferer);
+		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, URI.create(DEFAULT_URL), null, refferer);
 		
 		document.setInputEncoding("UTF-8");
 		
@@ -127,9 +128,9 @@ public class ScriptableDocument extends HTMLDocumentImpl {
 		return document;
 	}
 	
-	public static ScriptableDocument createSandboxedDocument(BrowsingContext browsingContext) {
+	public static Html5DocumentImpl createSandboxedDocument(BrowsingContext browsingContext) {
 		Set<SandboxingFlag> sandboxingFlagSet = new HashSet<SandboxingFlag>();
-		ScriptableDocument document = new ScriptableDocument(browsingContext, URI.create(DEFAULT_URL), sandboxingFlagSet, null);
+		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, URI.create(DEFAULT_URL), sandboxingFlagSet, null);
 		
 		return document;
 	}
@@ -139,7 +140,7 @@ public class ScriptableDocument extends HTMLDocumentImpl {
 		tagName = tagName.toLowerCase(Locale.ENGLISH);
 		
 		if ( tagName.equals(SCRIPT_TAG_NAME)) {
-			ScriptElement scriptElement = new ScriptElement(this, tagName);
+			Html5ScriptElementImpl scriptElement = new Html5ScriptElementImpl(this, tagName);
 			return scriptElement;
 		}
 		
@@ -158,13 +159,15 @@ public class ScriptableDocument extends HTMLDocumentImpl {
 	 */
 	public boolean isFullyActive() {
 		boolean fullyActive = true;
-		BrowsingContext parentContext = _browsingContext.getCreatorContext();
+		BrowsingContext parentContext = _browsingContext.getParentContext();
 		
 		fullyActive = fullyActive && _browsingContext.getActiveDocument() == this;
 		fullyActive = fullyActive && _browsingContext.isTopLevelBrowsingContext();
 		
-		fullyActive = fullyActive || (parentContext != null && parentContext.getActiveDocument().isFullyActive());
-		
+		if (parentContext != null) {
+			fullyActive = fullyActive || (parentContext != null && parentContext.getActiveDocument().isFullyActive());
+		}
+
 		return fullyActive;
 	}
 	
@@ -172,8 +175,8 @@ public class ScriptableDocument extends HTMLDocumentImpl {
 	 * The document family of a Document object consists of the union of all 
 	 * the document families of the browsing contexts that are nested through the Document object.
 	 */
-	public Collection<ScriptableDocument> getDocumentFamily() {
-		Set<ScriptableDocument> family = new HashSet<ScriptableDocument>();
+	public Collection<Html5DocumentImpl> getDocumentFamily() {
+		Set<Html5DocumentImpl> family = new HashSet<Html5DocumentImpl>();
 		Collection<BrowsingContext> nestedContexts = _browsingContext.getNestedContexts();
 		
 		for (BrowsingContext context : nestedContexts) {
@@ -232,12 +235,12 @@ public class ScriptableDocument extends HTMLDocumentImpl {
 	}
 	
 	public void implementSandboxing() {
-		if (_browsingContext.isTopLevelBrowsingContext()) {
-			setActiveSandboxingFlags(_browsingContext.getPopupSandboxingFlagSet());
+		if (_browsingContext instanceof WindowBrowsingContext) {
+			setActiveSandboxingFlags(((WindowBrowsingContext)_browsingContext).getPopupSandboxingFlagSet());
 		}
 		
-		if (_browsingContext.isNestedBrowsingContext()) {
-			setActiveSandboxingFlags(_browsingContext.getIframeSandboxingFlagSet());
+		if (_browsingContext instanceof IFrameBrowsingContext) {
+			setActiveSandboxingFlags(((IFrameBrowsingContext)_browsingContext).getIframeSandboxingFlagSet());
 		}
 		
 		if (_browsingContext.isNestedBrowsingContext()) {

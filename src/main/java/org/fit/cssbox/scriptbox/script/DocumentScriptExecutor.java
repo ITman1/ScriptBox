@@ -3,19 +3,19 @@ package org.fit.cssbox.scriptbox.script;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.fit.cssbox.scriptbox.document.script.ScriptElement;
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class DocumentScriptExecutor {
 	private static DocumentScriptExecutor instance;
 	
-	private Map<ScriptableDocument, DocumentContext> documentContexts;
+	private Map<Html5DocumentImpl, DocumentContext> documentContexts;
 	private DocumentScriptEngineManager documentScriptEngineManager;
 	
 	private DocumentScriptExecutor() {
-		documentContexts = new HashMap<ScriptableDocument, DocumentContext>();
+		documentContexts = new HashMap<Html5DocumentImpl, DocumentContext>();
 		documentScriptEngineManager = DocumentScriptEngineManager.getInstance();
 	}
 	
@@ -28,7 +28,7 @@ public class DocumentScriptExecutor {
 	}
 	
 	public void registerDocumentContext(DocumentContext documentContext) {
-		ScriptableDocument document = documentContext.getDocument();
+		Html5DocumentImpl document = documentContext.getDocument();
 		DocumentContext storedDocumentContext = documentContexts.get(document);
 		
 		if (storedDocumentContext == null && storedDocumentContext != documentContext) {

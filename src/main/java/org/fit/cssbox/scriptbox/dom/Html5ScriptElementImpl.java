@@ -1,19 +1,20 @@
-package org.fit.cssbox.scriptbox.document.script;
+package org.fit.cssbox.scriptbox.dom;
 
 import java.io.Reader;
 
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.html.dom.HTMLScriptElementImpl;
+import org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement;
 import org.fit.cssbox.scriptbox.script.DocumentScriptEngineManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class ScriptElement extends HTMLScriptElementImpl {
-	private static String ASYNC_ATTR_NAME = "async";
-	private static String DEFAULT_SCRIPT_MIME_TYPE = "text/javascript";
-	
-	private static final long serialVersionUID = 1L;
+public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Html5ScriptElement {
+	private static final long serialVersionUID = 4725269642619675257L;
+	private static final String ASYNC_ATTR_NAME = "async";
+	private static final String DEFER_ATTR_NAME = "defer";
+	private static final String DEFAULT_SCRIPT_MIME_TYPE = "text/javascript";
 	
 	private boolean _alreadyStarted;
 	private boolean _parserInserted;
@@ -25,7 +26,7 @@ public class ScriptElement extends HTMLScriptElementImpl {
 	private String _scriptMimeType;
 	private DocumentScriptEngineManager documentScriptEngineManager;
 	
-	public ScriptElement(HTMLDocumentImpl document, String name) {
+	public Html5ScriptElementImpl(HTMLDocumentImpl document, String name) {
 		super(document, name);
 		
 		_alreadyStarted = false;
@@ -37,12 +38,32 @@ public class ScriptElement extends HTMLScriptElementImpl {
 		_creatorDocument = document;
 	}
 
-	public String getAsync() {
-		return getAttribute(ASYNC_ATTR_NAME);
+	@Override
+	public boolean getAsync() {
+		return getAttribute(ASYNC_ATTR_NAME) != null;
 	}
 	
-	public void setAsync(String value) {
-		setAttribute(ASYNC_ATTR_NAME, value);
+	@Override
+	public void setAsync(boolean value) {
+		if (value) {
+			setAttribute(ASYNC_ATTR_NAME, "");
+		} else {
+			removeAttribute(ASYNC_ATTR_NAME);
+		}
+	}
+	
+	@Override
+	public boolean getDefer() {
+		return getAttribute(DEFER_ATTR_NAME) != null;
+	}
+	
+	@Override
+	public void setDefer(boolean value) {
+		if (value) {
+			setAttribute(DEFER_ATTR_NAME, "");
+		} else {
+			removeAttribute(DEFER_ATTR_NAME);
+		}
 	}
 	
 	public boolean prepareScript() {		
@@ -58,7 +79,7 @@ public class ScriptElement extends HTMLScriptElementImpl {
 		}
 		
 		/* Step 3 */
-		if (_wasParserInserted && getAsync() == null) {
+		if (_wasParserInserted && !getAsync()) {
 			_forceAsync = true;
 		}
 		

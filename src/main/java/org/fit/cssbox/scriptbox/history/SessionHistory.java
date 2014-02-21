@@ -5,26 +5,28 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
 public class SessionHistory {
 	private BrowsingContext _context;
 	private List<SessionHistoryEntry> _entries;
-	private Iterator<SessionHistoryEntry> _currentEntryIterator;
-	private SessionHistoryEntry _currentEntry;
+	private int _currentEntryPosition;
 	
 	public SessionHistory(BrowsingContext context) {
 		_context = context;
 		initSessionHistory();
 	}
 	
-	public ScriptableDocument getActiveDocument() {
-		if (_currentEntry != null) {
-			return _currentEntry.getDocument();
+	public SessionHistoryEntry getCurrentEntry() {
+		if (_currentEntryPosition != -1) {
+			return _entries.get(_currentEntryPosition);
 		} else {
 			return null;
 		}
-		
+	}
+	
+	public Html5DocumentImpl go(int delta) {
+		return null;
 	}
 	
 	public void clean() {
@@ -38,7 +40,7 @@ public class SessionHistory {
 	
 	private void initSessionHistory() {
 		SessionHistoryEntry blankPageEntry = new SessionHistoryEntry();
-		ScriptableDocument blankDocument = ScriptableDocument.createBlankDocument(_context);
+		Html5DocumentImpl blankDocument = Html5DocumentImpl.createBlankDocument(_context);
 		blankDocument.implementSandboxing();
 		
 		blankPageEntry.setSocument(blankDocument);
@@ -50,7 +52,7 @@ public class SessionHistory {
 		}
 		
 		_entries.add(blankPageEntry);
-		_currentEntry = blankPageEntry;
-		_currentEntryIterator = _entries.iterator();
+		_currentEntryPosition = 0;
 	}
+	
 }

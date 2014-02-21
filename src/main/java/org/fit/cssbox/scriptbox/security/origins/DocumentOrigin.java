@@ -2,30 +2,30 @@ package org.fit.cssbox.scriptbox.security.origins;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
-public class DocumentOrigin extends Origin<ScriptableDocument> {
+public class DocumentOrigin extends Origin<Html5DocumentImpl> {
 	private Object _uniqueIdentifier;
 	
-	private DocumentOrigin(ScriptableDocument originDocument, Origin<?> alias, Object uniqueIdentifier) {
+	private DocumentOrigin(Html5DocumentImpl originDocument, Origin<?> alias, Object uniqueIdentifier) {
 		super(originDocument, alias);
 		
 		_uniqueIdentifier = uniqueIdentifier;
 	}
 	
-	public static DocumentOrigin create(ScriptableDocument originDocument, Origin<?> alias) {
+	public static DocumentOrigin create(Html5DocumentImpl originDocument, Origin<?> alias) {
 		return new DocumentOrigin(originDocument, alias, null);
 	}
 	
-	public static DocumentOrigin createUnique(ScriptableDocument originDocument, Origin<?> alias) {
+	public static DocumentOrigin createUnique(Html5DocumentImpl originDocument, Origin<?> alias) {
 		return new DocumentOrigin(originDocument, alias, new Object());
 	}
 	
-	public static DocumentOrigin create(ScriptableDocument originDocument) {
+	public static DocumentOrigin create(Html5DocumentImpl originDocument) {
 		return create(originDocument, null);
 	}
 	
-	public static DocumentOrigin createUnique(ScriptableDocument originDocument) {
+	public static DocumentOrigin createUnique(Html5DocumentImpl originDocument) {
 		return createUnique(originDocument, null);
 	}
 

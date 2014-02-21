@@ -6,7 +6,7 @@ import org.apache.html.dom.HTMLDocumentImpl;
 import org.fit.cssbox.io.DefaultDocumentSource;
 import org.fit.cssbox.scriptbox.document.event.EventDOMSource;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMSource;
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.mozilla.javascript.Script;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
@@ -37,13 +37,13 @@ public class MultipleDocumentBrowser {
 		}
 		
 		ScriptDOMSource eventDOMSource = new ScriptDOMSource(docSource, true);
-		ScriptableDocument document = null;
+		Html5DocumentImpl document = null;
 		
 		eventDOMSource.addDocumentEventListener("DOMNodeRemoved", domEventListener, false);
 		eventDOMSource.addDocumentEventListener("DOMNodeInserted", domEventListener, false);
 		
 		try {
-			document = (ScriptableDocument)eventDOMSource.parse();
+			document = (Html5DocumentImpl)eventDOMSource.parse();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -6,6 +6,7 @@ import org.apache.xerces.xni.XMLDocumentHandler;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.fit.cssbox.scriptbox.document.event.EventDOMParser;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -17,9 +18,9 @@ import org.xml.sax.SAXNotSupportedException;
  */
 public class ScriptDOMParser extends EventDOMParser {
 	
-	private ScriptableDocument _document;
+	private Html5DocumentImpl _document;
 	
-	public ScriptDOMParser(ScriptableDocument document) {
+	public ScriptDOMParser(Html5DocumentImpl document) {
 		_document = document;
 	}
 	

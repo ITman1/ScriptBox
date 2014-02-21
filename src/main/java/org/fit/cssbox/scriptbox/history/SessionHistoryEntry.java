@@ -2,12 +2,13 @@ package org.fit.cssbox.scriptbox.history;
 
 import java.net.URL;
 
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
 public class SessionHistoryEntry {
 	private URL _url;
 	private String _title;
-	private ScriptableDocument _document;
+	private Html5DocumentImpl _document;
+	private History _history;
 	private int _scrollPositionX;
 	private int _scrollPositionY;
 	
@@ -16,15 +17,15 @@ public class SessionHistoryEntry {
 	}
 	
 	public void setURL(URL url) {
-		this._url = url;
+		_url = url;
 	}
 	
-	public ScriptableDocument getDocument() {
+	public Html5DocumentImpl getDocument() {
 		return _document;
 	}
 	
-	public void setSocument(ScriptableDocument document) {
-		this._document = document;
+	public void setSocument(Html5DocumentImpl document) {
+		_document = document;
 	}
 	
 	public int getScrollPositionX() {
@@ -32,7 +33,7 @@ public class SessionHistoryEntry {
 	}
 	
 	public void setScrollPositionX(int scrollPositionX) {
-		this._scrollPositionX = scrollPositionX;
+		_scrollPositionX = scrollPositionX;
 	}
 	
 	public int getScrollPositionY() {
@@ -40,7 +41,7 @@ public class SessionHistoryEntry {
 	}
 	
 	public void setScrollPositionY(int scrollPositionY) {
-		this._scrollPositionY = scrollPositionY;
+		_scrollPositionY = scrollPositionY;
 	}
 	
 	public String getTitle() {
@@ -48,6 +49,10 @@ public class SessionHistoryEntry {
 	}
 	
 	public void setTitle(String title) {
-		this._title = title;
+		_title = title;
+	}
+	
+	public History getHistory() {
+		return _history;
 	}
 }

@@ -1,6 +1,6 @@
 package org.fit.cssbox.scriptbox.browser;
 
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.history.Location;
 import org.fit.cssbox.scriptbox.ui.bars.BarProp;
@@ -44,7 +44,7 @@ public abstract class AbstractWindow {
 	protected WindowProxy parent;
 	protected Element frameElement;
 	
-	public AbstractWindow(ScriptableDocument document) {
+	public AbstractWindow(Html5DocumentImpl document) {
 		
 	}
 	
@@ -53,7 +53,7 @@ public abstract class AbstractWindow {
 	protected abstract Object getter(String name);
 	
 	protected WindowProxy open() {
-		return open(ScriptableDocument.DEFAULT_URL, DEFAULT_TARGET, DEFAULT_FEATURES, DEFAULT_REAPLACE);
+		return open(Html5DocumentImpl.DEFAULT_URL, DEFAULT_TARGET, DEFAULT_FEATURES, DEFAULT_REAPLACE);
 	}
 	
 	protected WindowProxy open(String url) {

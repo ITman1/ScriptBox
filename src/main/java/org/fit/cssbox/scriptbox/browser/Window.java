@@ -1,10 +1,10 @@
 package org.fit.cssbox.scriptbox.browser;
 
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
 public class Window extends AbstractWindow {
 
-	public Window(ScriptableDocument document) {
+	public Window(Html5DocumentImpl document) {
 		super(document);
 		// TODO Auto-generated constructor stub
 	}

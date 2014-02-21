@@ -1,6 +1,6 @@
 package org.fit.cssbox.scriptbox.security;
 
-public enum SandboxingFlag {
+public enum SandboxingFlag {	
 	NAVIGATION_BROWSING_CONTEXT_FLAG,
 	AUXILARY_NAVIGATION_BROWSING_CONTEXT_FLAG,
 	TOPLEVEL_NAVIGATION_BROWSING_CONTEXT_FLAG,

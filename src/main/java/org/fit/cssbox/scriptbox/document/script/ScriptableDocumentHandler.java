@@ -5,7 +5,6 @@ import org.apache.xerces.dom.DOMMessageFormatter;
 import org.apache.xerces.dom.DeferredDocumentImpl;
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xerces.dom.PSVIDocumentImpl;
-import org.apache.xerces.parsers.ObjectFactory;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.NamespaceContext;
 import org.apache.xerces.xni.QName;
@@ -16,18 +15,20 @@ import org.apache.xerces.xni.XNIException;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.document.event.EventDocumentHandlerDecorator;
 import org.fit.cssbox.scriptbox.document.event.EventProcessingProvider;
+import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 	private int scriptNestingLevel;
 	private boolean parserPauseFlag;
-	private ScriptElement pendingParsingBlockingScript;
+	private Html5ScriptElementImpl pendingParsingBlockingScript;
 	private boolean hasStyleSheetBlockScripts;           // FIXME: Is never set, info about style sheets is not propagated here
 	private Object pauseMonitor;
-	private ScriptableDocument _document;
+	private Html5DocumentImpl _document;
 	
-	public ScriptableDocumentHandler(XMLDocumentHandler oldHandler, EventProcessingProvider processingInfoProvider, ScriptableDocument document) {
+	public ScriptableDocumentHandler(XMLDocumentHandler oldHandler, EventProcessingProvider processingInfoProvider, Html5DocumentImpl document) {
 		super(oldHandler, processingInfoProvider);
 		
 		pauseMonitor = new Object();
@@ -39,7 +40,7 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 		super.startDocument(locator, encoding, namespaceContext, augs);
 		
 		if (!processingInfoProvider.isDeferNodeExpansion()) {
-			CoreDocumentImpl documentImpl;
+			CoreDocumentImpl documentImpl = null;
 
 			if (_document instanceof CoreDocumentImpl) {
 				documentImpl = (CoreDocumentImpl)_document;
@@ -73,8 +74,8 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 		
 		// FIXME: Steps 1) and 2) are somehow done following the HTML4, fix it to HTML5
 		
-		if (currNode instanceof ScriptElement) {
-			ScriptElement scriptElement = (ScriptElement)currNode;
+		if (currNode instanceof Html5ScriptElementImpl) {
+			Html5ScriptElementImpl scriptElement = (Html5ScriptElementImpl)currNode;
 			// 3) Mark the element as being "parser-inserted" and unset the element's "force-async" flag.
 			scriptElement.suspendExecution();
 			
@@ -98,8 +99,8 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 		Node currNode = processingInfoProvider.getCurrentNode();
 		
 		if (prevNode != currNode) { // We really ended previous element
-			if (prevNode instanceof ScriptElement) {
-				ScriptElement scriptElement = (ScriptElement)prevNode;
+			if (prevNode instanceof Html5ScriptElementImpl) {
+				Html5ScriptElementImpl scriptElement = (Html5ScriptElementImpl)prevNode;
 				
 				// TODO: 1) Perform a microtask checkpoint.
 				// TODO: 2) Provide a stable state.
@@ -175,8 +176,8 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 	public void pauseParsing() {
 		parserPauseFlag = true;
 		
-		while (parserPauseFlag) {
-			synchronized (pauseMonitor) {
+		synchronized (pauseMonitor) {
+			while (parserPauseFlag) {
 				try {
 					pauseMonitor.wait();
 				} catch (Exception e) {}

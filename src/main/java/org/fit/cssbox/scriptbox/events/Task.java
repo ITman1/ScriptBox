@@ -1,7 +1,7 @@
 package org.fit.cssbox.scriptbox.events;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocument;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
  * Each task in a browsing context event loop is associated with a Document; 
  */
 public class Task {
-	private ScriptableDocument _document;
+	private Html5DocumentImpl _document;
 	
 	/*
 	 * if the task was queued in the context of an element, then it is the element's Document
@@ -18,8 +18,8 @@ public class Task {
 	public Task(Element element) {
 		Document document = element.getOwnerDocument();
 		
-		if (document instanceof ScriptableDocument) {
-			_document = (ScriptableDocument)document;
+		if (document instanceof Html5DocumentImpl) {
+			_document = (Html5DocumentImpl)document;
 		}
 	}
 
@@ -31,7 +31,11 @@ public class Task {
 		_document = browsingContext.getActiveDocument();
 	}
 	
-	public ScriptableDocument getDocument() {
+	public Html5DocumentImpl getDocument() {
 		return _document;
+	}
+	
+	public void execute() {
+		
 	}
 }
