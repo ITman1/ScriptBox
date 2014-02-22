@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.net.URI;
+import java.net.URL;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
@@ -297,7 +298,7 @@ public class BrowsingContext {
 	 */
 	public Collection<Html5DocumentImpl> getDocumentFamily() {
 		Set<Html5DocumentImpl> family = new HashSet<Html5DocumentImpl>();
-		Collection<SessionHistoryEntry> sessionEntries = sessionHistory.getAllEntries();
+		Collection<SessionHistoryEntry> sessionEntries = sessionHistory.getSessionHistoryEntries();
 		
 		for (SessionHistoryEntry entry : sessionEntries) {
 			Html5DocumentImpl document = entry.getDocument();
@@ -443,5 +444,13 @@ public class BrowsingContext {
 	
 	public String getName(String name) {
 		return contextName;
+	}
+	
+	public SessionHistory getSesstionHistory() {
+		return sessionHistory;
+	}
+	
+	public void navigate(URL url) {
+		
 	}
 }

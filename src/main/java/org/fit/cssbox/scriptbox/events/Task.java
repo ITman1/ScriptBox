@@ -9,13 +9,20 @@ import org.w3c.dom.Element;
  * From HTML5 specification:
  * Each task in a browsing context event loop is associated with a Document; 
  */
-public class Task {
+public abstract class Task {
 	private Html5DocumentImpl _document;
+	private TaskSource _source;
+	
+	private Task(TaskSource source) {
+		_source = source;
+	}
 	
 	/*
 	 * if the task was queued in the context of an element, then it is the element's Document
 	 */
-	public Task(Element element) {
+	public Task(TaskSource source, Element element) {
+		this(source);
+		
 		Document document = element.getOwnerDocument();
 		
 		if (document instanceof Html5DocumentImpl) {
@@ -27,7 +34,9 @@ public class Task {
 	 * if the task was queued in the context of a browsing context, then it is the browsing 
 	 * context's active document at the time the task was queued
 	 */
-	public Task(BrowsingContext browsingContext) {
+	public Task(TaskSource source, BrowsingContext browsingContext) {
+		this(source);
+		
 		_document = browsingContext.getActiveDocument();
 	}
 	
@@ -35,7 +44,9 @@ public class Task {
 		return _document;
 	}
 	
-	public void execute() {
-		
+	public TaskSource getTaskSource() {
+		return _source;
 	}
+	
+	public abstract void execute();
 }

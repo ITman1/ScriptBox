@@ -8,39 +8,35 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
 public class SessionHistory {
-	private BrowsingContext _context;
-	private List<SessionHistoryEntry> _entries;
-	private int _currentEntryPosition;
+	protected BrowsingContext context;
+	protected List<SessionHistoryEntry> entries;
+	protected int currentEntryPosition;
 	
 	public SessionHistory(BrowsingContext context) {
-		_context = context;
+		this.context = context;
 		initSessionHistory();
 	}
 	
 	public SessionHistoryEntry getCurrentEntry() {
-		if (_currentEntryPosition != -1) {
-			return _entries.get(_currentEntryPosition);
+		if (currentEntryPosition != -1) {
+			return entries.get(currentEntryPosition);
 		} else {
 			return null;
 		}
 	}
 	
-	public Html5DocumentImpl go(int delta) {
-		return null;
-	}
-	
 	public void clean() {
-		_entries.clear();
+		entries.clear();
 		initSessionHistory();
 	}
 	
-	public List<SessionHistoryEntry> getAllEntries() {
-		return _entries;
+	public List<SessionHistoryEntry> getSessionHistoryEntries() {
+		return entries;
 	}
 	
 	private void initSessionHistory() {
-		SessionHistoryEntry blankPageEntry = new SessionHistoryEntry();
-		Html5DocumentImpl blankDocument = Html5DocumentImpl.createBlankDocument(_context);
+		SessionHistoryEntry blankPageEntry = new SessionHistoryEntry(this);
+		Html5DocumentImpl blankDocument = Html5DocumentImpl.createBlankDocument(context);
 		blankDocument.implementSandboxing();
 		
 		blankPageEntry.setSocument(blankDocument);
@@ -51,8 +47,12 @@ public class SessionHistory {
 			blankPageEntry.setURL(null);
 		}
 		
-		_entries.add(blankPageEntry);
-		_currentEntryPosition = 0;
+		entries.add(blankPageEntry);
+		currentEntryPosition = 0;
+	}
+	
+	public BrowsingContext getBrowsingContext() {
+		return context;
 	}
 	
 }

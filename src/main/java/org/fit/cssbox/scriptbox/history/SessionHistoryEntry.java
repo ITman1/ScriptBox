@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.history;
 
 import java.net.URL;
+import java.util.Date;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
@@ -11,6 +12,13 @@ public class SessionHistoryEntry {
 	private History _history;
 	private int _scrollPositionX;
 	private int _scrollPositionY;
+	
+	private Date _visitedDate;
+	private SessionHistory _sessionHistory;
+	
+	public SessionHistoryEntry(SessionHistory sessionHistory) {
+		_sessionHistory = sessionHistory;
+	}
 	
 	public URL getURL() {
 		return _url;
@@ -54,5 +62,17 @@ public class SessionHistoryEntry {
 	
 	public History getHistory() {
 		return _history;
+	}
+	
+	public Date getVisited() {
+		return _visitedDate;
+	}
+	
+	public void setVisited(Date date) {
+		_visitedDate = date;
+	}
+	
+	public SessionHistory getSessionHistory() {
+		return _sessionHistory;
 	}
 }
