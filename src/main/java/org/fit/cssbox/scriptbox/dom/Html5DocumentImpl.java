@@ -2,6 +2,7 @@ package org.fit.cssbox.scriptbox.dom;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +19,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
+import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.security.origins.OriginContainer;
@@ -50,6 +52,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	private URI _address;
 	private String _referrer;
 	private Window _window;
+	private SessionHistoryEntry _latestEntry;
 	
 	private Html5DocumentImpl(BrowsingContext browsingContext, URI address, Set<SandboxingFlag> sandboxingFlagSet, String referrer) {
 		_browsingContext = browsingContext;
@@ -208,6 +211,18 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 		}
 		
 		_originContainer = new OriginContainer<DocumentOrigin>(documentOrigin, effectiveScriptOrigin);
+	}
+	
+	public void setLatestEntry(SessionHistoryEntry entry) {
+		_latestEntry = entry;
+	}
+	
+	public SessionHistoryEntry getLatestEntry() {
+		return _latestEntry;
+	}
+	
+	public void setAddress(URI address) {
+		_address = address;
 	}
 	
 	public URI getURI() {

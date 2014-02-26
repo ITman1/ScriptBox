@@ -56,7 +56,7 @@ public class EventLoop extends Thread {
 	 * Not thread safe.
 	 */
 	public void filter(TaskSource source, Predicate<Task> predicate) {
-		
+		_taskQueues.filter(source, predicate);
 	}
 	
 	protected synchronized Task pullTask() {

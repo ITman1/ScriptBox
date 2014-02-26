@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.events;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -46,6 +47,10 @@ public abstract class Task {
 	
 	public TaskSource getTaskSource() {
 		return _source;
+	}
+	
+	public BrowsingUnit getBrowsingUnit() {
+		return _document.getBrowsingContext().getBrowsingUnit();
 	}
 	
 	public abstract void execute();

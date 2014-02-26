@@ -1,12 +1,16 @@
 package org.fit.cssbox.scriptbox.history;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 
 public class SessionHistoryEntry {
-	private URL _url;
+	private URI _uri;
 	private String _title;
 	private Html5DocumentImpl _document;
 	private History _history;
@@ -15,17 +19,34 @@ public class SessionHistoryEntry {
 	
 	private Date _visitedDate;
 	private SessionHistory _sessionHistory;
+	private String _browsingContextName;
+	private StateObject _stateObject;
 	
 	public SessionHistoryEntry(SessionHistory sessionHistory) {
 		_sessionHistory = sessionHistory;
 	}
 	
 	public URL getURL() {
-		return _url;
+		try {
+			return _uri.toURL();
+		} catch (MalformedURLException e) {
+			return null;
+		}
 	}
 	
 	public void setURL(URL url) {
-		_url = url;
+		try {
+			_uri = url.toURI();
+		} catch (URISyntaxException e) {
+		}
+	}
+	
+	public URI getURI() {
+		return _uri;
+	}
+	
+	public void setURI(URI uri) {
+		_uri = uri;
 	}
 	
 	public Html5DocumentImpl getDocument() {
@@ -74,5 +95,39 @@ public class SessionHistoryEntry {
 	
 	public SessionHistory getSessionHistory() {
 		return _sessionHistory;
+	}
+	
+	public String getBrowsingContextName() {
+		return _browsingContextName;
+	}
+	
+	public void setBrowsingContextName(String name) {
+		_browsingContextName = name;
+	}
+	
+	public boolean hasSameDocumentOrigin(SessionHistoryEntry entry) {
+		Html5DocumentImpl entryDocument = entry.getDocument();
+		DocumentOrigin entryEntryDocumentOrigin = entryDocument.getOriginContainer().getOrigin();
+		DocumentOrigin thisDocumentOrigin = _document.getOriginContainer().getOrigin();
+		
+		if (thisDocumentOrigin.equals(entryEntryDocumentOrigin)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	// FIXME: Implement.
+	public boolean hasPersistedUserState() {
+		return false;
+	}
+	
+	// FIXME: Implement.
+	public boolean hasStateObject() {
+		return false;
+	}
+	
+	public StateObject getStateObject() {
+		return _stateObject;
 	}
 }

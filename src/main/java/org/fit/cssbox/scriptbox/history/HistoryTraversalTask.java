@@ -31,6 +31,6 @@ public class HistoryTraversalTask extends Task {
 		 * @see http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history-by-a-delta
 		 */
 		
-		HistoryTraversalHelper.traverseHistory(_specifiedBrowsingContext, _specifiedEntry);
+		SessionHistory.traverseHistory(_specifiedBrowsingContext, _specifiedEntry);
 	}
 }

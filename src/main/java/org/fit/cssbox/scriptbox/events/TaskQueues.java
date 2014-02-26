@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+
 public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 
 	private static final long serialVersionUID = -6406790067694059818L;
@@ -34,6 +38,17 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 		}
 		
 		return null;
+	}
+	
+	public void filter(TaskSource source, Predicate<Task> predicate) {
+		List<Task> tasks = get(source);
+		
+		if (tasks != null) {
+			tasks = new ArrayList<Task>();
+			Iterables.addAll(tasks, Iterables.filter(tasks, predicate));
+		}
+		
+		put(source, tasks);
 	}
 	
 	public void removeTask(Task task) {

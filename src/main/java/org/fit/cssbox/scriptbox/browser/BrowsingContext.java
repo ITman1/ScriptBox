@@ -442,15 +442,27 @@ public class BrowsingContext {
 		}
 	}
 	
-	public String getName(String name) {
+	public String getName() {
 		return contextName;
+	}
+	
+	public void setName(String name) {
+		this.contextName = name;
 	}
 	
 	public SessionHistory getSesstionHistory() {
 		return sessionHistory;
 	}
 	
+	public BrowsingUnit getBrowsingUnit() {
+		return browsingUnit;
+	}
+	
 	public void navigate(URL url) {
+		
+	}
+	
+	public void scrollToFragment(String fragment) {
 		
 	}
 }

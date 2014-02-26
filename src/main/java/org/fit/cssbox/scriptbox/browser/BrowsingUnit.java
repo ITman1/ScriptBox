@@ -28,4 +28,8 @@ public class BrowsingUnit {
 	public void queueTask(Task task) {
 		_eventLoop.queueTask(task);
 	}
+	
+	public EventLoop getEventLoop() {
+		return _eventLoop;
+	}
 }
