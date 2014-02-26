@@ -1,5 +1,7 @@
 package org.fit.cssbox.scriptbox.browser;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,12 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.net.URI;
-import java.net.URL;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
+import org.fit.cssbox.scriptbox.network.NavigationController;
 import org.fit.cssbox.scriptbox.script.DocumentScriptEngine;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
@@ -41,8 +42,14 @@ public class BrowsingContext {
 	protected SessionHistory sessionHistory;
 	protected BrowsingContext openerBrowsingContext;
 	protected Html5DocumentImpl creatorDocument;
+	protected NavigationController navigationController;
 			
 	protected String contextName;
+	
+	protected boolean navigateRunning;
+	protected boolean navigateUnloadDocument;
+	protected URL navigateURL;
+
 	
 	protected BrowsingContext(BrowsingContext parentContext, BrowsingUnit browsingUnit, BrowsingContext openerBrowsingContext, String contextName) {
 		this.parentContext = parentContext;
@@ -54,6 +61,7 @@ public class BrowsingContext {
 		this.childContexts = new HashSet<BrowsingContext>();
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
+		this.navigationController = new NavigationController(this);
 		
 		BrowsingContext creatorContext = getCreatorContext();
 		if (creatorContext != null) {
@@ -73,6 +81,12 @@ public class BrowsingContext {
 		return createNestedContext(document, null);
 	}
 	
+	public BrowsingContext createNestedContext(Html5DocumentImpl document, String name) {
+		BrowsingContext childContext = new BrowsingContext(this, browsingUnit, null, name);
+		childContexts.add(childContext);
+		return childContext;
+	}
+	
 	public static BrowsingContext createTopLevelContext(BrowsingUnit browsingUnit, String name) {
 		return new BrowsingContext( null, browsingUnit, null, name);
 	}
@@ -81,11 +95,7 @@ public class BrowsingContext {
 		return new BrowsingContext( null, openerBrowsingContext.browsingUnit, openerBrowsingContext, name);
 	}
 	
-	public BrowsingContext createNestedContext(Html5DocumentImpl document, String name) {
-		BrowsingContext childContext = new BrowsingContext(this, browsingUnit, null, name);
-		childContexts.add(childContext);
-		return childContext;
-	}
+
 
 	public void destroyContext() {
 		destroyed = true;
@@ -458,8 +468,18 @@ public class BrowsingContext {
 		return browsingUnit;
 	}
 	
-	public void navigate(URL url) {
-		
+	public void navigate(BrowsingContext sourceBrowsingContext, URL url) {
+		navigationController.navigate(sourceBrowsingContext, url, false, false);
+	}
+	
+	// FIXME: Implement.
+	public boolean isNavigating() {
+		return false;
+	}
+	
+	// FIXME: Implement.
+	public boolean unloadDocumentRunning() {
+		return false;
 	}
 	
 	public void scrollToFragment(String fragment) {

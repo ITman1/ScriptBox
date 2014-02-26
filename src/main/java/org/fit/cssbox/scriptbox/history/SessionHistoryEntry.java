@@ -1,8 +1,5 @@
 package org.fit.cssbox.scriptbox.history;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 
@@ -10,7 +7,7 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 
 public class SessionHistoryEntry {
-	private URI _uri;
+	private URL _url;
 	private String _title;
 	private Html5DocumentImpl _document;
 	private History _history;
@@ -25,28 +22,13 @@ public class SessionHistoryEntry {
 	public SessionHistoryEntry(SessionHistory sessionHistory) {
 		_sessionHistory = sessionHistory;
 	}
-	
+		
 	public URL getURL() {
-		try {
-			return _uri.toURL();
-		} catch (MalformedURLException e) {
-			return null;
-		}
+		return _url;
 	}
 	
 	public void setURL(URL url) {
-		try {
-			_uri = url.toURI();
-		} catch (URISyntaxException e) {
-		}
-	}
-	
-	public URI getURI() {
-		return _uri;
-	}
-	
-	public void setURI(URI uri) {
-		_uri = uri;
+		_url = url;
 	}
 	
 	public Html5DocumentImpl getDocument() {

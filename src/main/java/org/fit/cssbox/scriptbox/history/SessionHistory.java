@@ -46,6 +46,10 @@ public class SessionHistory {
 		currentEntryPosition = entries.indexOf(entry);
 	}
 	
+	public int getLength() {
+		return entries.size();
+	}
+	
 	public void clean() {
 		entries.clear();
 		initSessionHistory();
@@ -75,11 +79,7 @@ public class SessionHistory {
 		
 		blankPageEntry.setSocument(blankDocument);
 		
-		try {
-			blankPageEntry.setURL(blankDocument.getURI().toURL());
-		} catch (MalformedURLException e) {
-			blankPageEntry.setURL(null);
-		}
+		blankPageEntry.setURL(blankDocument.getAddress());
 		
 		entries.add(blankPageEntry);
 		currentEntryPosition = 0;
@@ -183,7 +183,7 @@ public class SessionHistory {
 		}
 		
 		// 5) Set the document's address to the URL of the specified entry.
-		specifiedDocument.setAddress(specifiedEntry.getURI());
+		specifiedDocument.setAddress(specifiedEntry.getURL());
 		
 		// 6) If the specified entry has a URL whose fragment identifier differs from that of the current entry
 		boolean hashChanged = false;

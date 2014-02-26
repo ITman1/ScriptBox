@@ -13,12 +13,14 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
 
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
+import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
@@ -28,33 +30,41 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 public class Html5DocumentImpl extends HTMLDocumentImpl {
-	final public static String DEFAULT_URL = "about:blank";
+	final public static String DEFAULT_URL_ADDRESS = "about:blank";
+	private static URL _DEFAULT_URL;
+    static {       
+    	try {
+    		_DEFAULT_URL = new URL(DEFAULT_URL_ADDRESS);
+		} catch (MalformedURLException e) {
+		}
+    }
+	final public static URL DEFAULT_URL = _DEFAULT_URL;
 	final public static String JAVASCRIPT_SCHEME_NAME = "javascript";
 	final public static String DATA_SCHEME_NAME = "data";
 
 	private static final long serialVersionUID = -352261593104316623L;
 	private static final String SCRIPT_TAG_NAME = "script";
 
-    private static List<String> SERVER_BASED_SCHEMES;
+	private static List<String> SERVER_BASED_SCHEMES;
     static {       
     	SERVER_BASED_SCHEMES = new ArrayList<String>(3);
     	SERVER_BASED_SCHEMES.add("http");
     	SERVER_BASED_SCHEMES.add("https");
     	SERVER_BASED_SCHEMES.add("file");
     }
-		
+
 	private BrowsingContext _browsingContext;
 	
 	// Every Document has an active sandboxing flag set
 	private Set<SandboxingFlag> _activeSandboxingFlagSet;
 	
 	private OriginContainer<DocumentOrigin> _originContainer;
-	private URI _address;
+	private URL _address;
 	private String _referrer;
 	private Window _window;
 	private SessionHistoryEntry _latestEntry;
 	
-	private Html5DocumentImpl(BrowsingContext browsingContext, URI address, Set<SandboxingFlag> sandboxingFlagSet, String referrer) {
+	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow) {
 		_browsingContext = browsingContext;
 		_address = address;
 		_referrer = referrer;
@@ -71,17 +81,13 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 		if (sandboxingFlagSet.contains(SandboxingFlag.ORIGIN_BROWSING_CONTEXT_FLAG)) {
 			documentOrigin = DocumentOrigin.createUnique(this);
 			effectiveScriptOrigin = DocumentOrigin.create(this, documentOrigin);
-		} else if (address != null && SERVER_BASED_SCHEMES.contains(address.getScheme())) {
-			UrlOrigin addressOrigin;
-			try {
-				addressOrigin = new UrlOrigin(address.toURL());
-				documentOrigin = DocumentOrigin.create(this, addressOrigin);
-			} catch (MalformedURLException e) {
-			}
+		} else if (address != null && SERVER_BASED_SCHEMES.contains(address.getProtocol())) {
+			UrlOrigin addressOrigin = new UrlOrigin(address);
+			documentOrigin = DocumentOrigin.create(this, addressOrigin);
 			effectiveScriptOrigin = DocumentOrigin.create(this, documentOrigin);
-		} else if (address != null && address.getScheme().equals(DATA_SCHEME_NAME)) {
+		} else if (address != null && address.getProtocol().equals(DATA_SCHEME_NAME)) {
 			// TODO: If a Document was generated from a data: URL found in another Document or in a script
-		} else if (address != null && address.toASCIIString().equals(DEFAULT_URL)) {
+		} else if (address != null && address.toExternalForm().equals(DEFAULT_URL)) {
 			Html5DocumentImpl creatorDocument = browsingContext.getCreatorDocument();
 			if (creatorDocument != null) {
 				OriginContainer<?> originContainer = creatorDocument.getOriginContainer();
@@ -91,7 +97,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 				documentOrigin = DocumentOrigin.createUnique(this);
 				effectiveScriptOrigin = DocumentOrigin.create(this, documentOrigin);
 			}
-		} else if (address != null && address.getScheme().equals(JAVASCRIPT_SCHEME_NAME)) {
+		} else if (address != null && address.getProtocol().equals(JAVASCRIPT_SCHEME_NAME)) {
 			// TODO: If a Document was created as part of the processing for javascript: URLs
 		}
 		/*
@@ -102,11 +108,22 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 
 		_originContainer = new OriginContainer<DocumentOrigin>(documentOrigin, effectiveScriptOrigin);
 		
-		_window = new Window(this);
+		if (createWindow) {
+			_window = new Window(this);
+		}
 	}
 	
-	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URI address) {
-		return new Html5DocumentImpl(browsingContext, address, null, null);
+	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument) {
+		Html5DocumentImpl document = null;
+
+		if (recycleWindowDocument != null) {
+			document = new Html5DocumentImpl(browsingContext, address, null, null, false);
+			document._window = recycleWindowDocument._window;
+		} else {
+			document = new Html5DocumentImpl(browsingContext, address, null, null, true);
+		}
+		
+		return document;
 	}
 	
 	public static Html5DocumentImpl createBlankDocument(BrowsingContext browsingContext) {
@@ -116,8 +133,8 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 			refferer = browsingContext.getCreatorDocument().getURL();
 		}
 		
-		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, URI.create(DEFAULT_URL), null, refferer);
-		
+		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, null, refferer, true);
+
 		document.setInputEncoding("UTF-8");
 		
 		Element htmlElement = document.createElement("html");
@@ -133,7 +150,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	public static Html5DocumentImpl createSandboxedDocument(BrowsingContext browsingContext) {
 		Set<SandboxingFlag> sandboxingFlagSet = new HashSet<SandboxingFlag>();
-		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, URI.create(DEFAULT_URL), sandboxingFlagSet, null);
+		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, sandboxingFlagSet, null, true);
 		
 		return document;
 	}
@@ -221,17 +238,17 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 		return _latestEntry;
 	}
 	
-	public void setAddress(URI address) {
+	public void setAddress(URL address) {
 		_address = address;
 	}
 	
-	public URI getURI() {
+	public URL getAddress() {
 		return _address;
 	}
 	
 	@Override
 	public String getURL() {
-		return _address.toASCIIString();
+		return _address.toExternalForm();
 	}
 	
 	@Override
@@ -240,9 +257,16 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	}
 	
 	public void setAddressFragment(String fragment) {
-		UriBuilder builder = UriBuilder.fromUri(_address);
-		builder.fragment(fragment);
-		_address = builder.build();
+		UriBuilder builder;
+		try {
+			builder = UriBuilder.fromUri(_address.toURI());
+			builder.fragment(fragment);
+			_address = builder.build().toURL();
+		} catch (IllegalArgumentException e) {
+		} catch (URISyntaxException e) {
+		} catch (UriBuilderException e) {
+		} catch (MalformedURLException e) {
+		}
 	}
 	
 	public OriginContainer<DocumentOrigin> getOriginContainer() {
@@ -264,4 +288,12 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 
 		//TODO: The flags set on the Document's resource's forced sandboxing flag set, if it has one.
 	} 
+	
+	public boolean promptToUnload() {
+		return true;
+	}
+	
+	public Window getWindow() {
+		return _window;
+	}
 }
