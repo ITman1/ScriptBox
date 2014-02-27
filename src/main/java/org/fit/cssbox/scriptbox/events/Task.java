@@ -18,6 +18,12 @@ public abstract class Task {
 		_source = source;
 	}
 	
+	public Task(TaskSource source, Html5DocumentImpl document) {
+		this(source);
+		
+		_document = document;
+	}
+	
 	/*
 	 * if the task was queued in the context of an element, then it is the element's Document
 	 */

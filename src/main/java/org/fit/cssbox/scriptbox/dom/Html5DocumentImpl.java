@@ -63,6 +63,8 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	private String _referrer;
 	private Window _window;
 	private SessionHistoryEntry _latestEntry;
+	private boolean _fullscreenEnabledFlag;
+	private String _contentType;
 	
 	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow) {
 		_browsingContext = browsingContext;
@@ -293,7 +295,27 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 		return true;
 	}
 	
+	public void unload(boolean recycle) {
+		
+	}
+	
 	public Window getWindow() {
 		return _window;
+	}
+	
+	public boolean isFullscreenEnabledFlag() {
+		return _fullscreenEnabledFlag;
+	} 
+	
+	public void setEnableFullscreenFlag(boolean value) {
+		_fullscreenEnabledFlag = value;
+	}
+	
+	public void setContentType(String contentType) {
+		_contentType = contentType;
+	}
+	
+	public String getContentType() {
+		return _contentType;
 	}
 }

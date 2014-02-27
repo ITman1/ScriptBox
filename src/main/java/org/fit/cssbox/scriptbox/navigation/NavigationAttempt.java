@@ -1,12 +1,10 @@
-package org.fit.cssbox.scriptbox.network;
+package org.fit.cssbox.scriptbox.navigation;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.swing.SwingUtilities;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
@@ -14,16 +12,42 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
 
-public class NavigationController {
-	private BrowsingContext context;
+public class NavigationAttempt {
+	protected boolean matured;
+	protected NavigationController navigationController;
+	protected BrowsingContext sourceBrowsingContext;
+	protected boolean exceptionEnabled;
+	protected boolean explicitSelfNavigationOverride;
+	protected URL url;
+	
 	private boolean goneAsync;
 	
-	NavigationController(BrowsingContext context) {
-		this.context = context;
+	public NavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride) {
+		this.navigationController = navigationController;
+		this.sourceBrowsingContext = sourceBrowsingContext;
+		this.exceptionEnabled = exceptionEnabled;
+		this.explicitSelfNavigationOverride = explicitSelfNavigationOverride;
+		this.url = url;
 	}
 	
-	public void navigate(BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride) {
-		BrowsingContext destinationBrowsingContext = context;
+	public void mature() {
+		matured = true;
+	}
+	
+	public boolean isMatured() {
+		return matured;
+	}
+	
+	public NavigationController getNavigationController() {
+		return navigationController;
+	}
+	
+	public URL getURL() {
+		return url;
+	}
+	
+	public void navigate() {
+	BrowsingContext destinationBrowsingContext = context;
 		
 		// TODO: 1) Release the storage mutex.
 		
@@ -114,13 +138,12 @@ public class NavigationController {
 		 * FIXME: Missing implementation.
 		 * @see
 		 */
-		
 	}
 	
-	public void cancel() {
+public void cancel() {
 		
 	}
-	
+
 	private Resource getResourceTestOnly(URL url) {
 
 		URLConnection conn = url.openConnection();

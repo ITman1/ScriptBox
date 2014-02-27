@@ -11,13 +11,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
-import org.fit.cssbox.scriptbox.network.NavigationController;
+import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.script.DocumentScriptEngine;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /*
@@ -39,6 +41,7 @@ public class BrowsingContext {
 	protected BrowsingUnit browsingUnit;
 	protected Map<Class<? extends DocumentScriptEngine>, DocumentScriptEngine> scriptEngines;
 	protected WindowProxy windowProxy;
+	protected Element container;
 	protected SessionHistory sessionHistory;
 	protected BrowsingContext openerBrowsingContext;
 	protected Html5DocumentImpl creatorDocument;
@@ -51,11 +54,12 @@ public class BrowsingContext {
 	protected URL navigateURL;
 
 	
-	protected BrowsingContext(BrowsingContext parentContext, BrowsingUnit browsingUnit, BrowsingContext openerBrowsingContext, String contextName) {
+	protected BrowsingContext(BrowsingContext parentContext, BrowsingUnit browsingUnit, BrowsingContext openerBrowsingContext, String contextName, Element container) {
 		this.parentContext = parentContext;
 		this.browsingUnit = browsingUnit;
 		this.openerBrowsingContext = openerBrowsingContext;
 		this.contextName = contextName;
+		this.container = container;
 		
 		this.scriptEngines = new HashMap<Class<? extends DocumentScriptEngine>, DocumentScriptEngine>();
 		this.childContexts = new HashSet<BrowsingContext>();
@@ -78,21 +82,29 @@ public class BrowsingContext {
 	}
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document) {
-		return createNestedContext(document, null);
+		return createNestedContext(document, null, null);
 	}
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document, String name) {
-		BrowsingContext childContext = new BrowsingContext(this, browsingUnit, null, name);
+		return createNestedContext(document, name, null);
+	}
+	
+	public BrowsingContext createNestedContext(Html5DocumentImpl document, Element container) {
+		return createNestedContext(document, null, container);
+	}
+	
+	public BrowsingContext createNestedContext(Html5DocumentImpl document, String name, Element container) {
+		BrowsingContext childContext = new BrowsingContext(this, browsingUnit, null, name, container);
 		childContexts.add(childContext);
 		return childContext;
 	}
 	
 	public static BrowsingContext createTopLevelContext(BrowsingUnit browsingUnit, String name) {
-		return new BrowsingContext( null, browsingUnit, null, name);
+		return new BrowsingContext( null, browsingUnit, null, name, null);
 	}
 	
 	public static BrowsingContext createAuxiliaryContext(BrowsingContext openerBrowsingContext, String name) {
-		return new BrowsingContext( null, openerBrowsingContext.browsingUnit, openerBrowsingContext, name);
+		return new BrowsingContext( null, openerBrowsingContext.browsingUnit, openerBrowsingContext, name, null);
 	}
 	
 
@@ -468,6 +480,10 @@ public class BrowsingContext {
 		return browsingUnit;
 	}
 	
+	public EventLoop getEventLoop() {
+		return getBrowsingUnit().getEventLoop();
+	}
+	
 	public void navigate(BrowsingContext sourceBrowsingContext, URL url) {
 		navigationController.navigate(sourceBrowsingContext, url, false, false);
 	}
@@ -484,5 +500,13 @@ public class BrowsingContext {
 	
 	public void scrollToFragment(String fragment) {
 		
+	}
+	
+	public Element getContainer() {
+		return container;
+	}
+	
+	public NavigationController getNavigationController() {
+		return navigationController;
 	}
 }

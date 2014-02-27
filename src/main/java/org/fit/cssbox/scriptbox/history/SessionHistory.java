@@ -20,6 +20,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 public class SessionHistory {
+
+	
 	protected BrowsingContext context;
 	protected List<SessionHistoryEntry> entries;
 	protected int currentEntryPosition;
@@ -72,6 +74,10 @@ public class SessionHistory {
 		Iterables.addAll(entries, Iterables.filter(entries, predicate));
 	}
 	
+	public void add(SessionHistoryEntry entry) {
+		entries.add(entry);
+	}
+	
 	private void initSessionHistory() {
 		SessionHistoryEntry blankPageEntry = new SessionHistoryEntry(this);
 		Html5DocumentImpl blankDocument = Html5DocumentImpl.createBlankDocument(context);
@@ -104,8 +110,7 @@ public class SessionHistory {
 		 */
 		if (specifiedEntry.getDocument() == null) {
 			BrowsingContext context = specifiedEntry.getSessionHistory().getBrowsingContext();
-			URL documentURL = specifiedEntry.getURL();
-			context.navigate(documentURL);
+			context.getNavigationController().update(specifiedEntry);
 			return;
 		}
 		
@@ -187,14 +192,14 @@ public class SessionHistory {
 		
 		// 6) If the specified entry has a URL whose fragment identifier differs from that of the current entry
 		boolean hashChanged = false;
-		URI specifiedURI = specifiedDocument.getURI();
-		URI currentURI = currentDocument.getURI();
+		URL specifiedURI = specifiedDocument.getAddress();
+		URL currentURI = currentDocument.getAddress();
 		String specifiedUriFragment = null;
 		String currentUriFragment = null;
 		
 		if (specifiedURI != null && currentURI != null) {
-			specifiedUriFragment = specifiedURI.getFragment();
-			currentUriFragment = currentURI.getFragment();
+			specifiedUriFragment = specifiedURI.getRef();
+			currentUriFragment = currentURI.getRef();
 			
 			if (specifiedUriFragment != null && currentUriFragment != null) {
 				if (!specifiedUriFragment.equals(currentUriFragment) && specifiedDocument == currentDocument) {

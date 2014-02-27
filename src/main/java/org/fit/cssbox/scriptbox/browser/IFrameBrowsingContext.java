@@ -13,7 +13,7 @@ public class IFrameBrowsingContext extends BrowsingContext {
 	protected boolean seamlessBrowsingFlag;
 	
 	public IFrameBrowsingContext(BrowsingContext parentContext, Html5IFrameElementImpl iframeElement) {
-		super(parentContext, parentContext.browsingUnit, null, null);
+		super(parentContext, parentContext.browsingUnit, null, null, iframeElement);
 				
 		this.contextName = iframeElement.getName();
 		this.iframeSandboxingFlagSet = new HashSet<SandboxingFlag>();

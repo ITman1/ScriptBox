@@ -36,4 +36,8 @@ public class Resource {
 		
         return conn.getHeaderField("Content-Type");
 	}
+	
+	public URLConnection getUrlConnection() {
+		return conn;
+	}
 }
