@@ -11,9 +11,10 @@ public class IFrameBrowsingContext extends BrowsingContext {
 	// Every nested browsing context has an iframe sandboxing flag set
 	protected Set<SandboxingFlag> iframeSandboxingFlagSet;
 	protected boolean seamlessBrowsingFlag;
+	protected boolean delayingLoadEventsMode;
 	
 	public IFrameBrowsingContext(BrowsingContext parentContext, Html5IFrameElementImpl iframeElement) {
-		super(parentContext, parentContext.browsingUnit, null, null, iframeElement);
+		super(parentContext, null, null, iframeElement);
 				
 		this.contextName = iframeElement.getName();
 		this.iframeSandboxingFlagSet = new HashSet<SandboxingFlag>();
@@ -30,5 +31,9 @@ public class IFrameBrowsingContext extends BrowsingContext {
 	
 	public boolean getSeamlessFlag() {
 		return seamlessBrowsingFlag;
+	}
+	
+	public void delayLoadEvents() {
+		delayingLoadEventsMode = true;
 	}
 }

@@ -1,43 +1,69 @@
 package org.fit.cssbox.scriptbox.resource;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 
-public class Resource {
-	protected URLConnection conn;
+public abstract class Resource {
+	private class WaitForDataThread extends Thread {
+		private BufferedInputStream is;
+		private boolean dataAvailable;
+		
+		public WaitForDataThread(BufferedInputStream is) {
+			this.is = is;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				is.mark(0);
+				is.read();
+				is.reset();
+				dataAvailable = true;
+			} catch (IOException e) {
+			}
+		}
+	};
+	
 	protected BrowsingContext context;
 
-	public Resource(URLConnection conn, BrowsingContext context) {
-		this.conn = conn;
+	public Resource(BrowsingContext context) {
 		this.context = context;
 	}
 	
-	public InputStream getInputStream() {
-		try {
-			return conn.getInputStream();
-		} catch (IOException e) {
-			return null;
-		}
-	}
-	
-	public BrowsingContext getContext() {
+	public BrowsingContext getBrowsingContext() {
 		return context;
 	}
 	
-	public String getContentType() {
-		/*
-		 *  FIXME: If null, use MIME sniffing instead.
-		 *  See: http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#content-type-sniffing-0
-		 */
-		
-        return conn.getHeaderField("Content-Type");
+	public abstract BufferedInputStream getInputStream();
+	public abstract String getContentType();
+	
+	public boolean shouldRedirect() {
+		return false;
 	}
 	
-	public URLConnection getUrlConnection() {
-		return conn;
+	public URL getRedirectUrl() {
+		return null;
+	}
+	
+	public boolean isRedirectValid() {
+		return false;
+	}
+	
+	public boolean waitForBytes(int timeout) {
+		BufferedInputStream is = getInputStream();
+		WaitForDataThread waitForDataThread = new WaitForDataThread(is);
+		
+		waitForDataThread.start();
+		try {
+			waitForDataThread.join(timeout);
+		} catch (InterruptedException e) {
+			return false;
+		}
+		
+		return waitForDataThread.dataAvailable;
+
 	}
 }

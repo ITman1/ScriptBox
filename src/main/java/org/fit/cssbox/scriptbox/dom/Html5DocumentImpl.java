@@ -26,6 +26,8 @@ import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.security.origins.OriginContainer;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
+import org.fit.cssbox.scriptbox.utils.UrlUtils;
+import org.fit.cssbox.scriptbox.utils.UrlUtils.UrlComponent;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
@@ -259,16 +261,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	}
 	
 	public void setAddressFragment(String fragment) {
-		UriBuilder builder;
-		try {
-			builder = UriBuilder.fromUri(_address.toURI());
-			builder.fragment(fragment);
-			_address = builder.build().toURL();
-		} catch (IllegalArgumentException e) {
-		} catch (URISyntaxException e) {
-		} catch (UriBuilderException e) {
-		} catch (MalformedURLException e) {
-		}
+		_address = UrlUtils.setComponent(_address, UrlComponent.REF, fragment);
 	}
 	
 	public OriginContainer<DocumentOrigin> getOriginContainer() {
@@ -293,6 +286,14 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	public boolean promptToUnload() {
 		return true;
+	}
+	
+	public boolean isPromptToUnloadRunning() {
+		return false;
+	}
+	
+	public boolean isUnloadRunning() {
+		return false;
 	}
 	
 	public void unload(boolean recycle) {

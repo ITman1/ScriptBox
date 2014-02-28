@@ -11,7 +11,7 @@ public class WindowBrowsingContext extends BrowsingContext {
 	protected Set<SandboxingFlag> popupSandboxingFlagSet;
 	
 	public WindowBrowsingContext(BrowsingUnit browsingUnit, String name) {
-		super(null, browsingUnit, null, name, null);
+		super(null, browsingUnit, name, null);
 		
 		this.popupSandboxingFlagSet = new HashSet<SandboxingFlag>();
 	}

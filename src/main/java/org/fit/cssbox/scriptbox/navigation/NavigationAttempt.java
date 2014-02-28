@@ -1,8 +1,11 @@
 package org.fit.cssbox.scriptbox.navigation;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -10,9 +13,45 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.resource.Resource;
+import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
+import org.fit.cssbox.scriptbox.resource.content.ContentHandlerRegistry;
+import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
+import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
+import org.fit.cssbox.scriptbox.utils.UrlUtils;
+import org.fit.cssbox.scriptbox.utils.UrlUtils.UrlComponent;
 
-public class NavigationAttempt {
+import com.google.common.base.Predicate;
+
+public abstract class NavigationAttempt {
+	protected final static NavigationAttemptListener EMPTY_NAVIGATION_ATTEMPT_LISTENER = new NavigationAttemptListener() {
+		
+		@Override
+		public void onMatured(NavigationAttempt attempt) {}
+		
+		@Override
+		public void onEffectiveDestinationContextSelected(NavigationAttempt attempt, BrowsingContext context) {}
+		
+		@Override
+		public void onCancelled(NavigationAttempt attempt) {}
+	};
+	
+	protected final Predicate<NavigationAttempt> nonEqualOriginPredicate = new Predicate<NavigationAttempt>() {
+		
+		@Override
+		public boolean apply(NavigationAttempt attempt) {
+			if (sourceBrowsingContext == destinationBrowsingContext && attempt.runningUnloadDocument) {
+				UrlOrigin urlOrigin = new UrlOrigin(url);
+				UrlOrigin runningNavigateUrlOrigin = new UrlOrigin(attempt.getURL());
+				if (!urlOrigin.equals(runningNavigateUrlOrigin)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+	
 	protected boolean matured;
 	protected NavigationController navigationController;
 	protected BrowsingContext sourceBrowsingContext;
@@ -20,18 +59,23 @@ public class NavigationAttempt {
 	protected boolean explicitSelfNavigationOverride;
 	protected URL url;
 	
-	private boolean goneAsync;
+	protected boolean runningUnloadDocument;
+
+	protected BrowsingContext destinationBrowsingContext;
+	protected List<Fetch> fetches;
+	protected FetchRegistry fetchRegistry;
+	protected ContentHandlerRegistry resourceHandlerRegistry;
+	protected Resource resource;
 	
 	public NavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride) {
 		this.navigationController = navigationController;
 		this.sourceBrowsingContext = sourceBrowsingContext;
+		this.url = url;
 		this.exceptionEnabled = exceptionEnabled;
 		this.explicitSelfNavigationOverride = explicitSelfNavigationOverride;
-		this.url = url;
-	}
-	
-	public void mature() {
-		matured = true;
+		this.fetches = new ArrayList<Fetch>();
+		this.fetchRegistry = FetchRegistry.getInstance();
+		this.resourceHandlerRegistry = ContentHandlerRegistry.getInstance();
 	}
 	
 	public boolean isMatured() {
@@ -42,155 +86,249 @@ public class NavigationAttempt {
 		return navigationController;
 	}
 	
+	public BrowsingContext getSourceBrowsingContext() {
+		return sourceBrowsingContext;
+	}
+	
 	public URL getURL() {
 		return url;
 	}
 	
-	public void navigate() {
-	BrowsingContext destinationBrowsingContext = context;
+	public void perform() {
+		perform(EMPTY_NAVIGATION_ATTEMPT_LISTENER);
+	}
+	
+	public void perform(NavigationAttemptListener listener) {
+		destinationBrowsingContext = navigationController.getBrowsingContext();
 		
 		// TODO: 1) Release the storage mutex.
 		
-		// 2) If the source browsing context is not allowed to navigate the browsing context being navigated, then abort these steps.
-		// TODO: If these steps are aborted here, the user agent may instead offer to open the new resource 
-		// in a new top-level browsing context or in the top-level browsing context of the source browsing context
-		if (!sourceBrowsingContext.isAllowedToNavigate(destinationBrowsingContext)) {
+		// 2) Check if the source is allowed to navigate the destination context.
+		/*
+		 * TODO?:  If these steps are aborted here, the user agent may instead offer to open the new resource 
+	 	 * in a new top-level browsing context or in the top-level browsing context of the source browsing context
+		 */
+		if (!isAllowedToNavigate(sourceBrowsingContext, destinationBrowsingContext)) {
+			if (exceptionEnabled) {
+				// TODO: Throw SecurityError exception.
+			}
 			return;
 		}
 		
-		// 3) ...
-		if (sourceBrowsingContext == destinationBrowsingContext && hasSeamlessFlag(destinationBrowsingContext) && !explicitSelfNavigationOverride) {
-			while (destinationBrowsingContext.getCreatorContext() != null) {
-				destinationBrowsingContext = destinationBrowsingContext.getCreatorContext();
-				
-				if (hasSeamlessFlag(destinationBrowsingContext)) {
-					break;
-				}
-			}
-		}
+		// 3) Selects effective destination browsing context that will be actually used for the navigation
+		destinationBrowsingContext = selectEffectiveDestinationContext(destinationBrowsingContext);
+		listener.onEffectiveDestinationContextSelected(this, destinationBrowsingContext);
 
-		synchronized (destinationBrowsingContext) {
-			boolean runningNavigate = destinationBrowsingContext.navigateRunning;
-			boolean runningUnloadDocument = destinationBrowsingContext.navigateUnloadDocument;
-			URL runningNavigateURL = destinationBrowsingContext.navigateURL;
 			
-			// 4) ...
-			if (sourceBrowsingContext == destinationBrowsingContext && runningNavigate && runningUnloadDocument) {
-				UrlOrigin urlOrigin = new UrlOrigin(url);
-				UrlOrigin runningNavigateUrlOrigin = new UrlOrigin(runningNavigateURL);
-				if (urlOrigin.equals(runningNavigateUrlOrigin)) {
-					return;
-				}
-			}
-			
-			context.navigateRunning = true;
-			context.navigateUnloadDocument = false;
-			context.navigateURL = url;
-		}
-		
-		//TODO: 5) and 6)
-		
-		// 7) Let gone async be false.
-		goneAsync = false;
-		
-		// 8) ...
-		Html5DocumentImpl currentDocument = destinationBrowsingContext.getActiveDocument();
-		URL currentURL = currentDocument.getAddress();
-		boolean identicalUrls = currentURL.getProtocol().equals(url.getProtocol());
-		identicalUrls = identicalUrls && currentURL.getHost().equals(url.getHost());
-		identicalUrls = identicalUrls && currentURL.getPort() == url.getPort();
-		identicalUrls = identicalUrls && currentURL.getPath().equals(url.getPath());
-		identicalUrls = identicalUrls && currentURL.getQuery().equals(url.getQuery());
-		
-		String fragment = url.getRef();
-		if (identicalUrls && fragment != null) {
-			navigateToFragment(sourceBrowsingContext, fragment);
+		// 4) If there is already navigation attempt running with the different origin then abort
+		if (navigationController.existsNavigationAttempt(nonEqualOriginPredicate)) {
 			return;
 		}
 		
-		// 9) ...
-		if (goneAsync == false) {
-			cancelAllNavigations();
+		Html5DocumentImpl destinationActiveDocument = destinationBrowsingContext.getActiveDocument();
+		
+		// 5) If unload above active document is running then abort
+		if (destinationActiveDocument.isUnloadRunning()) {
+			return;
 		}
 		
-		// 10)
+		// 6) If prompt to unload above active document is running then abort
+		if (destinationActiveDocument.isPromptToUnloadRunning()) {
+			return;
+		}
+		
+		// 7) Let gone async be false.	
+		performFromFragmentIdentifiers(listener, false);
+	}
+	
+	public void cancel() {
+		
+	}
+	
+	protected void performFromFragmentIdentifiers(final NavigationAttemptListener listener, boolean goneAsync) {
+		// 8) Apply the URL parser for new and old resource and if only fragment is different then navigate to fragment only
+		if (shouldBeFragmentNavigated()) {
+			navigateToFragment(url.getRef());
+			return;
+		}
+				
+		// 9) Accept new navigation attempt and abort all currently running
+		// FIXME?: Abort document if already exists and all fetches
+		if (goneAsync == false) {
+			navigationController.cancelAllNavigationAttempts();
+		}
+				
+		Html5DocumentImpl currentDocument = destinationBrowsingContext.getActiveDocument();
+		
+		// 10) Abort if new navigation does not affects the destination browsing context
 		if (!affectsBrowsingContext()) {
 			return;
 		}
-		
-		// 11) ...
+				
+		// 11) Prompt to unload an old document
 		if (goneAsync == false && currentDocument.promptToUnload() == false) {
 			return;
 		}
-		
-		// 12)
+				
+		// 12) Abort an old document.
 		if (goneAsync == false) {
 			currentDocument.abort();
 		}
 		
-		/*
-		 * Remove following lines - simplification only.
-		 */
+		// 13) If resource is not fetchable then apply corresponding handler and abort
+		if (fetchRegistry.isFetchable(url)) {
+			handleUnableToFetch();
+			return;
+		}
 		
-		// TODO: 13) and 14)
+		// 14) If we are navigating into iframe context then delay load of whole page
+		if (destinationBrowsingContext instanceof IFrameBrowsingContext) {
+			((IFrameBrowsingContext)destinationBrowsingContext).delayLoadEvents();
+		}
+		
+		// 15) Obtain the resource, on failure abort
+		// TODO: If the resource has already been obtained then skip
 		/*
-		 * TODO: Missing implementation.
-		 * FIXME: Missing implementation.
-		 * @see
+		 * TODO: If the resource is being fetched using a method other than one equivalent to HTTP's GET, 
+		 * or, if the navigation algorithm was invoked as a result of the form submission algorithm, then 
+		 * the fetching algorithm must be invoked from the origin of the active document of the source browsing context, if any.
+		 * Otherwise, if the browsing context being navigated is a child browsing context, then the fetching 
+		 * algorithm must be invoked from the browsing context scope origin of the browsing context container 
+		 * of the browsing context being navigated, if it has one.
 		 */
+		resource = obtainResource();
+		if (resource == null) {
+			return;
+		}
+		
+		// 16) and 17)  If gone async is false, return and continue asynchronously and set gone async to true
+		if (goneAsync == false) {
+			Thread asyncPerform = new Thread() {
+				@Override
+				public void run() {
+					performFromHandleRedirects(listener, true);
+				}
+			};
+			asyncPerform.start();
+			return;
+		}
 	}
 	
-public void cancel() {
+	protected void performFromHandleRedirects(final NavigationAttemptListener listener, boolean goneAsync) {
+		// 18) Handle redirects and abort on different origins
+		if (resource.shouldRedirect()) {
+			if (resource.isRedirectValid()) {
+				performFromFragmentIdentifiers(listener, goneAsync);
+			} else {
+				// TODO: Maybe throw an security error.
+				return;
+			}
+		}
+		
+		// 19) Wait for incoming byte(s) or abort if resource is empty
+		// FIXME: Wait for 10 seconds - reach it from constant or from User agent settings
+		resource.waitForBytes(10000);
 		
 	}
-
-	private Resource getResourceTestOnly(URL url) {
-
-		URLConnection conn = url.openConnection();
-        conn.setRequestProperty("User-Agent",
-                "Mozilla/5.0 (compatible; SwingBox/1.x; Linux; U) CSSBox/4.x (like Gecko)");
-        conn.setRequestProperty("Accept-Charset", "utf-8");
-
-        if (conn instanceof HttpsURLConnection) {
-            System.out.println("$ Connection is HTTPS !!");
-        }
-        else if (conn instanceof HttpURLConnection)
-        {
-            HttpURLConnection hconn = (HttpURLConnection) conn;
-            hconn.setInstanceFollowRedirects(false);
-
-            int response = hconn.getResponseCode();
-            boolean redirect = (response >= 300 && response <= 399);
-
-            if (redirect) {
-                String loc = conn.getHeaderField("Location");
-                if (loc.startsWith("http", 0)) {
-                	url = new URL(loc);
-                } else {
-                	url = new URL(url, loc);
-                }
-                return getResourceTestOnly(url);
-            }
-        }
-
-        return conn.getInputStream();
+	
+	protected Resource obtainResource() {
+		Fetch fetch = fetchRegistry.getFetch(destinationBrowsingContext, url);
+		
+		fetches.add(fetch);
+		
+		try {
+			fetch.fetch();
+		} catch (IOException e) {
+			// TODO: Maybe throw exception.
+			return null;
+		}
+		
+		Resource resource = fetch.getResource();
+		if (resource == null) {
+			// TODO: Maybe throw exception.
+			return null;
+		}
+		
+		return resource;
 	}
 	
-	private boolean affectsBrowsingContext() {
+	protected void handleUnableToFetch() {
+		String urlScheme = url.getProtocol();
+		ContentHandler contentHandler = resourceHandlerRegistry.getHandlerForScheme(urlScheme);
+		
+		if (contentHandler != null) {
+			contentHandler.onFetchFailure();
+		}
+	}
+	
+	protected boolean shouldBeFragmentNavigated() {
+		Html5DocumentImpl currentDocument = destinationBrowsingContext.getActiveDocument();
+		URL currentURL = currentDocument.getAddress();
+		boolean identicalUrls = UrlUtils.identicalComponents(url, currentURL, UrlComponent.PROTOCOL, UrlComponent.HOST, UrlComponent.PORT, UrlComponent.PATH, UrlComponent.QUERY);
+				
+		String fragment = url.getRef();
+		if (identicalUrls && fragment != null) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	protected boolean affectsBrowsingContext() {
+		String urlScheme = url.getProtocol();
+		
+		return resourceHandlerRegistry.existsHandlerForScheme(urlScheme);
+	}
+	
+	protected void navigateToFragment(String fragment) {
+		
+	}
+	
+	protected BrowsingContext selectEffectiveDestinationContext(BrowsingContext navigatedContext) {
+		if (sourceBrowsingContext == navigatedContext && hasSeamlessFlag(navigatedContext) && !explicitSelfNavigationOverride) {
+			while (navigatedContext.getCreatorContext() != null) {
+				navigatedContext = navigatedContext.getCreatorContext();
+				
+				if (hasSeamlessFlag(navigatedContext)) {
+					break;
+				}
+			}
+		}
+		
+		return navigatedContext;
+	}
+	
+	/*
+	 * FIXME: Rename local variable to something more clear than a, b, c
+	 */
+	public static boolean isAllowedToNavigate(BrowsingContext sourceBrowsingContext, BrowsingContext destinationBrowsingContext) {
+		BrowsingContext a = sourceBrowsingContext;
+		BrowsingContext b = destinationBrowsingContext;
+		
+		if (a != b && !a.isAncestorOf(b) && !b.isTopLevelBrowsingContext() && a.getActiveDocument().
+				getActiveSandboxingFlagSet().contains(SandboxingFlag.NAVIGATION_BROWSING_CONTEXT_FLAG)) {
+			return false;
+		}
+		
+		if (b.isTopLevelBrowsingContext() && isAllowedToNavigate(b, a) && a.getActiveDocument().
+				getActiveSandboxingFlagSet().contains(SandboxingFlag.TOPLEVEL_NAVIGATION_BROWSING_CONTEXT_FLAG)) {
+			return false;
+		}
+		
+		/*
+		 * TODO: Otherwise, if B is a top-level browsing context, and is neither A 
+		 * nor one of the ancestor browsing contexts of A, and A's Document's active 
+		 * sandboxing flag set has its sandboxed navigation browsing context flag set, 
+		 * and A is not the one permitted sandboxed navigator of B, then abort these steps negatively.
+		 */
+		//if (b.isTopLevelBrowsingContext() && a != b && !b.isAncestorOf(a) && a.getActiveDocument().)
+		
 		return true;
 	}
 	
-	private void cancelAllNavigations() {
-		
-	}
-	
-	private void navigateToFragment(BrowsingContext sourceBrowsingContext, String fragment) {
-		
-	}
-	
-	private static boolean hasSeamlessFlag(BrowsingContext context) {
+	public static boolean hasSeamlessFlag(BrowsingContext context) {
 		if (context instanceof IFrameBrowsingContext) {
-			if (((IFrameBrowsingContext)context).seamlessBrowsingFlag) {
+			if (((IFrameBrowsingContext)context).getSeamlessFlag()) {
 				return true;
 			}
 		}

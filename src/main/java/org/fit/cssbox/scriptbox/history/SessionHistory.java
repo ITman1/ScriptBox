@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
@@ -162,7 +163,7 @@ public class SessionHistory {
 						entry.setBrowsingContextName(browsingContextName);
 					}
 				}
-				if (specifiedBrowsingContext.isTopLevelBrowsingContext() && !specifiedBrowsingContext.isAuxiliaryBrowsingContext()) {
+				if (specifiedBrowsingContext.isTopLevelBrowsingContext() && !(specifiedBrowsingContext instanceof AuxiliaryBrowsingContext)) {
 					specifiedBrowsingContext.setName(null);
 				}
 			}

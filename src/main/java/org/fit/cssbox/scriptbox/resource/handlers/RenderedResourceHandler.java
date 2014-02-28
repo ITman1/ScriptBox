@@ -9,13 +9,14 @@ import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
+import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigation.UpdateSessionHistoryTask;
-import org.fit.cssbox.scriptbox.resource.ResourceHandler;
+import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.w3c.dom.Element;
 
-public abstract class RenderedResourceHandler extends ResourceHandler {
+public abstract class RenderedResourceHandler extends ContentHandler {
 
 	/*
 	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page
@@ -42,9 +43,8 @@ public abstract class RenderedResourceHandler extends ResourceHandler {
 		
 	}
 
-	public RenderedResourceHandler(NavigationController navigationController) {
-		super(navigationController);
-		// TODO Auto-generated constructor stub
+	public RenderedResourceHandler(NavigationAttempt navigationAttempt) {
+		super(navigationAttempt);
 	}
 	
 	/*

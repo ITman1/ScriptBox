@@ -7,12 +7,17 @@ import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class HtmlDocumentHandler extends RenderedResourceHandler {
+
+	public HtmlDocumentHandler(NavigationAttempt navigationAttempt) {
+		super(navigationAttempt);
+	}
 
 	private class ParseDocumentTask extends Task {
 		private Resource resource;

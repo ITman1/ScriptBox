@@ -43,21 +43,13 @@ public class BrowsingContext {
 	protected WindowProxy windowProxy;
 	protected Element container;
 	protected SessionHistory sessionHistory;
-	protected BrowsingContext openerBrowsingContext;
-	protected Html5DocumentImpl creatorDocument;
 	protected NavigationController navigationController;
 			
 	protected String contextName;
 	
-	protected boolean navigateRunning;
-	protected boolean navigateUnloadDocument;
-	protected URL navigateURL;
-
-	
-	protected BrowsingContext(BrowsingContext parentContext, BrowsingUnit browsingUnit, BrowsingContext openerBrowsingContext, String contextName, Element container) {
+	protected BrowsingContext(BrowsingContext parentContext, BrowsingUnit browsingUnit, String contextName, Element container) {
 		this.parentContext = parentContext;
 		this.browsingUnit = browsingUnit;
-		this.openerBrowsingContext = openerBrowsingContext;
 		this.contextName = contextName;
 		this.container = container;
 		
@@ -66,19 +58,14 @@ public class BrowsingContext {
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
 		this.navigationController = new NavigationController(this);
-		
-		BrowsingContext creatorContext = getCreatorContext();
-		if (creatorContext != null) {
-			this.creatorDocument = creatorContext.getActiveDocument();
-		}
 	}
 	
-	public static BrowsingContext createTopLevelContext(BrowsingUnit browsingUnit) {
-		return createTopLevelContext(browsingUnit, null);
+	public BrowsingContext(BrowsingUnit browsingUnit) {
+		this(browsingUnit, null);
 	}
 	
-	public static BrowsingContext createAuxiliaryContext(BrowsingContext openerBrowsingContext) {
-		return createAuxiliaryContext(openerBrowsingContext, null);
+	public BrowsingContext(BrowsingUnit browsingUnit, String name) {
+		this(null, browsingUnit, name, null);
 	}
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document) {
@@ -94,20 +81,10 @@ public class BrowsingContext {
 	}
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document, String name, Element container) {
-		BrowsingContext childContext = new BrowsingContext(this, browsingUnit, null, name, container);
+		BrowsingContext childContext = new BrowsingContext(this, null, name, container);
 		childContexts.add(childContext);
 		return childContext;
 	}
-	
-	public static BrowsingContext createTopLevelContext(BrowsingUnit browsingUnit, String name) {
-		return new BrowsingContext( null, browsingUnit, null, name, null);
-	}
-	
-	public static BrowsingContext createAuxiliaryContext(BrowsingContext openerBrowsingContext, String name) {
-		return new BrowsingContext( null, openerBrowsingContext.browsingUnit, openerBrowsingContext, name, null);
-	}
-	
-
 
 	public void destroyContext() {
 		destroyed = true;
@@ -139,11 +116,6 @@ public class BrowsingContext {
 		if (parentContext != null) {
 			return parentContext;
 		} 
-		// if the browsing context has an opener browsing context, 
-		// then that is its creator browsing context.
-		else if (openerBrowsingContext != null) {
-			return openerBrowsingContext;
-		} 
 		// Otherwise, the browsing context has no creator browsing context.
 		else {
 			return null;
@@ -153,11 +125,7 @@ public class BrowsingContext {
 	public boolean hasCreatorContext() {
 		return getCreatorContext() != null;
 	}
-	
-	public boolean hasCreatorDocument() {
-		return getCreatorDocument() != null;
-	}
-	
+		
 	public BrowsingContext getParentContext() {
 		return parentContext;
 	}
@@ -165,30 +133,12 @@ public class BrowsingContext {
 	public boolean hasParentContext() {
 		return parentContext != null;
 	}
-	
-	/*
-	 * If a browsing context A has a creator browsing context, then the Document 
-	 * that was the active document of that creator browsing context at the 
-	 * time A was created is the creator Document.
-	 */
-	public Html5DocumentImpl getCreatorDocument() {
-		return creatorDocument;
-	}
-	
-	
-	/*
-	 * An auxiliary browsing context has an opener browsing context, which is the browsing 
-	 * context from which the auxiliary browsing context was created.
-	 */
-	public BrowsingContext getOpenerContext() {
-		return openerBrowsingContext;
-	}
-	
+		
 	public BrowsingContext getTopLevelContext() {
 		BrowsingContext topLevelContext = this;
 		
-		while (topLevelContext.getCreatorContext() != null) {
-			topLevelContext = topLevelContext.getCreatorContext();
+		while (topLevelContext.getParentContext() != null) {
+			topLevelContext = topLevelContext.getParentContext();
 		}
 		
 		return topLevelContext;
@@ -282,8 +232,8 @@ public class BrowsingContext {
 	public boolean isAncestorOf(BrowsingContext context) {
 		BrowsingContext ancestorContext = context;
 		
-		while (ancestorContext.getCreatorContext() != null) {
-			ancestorContext = ancestorContext.getCreatorContext();
+		while (ancestorContext.getParentContext() != null) {
+			ancestorContext = ancestorContext.getParentContext();
 			
 			if (ancestorContext == this) {
 				return true;
@@ -295,10 +245,6 @@ public class BrowsingContext {
 	
 	public boolean isNestedIn(BrowsingContext context) {		
 		return context.isAncestorOf(this);
-	}
-	
-	public boolean isAuxiliaryBrowsingContext() {		
-		return openerBrowsingContext != null;
 	}
 	
 	/*
@@ -348,16 +294,12 @@ public class BrowsingContext {
 		if (a.isNestedBrowsingContext() && a.getTopLevelContext() == b) {
 			return true;
 		}
-		
-		if (b.isAuxiliaryBrowsingContext() && a.isFamiliarWith(b.getOpenerContext())) {
-			return true;
-		}
-		
+				
 		if (!b.isTopLevelBrowsingContext()) {
 			BrowsingContext c = b;
 			
-			while (c.getCreatorContext() != null) {
-				c = c.getCreatorContext();
+			while (c.getParentContext() != null) {
+				c = c.getParentContext();
 				
 				DocumentOrigin cOrigin = c.getActiveDocument().getOriginContainer().getOrigin();
 				
@@ -380,34 +322,6 @@ public class BrowsingContext {
 		}
 		
 		return null;
-	}
-	
-	/*
-	 * FIXME: Rename local variable to something more clear than a, b, c
-	 */
-	public boolean isAllowedToNavigate(BrowsingContext context) {
-		BrowsingContext a = this;
-		BrowsingContext b = context;
-		
-		if (a != b && !a.isAncestorOf(b) && !b.isTopLevelBrowsingContext() && a.getActiveDocument().
-				getActiveSandboxingFlagSet().contains(SandboxingFlag.NAVIGATION_BROWSING_CONTEXT_FLAG)) {
-			return false;
-		}
-		
-		if (b.isTopLevelBrowsingContext() && b.isAllowedToNavigate(a) && a.getActiveDocument().
-				getActiveSandboxingFlagSet().contains(SandboxingFlag.TOPLEVEL_NAVIGATION_BROWSING_CONTEXT_FLAG)) {
-			return false;
-		}
-		
-		/*
-		 * TODO: Otherwise, if B is a top-level browsing context, and is neither A 
-		 * nor one of the ancestor browsing contexts of A, and A's Document's active 
-		 * sandboxing flag set has its sandboxed navigation browsing context flag set, 
-		 * and A is not the one permitted sandboxed navigator of B, then abort these steps negatively.
-		 */
-		//if (b.isTopLevelBrowsingContext() && a != b && !b.isAncestorOf(a) && a.getActiveDocument().)
-		
-		return true;
 	}
 	
 	public BrowsingContext chooseBrowsingContextByName(String name) {
@@ -477,26 +391,36 @@ public class BrowsingContext {
 	}
 	
 	public BrowsingUnit getBrowsingUnit() {
-		return browsingUnit;
+		BrowsingContext ancestorContext = this;
+		
+		do {
+			if (ancestorContext.browsingUnit != null) {
+				break;
+			}
+			
+			ancestorContext = ancestorContext.getParentContext();
+		} while (ancestorContext != null);
+		
+		if (ancestorContext == null) {
+			return null;
+		} else {
+			return ancestorContext.browsingUnit;
+		}
 	}
 	
 	public EventLoop getEventLoop() {
 		return getBrowsingUnit().getEventLoop();
 	}
 	
-	public void navigate(BrowsingContext sourceBrowsingContext, URL url) {
-		navigationController.navigate(sourceBrowsingContext, url, false, false);
-	}
+	// FIXME: Implement.
+	/*public boolean isNavigating() {
+		return false;
+	}*/
 	
 	// FIXME: Implement.
-	public boolean isNavigating() {
+	/*public boolean unloadDocumentRunning() {
 		return false;
-	}
-	
-	// FIXME: Implement.
-	public boolean unloadDocumentRunning() {
-		return false;
-	}
+	}*/
 	
 	public void scrollToFragment(String fragment) {
 		
