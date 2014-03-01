@@ -12,6 +12,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.misc.UrlUtils;
+import org.fit.cssbox.scriptbox.misc.UrlUtils.UrlComponent;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerRegistry;
@@ -20,8 +22,6 @@ import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
-import org.fit.cssbox.scriptbox.utils.UrlUtils;
-import org.fit.cssbox.scriptbox.utils.UrlUtils.UrlComponent;
 
 import com.google.common.base.Predicate;
 
@@ -104,6 +104,13 @@ public abstract class NavigationAttempt {
 		
 	}
 	
+	public String getContentType() {
+		return (resource != null)? resource.getContentType() : null;
+	}
+	
+	/*
+	 * See: http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate
+	 */
 	public void perform(NavigationAttemptListener listener) {
 		destinationBrowsingContext = navigationController.getBrowsingContext();
 		
@@ -244,8 +251,7 @@ public abstract class NavigationAttempt {
 		// 20) TODO: Fallback in prefer-online mode
 		
 		// 21) TODO: Fallback for fallback entries
-		
-		
+				
 		performFromResourceHandling(listener);
 	}
 	
@@ -271,7 +277,7 @@ public abstract class NavigationAttempt {
 		}
 		
 		// 24) and 25) Handling of document and inline contents is merged here, registry is delegated for the distinction
-		ContentHandler handler = resourceHandlerRegistry.getHandlerForResource(resource);
+		ContentHandler handler = resourceHandlerRegistry.getHandlerForNavigationAttempt(this);
 		if (handler != null) {
 			handler.process(resource);
 			return;
@@ -310,7 +316,7 @@ public abstract class NavigationAttempt {
 	}
 	
 	protected void handleUnableToFetch() {
-		ErrorHandler errorHandler = resourceHandlerRegistry.getErrorHandler(url);
+		ErrorHandler errorHandler = resourceHandlerRegistry.getErrorHandler(this);
 		
 		if (errorHandler != null) {
 			errorHandler.handle(url);

@@ -1,14 +1,40 @@
 package org.fit.cssbox.scriptbox.resource.content;
 
 import java.net.URL;
+import java.util.Map;
+import java.util.Set;
 
-import org.fit.cssbox.scriptbox.resource.Resource;
+import org.fit.cssbox.scriptbox.misc.MimeContentRegistryBase;
+import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
+import org.fit.cssbox.scriptbox.resource.content.handlers.HtmlDocumentHandlerFactory;
+import org.fit.cssbox.scriptbox.resource.content.handlers.MediaHandlerFactory;
+import org.fit.cssbox.scriptbox.resource.content.handlers.MultipartHandlerFactory;
+import org.fit.cssbox.scriptbox.resource.content.handlers.PlainTextFileHandlerFactory;
+import org.fit.cssbox.scriptbox.resource.content.handlers.PluginHandlerFactory;
+import org.fit.cssbox.scriptbox.resource.content.handlers.XmlDocumentHandlerFactory;
 
 
-public class ContentHandlerRegistry {
-	static private ContentHandlerRegistry instance;
-	
-	private ContentHandlerRegistry() {}
+public class ContentHandlerRegistry extends MimeContentRegistryBase<ContentHandlerFactory, ContentHandler> {
+	private class DefaultErrorHandler extends ErrorHandler {
+
+		public DefaultErrorHandler(NavigationAttempt navigationAttempt) {
+			super(navigationAttempt);
+		}
+		
+	};
+
+	private static ContentHandlerRegistry instance;
+
+	private Map<String, Set<Class<? extends ErrorHandler>>> registeredErrorHandlers;
+
+	private ContentHandlerRegistry() {
+		registerMimeContentFactory(HtmlDocumentHandlerFactory.class);
+		registerMimeContentFactory(XmlDocumentHandlerFactory.class);
+		registerMimeContentFactory(PlainTextFileHandlerFactory.class);
+		registerMimeContentFactory(MediaHandlerFactory.class);
+		registerMimeContentFactory(MultipartHandlerFactory.class);
+		registerMimeContentFactory(PluginHandlerFactory.class);
+	}
 	
 	public static synchronized ContentHandlerRegistry getInstance() {
 		if (instance == null) {
@@ -17,17 +43,25 @@ public class ContentHandlerRegistry {
 		
 		return instance;
 	}
-	
-	public ContentHandler getHandlerForResource(Resource resource) {
-		return null;
+
+	public ContentHandler getHandlerForNavigationAttempt(NavigationAttempt navigationAttempt) {
+		String mimeType = navigationAttempt.getContentType();
+		ContentHandlerFactory factory = (mimeType != null)? getFirstMimeContentFactory(mimeType) : null;
+		return (factory == null)? null : factory.getContentHandler(navigationAttempt);
 	}
 	
+	/*
+	 * TODO: Implement.
+	 */
 	public boolean existsErrorHandler(URL url) {
 		return true;
 	}
 	
-	public ErrorHandler getErrorHandler(URL url) {
-		return null;
+	/*
+	 * TODO: Implement.
+	 */
+	public ErrorHandler getErrorHandler(NavigationAttempt attempt) {
+		return new DefaultErrorHandler(attempt);
 	}
 
 }

@@ -69,6 +69,10 @@ public abstract class Resource {
 		return false;
 	}
 	
+	public URL getAddress() {
+		return null;
+	}
+	
 	public String getReferrer() {
 		return "";
 	}

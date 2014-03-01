@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.fit.cssbox.scriptbox.script.DocumentContext;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.DocumentScriptEngine;
 import org.fit.cssbox.scriptbox.script.DocumentScriptEngineFactory;
 
@@ -23,12 +23,12 @@ public class SecureRhinoScriptEngineFactory extends DocumentScriptEngineFactory 
     }
 	
 	@Override
-	public List<String> getMimeTypes() {
+	public List<String> getExplicitlySupportedMimeTypes() {
 		return mimeTypes;
 	}
 
 	@Override
-	public DocumentScriptEngine getDocumentScriptEngine(DocumentContext documentContext) {
+	public DocumentScriptEngine getDocumentScriptEngine(Html5DocumentImpl documentContext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
