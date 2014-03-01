@@ -1,8 +1,12 @@
 package org.fit.cssbox.scriptbox.browser;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.JointSessionHistory;
+import org.fit.cssbox.scriptbox.navigation.NavigationController;
 
 public class BrowsingUnit {
 	private UserAgent _userAgent;
@@ -31,5 +35,19 @@ public class BrowsingUnit {
 	
 	public EventLoop getEventLoop() {
 		return _eventLoop;
+	}
+	
+	public JointSessionHistory getJointSessionHistory() {
+		return _jointSessionHistory;
+	}
+	
+	public void navigate(String address) {
+		NavigationController navigationController = _windowBrowsingContext.getNavigationController();
+		
+		try {
+			URL url = new URL(address);
+			navigationController.navigate(_windowBrowsingContext, url, false, false);
+		} catch (MalformedURLException e) {}
+		
 	}
 }

@@ -4,17 +4,11 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
 public class AuxiliaryBrowsingContext extends BrowsingContext {
 	protected BrowsingContext openerBrowsingContext;
-	protected Html5DocumentImpl creatorDocument;
 	
 	public AuxiliaryBrowsingContext(BrowsingUnit browsingUnit, BrowsingContext openerBrowsingContext, String name) {
 		super(browsingUnit, name);
 
 		this.openerBrowsingContext = openerBrowsingContext;
-		
-		BrowsingContext creatorContext = getCreatorContext();
-		if (creatorContext != null) {
-			this.creatorDocument = creatorContext.getActiveDocument();
-		}
 	}
 
 	public AuxiliaryBrowsingContext(BrowsingContext openerBrowsingContext) {
@@ -32,20 +26,7 @@ public class AuxiliaryBrowsingContext extends BrowsingContext {
 	public BrowsingContext getOpenerContext() {
 		return openerBrowsingContext;
 	}
-	
-	public boolean hasCreatorDocument() {
-		return getCreatorDocument() != null;
-	}
-	
-	/*
-	 * If a browsing context A has a creator browsing context, then the Document 
-	 * that was the active document of that creator browsing context at the 
-	 * time A was created is the creator Document.
-	 */
-	public Html5DocumentImpl getCreatorDocument() {
-		return creatorDocument;
-	}
-	
+		
 	@Override
 	public BrowsingContext getCreatorContext() {
 		BrowsingContext creatorContext = super.getCreatorContext();

@@ -8,6 +8,7 @@ import java.util.List;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
@@ -26,6 +27,25 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			super(navigationAttempt);
 		}
 
+		private class ParseDocumentFinishedTask extends Task {
+			protected Exception exception;
+			
+			public ParseDocumentFinishedTask(Resource resource, Exception exception) {
+				super(TaskSource.NETWORKING, resource.getBrowsingContext());
+				
+				this.exception = exception;
+			}
+
+			@Override
+			public void run() {
+				if (exception != null) {
+					// TODO: Throw/display error
+				} else {
+					// TODO: See: http://www.w3.org/html/wg/drafts/html/CR/syntax.html#the-end
+				}
+			}
+		}
+		
 		private class ParseDocumentTask extends Task {
 			private Resource resource;
 			
@@ -36,25 +56,28 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			}
 
 			@Override
-			public void execute() {
-				Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress());
-				
+			public void run() {
+				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress(), "text/html");
+
+				Exception exception = null;
 				ScriptDOMParser scripDomParser = new ScriptDOMParser(document);
+								
 				try {
+					document.setDocumentReadiness(DocumentReadiness.LOADING);
 					scripDomParser.parse(new InputSource(resource.getInputStream()));
-				} catch (SAXException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+				} catch (Exception e) {
+					exception = e;
 					e.printStackTrace();
 				}
+				
+				document.setDocumentReadiness(DocumentReadiness.COMPLETE);
+				context.getEventLoop().queueTask(new ParseDocumentFinishedTask(resource, exception));
+				
 			}
 		}
 		
 		@Override
 		public void process(Resource resource) {
-			BrowsingContext context = resource.getBrowsingContext();
 			context.getEventLoop().queueTask(new ParseDocumentTask(resource));
 		}
 

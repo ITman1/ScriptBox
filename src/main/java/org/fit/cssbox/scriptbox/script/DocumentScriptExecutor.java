@@ -9,13 +9,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class DocumentScriptExecutor {
-	private static DocumentScriptExecutor instance;
+	/*private static DocumentScriptExecutor instance;
 	
-	private Map<Html5DocumentImpl, DocumentContext> documentContexts;
+	private Map<Html5DocumentImpl, Html5DocumentImpl> documentContexts;
 	private DocumentScriptEngineManager documentScriptEngineManager;
 	
 	private DocumentScriptExecutor() {
-		documentContexts = new HashMap<Html5DocumentImpl, DocumentContext>();
+		documentContexts = new HashMap<Html5DocumentImpl, Html5DocumentImpl>();
 		documentScriptEngineManager = DocumentScriptEngineManager.getInstance();
 	}
 	
@@ -27,9 +27,9 @@ public class DocumentScriptExecutor {
 		return instance;
 	}
 	
-	public void registerDocumentContext(DocumentContext documentContext) {
+	public void registerDocumentContext(Html5DocumentImpl documentContext) {
 		Html5DocumentImpl document = documentContext.getDocument();
-		DocumentContext storedDocumentContext = documentContexts.get(document);
+		Html5DocumentImpl storedDocumentContext = documentContexts.get(document);
 		
 		if (storedDocumentContext == null && storedDocumentContext != documentContext) {
 			unregisterDocumentContext(storedDocumentContext);
@@ -40,9 +40,9 @@ public class DocumentScriptExecutor {
 		}
 	}
 	
-	public void unregisterDocumentContext(DocumentContext documentContext) {
+	public void unregisterDocumentContext(Html5DocumentImpl documentContext) {
 		documentContexts.remove(documentContext.getDocument());
 	}
 		
-	
+	*/
 }

@@ -68,6 +68,7 @@ public abstract class NavigationAttempt {
 	protected FetchRegistry fetchRegistry;
 	protected ContentHandlerRegistry resourceHandlerRegistry;
 	protected Resource resource;
+	protected NavigationAttemptListener listener;
 	
 	public NavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride) {
 		this.navigationController = navigationController;
@@ -78,10 +79,16 @@ public abstract class NavigationAttempt {
 		this.fetches = new ArrayList<Fetch>();
 		this.fetchRegistry = FetchRegistry.getInstance();
 		this.resourceHandlerRegistry = ContentHandlerRegistry.getInstance();
+		this.listener = EMPTY_NAVIGATION_ATTEMPT_LISTENER;
 	}
 	
 	public boolean isMatured() {
 		return matured;
+	}
+	
+	public void mature() {
+		matured = true;
+		listener.onMatured(this);
 	}
 	
 	public NavigationController getNavigationController() {
@@ -101,7 +108,7 @@ public abstract class NavigationAttempt {
 	}
 	
 	public void cancel() {
-		
+		listener.onCancelled(this);
 	}
 	
 	public String getContentType() {
@@ -112,6 +119,8 @@ public abstract class NavigationAttempt {
 	 * See: http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate
 	 */
 	public void perform(NavigationAttemptListener listener) {
+		this.listener = listener;
+		
 		destinationBrowsingContext = navigationController.getBrowsingContext();
 		
 		// TODO: 1) Release the storage mutex.
@@ -153,10 +162,10 @@ public abstract class NavigationAttempt {
 		// 7) Let gone async be false.	
 		goneAsync = false;
 		
-		performFromFragmentIdentifiers(listener);
+		performFromFragmentIdentifiers();
 	}
 	
-	protected void performFromFragmentIdentifiers(final NavigationAttemptListener listener) {
+	protected void performFromFragmentIdentifiers() {
 		// 8) Apply the URL parser for new and old resource and if only fragment is different then navigate to fragment only
 		if (shouldBeFragmentNavigated()) {
 			navigateToFragment(url.getRef());
@@ -220,21 +229,21 @@ public abstract class NavigationAttempt {
 					// 17) Let gone async be true.
 					goneAsync = true;
 					
-					performFromHandleRedirects(listener);
+					performFromHandleRedirects();
 				}
 			};
 			asyncPerform.start();
 			return;
 		} else {		
-			performFromHandleRedirects(listener);
+			performFromHandleRedirects();
 		}
 	}
 	
-	protected void performFromHandleRedirects(final NavigationAttemptListener listener) {
+	protected void performFromHandleRedirects() {
 		// 18) Handle redirects and abort on different origins
 		if (resource.shouldRedirect()) {
 			if (resource.isRedirectValid()) {
-				performFromFragmentIdentifiers(listener);
+				performFromFragmentIdentifiers();
 			} else {
 				// TODO: Maybe throw an security error.
 				return;
@@ -252,10 +261,10 @@ public abstract class NavigationAttempt {
 		
 		// 21) TODO: Fallback for fallback entries
 				
-		performFromResourceHandling(listener);
+		performFromResourceHandling();
 	}
 	
-	protected void performFromResourceHandling(final NavigationAttemptListener listener) {
+	protected void performFromResourceHandling() {
 		// 22) Handle resources that are not valid (e.g. do not contain metadata and the content) and attachments
 		if (!resource.isContentValid()) {
 			ContentHandler errorHandler = resource.getErrorHandler();

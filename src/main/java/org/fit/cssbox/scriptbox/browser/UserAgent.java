@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.browser;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Set;
 
 public class UserAgent {
@@ -20,11 +21,7 @@ public class UserAgent {
 		return true;
 	}
 	
-	public BrowsingContext createBrowsingContext(URI page) {
-		return null;
-	}
-	
-	public BrowsingContext createBrowsingContext() {
-		return null;
+	public BrowsingUnit createBrowsingUnit() {
+		return new BrowsingUnit(this);
 	}
 }

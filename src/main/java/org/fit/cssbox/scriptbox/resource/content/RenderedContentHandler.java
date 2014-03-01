@@ -4,6 +4,7 @@ import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
@@ -11,32 +12,76 @@ import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
+import org.fit.cssbox.scriptbox.navigation.UpdateNavigationAttempt;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.w3c.dom.Element;
 
 public abstract class RenderedContentHandler extends ContentHandler {
 
+	protected class ScrollToFragmentRunnable implements Runnable {
+		@Override
+		public void run() {
+			String fragment = navigationAttempt.getURL().getRef();
+			
+			if (fragment == null) {
+				return;
+			}
+			
+			if (context.scrollToFragment(fragment)) {
+				return;
+			}
+			
+			DocumentReadiness readiness = context.getActiveDocument().getDocumentReadiness();
+			if (readiness.equals(DocumentReadiness.LOADING)) {
+				context.getEventLoop().spinForAmountTime(300, this);
+			}
+		}
+	}
+	
 	/*
 	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page
 	 */
 	protected class UpdateSessionHistoryTask extends Task {
 
 		private Html5DocumentImpl newDocument;
-		private boolean entryUpdate;
 		
-		public UpdateSessionHistoryTask(Html5DocumentImpl taskDocument, Html5DocumentImpl newDocument, boolean entryUpdate) {
+		public UpdateSessionHistoryTask(Html5DocumentImpl taskDocument, Html5DocumentImpl newDocument) {
 			super(TaskSource.NETWORKING, taskDocument);
 			
 			this.newDocument = newDocument;
-			this.entryUpdate = entryUpdate;
 		}
 
 		@Override
-		public void execute() {
+		public void run() {
 			Html5DocumentImpl oldDocument = getDocument();
 			
+			// 1) Unload the document
 			oldDocument.unload(false);
-			// FIXME: If this instance of the navigation algorithm ...
+
+			// 2) If the navigation was initiated for entry update then update otherwise insert new one
+			if (navigationAttempt instanceof UpdateNavigationAttempt) {
+				SessionHistoryEntry updateEntry = ((UpdateNavigationAttempt)navigationAttempt).getSessionHistoryEntry();
+				SessionHistory sessionHistory = updateEntry.getSessionHistory();
+						
+				// TODO: Update also any other entries that referenced the same document as that entry
+				updateEntry.setSocument(newDocument);
+				sessionHistory.traverseHistory(updateEntry);
+			} else {
+				SessionHistory sessionHistory = context.getSesstionHistory();
+				SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
+				
+				sessionHistory.removeAllAfter(currentEntry);
+				
+				SessionHistoryEntry newEntry = new SessionHistoryEntry(sessionHistory);
+				newEntry.setSocument(newDocument);
+				sessionHistory.add(newEntry);
+			}
+						
+			// 3) The navigation algorithm has now matured
+			navigationAttempt.mature();
+			
+			ScrollToFragmentRunnable performScrolling = new ScrollToFragmentRunnable();
+			performScrolling.run();
 		}
 		
 	}
@@ -48,14 +93,15 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	/*
 	 * See: http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page
 	 */
-	protected void update(Html5DocumentImpl newDocument) {
-		SessionHistoryEntry currentEntry = getCurrentEntry();
+	protected void updateSessionHistory(Html5DocumentImpl newDocument) {
+		SessionHistory sessionHistory = context.getSesstionHistory();
+		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 		Html5DocumentImpl taskDocument = (currentEntry != null)? currentEntry.getDocument() : null;
 		context.getEventLoop().queueTask(new UpdateSessionHistoryTask(taskDocument, newDocument));
 	}
 	
 	
-	protected Html5DocumentImpl createDocument(BrowsingContext context, URL url) {
+	protected Html5DocumentImpl createDocument(BrowsingContext context, URL url, String mimeType) {
 		SessionHistory sessionHistory = context.getSesstionHistory();
 		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 		Html5DocumentImpl currentDocument = currentEntry.getDocument();
@@ -68,7 +114,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		
 		// FIXME: 2) Set the document's referrer to the address of the resource from which Request-URIs 
 		// are obtained as determined when the fetch algorithm obtained the resource
-		Html5DocumentImpl newDocument = Html5DocumentImpl.createDocument(context, url, recycleWindowDocument);
+		Html5DocumentImpl newDocument = Html5DocumentImpl.createDocument(context, url, recycleWindowDocument, mimeType);
 		
 		// 3) Implement the sandboxing for the Document.
 		newDocument.implementSandboxing();

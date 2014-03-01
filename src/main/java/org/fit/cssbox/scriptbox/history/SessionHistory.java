@@ -70,6 +70,14 @@ public class SessionHistory {
 		}
 	}
 	
+	public void removeAllAfter(SessionHistoryEntry entry) {
+		int index = entries.indexOf(entry) + 1;
+		
+		while (entries.size() > index) {
+			entries.remove(index);
+		}
+	}
+	
 	public void filter(Predicate<SessionHistoryEntry> predicate) {
 		entries.clear();
 		Iterables.addAll(entries, Iterables.filter(entries, predicate));
@@ -94,6 +102,10 @@ public class SessionHistory {
 	
 	public BrowsingContext getBrowsingContext() {
 		return context;
+	}
+	
+	public void traverseHistory(SessionHistoryEntry specifiedEntry) {
+		traverseHistory(context, specifiedEntry);
 	}
 	
 	public static void traverseHistory(BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry) {

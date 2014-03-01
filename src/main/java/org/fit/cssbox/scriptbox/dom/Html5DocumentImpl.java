@@ -32,6 +32,12 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 public class Html5DocumentImpl extends HTMLDocumentImpl {
+	public enum DocumentReadiness {
+		LOADING,
+		INTERACTIVE,
+		COMPLETE
+	}
+	
 	final public static String DEFAULT_URL_ADDRESS = "about:blank";
 	private static URL _DEFAULT_URL;
     static {       
@@ -67,22 +73,24 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	private SessionHistoryEntry _latestEntry;
 	private boolean _fullscreenEnabledFlag;
 	private String _contentType;
+	private DocumentReadiness _documentReadiness;
 	
-	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow) {
+	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType) {
 		_browsingContext = browsingContext;
 		_address = address;
 		_referrer = referrer;
+		_contentType = contentType;
+		_documentReadiness = DocumentReadiness.COMPLETE;
+		_activeSandboxingFlagSet = new HashSet<SandboxingFlag>();
 		
 		if (sandboxingFlagSet != null) {
-			_activeSandboxingFlagSet = new HashSet<SandboxingFlag>();
-		} else {
 			_activeSandboxingFlagSet.addAll(sandboxingFlagSet);
 		}
 		
 		DocumentOrigin documentOrigin = null;
 		DocumentOrigin effectiveScriptOrigin = null;
 		
-		if (sandboxingFlagSet.contains(SandboxingFlag.ORIGIN_BROWSING_CONTEXT_FLAG)) {
+		if (_activeSandboxingFlagSet.contains(SandboxingFlag.ORIGIN_BROWSING_CONTEXT_FLAG)) {
 			documentOrigin = DocumentOrigin.createUnique(this);
 			effectiveScriptOrigin = DocumentOrigin.create(this, documentOrigin);
 		} else if (address != null && SERVER_BASED_SCHEMES.contains(address.getProtocol())) {
@@ -117,14 +125,14 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 		}
 	}
 	
-	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument) {
+	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType) {
 		Html5DocumentImpl document = null;
 
 		if (recycleWindowDocument != null) {
-			document = new Html5DocumentImpl(browsingContext, address, null, null, false);
+			document = new Html5DocumentImpl(browsingContext, address, null, null, false, contentType);
 			document._window = recycleWindowDocument._window;
 		} else {
-			document = new Html5DocumentImpl(browsingContext, address, null, null, true);
+			document = new Html5DocumentImpl(browsingContext, address, null, null, true, contentType);
 		}
 		
 		return document;
@@ -137,7 +145,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 			refferer = browsingContext.getCreatorDocument().getURL();
 		}
 		
-		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, null, refferer, true);
+		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, null, refferer, true, "text/html");
 
 		document.setInputEncoding("UTF-8");
 		
@@ -154,7 +162,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	public static Html5DocumentImpl createSandboxedDocument(BrowsingContext browsingContext) {
 		Set<SandboxingFlag> sandboxingFlagSet = new HashSet<SandboxingFlag>();
-		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, sandboxingFlagSet, null, true);
+		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, sandboxingFlagSet, null, true, "text/html");
 		
 		return document;
 	}
@@ -311,12 +319,16 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	public void setEnableFullscreenFlag(boolean value) {
 		_fullscreenEnabledFlag = value;
 	}
-	
-	public void setContentType(String contentType) {
-		_contentType = contentType;
-	}
-	
+		
 	public String getContentType() {
 		return _contentType;
+	}
+	
+	public DocumentReadiness getDocumentReadiness() {
+		return _documentReadiness;
+	}
+	
+	public void setDocumentReadiness(DocumentReadiness readiness) {
+		_documentReadiness = readiness;
 	}
 }

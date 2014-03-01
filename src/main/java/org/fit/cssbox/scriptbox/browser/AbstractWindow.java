@@ -53,7 +53,7 @@ public abstract class AbstractWindow {
 	protected abstract Object getter(String name);
 	
 	protected WindowProxy open() {
-		return open(Html5DocumentImpl.DEFAULT_URL, DEFAULT_TARGET, DEFAULT_FEATURES, DEFAULT_REAPLACE);
+		return open(Html5DocumentImpl.DEFAULT_URL_ADDRESS, DEFAULT_TARGET, DEFAULT_FEATURES, DEFAULT_REAPLACE);
 	}
 	
 	protected WindowProxy open(String url) {

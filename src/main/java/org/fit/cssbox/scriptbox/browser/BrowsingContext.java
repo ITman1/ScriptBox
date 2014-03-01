@@ -37,6 +37,7 @@ public class BrowsingContext {
 	protected URI baseURI;
 	
 	protected BrowsingContext parentContext;
+	protected Html5DocumentImpl creatorDocument;
 	protected Set<BrowsingContext> childContexts;
 	protected BrowsingUnit browsingUnit;
 	protected Map<Class<? extends DocumentScriptEngine>, DocumentScriptEngine> scriptEngines;
@@ -58,6 +59,11 @@ public class BrowsingContext {
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
 		this.navigationController = new NavigationController(this);
+		
+		BrowsingContext creatorContext = getCreatorContext();
+		if (creatorContext != null) {
+			this.creatorDocument = creatorContext.getActiveDocument();
+		}
 	}
 	
 	public BrowsingContext(BrowsingUnit browsingUnit) {
@@ -104,6 +110,19 @@ public class BrowsingContext {
 				return null;
 			}
 		}
+	}
+	
+	public boolean hasCreatorDocument() {
+		return getCreatorDocument() != null;
+	}
+	
+	/*
+	 * If a browsing context A has a creator browsing context, then the Document 
+	 * that was the active document of that creator browsing context at the 
+	 * time A was created is the creator Document.
+	 */
+	public Html5DocumentImpl getCreatorDocument() {
+		return creatorDocument;
 	}
 	
 	/*
@@ -374,7 +393,7 @@ public class BrowsingContext {
 			/*
 			 * FIXME: Replace for null and implement above TODOs.
 			 */
-			return browsingUnit.getUserAgent().createBrowsingContext();
+			return browsingUnit.getUserAgent().createBrowsingUnit().getWindowBrowsingContext();
 		}
 	}
 	
@@ -422,8 +441,8 @@ public class BrowsingContext {
 		return false;
 	}*/
 	
-	public void scrollToFragment(String fragment) {
-		
+	public boolean scrollToFragment(String fragment) {
+		return false;
 	}
 	
 	public Element getContainer() {

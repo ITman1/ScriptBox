@@ -39,7 +39,7 @@ public class JointSessionHistory {
 		}
 
 		@Override
-		public void execute() {
+		public void run() {
 			/*
 			 * TODO: 
 			 * 1) If there is an ongoing attempt to navigate specified browsing context 

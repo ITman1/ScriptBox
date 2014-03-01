@@ -1,21 +1,18 @@
 package org.fit.cssbox.scriptbox.demo;
 
-import java.io.IOException;
-
-import org.apache.html.dom.HTMLDocumentImpl;
-import org.fit.cssbox.io.DefaultDocumentSource;
-import org.fit.cssbox.scriptbox.document.event.EventDOMSource;
-import org.fit.cssbox.scriptbox.document.script.ScriptDOMSource;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.mozilla.javascript.Script;
-import org.w3c.dom.Element;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventListener;
-import org.xml.sax.SAXException;
+import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.UserAgent;
 
 public class MultipleDocumentBrowser {
 
-	static protected EventListener domEventListener = new EventListener() {
+	public static void main(String[] args) {
+		UserAgent userAgent = new UserAgent();
+		BrowsingUnit browsingUnit = userAgent.createBrowsingUnit();
+		browsingUnit.navigate("http://cssbox.sourceforge.net/");
+
+	}
+	
+	/*static protected EventListener domEventListener = new EventListener() {
 
 		@Override
 		public void handleEvent(Event event) {
@@ -56,6 +53,6 @@ public class MultipleDocumentBrowser {
 
 		
 		return;
-	}
+	}*/
 
 }

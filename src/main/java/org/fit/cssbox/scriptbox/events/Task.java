@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
  * From HTML5 specification:
  * Each task in a browsing context event loop is associated with a Document; 
  */
-public abstract class Task {
+public abstract class Task implements Runnable {
 	private Html5DocumentImpl _document;
 	private TaskSource _source;
 	
@@ -59,5 +59,5 @@ public abstract class Task {
 		return _document.getBrowsingContext().getBrowsingUnit();
 	}
 	
-	public abstract void execute();
+	public abstract void run();
 }

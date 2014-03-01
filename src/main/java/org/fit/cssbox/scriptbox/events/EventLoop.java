@@ -41,9 +41,13 @@ public class EventLoop extends Thread {
 			
 			Task task = pullTask();
 			
-			task.execute();
+			task.run();
 		}
 	}
+	
+	public void spinForAmountTime(int ms, Runnable actionAfter) {
+		
+	} 
 	
 	public synchronized void queueTask(Task task) {
 		synchronized (_pauseMonitor) {
