@@ -2,9 +2,11 @@ package org.fit.cssbox.scriptbox.resource;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 
 public abstract class Resource {
 	private class WaitForDataThread extends Thread {
@@ -40,6 +42,21 @@ public abstract class Resource {
 	public abstract BufferedInputStream getInputStream();
 	public abstract String getContentType();
 	
+	public boolean isContentValid() {
+		String contentType = getContentType();
+		InputStream is = getInputStream();
+		
+		return is != null && contentType != null && !contentType.isEmpty();
+	}
+	
+	public boolean isAttachment() {
+		return false;
+	}
+	
+	public ContentHandler getErrorHandler() {
+		return null;
+	}
+	
 	public boolean shouldRedirect() {
 		return false;
 	}
@@ -50,6 +67,10 @@ public abstract class Resource {
 	
 	public boolean isRedirectValid() {
 		return false;
+	}
+	
+	public String getReferrer() {
+		return "";
 	}
 	
 	public boolean waitForBytes(int timeout) {

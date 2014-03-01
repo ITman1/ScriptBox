@@ -1,5 +1,7 @@
 package org.fit.cssbox.scriptbox.resource.content;
 
+import java.net.URL;
+
 import org.fit.cssbox.scriptbox.resource.Resource;
 
 
@@ -16,15 +18,15 @@ public class ContentHandlerRegistry {
 		return instance;
 	}
 	
-	public boolean existsHandlerForScheme(String scheme) {
-		return true;
-	}
-	
 	public ContentHandler getHandlerForResource(Resource resource) {
 		return null;
 	}
 	
-	public ContentHandler getHandlerForScheme(String scheme) {
+	public boolean existsErrorHandler(URL url) {
+		return true;
+	}
+	
+	public ErrorHandler getErrorHandler(URL url) {
 		return null;
 	}
 

@@ -15,8 +15,6 @@ public abstract class ContentHandler {
 		this.navigationController = navigationAttempt.getNavigationController();
 		this.context = navigationController.getBrowsingContext();
 	}
-	
-	public void onFetchFailure() {}
-	
+		
 	public abstract void process(Resource resource);
 }

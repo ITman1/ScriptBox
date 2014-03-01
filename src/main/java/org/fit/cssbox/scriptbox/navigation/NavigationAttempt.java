@@ -15,6 +15,7 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerRegistry;
+import org.fit.cssbox.scriptbox.resource.content.ErrorHandler;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
@@ -62,6 +63,7 @@ public abstract class NavigationAttempt {
 	protected boolean runningUnloadDocument;
 
 	protected BrowsingContext destinationBrowsingContext;
+	protected boolean goneAsync;
 	protected List<Fetch> fetches;
 	protected FetchRegistry fetchRegistry;
 	protected ContentHandlerRegistry resourceHandlerRegistry;
@@ -96,6 +98,10 @@ public abstract class NavigationAttempt {
 	
 	public void perform() {
 		perform(EMPTY_NAVIGATION_ATTEMPT_LISTENER);
+	}
+	
+	public void cancel() {
+		
 	}
 	
 	public void perform(NavigationAttemptListener listener) {
@@ -138,14 +144,12 @@ public abstract class NavigationAttempt {
 		}
 		
 		// 7) Let gone async be false.	
-		performFromFragmentIdentifiers(listener, false);
-	}
-	
-	public void cancel() {
+		goneAsync = false;
 		
+		performFromFragmentIdentifiers(listener);
 	}
 	
-	protected void performFromFragmentIdentifiers(final NavigationAttemptListener listener, boolean goneAsync) {
+	protected void performFromFragmentIdentifiers(final NavigationAttemptListener listener) {
 		// 8) Apply the URL parser for new and old resource and if only fragment is different then navigate to fragment only
 		if (shouldBeFragmentNavigated()) {
 			navigateToFragment(url.getRef());
@@ -201,24 +205,29 @@ public abstract class NavigationAttempt {
 			return;
 		}
 		
-		// 16) and 17)  If gone async is false, return and continue asynchronously and set gone async to true
+		// 16) If gone async is false, return and continue asynchronously
 		if (goneAsync == false) {
 			Thread asyncPerform = new Thread() {
 				@Override
 				public void run() {
-					performFromHandleRedirects(listener, true);
+					// 17) Let gone async be true.
+					goneAsync = true;
+					
+					performFromHandleRedirects(listener);
 				}
 			};
 			asyncPerform.start();
 			return;
+		} else {		
+			performFromHandleRedirects(listener);
 		}
 	}
 	
-	protected void performFromHandleRedirects(final NavigationAttemptListener listener, boolean goneAsync) {
+	protected void performFromHandleRedirects(final NavigationAttemptListener listener) {
 		// 18) Handle redirects and abort on different origins
 		if (resource.shouldRedirect()) {
 			if (resource.isRedirectValid()) {
-				performFromFragmentIdentifiers(listener, goneAsync);
+				performFromFragmentIdentifiers(listener);
 			} else {
 				// TODO: Maybe throw an security error.
 				return;
@@ -227,7 +236,55 @@ public abstract class NavigationAttempt {
 		
 		// 19) Wait for incoming byte(s) or abort if resource is empty
 		// FIXME: Wait for 10 seconds - reach it from constant or from User agent settings
-		resource.waitForBytes(10000);
+		if (!resource.waitForBytes(10000)) {
+			// TODO: Throw timeout or similar exception
+			return;
+		}
+		
+		// 20) TODO: Fallback in prefer-online mode
+		
+		// 21) TODO: Fallback for fallback entries
+		
+		
+		performFromResourceHandling(listener);
+	}
+	
+	protected void performFromResourceHandling(final NavigationAttemptListener listener) {
+		// 22) Handle resources that are not valid (e.g. do not contain metadata and the content) and attachments
+		if (!resource.isContentValid()) {
+			ContentHandler errorHandler = resource.getErrorHandler();
+			
+			if (errorHandler != null) {
+				errorHandler.process(resource);
+			}
+		}
+		
+		if (resource.isAttachment()) {
+			downloadResource();
+		}
+		
+		// 23) Get content type.
+		String contentType = resource.getContentType();
+		if (contentType == null) {
+			// TODO: Maybe throw an exception.
+			return;
+		}
+		
+		// 24) and 25) Handling of document and inline contents is merged here, registry is delegated for the distinction
+		ContentHandler handler = resourceHandlerRegistry.getHandlerForResource(resource);
+		if (handler != null) {
+			handler.process(resource);
+			return;
+		} else {
+			// 26) If unknown type then download the resource
+			downloadResource();
+		}
+	}
+	
+	/*
+	 * TODO: See http://www.w3.org/html/wg/drafts/html/CR/links.html#as-a-download
+	 */
+	protected void downloadResource() {
 		
 	}
 	
@@ -253,11 +310,10 @@ public abstract class NavigationAttempt {
 	}
 	
 	protected void handleUnableToFetch() {
-		String urlScheme = url.getProtocol();
-		ContentHandler contentHandler = resourceHandlerRegistry.getHandlerForScheme(urlScheme);
+		ErrorHandler errorHandler = resourceHandlerRegistry.getErrorHandler(url);
 		
-		if (contentHandler != null) {
-			contentHandler.onFetchFailure();
+		if (errorHandler != null) {
+			errorHandler.handle(url);
 		}
 	}
 	
@@ -274,10 +330,8 @@ public abstract class NavigationAttempt {
 		return false;
 	}
 	
-	protected boolean affectsBrowsingContext() {
-		String urlScheme = url.getProtocol();
-		
-		return resourceHandlerRegistry.existsHandlerForScheme(urlScheme);
+	protected boolean affectsBrowsingContext() {	
+		return resourceHandlerRegistry.existsErrorHandler(url);
 	}
 	
 	protected void navigateToFragment(String fragment) {
