@@ -92,8 +92,9 @@ public class BrowsingContext {
 		return childContext;
 	}
 
-	public void destroyContext() {
+	public synchronized void destroyContext() {
 		destroyed = true;
+		navigationController.cancelAllNavigationAttempts();
 	}
 	
 	/*
@@ -393,7 +394,7 @@ public class BrowsingContext {
 			/*
 			 * FIXME: Replace for null and implement above TODOs.
 			 */
-			return browsingUnit.getUserAgent().createBrowsingUnit().getWindowBrowsingContext();
+			return browsingUnit.getUserAgent().openBrowsingUnit().getWindowBrowsingContext();
 		}
 	}
 	

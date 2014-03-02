@@ -13,7 +13,7 @@ public class MultipleDocumentBrowser {
 
 	public static void main(String[] args) throws Exception  {
 		UserAgent userAgent = new UserAgent();
-		BrowsingUnit browsingUnit = userAgent.createBrowsingUnit();
+		BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
 		browsingUnit.navigate("http://cssbox.sourceforge.net/");
 		
 		Object obj = new Object();
@@ -33,6 +33,8 @@ public class MultipleDocumentBrowser {
         output.setEncoding("UTF-8");
         output.setByteStream(System.out);
         serializer.write(doc, output);
+        
+        userAgent.stop();
         
 		return;
 	}

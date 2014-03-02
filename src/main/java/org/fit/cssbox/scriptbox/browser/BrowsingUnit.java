@@ -51,4 +51,9 @@ public class BrowsingUnit {
 		} catch (MalformedURLException e) {}
 		
 	}
+	
+	public void destroy() {
+		_windowBrowsingContext.destroyContext();
+		_eventLoop.abort();
+	}
 }

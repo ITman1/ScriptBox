@@ -2,18 +2,11 @@ package org.fit.cssbox.scriptbox.events;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.base.Predicate;
 
-public class EventLoop extends Thread {
-	private Object _pauseMonitor;
-	protected TaskQueues _taskQueues;
-	protected Thread executionThread;
-	protected int sourcesListPosition;
-	
+public class EventLoop {
 	protected static List<TaskSource> sourcesList;
-	
 	static {
 		sourcesList = new ArrayList<TaskSource>();
 		sourcesList.add(TaskSource.DOM_MANIPULATION);
@@ -22,33 +15,37 @@ public class EventLoop extends Thread {
 		sourcesList.add(TaskSource.USER_INTERACTION);
 	}
 	
+	protected Object _pauseMonitor;
+	protected TaskQueues _taskQueues;
+	protected int sourcesListPosition;
+	protected boolean _aborted;
+	
+	protected Thread executionThread = new Thread() {
+		@Override
+		public void run() {
+			eventLoop();
+		};
+	};
+		
 	public EventLoop() {
 		_pauseMonitor = new Object();
 		_taskQueues = new TaskQueues();
 		sourcesListPosition = -1;
 		
-		start();
+		executionThread.start();
 	}
-	
-	public void run() {
-		while (true) {
-			synchronized (_pauseMonitor) {
-				while (_taskQueues.isEmpty()) {
-					try {
-						_pauseMonitor.wait();
-					} catch (Exception e) {}
-			    }
-			}
 			
-			Task task = pullTask();
-			
-			task.run();
+	public void abort() {
+		_aborted = true;
+		
+		synchronized (_pauseMonitor) {
+			_pauseMonitor.notifyAll();
 		}
 	}
 	
-	public void spinForAmountTime(int ms, Runnable actionAfter) {
+	public synchronized void spinForAmountTime(int ms, Runnable actionAfter) {
 		
-	} 
+	}
 	
 	public synchronized void queueTask(Task task) {
 		synchronized (_pauseMonitor) {
@@ -57,11 +54,33 @@ public class EventLoop extends Thread {
 		}
 	}
 	
-	/*
-	 * Not thread safe.
-	 */
-	public void filter(TaskSource source, Predicate<Task> predicate) {
+	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {
 		_taskQueues.filter(source, predicate);
+	}
+	
+	protected void eventLoop() {
+		while (true) {
+			synchronized (_pauseMonitor) {
+				while (_taskQueues.isEmpty() && !_aborted) {
+					try {
+						_pauseMonitor.wait();
+					} catch (Exception e) {}
+			    }
+			}
+			
+			if (_aborted) {
+				cleanupJobs();
+				return;
+			}
+			
+			Task task = pullTask();
+			
+			task.run();
+		}
+	}
+	
+	protected void cleanupJobs() {
+		
 	}
 	
 	protected synchronized Task pullTask() {
