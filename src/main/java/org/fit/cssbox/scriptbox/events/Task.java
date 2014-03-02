@@ -58,6 +58,10 @@ public abstract class Task implements Runnable {
 	public BrowsingUnit getBrowsingUnit() {
 		return _document.getBrowsingContext().getBrowsingUnit();
 	}
+		
+	public void onCancellation() {
+		
+	}
 	
 	public abstract void run();
 }

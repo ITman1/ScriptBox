@@ -3,9 +3,20 @@ package org.fit.cssbox.scriptbox.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
+import org.fit.cssbox.scriptbox.script.GlobalScriptCleanupJobs;
+
 import com.google.common.base.Predicate;
 
 public class EventLoop {
+	protected class ExecutionThread extends Thread {
+		@Override
+		public void run() {
+			eventLoop();
+		};
+	};
+	
 	protected static List<TaskSource> sourcesList;
 	static {
 		sourcesList = new ArrayList<TaskSource>();
@@ -18,33 +29,65 @@ public class EventLoop {
 	protected Object _pauseMonitor;
 	protected TaskQueues _taskQueues;
 	protected int sourcesListPosition;
+	protected BrowsingUnit _browsingUnit;
 	protected boolean _aborted;
+	protected Task _runningTask;
 	
-	protected Thread executionThread = new Thread() {
-		@Override
-		public void run() {
-			eventLoop();
-		};
-	};
+	protected ExecutionThread executionThread;
 		
-	public EventLoop() {
+	public EventLoop(BrowsingUnit browsingUnit) {
 		_pauseMonitor = new Object();
 		_taskQueues = new TaskQueues();
+		_browsingUnit = browsingUnit;
 		sourcesListPosition = -1;
 		
+		executionThread = new ExecutionThread();
 		executionThread.start();
 	}
 			
 	public void abort() {
-		_aborted = true;
-		
-		synchronized (_pauseMonitor) {
-			_pauseMonitor.notifyAll();
+		abort(true);
+	}
+	
+	public synchronized void spinForCondition(final Runnable conditionRunnable, Runnable actionAfter) {
+		/* Method has to be invoked from the task */
+		if (_runningTask != null) {
+			ScriptSettingsStack scriptSettingsStack = _browsingUnit.getScriptSettingsStack();
+			GlobalScriptCleanupJobs cleanupJobs = _browsingUnit.getGlobalScriptCleanupJobs();
+			final TaskSource taskSource = _runningTask.getTaskSource();
+			final ScriptSettingsStack oldScriptSettingsStack = scriptSettingsStack.clone();
+			
+			scriptSettingsStack.clean();
+			cleanupJobs.runAll();
+			
+			
+			Thread conditionThread = new Thread() {
+				@Override
+				public void run() {
+					conditionRunnable.run();
+				}
+			};
+			conditionThread.start();
+			abort(false);
 		}
 	}
 	
-	public synchronized void spinForAmountTime(int ms, Runnable actionAfter) {
-		
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#spin-the-event-loop
+	 */
+	public synchronized void spinForAmountTime(final int ms, Runnable actionAfter) {
+		spinForCondition(new Runnable() {
+			
+			@Override
+			public void run() {
+				Object waitObj = new Object();		
+				try {
+					waitObj.wait(ms);
+				} catch (InterruptedException e) {
+					// TODO: Throw an exception
+				}
+			}
+		}, actionAfter);
 	}
 	
 	public synchronized void queueTask(Task task) {
@@ -54,8 +97,16 @@ public class EventLoop {
 		}
 	}
 	
+	public synchronized void removeTask(Task task) {
+		_taskQueues.removeTask(task);
+	}
+	
 	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {
 		_taskQueues.filter(source, predicate);
+	}
+	
+	public synchronized Task getRunningTask() {
+		return _runningTask;
 	}
 	
 	protected void eventLoop() {
@@ -73,13 +124,39 @@ public class EventLoop {
 				return;
 			}
 			
-			Task task = pullTask();
+			synchronized (this) {
+				_runningTask = pullTask();
+			}
 			
-			task.run();
+			_runningTask.run();
+			
+			synchronized (this) {
+				_runningTask = null;
+			}
 		}
 	}
 	
-	protected void cleanupJobs() {
+	@SuppressWarnings("deprecation")
+	protected synchronized void abort(boolean synced) {
+		if (synced) {
+			_aborted = true;
+			
+			synchronized (_pauseMonitor) {
+				_pauseMonitor.notifyAll();
+			}
+		} else {
+			if (_runningTask != null) {
+				_runningTask.onCancellation();
+			}
+
+			executionThread.stop();
+		}
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#perform-a-microtask-checkpoint
+	 */
+	protected void performMicrotaskCheckpoint() {
 		
 	}
 	
@@ -99,5 +176,7 @@ public class EventLoop {
 		}
 	}
 	
-
+	protected void cleanupJobs() {
+		
+	}
 }
