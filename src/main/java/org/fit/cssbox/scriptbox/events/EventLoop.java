@@ -1,5 +1,7 @@
 package org.fit.cssbox.scriptbox.events;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,18 +21,20 @@ public class EventLoop {
 	
 	protected class SpinEventLoopResumeTask extends Task {
 		protected ScriptSettingsStack oldScriptSettingsStack;
-		protected Runnable actionAfter;
+		protected Executable actionAfter;
 		
-		public SpinEventLoopResumeTask(Task oldTask, ScriptSettingsStack oldScriptSettingsStack, Runnable actionAfter) {
+		public SpinEventLoopResumeTask(Task oldTask, ScriptSettingsStack oldScriptSettingsStack, Executable actionAfter) {
 			super(oldTask.getTaskSource(), oldTask.getDocument());
+			
+			this.actionAfter = actionAfter;
 		}
 
 		@Override
-		public void run() {
+		public void execute() throws InterruptedException  {
 			ScriptSettingsStack stack = _browsingUnit.getScriptSettingsStack();
 			stack.importScriptSettingsStack(oldScriptSettingsStack);
 			
-			actionAfter.run();
+			actionAfter.execute();
 		}
 	}
 	
@@ -47,8 +51,8 @@ public class EventLoop {
 	protected TaskQueues _taskQueues;
 	protected int sourcesListPosition;
 	protected BrowsingUnit _browsingUnit;
-	protected boolean _aborted;
 	protected Task _runningTask;
+	protected boolean _aborted;
 	
 	protected ExecutionThread executionThread;
 		
@@ -57,19 +61,48 @@ public class EventLoop {
 		_taskQueues = new TaskQueues();
 		_browsingUnit = browsingUnit;
 		sourcesListPosition = -1;
-		
+
 		executionThread = new ExecutionThread();
 		executionThread.start();
 	}
 			
-	public void abort(boolean join) {
-		abort(true, join);
+	/*
+	 * throws InterruptedException if we are aborting current thread or if it occurs on join
+	 */
+	public synchronized void abort(boolean join) throws InterruptedException {		
+		if (!executionThread.isAlive() || _aborted) {
+			return;
+		}
+		
+		Thread currentThread = Thread.currentThread();
+		boolean currentThreadInterrupted = currentThread.equals(executionThread);
+		
+		_aborted = true;
+		executionThread.interrupt();
+
+		if (currentThreadInterrupted) {
+			throw new InterruptedException();
+		} else if (join) {
+			executionThread.join();
+		}		
+	}
+	
+	public synchronized boolean isAborted() {
+		return _aborted;
+	}
+	
+	public synchronized boolean isRunning() {
+		return (executionThread != null && !_aborted)? executionThread.isAlive() : false;
 	}
 	
 	/*
 	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#spin-the-event-loop
 	 */
-	public synchronized void spinForCondition(final Runnable conditionRunnable, final Runnable actionAfter) {
+	public synchronized void spinForCondition(final Runnable conditionRunnable, final Executable actionAfter) throws InterruptedException {
+		if (_aborted) {
+			return;
+		}
+		
 		/* Method has to be invoked from the task thread */
 		Thread currentThread = Thread.currentThread();
 		final Task runningTask = _runningTask;
@@ -84,32 +117,38 @@ public class EventLoop {
 			Thread conditionThread = new Thread() {
 				@Override
 				public void run() {
-					EventLoop.this.start();
 					conditionRunnable.run();
 					queueTask(new SpinEventLoopResumeTask(runningTask, oldScriptSettingsStack, actionAfter));
 				}
 			};
 			conditionThread.start();
-			abort(false, false);
+			executionThread.interrupt();
+			throw new InterruptedException();
 		}
 	}
 	
 
-	public synchronized void spinForAmountTime(final int ms, Runnable actionAfter) {
+	public synchronized void spinForAmountTime(final int ms, Executable actionAfter) throws InterruptedException {
 		spinForCondition(new Runnable() {
 			
 			@Override
 			public void run() {
 				Object waitObj = new Object();		
-				try {
-					waitObj.wait(ms);
-				} catch (InterruptedException e) {
+				synchronized (waitObj) {
+					try {
+						waitObj.wait(ms);
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 		}, actionAfter);
 	}
 	
 	public synchronized void queueTask(Task task) {
+		if (_aborted) {
+			return;
+		}
+		
 		synchronized (_pauseMonitor) {
 			_taskQueues.queueTask(task);
 			_pauseMonitor.notifyAll();
@@ -117,79 +156,66 @@ public class EventLoop {
 	}
 	
 	public synchronized void removeTask(Task task) {
+		if (_aborted) {
+			return;
+		}
 		_taskQueues.removeTask(task);
 	}
 	
 	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {
+		if (_aborted) {
+			return;
+		}
 		_taskQueues.filter(source, predicate);
 	}
 	
 	public synchronized Task getRunningTask() {
+		if (_aborted) {
+			return null;
+		}
 		return _runningTask;
 	}
 	
 	protected void eventLoop() {
-		while (true) {
+		while (!_aborted) {
 			synchronized (_pauseMonitor) {
 				while (_taskQueues.isEmpty() && !_aborted) {
 					try {
 						_pauseMonitor.wait();
-					} catch (Exception e) {}
-			    }
+					} catch (InterruptedException e) {
+					}
+				}
 			}
 			
 			if (_aborted) {
-				cleanupJobs();
-				return;
+				break;
 			}
 			
 			synchronized (this) {
 				_runningTask = pullTask();
 			}
 			
-			_runningTask.run();
+			try {
+				_runningTask.execute();
+			} catch (InterruptedException e) {
+			}
+			
+			if (_aborted) {
+				break;
+			}
 			
 			synchronized (this) {
 				_runningTask = null;
 			}
 		}
+		
+		cleanupJobs();
+		return;
 	}
 	
-	protected synchronized void start() {
-		if (executionThread != null && executionThread.isAlive()) {
-			abort(true, true);
-		}
-		executionThread = new ExecutionThread();
-		executionThread.start();
-	}
-	
-	@SuppressWarnings("deprecation")
-	protected synchronized void abort(boolean synced, boolean join) {
-		if (executionThread == null || !executionThread.isAlive()) {
-			return;
-		}
-		
-		if (synced) {
-			_aborted = true;
-			
-			synchronized (_pauseMonitor) {
-				_pauseMonitor.notifyAll();
-			}
-			
-			if (join) {
-				try {
-					executionThread.join();
-				} catch (InterruptedException e) {
-				} finally {}
-			}
-		} else {
-			if (_runningTask != null) {
-				_runningTask.onCancellation();
-			}
-			executionThread.stop();
-		}
-		
-		executionThread = null;
+	protected long getCpuTime( ) {
+		ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
+		return bean.isCurrentThreadCpuTimeSupported()? bean.getCurrentThreadCpuTime( ) : 0L;
 	}
 	
 	/*

@@ -37,7 +37,7 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			}
 
 			@Override
-			public void run() {
+			public void execute() throws InterruptedException {
 				if (exception != null) {
 					// TODO: Throw/display error
 				} else {
@@ -56,7 +56,7 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			}
 
 			@Override
-			public void run() {
+			public void execute() throws InterruptedException {
 				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress(), "text/html");
 				updateSessionHistory(document);
 				

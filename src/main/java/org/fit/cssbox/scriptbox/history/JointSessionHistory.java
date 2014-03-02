@@ -39,7 +39,7 @@ public class JointSessionHistory {
 		}
 
 		@Override
-		public void run() {
+		public void execute() throws InterruptedException {
 			/*
 			 * TODO: 
 			 * 1) If there is an ongoing attempt to navigate specified browsing context 

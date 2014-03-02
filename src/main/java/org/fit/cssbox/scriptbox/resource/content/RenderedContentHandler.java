@@ -6,6 +6,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
+import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
@@ -18,9 +19,9 @@ import org.w3c.dom.Element;
 
 public abstract class RenderedContentHandler extends ContentHandler {
 
-	protected class ScrollToFragmentRunnable implements Runnable {
+	protected class ScrollToFragmentRunnable implements Executable {
 		@Override
-		public void run() {
+		public void execute() throws InterruptedException {
 			String fragment = navigationAttempt.getURL().getRef();
 			
 			if (fragment == null) {
@@ -52,7 +53,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		}
 
 		@Override
-		public void run() {
+		public void execute() throws InterruptedException {
 			Html5DocumentImpl oldDocument = getDocument();
 			
 			// 1) Unload the document
@@ -83,7 +84,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 			navigationAttempt.mature();
 			
 			ScrollToFragmentRunnable performScrolling = new ScrollToFragmentRunnable();
-			performScrolling.run();
+			performScrolling.execute();
 		}
 		
 	}
