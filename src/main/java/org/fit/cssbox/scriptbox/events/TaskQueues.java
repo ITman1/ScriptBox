@@ -44,11 +44,17 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 		List<Task> tasks = get(source);
 		
 		if (tasks != null) {
-			tasks = new ArrayList<Task>();
-			Iterables.addAll(tasks, Iterables.filter(tasks, predicate));
+			List<Task> filteredTasks = new ArrayList<Task>();
+			Iterables.addAll(filteredTasks, Iterables.filter(tasks, predicate));
+			
+			if (filteredTasks.isEmpty()) {
+				remove(source);
+			} else {
+				put(source, filteredTasks);
+			}
 		}
 		
-		put(source, tasks);
+		
 	}
 	
 	public void removeTask(Task task) {

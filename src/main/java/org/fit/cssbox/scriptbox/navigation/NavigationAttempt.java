@@ -58,6 +58,7 @@ public abstract class NavigationAttempt {
 	protected BrowsingContext sourceBrowsingContext;
 	protected boolean exceptionEnabled;
 	protected boolean explicitSelfNavigationOverride;
+	protected boolean replacementEnabled;
 	protected URL url;
 	
 	protected boolean runningUnloadDocument;
@@ -70,12 +71,13 @@ public abstract class NavigationAttempt {
 	protected Resource resource;
 	protected NavigationAttemptListener listener;
 	
-	public NavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride) {
+	public NavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride, boolean replacementEnabled) {
 		this.navigationController = navigationController;
 		this.sourceBrowsingContext = sourceBrowsingContext;
 		this.url = url;
 		this.exceptionEnabled = exceptionEnabled;
 		this.explicitSelfNavigationOverride = explicitSelfNavigationOverride;
+		this.replacementEnabled = replacementEnabled;
 		this.fetches = new ArrayList<Fetch>();
 		this.fetchRegistry = FetchRegistry.getInstance();
 		this.resourceHandlerRegistry = ContentHandlerRegistry.getInstance();
@@ -97,6 +99,18 @@ public abstract class NavigationAttempt {
 	
 	public BrowsingContext getSourceBrowsingContext() {
 		return sourceBrowsingContext;
+	}
+	
+	public boolean hasExceptionEnabled() {
+		return exceptionEnabled;
+	}
+	
+	public boolean hasExplicitSelfNavigationOverride() {
+		return explicitSelfNavigationOverride;
+	}
+	
+	public boolean hasReplacementEnabled() {
+		return replacementEnabled;
 	}
 	
 	public URL getURL() {
@@ -196,7 +210,7 @@ public abstract class NavigationAttempt {
 		}
 		
 		// 13) If resource is not fetchable then apply corresponding handler and abort
-		if (fetchRegistry.isFetchable(url)) {
+		if (!fetchRegistry.isFetchable(url)) {
 			handleUnableToFetch();
 			return;
 		}
@@ -379,7 +393,7 @@ public abstract class NavigationAttempt {
 			return false;
 		}
 		
-		if (b.isTopLevelBrowsingContext() && isAllowedToNavigate(b, a) && a.getActiveDocument().
+		if (b.isTopLevelBrowsingContext() && b.isAncestorOf(a) && a.getActiveDocument().
 				getActiveSandboxingFlagSet().contains(SandboxingFlag.TOPLEVEL_NAVIGATION_BROWSING_CONTEXT_FLAG)) {
 			return false;
 		}

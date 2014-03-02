@@ -19,6 +19,7 @@ public class BrowsingUnit {
 		
 		_windowBrowsingContext = new WindowBrowsingContext(this);
 		_jointSessionHistory = new JointSessionHistory(this);
+		_eventLoop = new EventLoop();
 	}
 	
 	public UserAgent getUserAgent() {
@@ -46,7 +47,7 @@ public class BrowsingUnit {
 		
 		try {
 			URL url = new URL(address);
-			navigationController.navigate(_windowBrowsingContext, url, false, false);
+			navigationController.navigate(_windowBrowsingContext, url, false, false, true);
 		} catch (MalformedURLException e) {}
 		
 	}

@@ -58,23 +58,39 @@ public class SessionHistory {
 		initSessionHistory();
 	}
 	
+	public void remove(int index) {
+		if (index < 0) {
+			return;
+		}
+	
+		if (entries.size() > index) {
+			entries.remove(index);
+			
+			if (index < currentEntryPosition) {
+				currentEntryPosition--;
+			}
+			
+			if (entries.isEmpty()) {
+				currentEntryPosition = -1;
+			}
+		}
+	}
+	
 	public void remove(SessionHistoryEntry entry) {
-		entries.remove(entry);
+		int index = entries.indexOf(entry);
+		remove(index);
 	}
 	
 	public void removeBefore(SessionHistoryEntry entry) {
 		int index = entries.indexOf(entry);
-		
-		if (index > 0) {
-			entries.remove(index - 1);
-		}
+		remove(index - 1);
 	}
 	
 	public void removeAllAfter(SessionHistoryEntry entry) {
 		int index = entries.indexOf(entry) + 1;
 		
 		while (entries.size() > index) {
-			entries.remove(index);
+			remove(index);
 		}
 	}
 	
@@ -102,6 +118,14 @@ public class SessionHistory {
 	
 	public BrowsingContext getBrowsingContext() {
 		return context;
+	}
+	
+	public void traverseHistory(SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents) {
+		traverseHistory(context, specifiedEntry, replacementEnabled, asynchronousEvents);
+	}
+	
+	public void traverseHistory(SessionHistoryEntry specifiedEntry, boolean replacementEnabled) {
+		traverseHistory(context, specifiedEntry, replacementEnabled);
 	}
 	
 	public void traverseHistory(SessionHistoryEntry specifiedEntry) {

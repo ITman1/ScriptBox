@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,8 @@ public class FetchRegistry {
 	private Map<String, Set<Class<? extends Fetch>>> registeredFetchHandlers;
 	
 	private FetchRegistry() {
+		registeredFetchHandlers = new HashMap<String, Set<Class<? extends Fetch>>>();
+		
 		registerFetchHandler(FileFetch.class);
 		registerFetchHandler(HttpFetch.class);
 		registerFetchHandler(HttpsFetch.class);
@@ -37,7 +40,8 @@ public class FetchRegistry {
 	}
 	
 	public boolean isFetchable(URL url) {
-		return registeredFetchHandlers.containsKey(url.getProtocol());
+		String scheme = url.getProtocol();
+		return registeredFetchHandlers.containsKey(scheme);
 	}
 	
 	public Fetch getFetch(BrowsingContext context, URL url) {

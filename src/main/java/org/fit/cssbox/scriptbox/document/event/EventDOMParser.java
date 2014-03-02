@@ -19,9 +19,6 @@ public class EventDOMParser extends DOMParser {
 	protected EventProcessingProvider processingProvider;
 	protected boolean parserAborted;
 	
-	private XMLDocumentHandler _superXMLDocumentHandler;
-	private XMLDocumentHandler _eventXMLDocumentHandler;
-	
 	private class EventProcessingProviderImpl implements EventProcessingProvider {
 		@Override
 		public Node getCurrentNode() {
@@ -104,6 +101,8 @@ public class EventDOMParser extends DOMParser {
 		}
 	};
 	
+	private XMLDocumentHandler _superXMLDocumentHandler;
+	
 	public EventDOMParser() {
 		listeners = new ArrayList<EventListenerEntry>();
 		processingProvider = new EventProcessingProviderImpl();
@@ -125,12 +124,17 @@ public class EventDOMParser extends DOMParser {
 		initParser();
 	}
 	
-	protected void initParser() {	
-		_superXMLDocumentHandler = processingProvider.getConfiguration().getDocumentHandler();
-		_eventXMLDocumentHandler = new EventDocumentHandlerDecorator(_superXMLDocumentHandler, processingProvider);
-	    
+	protected void initParser() {			
+		XMLDocumentHandler _eventXMLDocumentHandler = instantizeEventDocumentHandlerDecorator();
+		
 		processingProvider.getConfiguration().setDocumentHandler(_eventXMLDocumentHandler);
 	}
 	
+	protected EventDocumentHandlerDecorator instantizeEventDocumentHandlerDecorator() {
+		if (_superXMLDocumentHandler == null) {
+			_superXMLDocumentHandler = processingProvider.getConfiguration().getDocumentHandler();
+		}
+		return new EventDocumentHandlerDecorator(_superXMLDocumentHandler, processingProvider);
+	}
 
 }

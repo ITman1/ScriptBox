@@ -24,9 +24,10 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 	private int scriptNestingLevel;
 	private boolean parserPauseFlag;
 	private Html5ScriptElementImpl pendingParsingBlockingScript;
-	private boolean hasStyleSheetBlockScripts;           // FIXME: Is never set, info about style sheets is not propagated here
+	private boolean hasStyleSheetBlockScripts;		   // FIXME: Is never set, info about style sheets is not propagated here
 	private Object pauseMonitor;
 	private Html5DocumentImpl _document;
+	private XMLLocator _locator;
 	
 	public ScriptableDocumentHandler(XMLDocumentHandler oldHandler, EventProcessingProvider processingInfoProvider, Html5DocumentImpl document) {
 		super(oldHandler, processingInfoProvider);
@@ -36,28 +37,45 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 	}
 	
 	@Override
-	public void startDocument(XMLLocator locator, String encoding, NamespaceContext namespaceContext, Augmentations augs) throws XNIException {
-		super.startDocument(locator, encoding, namespaceContext, augs);
-		
+	public void startDocument(XMLLocator locator, String encoding, NamespaceContext namespaceContext, Augmentations augs) throws XNIException {	
 		if (!processingInfoProvider.isDeferNodeExpansion()) {
+			_locator = locator;
 			CoreDocumentImpl documentImpl = null;
 
 			if (_document instanceof CoreDocumentImpl) {
 				documentImpl = (CoreDocumentImpl)_document;
 				documentImpl.setStrictErrorChecking (false);
 				documentImpl.setInputEncoding (encoding);
-		        if (locator != null) {
-		        	documentImpl.setDocumentURI (locator.getExpandedSystemId ());
-		        }
+				if (locator != null) {
+					documentImpl.setDocumentURI (locator.getExpandedSystemId ());
+				}
 			}
-	            
+				
 			processingInfoProvider.setDocument(_document);
 			processingInfoProvider.setDocumentImpl(documentImpl);
-	        processingInfoProvider.setCurrentNode(_document);
+			processingInfoProvider.setCurrentNode(_document);
 		} else {
 			throw new UnsupportedOperationException("Parser does not support deferred node expansion.");
 		}
 	}
+	
+	@Override
+	public void endDocument (Augmentations augs) throws XNIException {
+
+		if (!processingInfoProvider.isDeferNodeExpansion()) {
+			if (_document != null) {
+				if (_locator != null) {
+					_document.setInputEncoding (_locator.getEncoding());
+				}
+				_document.setStrictErrorChecking (true);
+			}
+			processingInfoProvider.setCurrentNode(null);
+		}
+		else {
+			throw new UnsupportedOperationException("Parser does not support deferred node expansion.");
+		}
+
+	} // endDocument()
 	
 	/*
 	 * Implements only some aspects of the HTML5 specification.
@@ -80,7 +98,7 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 			scriptElement.suspendExecution();
 			
 			// 4) If the parser was originally created for the HTML fragment parsing algorithm, 
-			//    then mark the script element as "already started". (fragment case)
+			//	then mark the script element as "already started". (fragment case)
 			if (processingInfoProvider.isDocumentFragmentParser()) {
 				scriptElement.cancelExecution();
 			}
@@ -113,7 +131,7 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 				scriptElement.prepareScript();
 				
 				// 9) Decrement the parser's script nesting level by one. 
-				//    If the parser's script nesting level is zero, then set the parser pause flag to false.
+				//	If the parser's script nesting level is zero, then set the parser pause flag to false.
 				decrementScriptNestingLevel();
 				
 				// TODO: 10) Let the insertion point have the value of the old insertion point. 
@@ -133,10 +151,10 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 							// TODO: 11.2.2) Block the tokenizer for this instance of the HTML parser.
 							
 							// 11.2.3) If the parser's Document has a style sheet that is blocking scripts 
-							//         or the script's "ready to be parser-executed" flag is not set
+							//		 or the script's "ready to be parser-executed" flag is not set
 							if (hasStyleSheetBlockScripts || !scriptElement.isReadyToBeParserExecuted()) {
 								// TODO: Spin the event loop until the parser's Document has no style sheet that is
-								//       blocking scripts and the script's "ready to be parser-executed" flag is set
+								//	   blocking scripts and the script's "ready to be parser-executed" flag is set
 							}
 							
 							// 11.2.4) If this parser has been aborted in the meantime, abort these steps.
@@ -181,7 +199,7 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 				try {
 					pauseMonitor.wait();
 				} catch (Exception e) {}
-		    }
+			}
 		}
 	}
 	

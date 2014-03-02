@@ -6,7 +6,7 @@ public class UpdateNavigationAttempt extends NavigationAttempt {
 	protected SessionHistoryEntry entry;
 	
 	public UpdateNavigationAttempt(NavigationController navigationController, SessionHistoryEntry entry) {
-		super(navigationController, navigationController.getBrowsingContext(), entry.getURL(), false, false);
+		super(navigationController, navigationController.getBrowsingContext(), entry.getURL(), false, false, false);
 
 		this.entry = entry;
 	}

@@ -1,15 +1,40 @@
 package org.fit.cssbox.scriptbox.demo;
 
+import org.apache.xml.serialize.OutputFormat;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 public class MultipleDocumentBrowser {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception  {
 		UserAgent userAgent = new UserAgent();
 		BrowsingUnit browsingUnit = userAgent.createBrowsingUnit();
 		browsingUnit.navigate("http://cssbox.sourceforge.net/");
-
+		
+		Object obj = new Object();
+		synchronized (obj) {
+			try {
+				obj.wait(3000); // Just some time until navigation completes
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		Html5DocumentImpl doc = browsingUnit.getWindowBrowsingContext().getActiveDocument();
+		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();    
+		DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("XML 3.0 LS 3.0");
+		LSSerializer serializer = impl.createLSSerializer();
+        LSOutput output = impl.createLSOutput();
+        output.setEncoding("UTF-8");
+        output.setByteStream(System.out);
+        serializer.write(doc, output);
+        
+		return;
 	}
 	
 	/*static protected EventListener domEventListener = new EventListener() {

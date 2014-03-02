@@ -75,6 +75,8 @@ public abstract class RenderedContentHandler extends ContentHandler {
 				SessionHistoryEntry newEntry = new SessionHistoryEntry(sessionHistory);
 				newEntry.setSocument(newDocument);
 				sessionHistory.add(newEntry);
+				
+				sessionHistory.traverseHistory(newEntry, navigationAttempt.hasReplacementEnabled());
 			}
 						
 			// 3) The navigation algorithm has now matured
@@ -108,7 +110,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		
 		// 1) Create a new Window object, and associate it with the Document
 		Html5DocumentImpl recycleWindowDocument = null;
-		if (sessionHistory.getLength() == 1 && currentDocument != null && currentDocument.getAddress().equals(Html5DocumentImpl.DEFAULT_URL)) {
+		if (sessionHistory.getLength() == 1 && currentDocument != null && currentDocument.hasDefaultAddress()) {
 			recycleWindowDocument = currentDocument; 
 		}
 		

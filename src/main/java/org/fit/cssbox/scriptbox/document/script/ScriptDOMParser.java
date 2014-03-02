@@ -6,6 +6,7 @@ import org.apache.xerces.xni.XMLDocumentHandler;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.fit.cssbox.scriptbox.document.event.EventDOMParser;
+import org.fit.cssbox.scriptbox.document.event.EventDocumentHandlerDecorator;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -19,7 +20,8 @@ import org.xml.sax.SAXNotSupportedException;
 public class ScriptDOMParser extends EventDOMParser {
 	
 	private Html5DocumentImpl _document;
-	
+	private XMLDocumentHandler _superXMLDocumentHandler;
+
 	public ScriptDOMParser(Html5DocumentImpl document) {
 		_document = document;
 	}
@@ -50,14 +52,9 @@ public class ScriptDOMParser extends EventDOMParser {
 	@Override
 	protected void initParser() {	
 		super.initParser();
-		
-		XMLDocumentHandler handler = processingProvider.getConfiguration().getDocumentHandler();
-		XMLDocumentHandler newHandler = new ScriptableDocumentHandler(handler, processingProvider, _document);
-	    
-		processingProvider.getConfiguration().setDocumentHandler(newHandler);
 
 		try {
-			setProperty("http://apache.org/xml/properties/dom/document-class-name", "org.fit.cssbox.scriptbox.document.script.ScriptableDocument");
+			setProperty("http://apache.org/xml/properties/dom/document-class-name", "org.fit.cssbox.scriptbox.dom.Html5DocumentImpl");
 		} catch (SAXNotRecognizedException e) {
 			e.printStackTrace();
 		} catch (SAXNotSupportedException e) {
@@ -70,5 +67,13 @@ public class ScriptDOMParser extends EventDOMParser {
 		 * TODO: See: http://www.w3.org/html/wg/drafts/html/master/syntax.html#the-end
 		 * - implement defer scripts and delayed scripts due remote resources
 		 */
+	}
+	
+	@Override
+	protected EventDocumentHandlerDecorator instantizeEventDocumentHandlerDecorator() {
+		if (_superXMLDocumentHandler == null) {
+			_superXMLDocumentHandler = processingProvider.getConfiguration().getDocumentHandler();
+		}
+		return new ScriptableDocumentHandler(_superXMLDocumentHandler, processingProvider, _document);
 	}
 }

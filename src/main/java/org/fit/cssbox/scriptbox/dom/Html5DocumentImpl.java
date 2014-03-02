@@ -39,14 +39,15 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	}
 	
 	final public static String DEFAULT_URL_ADDRESS = "about:blank";
-	private static URL _DEFAULT_URL;
+	final public static URL DEFAULT_URL;
     static {       
+    	URL defaultURL = null;
     	try {
-    		_DEFAULT_URL = new URL(DEFAULT_URL_ADDRESS);
+    		defaultURL = new URL(DEFAULT_URL_ADDRESS); // FIXME: about is not supported!
 		} catch (MalformedURLException e) {
 		}
+    	DEFAULT_URL = defaultURL;
     }
-	final public static URL DEFAULT_URL = _DEFAULT_URL;
 	final public static String JAVASCRIPT_SCHEME_NAME = "javascript";
 	final public static String DATA_SCHEME_NAME = "data";
 
@@ -99,7 +100,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 			effectiveScriptOrigin = DocumentOrigin.create(this, documentOrigin);
 		} else if (address != null && address.getProtocol().equals(DATA_SCHEME_NAME)) {
 			// TODO: If a Document was generated from a data: URL found in another Document or in a script
-		} else if (address != null && address.toExternalForm().equals(DEFAULT_URL)) {
+		} else if (address != null && address.equals(DEFAULT_URL)) {
 			Html5DocumentImpl creatorDocument = browsingContext.getCreatorDocument();
 			if (creatorDocument != null) {
 				OriginContainer<?> originContainer = creatorDocument.getOriginContainer();
@@ -223,6 +224,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	}
 	
 	public void setActiveSandboxingFlags(Collection<SandboxingFlag> flags) {
+		if (flags == null) {
+			return;
+		}
+		
 		for (SandboxingFlag flag : flags) {
 			setActiveSandboxingFlag(flag);
 		}
@@ -330,5 +335,9 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	public void setDocumentReadiness(DocumentReadiness readiness) {
 		_documentReadiness = readiness;
+	}
+	
+	public boolean hasDefaultAddress() {
+		return _address == null || _address.equals(DEFAULT_URL);
 	}
 }

@@ -92,7 +92,7 @@ public class SessionHistoryEntry {
 		DocumentOrigin entryEntryDocumentOrigin = entryDocument.getOriginContainer().getOrigin();
 		DocumentOrigin thisDocumentOrigin = _document.getOriginContainer().getOrigin();
 		
-		if (thisDocumentOrigin.equals(entryEntryDocumentOrigin)) {
+		if (thisDocumentOrigin != null && thisDocumentOrigin.equals(entryEntryDocumentOrigin)) {
 			return true;
 		}
 		

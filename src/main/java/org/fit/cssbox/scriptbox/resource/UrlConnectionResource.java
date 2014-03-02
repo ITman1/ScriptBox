@@ -20,6 +20,7 @@ public abstract class UrlConnectionResource extends Resource {
 	public UrlConnectionResource(BrowsingContext context, URLConnection conn) {
 		super(context);
 		
+		this.conn = conn;
 		try {
 			this.is = new BufferedInputStream(conn.getInputStream());
 		} catch (IOException e) {

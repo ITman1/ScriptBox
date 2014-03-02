@@ -24,6 +24,7 @@ public class EventLoop extends Thread {
 	
 	public EventLoop() {
 		_pauseMonitor = new Object();
+		_taskQueues = new TaskQueues();
 		sourcesListPosition = -1;
 		
 		start();

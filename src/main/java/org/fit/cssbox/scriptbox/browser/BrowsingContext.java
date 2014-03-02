@@ -428,7 +428,8 @@ public class BrowsingContext {
 	}
 	
 	public EventLoop getEventLoop() {
-		return getBrowsingUnit().getEventLoop();
+		BrowsingUnit browsingUnit = getBrowsingUnit();
+		return (browsingUnit != null)? browsingUnit.getEventLoop() : null;
 	}
 	
 	// FIXME: Implement.

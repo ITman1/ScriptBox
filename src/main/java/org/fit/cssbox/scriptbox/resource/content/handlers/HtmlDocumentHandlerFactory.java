@@ -58,7 +58,8 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			@Override
 			public void run() {
 				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress(), "text/html");
-
+				updateSessionHistory(document);
+				
 				Exception exception = null;
 				ScriptDOMParser scripDomParser = new ScriptDOMParser(document);
 								
