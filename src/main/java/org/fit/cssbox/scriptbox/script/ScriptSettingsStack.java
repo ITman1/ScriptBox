@@ -19,4 +19,8 @@ public class ScriptSettingsStack {
 	public ScriptSettingsStack clone() {
 		return null;
 	}
+	
+	public void importScriptSettingsStack(ScriptSettingsStack stack) {
+		
+	}
 }

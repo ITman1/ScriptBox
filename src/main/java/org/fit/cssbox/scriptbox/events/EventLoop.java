@@ -17,6 +17,23 @@ public class EventLoop {
 		};
 	};
 	
+	protected class SpinEventLoopResumeTask extends Task {
+		protected ScriptSettingsStack oldScriptSettingsStack;
+		protected Runnable actionAfter;
+		
+		public SpinEventLoopResumeTask(Task oldTask, ScriptSettingsStack oldScriptSettingsStack, Runnable actionAfter) {
+			super(oldTask.getTaskSource(), oldTask.getDocument());
+		}
+
+		@Override
+		public void run() {
+			ScriptSettingsStack stack = _browsingUnit.getScriptSettingsStack();
+			stack.importScriptSettingsStack(oldScriptSettingsStack);
+			
+			actionAfter.run();
+		}
+	}
+	
 	protected static List<TaskSource> sourcesList;
 	static {
 		sourcesList = new ArrayList<TaskSource>();
@@ -45,36 +62,39 @@ public class EventLoop {
 		executionThread.start();
 	}
 			
-	public void abort() {
-		abort(true);
-	}
-	
-	public synchronized void spinForCondition(final Runnable conditionRunnable, Runnable actionAfter) {
-		/* Method has to be invoked from the task */
-		if (_runningTask != null) {
-			ScriptSettingsStack scriptSettingsStack = _browsingUnit.getScriptSettingsStack();
-			GlobalScriptCleanupJobs cleanupJobs = _browsingUnit.getGlobalScriptCleanupJobs();
-			final TaskSource taskSource = _runningTask.getTaskSource();
-			final ScriptSettingsStack oldScriptSettingsStack = scriptSettingsStack.clone();
-			
-			scriptSettingsStack.clean();
-			cleanupJobs.runAll();
-			
-			
-			Thread conditionThread = new Thread() {
-				@Override
-				public void run() {
-					conditionRunnable.run();
-				}
-			};
-			conditionThread.start();
-			abort(false);
-		}
+	public void abort(boolean join) {
+		abort(true, join);
 	}
 	
 	/*
 	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#spin-the-event-loop
 	 */
+	public synchronized void spinForCondition(final Runnable conditionRunnable, final Runnable actionAfter) {
+		/* Method has to be invoked from the task thread */
+		Thread currentThread = Thread.currentThread();
+		final Task runningTask = _runningTask;
+		if (currentThread.equals(executionThread) && runningTask != null) {
+			ScriptSettingsStack scriptSettingsStack = _browsingUnit.getScriptSettingsStack();
+			GlobalScriptCleanupJobs cleanupJobs = _browsingUnit.getGlobalScriptCleanupJobs();
+			final ScriptSettingsStack oldScriptSettingsStack = scriptSettingsStack.clone();
+			
+			scriptSettingsStack.clean();
+			cleanupJobs.runAll();
+						
+			Thread conditionThread = new Thread() {
+				@Override
+				public void run() {
+					EventLoop.this.start();
+					conditionRunnable.run();
+					queueTask(new SpinEventLoopResumeTask(runningTask, oldScriptSettingsStack, actionAfter));
+				}
+			};
+			conditionThread.start();
+			abort(false, false);
+		}
+	}
+	
+
 	public synchronized void spinForAmountTime(final int ms, Runnable actionAfter) {
 		spinForCondition(new Runnable() {
 			
@@ -84,7 +104,6 @@ public class EventLoop {
 				try {
 					waitObj.wait(ms);
 				} catch (InterruptedException e) {
-					// TODO: Throw an exception
 				}
 			}
 		}, actionAfter);
@@ -136,21 +155,41 @@ public class EventLoop {
 		}
 	}
 	
+	protected synchronized void start() {
+		if (executionThread != null && executionThread.isAlive()) {
+			abort(true, true);
+		}
+		executionThread = new ExecutionThread();
+		executionThread.start();
+	}
+	
 	@SuppressWarnings("deprecation")
-	protected synchronized void abort(boolean synced) {
+	protected synchronized void abort(boolean synced, boolean join) {
+		if (executionThread == null || !executionThread.isAlive()) {
+			return;
+		}
+		
 		if (synced) {
 			_aborted = true;
 			
 			synchronized (_pauseMonitor) {
 				_pauseMonitor.notifyAll();
 			}
+			
+			if (join) {
+				try {
+					executionThread.join();
+				} catch (InterruptedException e) {
+				} finally {}
+			}
 		} else {
 			if (_runningTask != null) {
 				_runningTask.onCancellation();
 			}
-
 			executionThread.stop();
 		}
+		
+		executionThread = null;
 	}
 	
 	/*

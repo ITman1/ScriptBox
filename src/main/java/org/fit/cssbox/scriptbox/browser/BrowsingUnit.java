@@ -68,6 +68,6 @@ public class BrowsingUnit {
 	
 	public void destroy() {
 		_windowBrowsingContext.destroyContext();
-		_eventLoop.abort();
+		_eventLoop.abort(false);
 	}
 }
