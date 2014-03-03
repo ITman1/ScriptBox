@@ -182,7 +182,7 @@ public class SessionHistory {
 				public boolean apply(Task task) {
 					BrowsingContext topLevel = browsingUnit.getWindowBrowsingContext();
 					Collection<Html5DocumentImpl> documentFamily = topLevel.getDocumentFamily();
-					return documentFamily.contains(task.getDocument());
+					return !documentFamily.contains(task.getDocument());
 				}
 			});
 			

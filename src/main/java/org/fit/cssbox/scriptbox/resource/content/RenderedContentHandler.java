@@ -9,6 +9,7 @@ import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
 import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
@@ -21,7 +22,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 
 	protected class ScrollToFragmentRunnable implements Executable {
 		@Override
-		public void execute() throws InterruptedException {
+		public void execute() throws TaskAbortedException, InterruptedException {
 			String fragment = navigationAttempt.getURL().getRef();
 			
 			if (fragment == null) {
@@ -53,7 +54,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		}
 
 		@Override
-		public void execute() throws InterruptedException {
+		public void execute() throws TaskAbortedException, InterruptedException {
 			Html5DocumentImpl oldDocument = getDocument();
 			
 			// 1) Unload the document

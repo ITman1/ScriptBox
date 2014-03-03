@@ -4,8 +4,11 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 import org.fit.cssbox.scriptbox.script.GlobalScriptCleanupJobs;
 
@@ -30,7 +33,7 @@ public class EventLoop {
 		}
 
 		@Override
-		public void execute() throws InterruptedException  {
+		public void execute() throws TaskAbortedException, InterruptedException  {
 			ScriptSettingsStack stack = _browsingUnit.getScriptSettingsStack();
 			stack.importScriptSettingsStack(oldScriptSettingsStack);
 			
@@ -38,18 +41,9 @@ public class EventLoop {
 		}
 	}
 	
-	protected static List<TaskSource> sourcesList;
-	static {
-		sourcesList = new ArrayList<TaskSource>();
-		sourcesList.add(TaskSource.DOM_MANIPULATION);
-		sourcesList.add(TaskSource.HISTORY_TRAVERSAL);
-		sourcesList.add(TaskSource.NETWORKING);
-		sourcesList.add(TaskSource.USER_INTERACTION);
-	}
+	protected static final LifetimeEndedException ABORTED_EXCEPTION = new LifetimeEndedException("Event loop has been aborted!");
 	
-	protected Object _pauseMonitor;
-	protected TaskQueues _taskQueues;
-	protected int sourcesListPosition;
+	protected TaskQueuesScheduler _taskScheduler;
 	protected BrowsingUnit _browsingUnit;
 	protected Task _runningTask;
 	protected boolean _aborted;
@@ -57,10 +51,8 @@ public class EventLoop {
 	protected ExecutionThread executionThread;
 		
 	public EventLoop(BrowsingUnit browsingUnit) {
-		_pauseMonitor = new Object();
-		_taskQueues = new TaskQueues();
+		_taskScheduler = new TaskQueuesScheduler();
 		_browsingUnit = browsingUnit;
-		sourcesListPosition = -1;
 
 		executionThread = new ExecutionThread();
 		executionThread.start();
@@ -70,14 +62,11 @@ public class EventLoop {
 	 * throws InterruptedException if we are aborting current thread or if it occurs on join
 	 */
 	public synchronized void abort(boolean join) throws InterruptedException {		
-		if (!executionThread.isAlive() || _aborted) {
-			return;
-		}
+		testForAbort();
 		
 		Thread currentThread = Thread.currentThread();
 		boolean currentThreadInterrupted = currentThread.equals(executionThread);
 		
-		_aborted = true;
 		executionThread.interrupt();
 
 		if (currentThreadInterrupted) {
@@ -92,16 +81,14 @@ public class EventLoop {
 	}
 	
 	public synchronized boolean isRunning() {
-		return (executionThread != null && !_aborted)? executionThread.isAlive() : false;
+		return (!_aborted)? executionThread.isAlive() : false;
 	}
 	
 	/*
 	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#spin-the-event-loop
 	 */
-	public synchronized void spinForCondition(final Runnable conditionRunnable, final Executable actionAfter) throws InterruptedException {
-		if (_aborted) {
-			return;
-		}
+	public synchronized void spinForCondition(final Runnable conditionRunnable, final Executable actionAfter) throws TaskAbortedException {
+		testForAbort();
 		
 		/* Method has to be invoked from the task thread */
 		Thread currentThread = Thread.currentThread();
@@ -122,22 +109,22 @@ public class EventLoop {
 				}
 			};
 			conditionThread.start();
-			executionThread.interrupt();
-			throw new InterruptedException();
+			throw new TaskAbortedException();
 		}
 	}
 	
 
-	public synchronized void spinForAmountTime(final int ms, Executable actionAfter) throws InterruptedException {
+	public synchronized void spinForAmountTime(final int ms, Executable actionAfter) throws TaskAbortedException {
 		spinForCondition(new Runnable() {
 			
 			@Override
 			public void run() {
-				Object waitObj = new Object();		
-				synchronized (waitObj) {
+				try {
+					Thread.sleep(ms);
+				} catch (InterruptedException e) {
 					try {
-						waitObj.wait(ms);
-					} catch (InterruptedException e) {
+						abort(false);
+					} catch (InterruptedException e1) {
 					}
 				}
 			}
@@ -145,77 +132,118 @@ public class EventLoop {
 	}
 	
 	public synchronized void queueTask(Task task) {
-		if (_aborted) {
-			return;
-		}
-		
-		synchronized (_pauseMonitor) {
-			_taskQueues.queueTask(task);
-			_pauseMonitor.notifyAll();
-		}
+		testForAbort();
+		_taskScheduler.queueTask(task);
 	}
 	
-	public synchronized void removeTask(Task task) {
-		if (_aborted) {
-			return;
-		}
-		_taskQueues.removeTask(task);
+	public synchronized void removeFirstTask(Task task) {
+		testForAbort();
+		_taskScheduler.removeFirstTask(task);
+	}
+	
+	public synchronized void removeAllTasks(Task task) {
+		testForAbort();
+		_taskScheduler.removeAllTasks(task);
 	}
 	
 	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {
-		if (_aborted) {
-			return;
-		}
-		_taskQueues.filter(source, predicate);
+		testForAbort();
+		_taskScheduler.filter(source, predicate);
 	}
 	
 	public synchronized Task getRunningTask() {
-		if (_aborted) {
-			return null;
-		}
+		testForAbort();
 		return _runningTask;
 	}
 	
 	protected void eventLoop() {
-		while (!_aborted) {
-			synchronized (_pauseMonitor) {
-				while (_taskQueues.isEmpty() && !_aborted) {
-					try {
-						_pauseMonitor.wait();
-					} catch (InterruptedException e) {
-					}
-				}
-			}
+		while (!executionThread.isInterrupted()) {	
 			
-			if (_aborted) {
+			Task taskToRun;
+			try {
+				taskToRun = pullTask();
+			} catch (InterruptedException e1) {
 				break;
 			}
-			
+						
 			synchronized (this) {
-				_runningTask = pullTask();
+				_runningTask = taskToRun;
 			}
 			
 			try {
-				_runningTask.execute();
+				executeTask(taskToRun);
 			} catch (InterruptedException e) {
-			}
-			
-			if (_aborted) {
 				break;
 			}
-			
+						
 			synchronized (this) {
 				_runningTask = null;
 			}
+		}
+		
+		synchronized (this) {
+			_aborted = true;
+			_runningTask = null;
 		}
 		
 		cleanupJobs();
 		return;
 	}
 	
-	protected long getCpuTime( ) {
-		ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
-		return bean.isCurrentThreadCpuTimeSupported()? bean.getCurrentThreadCpuTime( ) : 0L;
+	protected Task pullTask() throws InterruptedException {
+		Task task = null;
+		try {
+			task = _taskScheduler.pullTask();
+		} catch (LifetimeEndedException e) {
+			throw new InterruptedException();
+		}
+		
+		if (executionThread.isInterrupted()) {
+			throw new InterruptedException();
+		}
+		
+		if (task == null) {
+			throw new InterruptedException();
+		}
+		
+		return task;
+	}
+	
+	protected void executeTask(Task task) throws InterruptedException {
+		try {
+			_taskScheduler.onTaskStarted(_runningTask);
+			_runningTask.execute();
+		} catch (TaskAbortedException e) {
+			// It is OK, task only ended earlier
+		} catch (LifetimeEndedException e) {
+			throw new InterruptedException();
+		} finally {
+			_taskScheduler.onTaskFinished(_runningTask);
+		}
+		
+		if (executionThread.isInterrupted()) {
+			throw new InterruptedException();
+		}
+	}
+	
+	protected void testForAbort() {
+		if (_aborted) {
+			throw ABORTED_EXCEPTION;
+		}
+		
+		if (_taskScheduler.isAborted()) {
+			try {
+				abort(false);
+			} catch (InterruptedException e) {
+				_aborted = true;
+			}
+			throw ABORTED_EXCEPTION;
+		}
+		
+		if (!executionThread.isAlive()) {
+			_aborted = true;
+			throw ABORTED_EXCEPTION;
+		}
 	}
 	
 	/*
@@ -224,23 +252,7 @@ public class EventLoop {
 	protected void performMicrotaskCheckpoint() {
 		
 	}
-	
-	protected synchronized Task pullTask() {
-		synchronized (_pauseMonitor) {
-			while (true) {
-				/* FIXME: Fix it to something more sophisticated than round robin. */
-				sourcesListPosition = (sourcesListPosition + 1) % sourcesList.size();
-				TaskSource source = sourcesList.get(sourcesListPosition);
-				
-				Task task = _taskQueues.pullTask(source);
-				
-				if (task != null) {
-					return task;
-				}
-			}
-		}
-	}
-	
+		
 	protected void cleanupJobs() {
 		
 	}

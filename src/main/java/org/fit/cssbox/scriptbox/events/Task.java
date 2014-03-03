@@ -3,6 +3,7 @@ package org.fit.cssbox.scriptbox.events;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -51,6 +52,10 @@ public abstract class Task implements Executable {
 		return _document;
 	}
 	
+	public BrowsingContext getBrowsingContext() {
+		return _document.getBrowsingContext();
+	}
+	
 	public TaskSource getTaskSource() {
 		return _source;
 	}
@@ -67,5 +72,5 @@ public abstract class Task implements Executable {
 		
 	}
 	
-	public abstract void execute() throws InterruptedException;
+	public abstract void execute() throws TaskAbortedException, InterruptedException;
 }

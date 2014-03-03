@@ -53,16 +53,27 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 				put(source, filteredTasks);
 			}
 		}
-		
-		
 	}
 	
-	public void removeTask(Task task) {
+	public boolean removeFirstTask(Task task) {
 		List<Task> tasks = get(task.getTaskSource());
 		
 		if (tasks != null) {
-			tasks.remove(task);
+			if (tasks.remove(task)) {
+				if (tasks.isEmpty()) {
+					TaskSource source = task.getTaskSource();
+					remove(source);
+				}
+				
+				return true;
+			}
 		}
+		
+		return false;
+	}
+	
+	public void removeAllTasks(Task task) {
+		while (removeFirstTask(task)) {}
 	}
 	
 	public boolean isEmpty() {
