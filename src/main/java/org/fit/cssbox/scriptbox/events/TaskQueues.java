@@ -2,6 +2,7 @@ package org.fit.cssbox.scriptbox.events;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 		List<Task> tasks = get(task.getTaskSource());
 		
 		if (tasks == null) {
-			tasks = new ArrayList<Task>();
+			tasks = new LinkedList<Task>();
 		}
 		
 		tasks.add(task);
@@ -44,7 +45,7 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 		List<Task> tasks = get(source);
 		
 		if (tasks != null) {
-			List<Task> filteredTasks = new ArrayList<Task>();
+			List<Task> filteredTasks = new LinkedList<Task>();
 			Iterables.addAll(filteredTasks, Iterables.filter(tasks, predicate));
 			
 			if (filteredTasks.isEmpty()) {

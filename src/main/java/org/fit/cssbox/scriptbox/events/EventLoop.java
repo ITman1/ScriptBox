@@ -1,16 +1,10 @@
 package org.fit.cssbox.scriptbox.events;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor.AbortPolicy;
-
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
-import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 import org.fit.cssbox.scriptbox.script.GlobalScriptCleanupJobs;
+import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 
 import com.google.common.base.Predicate;
 
@@ -18,7 +12,17 @@ public class EventLoop {
 	protected class ExecutionThread extends Thread {
 		@Override
 		public void run() {
-			eventLoop();
+			try {
+				eventLoop();
+			} catch (InterruptedException e) {
+			}
+			
+			synchronized (EventLoop.this) {
+				_aborted = true;
+				_runningTask = null;
+			}
+			
+			cleanupJobs();
 		};
 	};
 	
@@ -156,38 +160,21 @@ public class EventLoop {
 		return _runningTask;
 	}
 	
-	protected void eventLoop() {
+	protected void eventLoop() throws InterruptedException {
 		while (!executionThread.isInterrupted()) {	
 			
-			Task taskToRun;
-			try {
-				taskToRun = pullTask();
-			} catch (InterruptedException e1) {
-				break;
-			}
-						
+			Task taskToRun = pullTask();
+	
 			synchronized (this) {
 				_runningTask = taskToRun;
 			}
 			
-			try {
-				executeTask(taskToRun);
-			} catch (InterruptedException e) {
-				break;
-			}
+			executeTask(taskToRun);
 						
 			synchronized (this) {
 				_runningTask = null;
 			}
 		}
-		
-		synchronized (this) {
-			_aborted = true;
-			_runningTask = null;
-		}
-		
-		cleanupJobs();
-		return;
 	}
 	
 	protected Task pullTask() throws InterruptedException {
