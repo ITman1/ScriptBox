@@ -1,20 +1,18 @@
 package org.fit.cssbox.scriptbox.events;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 
 	private static final long serialVersionUID = -6406790067694059818L;
 
-	public void queueTask(Task task) {
+	public synchronized void queueTask(Task task) {
 		List<Task> tasks = get(task.getTaskSource());
 		
 		if (tasks == null) {
@@ -26,22 +24,23 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 		put(task.getTaskSource(), tasks);
 	}
 	
-	public Task pullTask(TaskSource source) {
+	public synchronized Task pullTask(TaskSource source) {
 		List<Task> tasks = get(source);
 		
-		if (tasks != null) {
+		if (tasks != null && !tasks.isEmpty()) {
+			Task task = tasks.remove(0);
+			
 			if (tasks.isEmpty()) {
 				remove(source);
-				return null;
-			} else {
-				return tasks.remove(0);
 			}
+			
+			return task;
 		}
 		
 		return null;
 	}
 	
-	public void filter(TaskSource source, Predicate<Task> predicate) {
+	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {
 		List<Task> tasks = get(source);
 		
 		if (tasks != null) {
@@ -56,7 +55,7 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 		}
 	}
 	
-	public boolean removeFirstTask(Task task) {
+	public synchronized boolean removeFirstTask(Task task) {
 		List<Task> tasks = get(task.getTaskSource());
 		
 		if (tasks != null) {
@@ -73,16 +72,20 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 		return false;
 	}
 	
-	public void removeAllTasks(Task task) {
+	public synchronized void removeAllTasks(Task task) {
 		while (removeFirstTask(task)) {}
 	}
 	
-	public boolean isEmpty() {
+	public synchronized boolean isEmpty() {
 		for (Map.Entry<TaskSource, List<Task>> entry : entrySet()) {
 			if (!entry.getValue().isEmpty()) {
 				return false;
 			}
 		}
 		return true;
+	}
+	
+	public synchronized boolean isEmpty(TaskSource source) {
+		return get(source) == null;
 	}
 }

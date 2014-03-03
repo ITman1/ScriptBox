@@ -2,17 +2,14 @@ package org.fit.cssbox.scriptbox.events;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.fit.cssbox.scriptbox.events.EventLoop.ExecutionThread;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 
 import com.google.common.base.Predicate;
 
-public class TaskQueuesScheduler {	
+public abstract class TaskQueuesScheduler {	
 	protected class ExecutionThread extends Thread {
 		@Override
 		public void run() {
@@ -23,20 +20,11 @@ public class TaskQueuesScheduler {
 			
 			synchronized (TaskQueuesScheduler.this) {
 				aborted = true;
+				cleanupJobs();
 			}
 		};
 	};
 	
-	protected static List<TaskSource> sourcesList;
-
-	static {
-		sourcesList = new ArrayList<TaskSource>();
-		sourcesList.add(TaskSource.DOM_MANIPULATION);
-		sourcesList.add(TaskSource.HISTORY_TRAVERSAL);
-		sourcesList.add(TaskSource.NETWORKING);
-		sourcesList.add(TaskSource.USER_INTERACTION);
-	}
-
 	protected static final LifetimeEndedException ABORTED_EXCEPTION = new LifetimeEndedException("Task queues scheduler has been aborted!");
 	protected List<Task> inputTasks;
 	protected List<Task> scheduledTasks;
@@ -44,7 +32,6 @@ public class TaskQueuesScheduler {
 	protected boolean aborted;
 	protected Object pauseMonitor;
 	
-	protected int sourcesListPosition;
 	protected Task lastStartedTask;
 	protected long lastStartedTaskTime;
 	
@@ -54,16 +41,28 @@ public class TaskQueuesScheduler {
 		this.taskQueues = new TaskQueues();
 		this.scheduledTasks = new LinkedList<Task>();
 		this.pauseMonitor = new Object();
-		this.sourcesListPosition = -1;
 		
 		executionThread = new ExecutionThread();
 		executionThread.start();
 	}
 	
+	public synchronized void abort(boolean join) throws InterruptedException {		
+		testForAbort();
+		
+		Thread currentThread = Thread.currentThread();
+		boolean currentThreadInterrupted = currentThread.equals(executionThread);
+		
+		executionThread.interrupt();
+
+		if (currentThreadInterrupted) {
+			throw new InterruptedException(); // Ensures returning from the schedule loop
+		} else if (join) {
+			executionThread.join();
+		}		
+	}
+	
 	public Task pullTask() throws InterruptedException {
-		if (aborted) {
-			throw ABORTED_EXCEPTION;
-		}
+		testForAbort();
 		
 		synchronized (this) {
 			while (scheduledTasks.isEmpty()) {
@@ -75,9 +74,7 @@ public class TaskQueuesScheduler {
 	}
 	
 	public void queueTask(Task task) {
-		if (aborted) {
-			throw ABORTED_EXCEPTION;
-		}
+		testForAbort();
 		
 		synchronized (this) {
 			taskQueues.queueTask(task);
@@ -94,9 +91,7 @@ public class TaskQueuesScheduler {
 	}
 	
 	public void onTaskStarted(Task task) {
-		if (aborted) {
-			throw ABORTED_EXCEPTION;
-		}
+		testForAbort();
 		
 		synchronized (this) {
 			lastStartedTask = task;
@@ -107,11 +102,8 @@ public class TaskQueuesScheduler {
 	public void onTaskFinished(Task task) {
 		long currentTaskTime = getCpuTime();
 		
-		if (aborted) {
-			throw ABORTED_EXCEPTION;
-		}
+		testForAbort();
 		
-		// TODO: Store taskDuration somewhere and use it then in scheduling
 		long taskDuration = 0L;
 		synchronized (this) {
 			if (lastStartedTask != task) {
@@ -119,12 +111,12 @@ public class TaskQueuesScheduler {
 			}
 			taskDuration = currentTaskTime - lastStartedTaskTime;
 		}
+		
+		onTaskCompletedExecution(task, taskDuration);
 	}
 	
 	public synchronized void removeFirstTask(Task task) {
-		if (aborted) {
-			throw ABORTED_EXCEPTION;
-		}
+		testForAbort();
 		boolean isRemovedFromBuffer = scheduledTasks.remove(task);
 		if (!isRemovedFromBuffer) {
 			taskQueues.removeFirstTask(task);
@@ -132,18 +124,25 @@ public class TaskQueuesScheduler {
 	}
 	
 	public synchronized void removeAllTasks(Task task) {
-		if (aborted) {
-			throw ABORTED_EXCEPTION;
-		}
+		testForAbort();
 		while (scheduledTasks.remove(task));
 		taskQueues.removeAllTasks(task);
 	}
 	
 	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {
+		testForAbort();
+		taskQueues.filter(source, predicate);
+	}
+	
+	protected void testForAbort() {
 		if (aborted) {
 			throw ABORTED_EXCEPTION;
 		}
-		taskQueues.filter(source, predicate);
+		
+		if (!executionThread.isAlive()) {
+			aborted = true;
+			throw ABORTED_EXCEPTION;
+		}
 	}
 	
 	protected void schedulerLoop() throws InterruptedException {
@@ -166,17 +165,6 @@ public class TaskQueuesScheduler {
 		}
 	}
 	
-	protected Task scheduleTask() {
-		/* FIXME: Fix it to something more sophisticated than round robin. */
-		sourcesListPosition = (sourcesListPosition + 1) % sourcesList.size();
-		TaskSource source = sourcesList.get(sourcesListPosition);
-			
-		synchronized (this) {
-			Task task = taskQueues.pullTask(source);
-			return task;
-		}
-	}
-	
 	protected void waitUntilQueueAnyTask() throws InterruptedException {
 		synchronized (pauseMonitor) {
 			boolean queuesEmpty;
@@ -196,4 +184,10 @@ public class TaskQueuesScheduler {
 		ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
 		return bean.isCurrentThreadCpuTimeSupported()? bean.getCurrentThreadCpuTime() : 0L;
 	}
+	
+	protected void cleanupJobs() {
+	}
+	
+	protected abstract Task scheduleTask();
+	protected abstract void onTaskCompletedExecution(Task task, long taskDuration);
 }

@@ -19,10 +19,8 @@ public class EventLoop {
 			
 			synchronized (EventLoop.this) {
 				_aborted = true;
-				_runningTask = null;
+				cleanupJobs();
 			}
-			
-			cleanupJobs();
 		};
 	};
 	
@@ -54,12 +52,16 @@ public class EventLoop {
 	
 	protected ExecutionThread executionThread;
 		
-	public EventLoop(BrowsingUnit browsingUnit) {
-		_taskScheduler = new TaskQueuesScheduler();
+	public EventLoop(BrowsingUnit browsingUnit, TaskQueuesScheduler taskScheduler) {
+		_taskScheduler = taskScheduler;
 		_browsingUnit = browsingUnit;
 
 		executionThread = new ExecutionThread();
 		executionThread.start();
+	}
+	
+	public EventLoop(BrowsingUnit browsingUnit) {
+		this(browsingUnit, new RoundRobinScheduler());
 	}
 			
 	/*
@@ -74,7 +76,7 @@ public class EventLoop {
 		executionThread.interrupt();
 
 		if (currentThreadInterrupted) {
-			throw new InterruptedException();
+			throw new InterruptedException(); // Ensures returning from the event loop
 		} else if (join) {
 			executionThread.join();
 		}		
@@ -160,6 +162,11 @@ public class EventLoop {
 		return _runningTask;
 	}
 	
+	public synchronized TaskQueuesScheduler getTaskScheduler() {
+		testForAbort();
+		return _taskScheduler;
+	}
+	
 	protected void eventLoop() throws InterruptedException {
 		while (!executionThread.isInterrupted()) {	
 			
@@ -240,7 +247,12 @@ public class EventLoop {
 		
 	}
 		
-	protected void cleanupJobs() {
+	protected synchronized void cleanupJobs() {
+		_runningTask = null;
 		
+		try {
+			_taskScheduler.abort(false);
+		} catch (InterruptedException e) {
+		}
 	}
 }
