@@ -12,8 +12,6 @@ import javax.net.ssl.HttpsURLConnection;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.misc.UrlUtils;
-import org.fit.cssbox.scriptbox.misc.UrlUtils.UrlComponent;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerRegistry;
@@ -22,6 +20,8 @@ import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
+import org.fit.cssbox.scriptbox.url.UrlUtils;
+import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
 
 import com.google.common.base.Predicate;
 

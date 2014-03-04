@@ -10,13 +10,13 @@ import javax.mail.internet.ContentDisposition;
 import javax.mail.internet.ParseException;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.misc.UrlUtils;
-import org.fit.cssbox.scriptbox.misc.UrlUtils.UrlComponent;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
+import org.fit.cssbox.scriptbox.url.UrlUtils;
+import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
 
 @FetchPreamble (protocols = {"http"})
 public class HttpFetch extends Fetch {

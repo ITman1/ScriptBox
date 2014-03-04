@@ -1,6 +1,5 @@
-package org.fit.cssbox.scriptbox.misc;
+package org.fit.cssbox.scriptbox.url;
 
-import java.awt.image.ComponentSampleModel;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -92,6 +91,21 @@ public class UrlUtils {
 			return false;
 		}
 		
+		return true;
+	}
+	
+
+	public static boolean registerUrlHandlerPackage(String handlerPackageName) {
+		try{
+			String handlerPkgs = System.getProperty("java.protocol.handler.pkgs");
+		      if ((handlerPkgs != null) && !(handlerPkgs.isEmpty())){
+		    	  handlerPkgs = handlerPkgs + "|" + handlerPackageName;
+		      }
+		      System.setProperty("java.protocol.handler.pkgs",handlerPackageName);
+		    }
+		    catch(Exception e){
+		      return false;
+		    }
 		return true;
 	}
 }

@@ -22,12 +22,12 @@ import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
-import org.fit.cssbox.scriptbox.misc.UrlUtils;
-import org.fit.cssbox.scriptbox.misc.UrlUtils.UrlComponent;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.security.origins.OriginContainer;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
+import org.fit.cssbox.scriptbox.url.UrlUtils;
+import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 

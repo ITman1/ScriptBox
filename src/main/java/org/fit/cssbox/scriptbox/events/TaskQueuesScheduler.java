@@ -188,6 +188,9 @@ public abstract class TaskQueuesScheduler {
 	protected void cleanupJobs() {
 	}
 	
+	protected void onTaskCompletedExecution(Task task, long taskDuration) {
+	}
+	
 	protected abstract Task scheduleTask();
-	protected abstract void onTaskCompletedExecution(Task task, long taskDuration);
+
 }

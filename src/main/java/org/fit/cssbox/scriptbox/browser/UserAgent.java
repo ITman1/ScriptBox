@@ -1,12 +1,17 @@
 package org.fit.cssbox.scriptbox.browser;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.fit.cssbox.scriptbox.url.UrlUtils;
+
 public class UserAgent {
+	static {
+		UrlUtils.registerUrlHandlerPackage("org.fit.cssbox.scriptbox.url");
+	}
+	
 	private List<BrowsingUnit> _browsingUnits;
 	
 	public UserAgent() {
