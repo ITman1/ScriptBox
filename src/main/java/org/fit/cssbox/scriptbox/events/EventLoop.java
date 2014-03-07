@@ -30,6 +30,7 @@ public class EventLoop {
 		public SpinEventLoopResumeTask(Task oldTask, ScriptSettingsStack oldScriptSettingsStack, Executable actionAfter) {
 			super(oldTask.getTaskSource(), oldTask.getDocument());
 			
+			this.oldScriptSettingsStack = oldScriptSettingsStack;
 			this.actionAfter = actionAfter;
 		}
 
