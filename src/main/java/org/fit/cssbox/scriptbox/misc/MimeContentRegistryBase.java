@@ -89,7 +89,7 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 	public MimeContentFactory getFirstMimeContentFactory(String mimeType) {
 		Set<MimeContentFactory> factories = getMimeContentFactories(mimeType);
 		
-		return (factories == null)? null : factories.iterator().next();
+		return (factories.isEmpty())? null : factories.iterator().next();
 	}
 	
 	public Set<MimeContentFactory> getMimeContentFactories(String mimeType) {
@@ -106,7 +106,7 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 	public Set<MimeContentFactory> getExplicitMimeContentFactories(String mimeType) {
 		Set<MimeContentFactory> factories = explicitRegisteredFactories.get(mimeType);
 		
-		return (factories == null)? null : Collections.unmodifiableSet(factories);
+		return (factories == null)? new HashSet<MimeContentFactory>() : Collections.unmodifiableSet(factories);
 	}
 	
 	public Set<MimeContentFactory> getImplicitMimeContentFactories(String mimeType) {

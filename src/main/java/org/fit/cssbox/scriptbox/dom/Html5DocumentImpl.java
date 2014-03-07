@@ -15,6 +15,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
+import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
@@ -69,14 +70,16 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	private boolean _fullscreenEnabledFlag;
 	private String _contentType;
 	private DocumentReadiness _documentReadiness;
+	private ScriptDOMParser _parser;
 	
-	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType) {
+	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptDOMParser parser) {
 		_browsingContext = browsingContext;
 		_address = address;
 		_referrer = referrer;
 		_contentType = contentType;
 		_documentReadiness = DocumentReadiness.COMPLETE;
 		_activeSandboxingFlagSet = new HashSet<SandboxingFlag>();
+		_parser = parser;
 		
 		if (sandboxingFlagSet != null) {
 			_activeSandboxingFlagSet.addAll(sandboxingFlagSet);
@@ -121,13 +124,17 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	}
 	
 	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType) {
+		return createDocument(browsingContext, address, recycleWindowDocument, contentType, null);
+	}
+	
+	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType, ScriptDOMParser parser) {
 		Html5DocumentImpl document = null;
 
 		if (recycleWindowDocument != null) {
-			document = new Html5DocumentImpl(browsingContext, address, null, null, false, contentType);
+			document = new Html5DocumentImpl(browsingContext, address, null, null, false, contentType, parser);
 			document._window = recycleWindowDocument._window;
 		} else {
-			document = new Html5DocumentImpl(browsingContext, address, null, null, true, contentType);
+			document = new Html5DocumentImpl(browsingContext, address, null, null, true, contentType, parser);
 		}
 		
 		return document;
@@ -140,7 +147,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 			refferer = browsingContext.getCreatorDocument().getURL();
 		}
 		
-		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, null, refferer, true, "text/html");
+		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, null, refferer, true, "text/html", null);
 
 		document.setInputEncoding("UTF-8");
 		
@@ -157,7 +164,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	public static Html5DocumentImpl createSandboxedDocument(BrowsingContext browsingContext) {
 		Set<SandboxingFlag> sandboxingFlagSet = new HashSet<SandboxingFlag>();
-		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, sandboxingFlagSet, null, true, "text/html");
+		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, sandboxingFlagSet, null, true, "text/html", null);
 		
 		return document;
 	}
@@ -333,5 +340,9 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	public boolean hasDefaultAddress() {
 		return _address == null || _address.equals(DEFAULT_URL);
+	}
+	
+	public ScriptDOMParser getParser() {
+		return _parser;
 	}
 }

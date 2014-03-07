@@ -3,6 +3,7 @@ package org.fit.cssbox.scriptbox.resource.content;
 import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
@@ -104,7 +105,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	}
 	
 	
-	protected Html5DocumentImpl createDocument(BrowsingContext context, URL url, String mimeType) {
+	protected Html5DocumentImpl createDocument(BrowsingContext context, URL url, String mimeType, ScriptDOMParser parser) {
 		SessionHistory sessionHistory = context.getSesstionHistory();
 		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 		Html5DocumentImpl currentDocument = currentEntry.getDocument();
@@ -117,7 +118,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		
 		// FIXME: 2) Set the document's referrer to the address of the resource from which Request-URIs 
 		// are obtained as determined when the fetch algorithm obtained the resource
-		Html5DocumentImpl newDocument = Html5DocumentImpl.createDocument(context, url, recycleWindowDocument, mimeType);
+		Html5DocumentImpl newDocument = Html5DocumentImpl.createDocument(context, url, recycleWindowDocument, mimeType, parser);
 		
 		// 3) Implement the sandboxing for the Document.
 		newDocument.implementSandboxing();

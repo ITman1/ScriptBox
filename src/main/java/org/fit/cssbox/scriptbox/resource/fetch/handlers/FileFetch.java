@@ -14,7 +14,7 @@ import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 public class FileFetch extends Fetch {
 	
 	private class FileResource extends UrlConnectionResource {
-
+		
 		public FileResource(BrowsingContext context, URLConnection conn) {
 			super(context, conn);
 		}
@@ -32,6 +32,10 @@ public class FileFetch extends Fetch {
 	}
 	
 	Resource fileResource;
+	
+	public FileFetch(BrowsingContext context, URL url, boolean synchronous) {
+		super(context, url, synchronous);
+	}
 	
 	public FileFetch(BrowsingContext context, URL url) {
 		super(context, url);

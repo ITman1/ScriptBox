@@ -114,6 +114,10 @@ public class HttpFetch extends Fetch {
 	protected URLConnection conn;
 	protected HttpMethod method;
 
+	public HttpFetch(BrowsingContext context, URL url, boolean synchronous) {
+		super(context, url, synchronous);
+	}
+	
 	public HttpFetch(BrowsingContext context, URL url) {
 		super(context, url);
 		

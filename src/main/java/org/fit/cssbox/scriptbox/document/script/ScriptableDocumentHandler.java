@@ -214,4 +214,12 @@ public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {
 			resumeParsing();
 		}
 	}
+	
+	public int getScriptNestingLevel() {
+		return scriptNestingLevel;
+	}
+	
+	public boolean hasStyleSheetBlockScripts() {
+		return hasStyleSheetBlockScripts;
+	}
 }

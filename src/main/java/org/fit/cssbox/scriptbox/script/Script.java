@@ -1,30 +1,38 @@
 package org.fit.cssbox.scriptbox.script;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.Reader;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
+import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 
-public abstract class Script {
-	protected InputStream scriptInputStream;
+public abstract class Script<CodeEntryPoint> {
+	protected Reader source;
+	protected URL sourceURL;
+	protected String language;
 	protected boolean mutedErrorsFlag;
-	protected ScriptSettings scriptSettings;
+	protected ScriptSettings settings;
 	
-	public void setCodeEntryPoint(String script) {
-		scriptInputStream = new ByteArrayInputStream(script.getBytes());
+	public Script(Reader source, URL sourceURL, String language, ScriptSettings settings, boolean mutedErrorsFlag) {
+		this.source = source;
+		this.sourceURL = sourceURL;
+		this.language = language;
+		this.settings = settings;
+		this.mutedErrorsFlag = mutedErrorsFlag;
+		
+		createScript();
+	}
+			
+	public Reader getSource() {
+		return source;
 	}
 	
-	public InputStream getCodeEntryPointInputStream() {
-		return scriptInputStream;
+	public URL getSourceURL() {
+		return sourceURL;
 	}
 	
-	public void muteErrors() {
-		mutedErrorsFlag = true;
+	public String getLanguage() {
+		return language;
 	}
 	
 	public boolean hasMutedErros() {
@@ -32,40 +40,29 @@ public abstract class Script {
 	}
 	
 	public ScriptSettings getScriptSettings() {
-		return scriptSettings;
-	}
-
-	public void setScriptSettings(ScriptSettings scriptSettings) {
-		this.scriptSettings = scriptSettings;
+		return settings;
 	}
 	
-	public void jumpToCodeEntryPoint() {
-		ScriptSettings context = scriptSettings;
-		
-		if (!prepareRunCallback(context)) {
+	protected void jumpToCodeEntryPoint(CodeEntryPoint codeEntryPoint) {		
+		if (!prepareRunCallback(settings)) {
 			return;
 		}
 		
-		ScriptEngine executionEnviroment = context.getExecutionEnviroment(this);
+		BrowserScriptEngine executionEnviroment = obtainExecutionEnviroment(settings);
 		
 		if (executionEnviroment != null) {
-			try {
-				executionEnviroment.eval(getCodeEntryPoint());
-			} catch (ScriptException e) {
-				// TODO: Throw exception?
-			}
+			executeCodeEntryPoint(executionEnviroment, codeEntryPoint);
 		}
 		
 		cleanupAfterRunningCallback();
 	} 
 	
-	protected boolean prepareRunCallback(ScriptSettings settings) {
-		BrowsingContext browsingContext = settings.getResposibleBrowsingContext();
-		
-		if (!browsingContext.scriptingEnabled()) {
+	protected boolean prepareRunCallback(ScriptSettings context) {	
+		if (isScriptingDisabled()) {
 			return false;
 		}
 		
+		BrowsingContext browsingContext = context.getResposibleBrowsingContext();
 		BrowsingUnit browsingUnit = browsingContext.getBrowsingUnit();
 		
 		if (browsingUnit == null) {
@@ -80,7 +77,7 @@ public abstract class Script {
 	} 
 	
 	protected void cleanupAfterRunningCallback() {
-		BrowsingContext browsingContext = scriptSettings.getResposibleBrowsingContext();
+		BrowsingContext browsingContext = settings.getResposibleBrowsingContext();
 		
 		if (browsingContext == null) {
 			return;
@@ -96,5 +93,31 @@ public abstract class Script {
 		stack.popIncumbentScriptSettings(); // this will maybe invoke cleanup jobs and microtask checkpoint
 	}
 	
-	protected abstract Reader getCodeEntryPoint();
+	protected void createScript() {
+		if (isScriptingDisabled()) {
+			return;
+		}
+		
+		BrowserScriptEngine executionEnviroment = obtainExecutionEnviroment(settings);
+		
+		if (executionEnviroment == null) {
+			return;
+		}
+		
+		CodeEntryPoint codeEntryPoint = obtainCodeEntryPoint(executionEnviroment, source);
+		jumpToCodeEntryPoint(codeEntryPoint);
+	}
+	
+	protected boolean isScriptingDisabled() {
+		BrowsingContext browsingContext = settings.getResposibleBrowsingContext();
+		
+		return !browsingContext.scriptingEnabled();
+	}
+	
+	protected BrowserScriptEngine obtainExecutionEnviroment(ScriptSettings settings) {
+		return settings.getExecutionEnviroment(this);
+	}
+	
+	protected abstract CodeEntryPoint obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader source);
+	protected abstract void executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, CodeEntryPoint codeEntryPoint);
 }

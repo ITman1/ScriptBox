@@ -1,11 +1,14 @@
 package org.fit.cssbox.scriptbox.script;
 
 import org.fit.cssbox.scriptbox.misc.MimeContentRegistryBase;
+import org.fit.cssbox.scriptbox.script.javascript.SecureRhinoScriptEngineFactory;
 
 public class BrowserScriptEngineManager extends MimeContentRegistryBase<BrowserScriptEngineFactory, BrowserScriptEngine> {
 	static private BrowserScriptEngineManager instance;
 	
-	private BrowserScriptEngineManager() {}
+	private BrowserScriptEngineManager() {
+		registerMimeContentFactory(SecureRhinoScriptEngineFactory.class);
+	}
 	
 	public static synchronized BrowserScriptEngineManager getInstance() {
 		if (instance == null) {

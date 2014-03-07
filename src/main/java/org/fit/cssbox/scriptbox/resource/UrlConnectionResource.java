@@ -1,7 +1,6 @@
 package org.fit.cssbox.scriptbox.resource;
 
 import java.io.BufferedInputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -48,7 +47,9 @@ public abstract class UrlConnectionResource extends Resource {
 		 *  FIXME: Check for correctness and use MIME sniffing instead.
 		 *  See: http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#content-type-sniffing-0
 		 */
-		String contentType = conn.getHeaderField("Content-Type");
+		String contentTypeField = conn.getContentType();
+		String[] contentTypeValues = (contentTypeField != null)? contentTypeField.split(";") : null;
+		String contentType = (contentTypeValues != null && contentTypeValues.length > 0)? contentTypeValues[0] : null;
 		
 		if (contentType == null) {
 			InputStream is = getInputStream();
@@ -59,5 +60,28 @@ public abstract class UrlConnectionResource extends Resource {
 		}
 		
 		return contentType;
+	}
+	
+	@Override
+	public String getContentEncoding() {
+		String contentEncoding = conn.getContentEncoding();
+		contentEncoding = (contentEncoding == null)? getCharsetFromContentType() : null;
+		
+		return contentEncoding;
+	}
+	
+	protected String getCharsetFromContentType() {		
+		String contentType = conn.getContentType();	
+		String[] contentValues = contentType.split(";");
+
+		for (String value : contentValues) {
+		    value = value.trim();
+
+		    if (value.toLowerCase().startsWith("charset=")) {
+		    	return value.substring("charset=".length());
+		    }
+		}
+
+		return "UTF-8";
 	}
 }

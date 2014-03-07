@@ -5,8 +5,14 @@ import java.io.StringReader;
 
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.html.dom.HTMLScriptElementImpl;
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.browser.Window;
+import org.fit.cssbox.scriptbox.browser.WindowScript;
+import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement;
+import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineManager;
+import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,11 +30,14 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	private boolean _readyToBeParserExecuted;
 	
 	private Document _creatorDocument;
-	private BrowserScriptEngineManager documentScriptEngineManager;
+	private ScriptDOMParser _creatorParser;
+	private BrowserScriptEngineManager _browserScriptEngineManager;
+	private Fetch scriptFetch;
 	
 	public Html5ScriptElementImpl(HTMLDocumentImpl document, String name) {
 		super(document, name);
 		
+		_browserScriptEngineManager = BrowserScriptEngineManager.getInstance();
 		_alreadyStarted = false;
 		_parserInserted = false;
 		_wasParserInserted = false;
@@ -36,6 +45,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		_readyToBeParserExecuted = false;
 		
 		_creatorDocument = document;
+		_creatorParser = (document instanceof Html5DocumentImpl)? ((Html5DocumentImpl)document).getParser() : null;
 	}
 
 	@Override
@@ -102,7 +112,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		String scriptMimeType = getMimeType();
 		
 		/* Step 7 */
-		if (!documentScriptEngineManager.isSupported(scriptMimeType)) {
+		if (!_browserScriptEngineManager.isSupported(scriptMimeType)) {
 			return false;
 		}
 		
@@ -116,12 +126,14 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		_alreadyStarted = true;
 		
 		/* Step 10 */
-		if (_parserInserted && _creatorDocument != getOwnerDocument()) {
+		if (_parserInserted && (_creatorDocument != getOwnerDocument() || _creatorParser == null)) {
 			return false;
 		}
 		
 		/* Step 11 */
-		// TODO: Script disabled feature
+		if (isScriptingDisabled()) {
+			return false;
+		}
 			
 		/* Step 12 */
 		// TODO: Script for and event features
@@ -129,6 +141,28 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		/* Step 13 */
 		// TODO: Script encoding feature	
 		
+		/* Step 14 */
+		// TODO: Element contains src attribute
+		
+		/* Step 15 */
+		boolean hasSrc = getSrc() != null && !getSrc().isEmpty();
+		if (hasSrc && getDefer() && _parserInserted && !getAsync()) {
+			// TODO: Add to the end of the list of scripts that will execute when the document has finished parsing 
+			// once the fetching algorithm has completed must set the element's "ready to be parser-executed" flag
+		} else if (hasSrc && _parserInserted && !getAsync()) {
+			// TODO: element is the pending parsing-blocking script of the Document of the parser that created the element
+			// once the fetching algorithm has completed must set the element's "ready to be parser-executed" flag
+		} if (!hasSrc && _parserInserted && _creatorParser.scriptNestingLevel() < 2 && _creatorParser.hasStyleSheetBlockScripts()) {
+			// TODO: Not complete - add pending processing script
+			_readyToBeParserExecuted = true;
+		} else if (hasSrc && !getAsync() && !_forceAsync) {
+			// TODO: Implement
+		} else if (hasSrc) {
+			// TODO: Implement
+		} else {
+			executeScript();
+		}
+			
 		return true;
 	}
 	
@@ -162,7 +196,28 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	}
 	
 	public boolean executeScript() {
-		return true;
+		if (_parserInserted && (_creatorParser == null || _creatorParser.getDocument() != getOwnerDocument())) {
+			return false;
+		}
+		
+		if (scriptFetch == null || scriptFetch.isValid()) {
+			/* TODO: Implement http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#execute-the-script-block */
+			// Now it is simplified
+			Document document = getOwnerDocument();
+			
+			if (document instanceof Html5DocumentImpl) {
+				Html5DocumentImpl documentImpl = (Html5DocumentImpl)document;
+				Window window = documentImpl.getWindow();
+				Reader source = getExecutableScript(); 
+				ScriptSettings settings = window.getScriptSettings();
+				String language = getMimeType();
+				new WindowScript(source, null, language, settings, false);
+			} else {
+				return false;
+			}
+		}
+		
+		return false;
 	}
 	
 	public void cancelExecution() {
@@ -193,5 +248,17 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		
 		return new StringReader(executableScript.toString());
 	}
-
+	
+	protected boolean isScriptingDisabled() {
+		Document document = getOwnerDocument();
+		
+		if (document instanceof Html5DocumentImpl) {
+			Html5DocumentImpl documentImpl = (Html5DocumentImpl)document;
+			BrowsingContext context = documentImpl.getBrowsingContext();
+			
+			return context == null || !context.scriptingEnabled();
+		}
+		
+		return true;
+	}
 }

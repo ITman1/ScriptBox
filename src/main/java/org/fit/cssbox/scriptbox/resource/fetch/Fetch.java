@@ -10,14 +10,23 @@ import org.fit.cssbox.scriptbox.resource.Resource;
 public abstract class Fetch implements Closeable {
 	protected BrowsingContext context;
 	protected URL url;
+	protected boolean synchronous;
 	
-	public Fetch(BrowsingContext context, URL url) {
+	public Fetch(BrowsingContext context, URL url, boolean synchronous) {
 		this.context = context;
 		this.url = url;
 	}
 	
+	public Fetch(BrowsingContext context, URL url) {
+		this(context, url, true);
+	}
+	
 	public boolean isValid() {
 		return true;
+	}
+	
+	public boolean isSynchronous() {
+		return synchronous;
 	}
 	
 	@Override

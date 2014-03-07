@@ -13,7 +13,8 @@ public class MultipleDocumentBrowser {
 	public static void main(String[] args) throws Exception  {
 		UserAgent userAgent = new UserAgent();
 		BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
-		browsingUnit.navigate("http://cssbox.sourceforge.net/");
+		//browsingUnit.navigate("http://cssbox.sourceforge.net/");
+		browsingUnit.navigate("http://www.stud.fit.vutbr.cz/~xlosko01/scriptbox/print.html");
 		
 		Object obj = new Object();
 		synchronized (obj) {

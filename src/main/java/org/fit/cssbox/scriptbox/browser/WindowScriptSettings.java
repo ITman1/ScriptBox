@@ -7,10 +7,10 @@ import javax.script.ScriptEngine;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.EventLoop;
-import org.fit.cssbox.scriptbox.script.MimeScriptSettings;
+import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 
-public class WindowScriptSettings extends MimeScriptSettings {
+public class WindowScriptSettings extends ScriptSettings {
 
 	private Window _window;
 	protected Map<Class<? extends ScriptEngine>, ScriptEngine> scriptEngines;

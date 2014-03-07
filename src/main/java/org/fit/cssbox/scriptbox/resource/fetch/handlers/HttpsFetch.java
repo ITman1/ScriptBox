@@ -23,6 +23,10 @@ public class HttpsFetch extends HttpFetch {
 		}		
 	}
 		
+	public HttpsFetch(BrowsingContext context, URL url, boolean synchronous) {
+		super(context, url, synchronous);
+	}
+	
 	public HttpsFetch(BrowsingContext context, URL url) {
 		super(context, url);
 	}

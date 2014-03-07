@@ -1,32 +1,24 @@
 package org.fit.cssbox.scriptbox.browser;
 
 import java.io.Reader;
+import java.net.URL;
+
+import javax.script.ScriptException;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
-import org.fit.cssbox.scriptbox.script.MimeScript;
+import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.Script;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
-import org.w3c.dom.Document;
 
-public class WindowScript extends MimeScript {
-	private Html5ScriptElementImpl scriptElement;
+public class WindowScript extends Script<Reader> {
 	
-	public WindowScript(WindowScriptSettings windowSettings, Html5ScriptElementImpl scriptElement) {
-		this.scriptElement = scriptElement;
-		Document document = scriptElement.getOwnerDocument();
-		
-		if (document instanceof Html5DocumentImpl) {
-			Html5DocumentImpl documentImpl = (Html5DocumentImpl)document;
-			Window window = documentImpl.getWindow();
-			scriptSettings = window.getScriptSettings();
-		} else {
-			// TODO: Throw exception?
-		}
+	public WindowScript(Reader source, URL sourceURL, String language, ScriptSettings settings, boolean mutedErrorsFlag) {
+		super(source, sourceURL, language, settings, mutedErrorsFlag);
 	}
-	
+
 	@Override
 	protected boolean prepareRunCallback(ScriptSettings settings) {
-		Object globalObject = scriptSettings.getGlobalObject();
+		Object globalObject = settings.getGlobalObject();
 		if (globalObject instanceof Window) {
 			Window window = (Window)globalObject;
 			Html5DocumentImpl windowDocument = window.getDocumentImpl();
@@ -37,13 +29,19 @@ public class WindowScript extends MimeScript {
 		return super.prepareRunCallback(settings);
 	}
 	
+	// Parse/compile/initialize the source of the script using the script execution environment
 	@Override
-	public String getMimeType() {
-		return scriptElement.getMimeType();
+	protected Reader obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader source) {
+		return source;
 	}
 
 	@Override
-	protected Reader getCodeEntryPoint() {
-		return scriptElement.getExecutableScript();
+	protected void executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader codeEntryPoint) {
+		try {
+			executionEnviroment.eval(codeEntryPoint);
+		} catch (ScriptException e) {
+			// TODO: Throw exception?
+		}
+		
 	}
 }

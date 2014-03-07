@@ -45,11 +45,25 @@ public class FetchRegistry {
 	}
 	
 	public Fetch getFetch(BrowsingContext context, URL url) {
+		return getFetchProtected(context, url, null);
+	}
+	
+	public Fetch getFetch(BrowsingContext context, URL url, boolean synchronous) {
+		return getFetchProtected(context, url, synchronous);
+	}
+	
+	protected Fetch getFetchProtected(BrowsingContext context, URL url, Boolean synchronous) {
 		Set<Class<? extends Fetch>> fetchHandlers = registeredFetchHandlers.get(url.getProtocol());
 		
 		if (fetchHandlers != null) {
 			for (Class<? extends Fetch> fetchClass : fetchHandlers) {
-				Fetch fetch = instantizeFetch(fetchClass, context, url);
+				Fetch fetch = null;
+				
+				if (synchronous != null) {
+					fetch = instantizeFetch(fetchClass, context, url, synchronous);
+				} else {
+					fetch = instantizeFetch(fetchClass, context, url);
+				}
 				
 				if (fetch == null) {
 					continue;
@@ -96,6 +110,22 @@ public class FetchRegistry {
 		}
 	}
 	
+	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext context, URL url, boolean synchronous) {
+		Fetch fetch = null;
+		
+		try {
+			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, URL.class, boolean.class);
+			Object newInstance = contructor.newInstance(context, url, synchronous);
+			
+			if (newInstance instanceof Fetch) {
+				fetch = (Fetch)newInstance;
+			}
+		} catch (Exception e) {
+		}
+		
+		return fetch;
+	}
+	
 	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext context, URL url) {
 		Fetch fetch = null;
 		
@@ -106,12 +136,7 @@ public class FetchRegistry {
 			if (newInstance instanceof Fetch) {
 				fetch = (Fetch)newInstance;
 			}
-		} catch (InstantiationException e) {
-		} catch (IllegalAccessException e) {
-		} catch (IllegalArgumentException e) {
-		} catch (InvocationTargetException e) {
-		} catch (NoSuchMethodException e) {
-		} catch (SecurityException e) {
+		} catch (Exception e) {
 		}
 		
 		return fetch;

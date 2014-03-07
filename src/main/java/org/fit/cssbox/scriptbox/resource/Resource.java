@@ -41,6 +41,7 @@ public abstract class Resource {
 	
 	public abstract BufferedInputStream getInputStream();
 	public abstract String getContentType();
+	public abstract String getContentEncoding();
 	
 	public boolean isContentValid() {
 		String contentType = getContentType();

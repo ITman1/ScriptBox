@@ -53,15 +53,15 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 
 			@Override
 			public void execute() throws InterruptedException {
-				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress(), "text/html");
+				ScriptDOMParser scripDomParser = new ScriptDOMParser();
+				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress(), "text/html", scripDomParser);
 				updateSessionHistory(document);
 				
 				Exception exception = null;
-				ScriptDOMParser scripDomParser = new ScriptDOMParser(document);
-								
+												
 				try {
 					document.setDocumentReadiness(DocumentReadiness.LOADING);
-					scripDomParser.parse(new InputSource(resource.getInputStream()));
+					scripDomParser.parse(document, new InputSource(resource.getInputStream()));
 				} catch (Exception e) {
 					exception = e;
 					e.printStackTrace();
