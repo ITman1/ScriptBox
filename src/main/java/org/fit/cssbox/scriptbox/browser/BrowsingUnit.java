@@ -7,7 +7,6 @@ import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.JointSessionHistory;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
-import org.fit.cssbox.scriptbox.script.GlobalScriptCleanupJobs;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 
 public class BrowsingUnit {
@@ -16,7 +15,6 @@ public class BrowsingUnit {
 	private JointSessionHistory _jointSessionHistory;
 	private WindowBrowsingContext _windowBrowsingContext;
 	private ScriptSettingsStack _scriptSettingsStack;
-	private GlobalScriptCleanupJobs _globalScriptCleanupJobs;
 	
 	public BrowsingUnit(UserAgent userAgent) {
 		_userAgent = userAgent;
@@ -25,7 +23,6 @@ public class BrowsingUnit {
 		_jointSessionHistory = new JointSessionHistory(this);
 		_eventLoop = new EventLoop(this);
 		_scriptSettingsStack = new ScriptSettingsStack();
-		_globalScriptCleanupJobs = new GlobalScriptCleanupJobs();
 	}
 	
 	public UserAgent getUserAgent() {
@@ -47,11 +44,7 @@ public class BrowsingUnit {
 	public ScriptSettingsStack getScriptSettingsStack() {
 		return _scriptSettingsStack;
 	}
-	
-	public GlobalScriptCleanupJobs getGlobalScriptCleanupJobs() {
-		return _globalScriptCleanupJobs;
-	}
-	
+		
 	public JointSessionHistory getJointSessionHistory() {
 		return _jointSessionHistory;
 	}

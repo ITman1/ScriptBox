@@ -69,6 +69,17 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 		}
 	}
 	
+	public Set<MimeContentFactory> getAllMimeContentFactories() {
+		Set<MimeContentFactory> factories = new HashSet<MimeContentFactory>();
+		
+		for (Map.Entry<String, Set<MimeContentFactory>> registeredEntry : explicitRegisteredFactories.entrySet()) {
+			Set<MimeContentFactory> entryFactories = registeredEntry.getValue();
+			factories.addAll(entryFactories);
+		}
+		
+		return factories;
+	}
+	
 	public MimeContent getContent(String mimeType, Object ...args) {
 		MimeContentFactory factory = getFirstMimeContentFactory(mimeType);
 

@@ -3,7 +3,6 @@ package org.fit.cssbox.scriptbox.events;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
-import org.fit.cssbox.scriptbox.script.GlobalScriptCleanupJobs;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 
 import com.google.common.base.Predicate;
@@ -101,11 +100,9 @@ public class EventLoop {
 		final Task runningTask = _runningTask;
 		if (currentThread.equals(executionThread) && runningTask != null) {
 			ScriptSettingsStack scriptSettingsStack = _browsingUnit.getScriptSettingsStack();
-			GlobalScriptCleanupJobs cleanupJobs = _browsingUnit.getGlobalScriptCleanupJobs();
 			final ScriptSettingsStack oldScriptSettingsStack = scriptSettingsStack.clone();
 			
 			scriptSettingsStack.clean();
-			cleanupJobs.runAll();
 						
 			Thread conditionThread = new Thread() {
 				@Override
@@ -239,14 +236,7 @@ public class EventLoop {
 			throw ABORTED_EXCEPTION;
 		}
 	}
-	
-	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#perform-a-microtask-checkpoint
-	 */
-	protected void performMicrotaskCheckpoint() {
-		
-	}
-		
+			
 	protected synchronized void cleanupJobs() {
 		_runningTask = null;
 		

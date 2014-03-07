@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.script.DocumentScriptEngine;
-import org.fit.cssbox.scriptbox.script.DocumentScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.ScriptSettings;
 
-public class SecureRhinoScriptEngineFactory extends DocumentScriptEngineFactory {
+public class SecureRhinoScriptEngineFactory extends BrowserScriptEngineFactory {
 
     private static List<String> mimeTypes;
 	
@@ -28,9 +28,8 @@ public class SecureRhinoScriptEngineFactory extends DocumentScriptEngineFactory 
 	}
 
 	@Override
-	public DocumentScriptEngine getDocumentScriptEngine(Html5DocumentImpl documentContext) {
-		// TODO Auto-generated method stub
-		return null;
+	public BrowserScriptEngine getBrowserScriptEngine(ScriptSettings scriptSettings) {
+		return new SecureRhinoScriptEngine(scriptSettings);
 	}
 
 }

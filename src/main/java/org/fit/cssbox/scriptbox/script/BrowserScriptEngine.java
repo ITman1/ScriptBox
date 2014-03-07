@@ -8,17 +8,15 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-
-public abstract class DocumentScriptEngine implements ScriptEngine {
-	protected Html5DocumentImpl document;
+public abstract class BrowserScriptEngine implements ScriptEngine {
+	protected ScriptSettings scriptSettings;
 	
-	protected DocumentScriptEngine(Html5DocumentImpl document) {
-		this.document = document;
+	protected BrowserScriptEngine(ScriptSettings scriptSettings) {
+		this.scriptSettings = scriptSettings;
 	}
 	
-	public Html5DocumentImpl getDocument() {
-		return document;
+	public ScriptSettings getScriptSettings() {
+		return scriptSettings;
 	}
 	
 	@Override

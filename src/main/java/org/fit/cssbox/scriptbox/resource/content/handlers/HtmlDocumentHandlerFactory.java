@@ -1,24 +1,20 @@
 package org.fit.cssbox.scriptbox.resource.content.handlers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
-import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 	private class HtmlDocumentHandler extends RenderedContentHandler {

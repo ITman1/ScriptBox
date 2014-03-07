@@ -1,11 +1,12 @@
 package org.fit.cssbox.scriptbox.dom;
 
 import java.io.Reader;
+import java.io.StringReader;
 
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.html.dom.HTMLScriptElementImpl;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement;
-import org.fit.cssbox.scriptbox.script.DocumentScriptEngineManager;
+import org.fit.cssbox.scriptbox.script.BrowserScriptEngineManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -23,8 +24,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	private boolean _readyToBeParserExecuted;
 	
 	private Document _creatorDocument;
-	private String _scriptMimeType;
-	private DocumentScriptEngineManager documentScriptEngineManager;
+	private BrowserScriptEngineManager documentScriptEngineManager;
 	
 	public Html5ScriptElementImpl(HTMLDocumentImpl document, String name) {
 		super(document, name);
@@ -85,17 +85,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		
 		/* Step 4 */
 		if (getSrc() == null) {
-			boolean isEmpty = true;
-			NodeList childNodes = getChildNodes();
-			for(int i = 0; i < childNodes.getLength(); i++) {
-				Node node = childNodes.item(i);
-				
-				if (node.getNodeType() == Node.TEXT_NODE) {
-					isEmpty = isEmpty && node.getNodeValue().isEmpty();
-				} else if (node.getNodeType() != Node.COMMENT_NODE) {
-					isEmpty = false;
-				}
-			}
+			boolean isEmpty = !hasExecutableScript();
 
 			if (isEmpty) {
 				return false;
@@ -109,18 +99,10 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}*/
 		
 		/* Step 6 */
-		if ((getType() != null && getType().isEmpty())
-				|| (getType() == null && getLang() != null && getLang().isEmpty())
-				|| (getType() == null && getLang() == null)) {
-			_scriptMimeType = DEFAULT_SCRIPT_MIME_TYPE;
-		} else if (getType() != null) {
-			_scriptMimeType = getType().trim();
-		} else if (getLang() != null && !getLang().isEmpty()) {
-			_scriptMimeType = "text/" + getLang().trim();
-		}
+		String scriptMimeType = getMimeType();
 		
 		/* Step 7 */
-		if (!documentScriptEngineManager.isSupported(_scriptMimeType)) {
+		if (!documentScriptEngineManager.isSupported(scriptMimeType)) {
 			return false;
 		}
 		
@@ -150,6 +132,35 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		return true;
 	}
 	
+	public boolean hasExecutableScript() {
+		boolean isEmpty = true;
+		NodeList childNodes = getChildNodes();
+		for(int i = 0; i < childNodes.getLength(); i++) {
+			Node node = childNodes.item(i);
+			
+			if (node.getNodeType() == Node.TEXT_NODE) {
+				isEmpty = isEmpty && node.getNodeValue().isEmpty();
+			} else if (node.getNodeType() != Node.COMMENT_NODE) {
+				isEmpty = false;
+			}
+		}
+		
+		return !isEmpty;
+	}
+	
+	public String getMimeType() {
+		if ((getType() != null && getType().isEmpty())
+				|| (getType() == null && getLang() != null && getLang().isEmpty())
+				|| (getType() == null && getLang() == null)) {
+			return DEFAULT_SCRIPT_MIME_TYPE;
+		} else if (getType() != null) {
+			return getType().trim();
+		} else if (getLang() != null && !getLang().isEmpty()) {
+			return "text/" + getLang().trim();
+		}
+		return "";
+	}
+	
 	public boolean executeScript() {
 		return true;
 	}
@@ -165,6 +176,22 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	
 	public boolean isReadyToBeParserExecuted() {
 		return _readyToBeParserExecuted;
+	}
+	
+	public Reader getExecutableScript() {
+		NodeList childNodes = getChildNodes();
+		StringBuilder executableScript = new StringBuilder();
+		
+		for(int i = 0; i < childNodes.getLength(); i++) {
+			Node node = childNodes.item(i);
+			String nodeValue = node.getNodeValue();
+			
+			if (node.getNodeType() == Node.TEXT_NODE && nodeValue != null && !nodeValue.isEmpty()) {
+				executableScript.append(nodeValue);
+			}
+		}
+		
+		return new StringReader(executableScript.toString());
 	}
 
 }

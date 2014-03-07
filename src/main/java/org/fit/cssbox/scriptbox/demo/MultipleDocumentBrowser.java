@@ -1,6 +1,5 @@
 package org.fit.cssbox.scriptbox.demo;
 
-import org.apache.xml.serialize.OutputFormat;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;

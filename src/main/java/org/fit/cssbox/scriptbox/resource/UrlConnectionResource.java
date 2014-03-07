@@ -2,9 +2,6 @@ package org.fit.cssbox.scriptbox.resource;
 
 import java.io.BufferedInputStream;
 
-import javax.mail.internet.ContentDisposition;
-import javax.mail.internet.ParseException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

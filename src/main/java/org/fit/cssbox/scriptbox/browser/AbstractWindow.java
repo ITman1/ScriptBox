@@ -11,7 +11,7 @@ public abstract class AbstractWindow {
 	final public static String DEFAULT_TARGET =  "_blank";
 	final public static String DEFAULT_FEATURES = "";
 	final public static boolean DEFAULT_REAPLACE = false;
-	
+		
 	/* The current browsing context */
 	
 	protected WindowProxy window;
@@ -45,7 +45,7 @@ public abstract class AbstractWindow {
 	protected Element frameElement;
 	
 	public AbstractWindow(Html5DocumentImpl document) {
-		
+		this.document = document;
 	}
 	
 	protected abstract WindowProxy open(String url, String target, String features, boolean replace);

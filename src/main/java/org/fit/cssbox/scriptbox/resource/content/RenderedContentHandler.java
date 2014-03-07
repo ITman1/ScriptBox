@@ -13,7 +13,6 @@ import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
-import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigation.UpdateNavigationAttempt;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.w3c.dom.Element;

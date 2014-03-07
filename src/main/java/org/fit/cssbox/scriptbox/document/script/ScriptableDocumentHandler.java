@@ -1,10 +1,6 @@
 package org.fit.cssbox.scriptbox.document.script;
 
 import org.apache.xerces.dom.CoreDocumentImpl;
-import org.apache.xerces.dom.DOMMessageFormatter;
-import org.apache.xerces.dom.DeferredDocumentImpl;
-import org.apache.xerces.dom.DocumentImpl;
-import org.apache.xerces.dom.PSVIDocumentImpl;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.NamespaceContext;
 import org.apache.xerces.xni.QName;
@@ -12,12 +8,10 @@ import org.apache.xerces.xni.XMLAttributes;
 import org.apache.xerces.xni.XMLDocumentHandler;
 import org.apache.xerces.xni.XMLLocator;
 import org.apache.xerces.xni.XNIException;
-import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.document.event.EventDocumentHandlerDecorator;
 import org.fit.cssbox.scriptbox.document.event.EventProcessingProvider;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class ScriptableDocumentHandler extends EventDocumentHandlerDecorator {

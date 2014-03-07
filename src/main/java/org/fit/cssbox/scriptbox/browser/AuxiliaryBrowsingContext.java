@@ -1,7 +1,5 @@
 package org.fit.cssbox.scriptbox.browser;
 
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-
 public class AuxiliaryBrowsingContext extends BrowsingContext {
 	protected BrowsingContext openerBrowsingContext;
 	

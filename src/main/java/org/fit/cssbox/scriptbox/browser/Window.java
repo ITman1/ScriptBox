@@ -4,9 +4,22 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
 public class Window extends AbstractWindow {
 
+	protected Html5DocumentImpl _document;
+	protected WindowScriptSettings _scriptSettings;
+	
 	public Window(Html5DocumentImpl document) {
 		super(document);
+		_document = document;
+		_scriptSettings = new WindowScriptSettings(this);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public Html5DocumentImpl getDocumentImpl() {
+		return _document;
+	}
+	
+	public WindowScriptSettings getScriptSettings() {
+		return _scriptSettings;
 	}
 
 	@Override

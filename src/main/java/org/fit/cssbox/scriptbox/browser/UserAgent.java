@@ -1,6 +1,6 @@
 package org.fit.cssbox.scriptbox.browser;
 
-import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +26,7 @@ public class UserAgent {
 		return true;
 	}
 	
-	public boolean scriptsEnabled(URI page) {
+	public boolean scriptsEnabled(URL page) {
 		return true;
 	}
 	

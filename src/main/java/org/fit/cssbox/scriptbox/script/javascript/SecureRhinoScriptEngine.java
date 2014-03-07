@@ -3,19 +3,19 @@ package org.fit.cssbox.scriptbox.script.javascript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.script.DocumentScriptEngine;
+import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.ScriptSettings;
 
-public class SecureRhinoScriptEngine extends DocumentScriptEngine {
+public class SecureRhinoScriptEngine extends BrowserScriptEngine {
 
-	protected SecureRhinoScriptEngine(Html5DocumentImpl document) {
-		super(document);
+	public SecureRhinoScriptEngine(ScriptSettings scriptSettings) {
+		super(scriptSettings);
 	}
 
 	@Override
 	protected ScriptEngine getEngine() {
-		// TODO: Connect to our script engine
-		return new ScriptEngineManager().getEngineByName("js");
+		ScriptEngineManager factory = new ScriptEngineManager();
+        return factory.getEngineByName("JavaScript");
 	}
 
 }

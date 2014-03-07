@@ -1,11 +1,8 @@
 package org.fit.cssbox.scriptbox.history;
 
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
@@ -17,7 +14,6 @@ import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 public class SessionHistory {

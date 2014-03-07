@@ -1,13 +1,10 @@
 package org.fit.cssbox.scriptbox.browser;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
@@ -15,7 +12,6 @@ import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
-import org.fit.cssbox.scriptbox.script.DocumentScriptEngine;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.w3c.dom.Document;
@@ -34,13 +30,12 @@ public class BrowsingContext {
 	public static final String TOP_KEYWORD = "_top";
 	
 	protected boolean destroyed;
-	protected URI baseURI;
+	protected URL baseURI;
 	
 	protected BrowsingContext parentContext;
 	protected Html5DocumentImpl creatorDocument;
 	protected Set<BrowsingContext> childContexts;
 	protected BrowsingUnit browsingUnit;
-	protected Map<Class<? extends DocumentScriptEngine>, DocumentScriptEngine> scriptEngines;
 	protected WindowProxy windowProxy;
 	protected Element container;
 	protected SessionHistory sessionHistory;
@@ -54,7 +49,6 @@ public class BrowsingContext {
 		this.contextName = contextName;
 		this.container = container;
 		
-		this.scriptEngines = new HashMap<Class<? extends DocumentScriptEngine>, DocumentScriptEngine>();
 		this.childContexts = new HashSet<BrowsingContext>();
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
@@ -183,20 +177,12 @@ public class BrowsingContext {
 		
 		return contextList;
 	}
-	
-	public void addDocumentScriptEngine(DocumentScriptEngine scriptEngine) {
-		scriptEngines.put(scriptEngine.getClass(), scriptEngine);
-	}
-	
-	public void getDocumentScriptEngine(Class<? extends DocumentScriptEngine> engineClass) {
-		scriptEngines.get(engineClass);
-	}
-	
-	public URI getBaseURI() {
+		
+	public URL getBaseURL() {
 		return baseURI;
 	}
 	
-	public void setBaseURI(URI baseURI) {
+	public void setBaseURI(URL baseURI) {
 		this.baseURI = baseURI;
 	}
 	
@@ -212,7 +198,7 @@ public class BrowsingContext {
 		boolean isEnabled = true;
 		
 		isEnabled = isEnabled && browsingUnit.getUserAgent().scriptsSupported();
-		isEnabled = isEnabled && browsingUnit.getUserAgent().scriptsEnabled(getBaseURI());
+		isEnabled = isEnabled && browsingUnit.getUserAgent().scriptsEnabled(getBaseURL());
 		
 		// TODO: The browsing context's active document's active sandboxing 
 		// flag set does not have its sandboxed scripts browsing context flag set.
