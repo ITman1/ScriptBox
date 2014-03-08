@@ -6,12 +6,12 @@ import java.util.Stack;
 
 public class ScriptSettingsStack implements Cloneable {
 	private class ScriptSettingsEntry {
-		ScriptSettingsEntry(ScriptSettings scriptSettings, boolean candidateEntry) {
+		ScriptSettingsEntry(ScriptSettings<?> scriptSettings, boolean candidateEntry) {
 			this.scriptSettings = scriptSettings;
 			this.candidateEntry = candidateEntry;
 		}
 		
-		ScriptSettings scriptSettings;
+		ScriptSettings<?> scriptSettings;
 		boolean candidateEntry;
 	};
 	
@@ -23,15 +23,15 @@ public class ScriptSettingsStack implements Cloneable {
 		_globalScriptCleanupJobs = new ArrayList<Runnable>();
 	}
 		
-	void push(ScriptSettings settings) {
+	void push(ScriptSettings<?> settings) {
 		push(settings, false);
 	}
 	
-	void push(ScriptSettings settings, boolean candidateEntry) {
+	void push(ScriptSettings<?> settings, boolean candidateEntry) {
 		_stack.push(new ScriptSettingsEntry(settings, candidateEntry));
 	}
 	
-	public ScriptSettings pop() {
+	public ScriptSettings<?> pop() {
 		return popIncumbentScriptSettings();
 	}
 	
@@ -51,12 +51,12 @@ public class ScriptSettingsStack implements Cloneable {
 		_stack.addAll(stack._stack);
 	}
 	
-	public ScriptSettings getIncumbentScriptSettings() {
+	public ScriptSettings<?> getIncumbentScriptSettings() {
 		ScriptSettingsEntry settings = _stack.peek();
 		return (settings != null)? settings.scriptSettings : null;
 	}
 	
-	public ScriptSettings popIncumbentScriptSettings() {
+	public ScriptSettings<?> popIncumbentScriptSettings() {
 		ScriptSettingsEntry settings = _stack.pop();
 		isEmptyCheckpoint();
 		return (settings != null)? settings.scriptSettings : null;

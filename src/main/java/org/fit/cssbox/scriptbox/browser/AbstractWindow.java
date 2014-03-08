@@ -4,6 +4,7 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.history.Location;
 import org.fit.cssbox.scriptbox.ui.bars.BarProp;
+import org.mozilla.javascript.TopLevel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

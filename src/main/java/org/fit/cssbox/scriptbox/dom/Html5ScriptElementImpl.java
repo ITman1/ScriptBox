@@ -8,6 +8,7 @@ import org.apache.html.dom.HTMLScriptElementImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScript;
+import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
@@ -209,7 +210,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 				Html5DocumentImpl documentImpl = (Html5DocumentImpl)document;
 				Window window = documentImpl.getWindow();
 				Reader source = getExecutableScript(); 
-				ScriptSettings settings = window.getScriptSettings();
+				WindowScriptSettings settings = window.getScriptSettings();
 				String language = getMimeType();
 				new WindowScript(source, null, language, settings, false);
 			} else {

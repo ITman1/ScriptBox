@@ -6,14 +6,14 @@ import java.net.URL;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 
-public abstract class Script<CodeEntryPoint> {
+public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends ScriptSettings<?>> {
 	protected Reader source;
 	protected URL sourceURL;
 	protected String language;
 	protected boolean mutedErrorsFlag;
-	protected ScriptSettings settings;
+	protected ScriptSettingsTemplate settings;
 	
-	public Script(Reader source, URL sourceURL, String language, ScriptSettings settings, boolean mutedErrorsFlag) {
+	public Script(Reader source, URL sourceURL, String language, ScriptSettingsTemplate settings, boolean mutedErrorsFlag) {
 		this.source = source;
 		this.sourceURL = sourceURL;
 		this.language = language;
@@ -39,7 +39,7 @@ public abstract class Script<CodeEntryPoint> {
 		return mutedErrorsFlag;
 	}
 	
-	public ScriptSettings getScriptSettings() {
+	public ScriptSettingsTemplate getScriptSettings() {
 		return settings;
 	}
 	
@@ -57,7 +57,7 @@ public abstract class Script<CodeEntryPoint> {
 		cleanupAfterRunningCallback();
 	} 
 	
-	protected boolean prepareRunCallback(ScriptSettings context) {	
+	protected boolean prepareRunCallback(ScriptSettingsTemplate context) {	
 		if (isScriptingDisabled()) {
 			return false;
 		}
@@ -114,7 +114,7 @@ public abstract class Script<CodeEntryPoint> {
 		return !browsingContext.scriptingEnabled();
 	}
 	
-	protected BrowserScriptEngine obtainExecutionEnviroment(ScriptSettings settings) {
+	protected BrowserScriptEngine obtainExecutionEnviroment(ScriptSettingsTemplate settings) {
 		return settings.getExecutionEnviroment(this);
 	}
 	

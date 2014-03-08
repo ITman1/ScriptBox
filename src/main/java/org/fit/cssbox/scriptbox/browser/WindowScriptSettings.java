@@ -10,7 +10,7 @@ import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 
-public class WindowScriptSettings extends ScriptSettings {
+public class WindowScriptSettings extends ScriptSettings<Window> {
 
 	private Window _window;
 	protected Map<Class<? extends ScriptEngine>, ScriptEngine> scriptEngines;
@@ -30,7 +30,7 @@ public class WindowScriptSettings extends ScriptSettings {
 	}
 
 	@Override
-	public Object getGlobalObject() {
+	public Window getGlobalObject() {
 		return _window;
 	}
 

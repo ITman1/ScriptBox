@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.browser;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.mozilla.javascript.annotations.JSGetter;
 
 public class Window extends AbstractWindow {
 
@@ -64,5 +65,10 @@ public class Window extends AbstractWindow {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+    @JSGetter
+    public String getTest() {
+        return "WINDOW GETTER";
+    }
 
 }
