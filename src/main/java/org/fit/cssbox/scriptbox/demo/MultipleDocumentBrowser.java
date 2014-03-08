@@ -75,6 +75,7 @@ public class MultipleDocumentBrowser {
 			BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
 			engine.put("browsingUnit", browsingUnit);
 			engine.eval("debug(browsingUnit.userAgent);");
+			engine.eval("hostFunction()");
         	engine.eval("var propValue;" +
 			"for(var propName in this) {" +
 			"    nldebug(propName + ';');" +

@@ -1,6 +1,8 @@
 package org.fit.cssbox.scriptbox.browser;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.script.ScriptFunction;
+import org.fit.cssbox.scriptbox.script.ScriptGetter;
 import org.mozilla.javascript.annotations.JSGetter;
 
 public class Window extends AbstractWindow {
@@ -19,6 +21,7 @@ public class Window extends AbstractWindow {
 		return _document;
 	}
 	
+    @ScriptGetter()
 	public WindowScriptSettings getScriptSettings() {
 		return _scriptSettings;
 	}
@@ -66,9 +69,14 @@ public class Window extends AbstractWindow {
 		return null;
 	}
 	
-    @JSGetter
+    @ScriptGetter()
     public String getTest() {
         return "WINDOW GETTER";
+    }
+    
+    @ScriptFunction
+    public void hostFunction() {
+    	return;
     }
 
 }

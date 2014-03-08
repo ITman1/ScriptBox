@@ -20,4 +20,8 @@ public abstract class BrowserScriptEngine extends AbstractScriptEngine {
     public ScriptEngineFactory getFactory() {
 		return factory;
 	}
+
+    public BrowserScriptEngineFactory getBrowserFactory() {
+		return factory;
+	}
 }

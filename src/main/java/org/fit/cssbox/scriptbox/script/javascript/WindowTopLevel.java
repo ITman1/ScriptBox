@@ -26,6 +26,7 @@ public class WindowTopLevel extends TopLevel {
 			cx.initStandardObjects(this, true);
 			String builtinFunctions[] = {"debug", "nldebug"};
 			defineFunctionProperties(builtinFunctions, WindowTopLevel.class, ScriptableObject.DONTENUM);
+			sealObject();
 		} finally {
 			Context.exit();
 		}
