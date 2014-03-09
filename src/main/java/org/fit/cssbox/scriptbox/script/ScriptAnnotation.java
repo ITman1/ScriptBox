@@ -35,4 +35,12 @@ public class ScriptAnnotation {
 			return getterName;
 		}
 	}
+	
+	public static String getFieldFromSetterName(String getterName) {
+		if (getterName.startsWith("set") && getterName.length() > 3) {
+			return (getterName.charAt(3) + "").toLowerCase() + getterName.substring(4);
+		} else {
+			return getterName;
+		}
+	}
 }
