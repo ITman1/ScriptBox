@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.javascript;
+package org.fit.cssbox.scriptbox.script.javascript.window;
 
 import java.util.ArrayList;
 import java.util.Collections;

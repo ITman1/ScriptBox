@@ -10,8 +10,8 @@ import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.script.javascript.WindowScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.WindowScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngineFactory;
 import org.mozilla.javascript.Wrapper;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -43,10 +43,8 @@ public class MultipleDocumentBrowser {
         
         // evaluate script
         try {
-			engine.eval("var variable = java.lang.String('\\nHello, World\\n'); debug(variable); java.lang.System.out.println('test');");
+			engine.eval("var variable = '\\nHello, World\\n'; debug(variable);");
 			engine.eval(script);
-			engine.eval("debug(variable.isEmpty());");
-			engine.eval("debug(com);");
 			engine.eval("debug(this);");
 			engine.eval("debug(this.prototype);");
 			/*Object test = engine.get("test");
@@ -75,7 +73,8 @@ public class MultipleDocumentBrowser {
 			BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
 			engine.put("browsingUnit", browsingUnit);
 			engine.eval("debug(browsingUnit.userAgent);");
-			engine.eval("hostFunction()");
+			engine.eval("debug('Soucet: ', soucet(1,2))");
+			engine.eval("debug('Object test: ', objectTest(window));");
         	engine.eval("var propValue;" +
 			"for(var propName in this) {" +
 			"    nldebug(propName + ';');" +

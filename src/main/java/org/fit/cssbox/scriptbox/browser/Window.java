@@ -75,8 +75,13 @@ public class Window extends AbstractWindow {
     }
     
     @ScriptFunction
-    public void hostFunction() {
-    	return;
+    public int soucet(int arg1, int arg2) {
+    	return arg1 + arg2;
+    }
+    
+    @ScriptFunction
+    public boolean objectTest(Window window) {
+    	return window == this;
     }
 
 }

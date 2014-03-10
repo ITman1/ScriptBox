@@ -1,6 +1,5 @@
-package org.fit.cssbox.scriptbox.script.javascript;
+package org.fit.cssbox.scriptbox.script.javascript.window;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -13,10 +12,10 @@ import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.javascript.ContextScriptable;
+import org.fit.cssbox.scriptbox.script.javascript.ObjectTopLevel;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
@@ -45,7 +44,7 @@ public class WindowScriptEngine extends BrowserScriptEngine {
 	}
 
 	private Window window;
-	private WindowTopLevel windowTopLevel;
+	private ObjectTopLevel windowTopLevel;
 	
 	public static Context enterContext() {
 		return Context.enter();
@@ -59,7 +58,7 @@ public class WindowScriptEngine extends BrowserScriptEngine {
 		super(factory, scriptSettings);
 		
 		window = scriptSettings.getGlobalObject();
-		windowTopLevel = new WindowTopLevel(this);
+		windowTopLevel = new ObjectTopLevel(window, this);
 	}
 	
 	public Window getWindow() {
@@ -94,7 +93,7 @@ public class WindowScriptEngine extends BrowserScriptEngine {
 	}
 
 	protected Scriptable getWindowScope(ScriptContext context) throws ScriptException {		
-		Scriptable windowScope = new WindowScriptable(context);
+		Scriptable windowScope = new ContextScriptable(context);
 		
 		windowScope.setPrototype(windowTopLevel);
 		windowScope.setParentScope(null);

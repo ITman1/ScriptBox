@@ -1,7 +1,7 @@
 package org.fit.cssbox.scriptbox.script;
 
 import org.fit.cssbox.scriptbox.misc.MimeContentRegistryBase;
-import org.fit.cssbox.scriptbox.script.javascript.WindowScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngineFactory;
 
 public class BrowserScriptEngineManager extends MimeContentRegistryBase<BrowserScriptEngineFactory, BrowserScriptEngine> {
 	static private BrowserScriptEngineManager instance;
