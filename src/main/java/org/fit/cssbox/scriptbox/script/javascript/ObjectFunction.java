@@ -1,15 +1,15 @@
 package org.fit.cssbox.scriptbox.script.javascript;
 
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 import javax.script.ScriptException;
 
+import org.apache.commons.lang3.ClassUtils;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
-import org.mozilla.javascript.FunctionObject;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 
 public class ObjectFunction {	
 	public final static Method FUNCTION_METHOD;
@@ -40,12 +40,18 @@ public class ObjectFunction {
 		return functionMethod;
 	}
 	
-	public static Object function(Context cx, Scriptable thisObj, Object[] args, Function funObj) throws ScriptException {
-		if (funObj instanceof WrappedFunctionObject) {
-			WrappedFunctionObject wrappedFunctionObject = (WrappedFunctionObject)funObj;
-			ObjectFunction wrapper = wrappedFunctionObject.getObjectFunctionWrapper();
-			Method functionMethod = wrapper.functionMethod;
-			Object object = wrapper.object;
+	public static Object function(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		if (funObj instanceof OverloadableFunctionObject) {
+			
+			OverloadableFunctionObject wrappedFunctionObject = (OverloadableFunctionObject)funObj;
+			ObjectFunction nearestFunctionObject = wrappedFunctionObject.getNearestObjectFunction(args);
+
+			if (nearestFunctionObject == null) {
+				throw new FunctionException("Unable to match nearest function");
+			}
+			
+			Method functionMethod = nearestFunctionObject.functionMethod;
+			Object object = nearestFunctionObject.object;
 			
 			Class<?> expectedTypes[] = functionMethod.getParameterTypes();
 			Object[] castedArgs = castArgs(expectedTypes, args);
@@ -53,15 +59,15 @@ public class ObjectFunction {
 			try {
 				 return functionMethod.invoke(object, castedArgs);
 			} catch (Exception e) {
-				throw new ScriptException(e);
+				throw new UnknownException(e);
 			}
 		}
 
-		throw new ScriptException("Function object must be of class WrappedFunctionObject");
+		throw new FunctionException("Function object must be of class WrappedFunctionObject");
 		//return Context.getUndefinedValue();
 	}
 	
-	private static Object[] castArgs(Class<?>[] expectedTypes, Object[] args) {
+	public static Object[] castArgs(Class<?>[] expectedTypes, Object[] args) {
 		if (expectedTypes != null && args != null && expectedTypes.length == args.length && args.length > 0) {
 			Object[] castedArgs = new Object[args.length];
 			for (int i = 0; i < args.length; i++) {
@@ -78,5 +84,22 @@ public class ObjectFunction {
 		}
 		
 		return new Object[0];
+	}
+	
+	public static boolean isAssignableTypes(Object[] args, Class<?>[] types) {
+		if (args.length != types.length) {
+			return false;
+		}
+		
+		for (int i = 0; i < args.length; i++) {
+			Class<?> argClass = args[i].getClass();
+			Class<?> paramClass = types[i];
+			
+			if (!ClassUtils.isAssignable(argClass, paramClass, true)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }

@@ -3,7 +3,9 @@ package org.fit.cssbox.scriptbox.script.javascript;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.ScriptAnnotation;
@@ -16,11 +18,13 @@ public class ObjectImplementor {
 	private Object implementedObject;
 	private ScriptableObject destinationScope;
 	private BrowserScriptEngine browserScriptEngine;
+	private Set<String> definedProperties;
 	
 	public ObjectImplementor(Object implementedObject, ScriptableObject destinationScope, BrowserScriptEngine browserScriptEngine) {
 		this.implementedObject = implementedObject;
 		this.destinationScope = destinationScope;
 		this.browserScriptEngine = browserScriptEngine;
+		this.definedProperties = new HashSet<String>();
 		
 		implementObject();
 	}
@@ -39,8 +43,10 @@ public class ObjectImplementor {
 	}
 	
 	public void removeObject() {
-		defineObjectProperties();
-		defineObjectFunctions();
+		for (String property : definedProperties) {
+			destinationScope.delete(property);
+		}
+		definedProperties.clear();
 	}
 	
 	private void defineObjectFunctions() {
@@ -58,7 +64,8 @@ public class ObjectImplementor {
 				String methodName = method.getName();
 				ObjectFunction objectFunction = new ObjectFunction(implementedObject, method);
 				
-				ObjectScriptable.defineObjectFunction(destinationScope,  methodName, objectFunction);
+				ObjectScriptable.defineObjectFunction(destinationScope, methodName, objectFunction);
+				definedProperties.add(methodName);
 			}
 		}
 	}
@@ -98,6 +105,16 @@ public class ObjectImplementor {
 			setters.remove(fieldName);
 			ObjectField objectField = new ObjectField(implementedObject, objectFieldGetter, objectFieldSetter);
 			ObjectScriptable.defineObjectField(destinationScope, fieldName, objectField);
+			definedProperties.add(fieldName);
+		}
+		
+		for (Map.Entry<String, Method> setterEntry : setters.entrySet()) {
+			String fieldName = setterEntry.getKey();
+			Method objectFieldSetter = setterEntry.getValue();
+
+			ObjectField objectField = new ObjectField(implementedObject, null, objectFieldSetter);
+			ObjectScriptable.defineObjectField(destinationScope, fieldName, objectField);
+			definedProperties.add(fieldName);
 		}
 	}
 }

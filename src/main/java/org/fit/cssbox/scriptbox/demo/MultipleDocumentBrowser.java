@@ -74,6 +74,7 @@ public class MultipleDocumentBrowser {
 			engine.put("browsingUnit", browsingUnit);
 			engine.eval("debug(browsingUnit.userAgent);");
 			engine.eval("debug('Soucet: ', soucet(1,2))");
+			engine.eval("debug('Overloaded soucet: ', soucet(1,2,4))");
 			engine.eval("debug('Object test: ', objectTest(window));");
         	engine.eval("var propValue;" +
 			"for(var propName in this) {" +

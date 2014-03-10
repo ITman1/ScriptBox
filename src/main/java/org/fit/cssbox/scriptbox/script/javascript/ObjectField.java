@@ -2,10 +2,8 @@ package org.fit.cssbox.scriptbox.script.javascript;
 
 import java.lang.reflect.Method;
 
-import javax.script.ScriptException;
-
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 
 public class ObjectField {
 	public final static Method GETTER_METHOD;
@@ -49,20 +47,20 @@ public class ObjectField {
 		return fieldSetterMethod;
 	}
 	
-	public Object gettter(Scriptable obj) throws ScriptException {		
+	public Object gettter(Scriptable obj) {		
 		try {
 			return fieldGetterMethod.invoke(object);
 		} catch (Exception e) {
-			throw new ScriptException(e);
+			throw new UnknownException(e);
 		}
 	}
 	
-	public void setter(Scriptable obj, Object value) throws ScriptException {
+	public void setter(Scriptable obj, Object value) {
 		try {
 			value = ObjectScriptable.jsToJava(value);
 			fieldSetterMethod.invoke(object, value);
 		} catch (Exception e) {
-			throw new ScriptException(e);
+			throw new UnknownException(e);
 		}
 	}	
 }

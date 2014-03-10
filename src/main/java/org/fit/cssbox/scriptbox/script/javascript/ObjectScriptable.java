@@ -2,8 +2,9 @@ package org.fit.cssbox.scriptbox.script.javascript;
 
 import java.lang.reflect.Method;
 
-import org.mozilla.javascript.FunctionObject;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
 import org.mozilla.javascript.NativeJavaClass;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
 
@@ -36,8 +37,20 @@ public class ObjectScriptable extends ScriptableObject  {
 	}
 	
 	public static void defineObjectFunction(ScriptableObject functionScopeObject, String functionName, ObjectFunction objectFunction) {		
-		FunctionObject f = new WrappedFunctionObject(objectFunction, functionName, ObjectFunction.FUNCTION_METHOD, functionScopeObject);
-		functionScopeObject.defineProperty(functionName, f, ScriptableObject.DONTENUM | ScriptableObject.PERMANENT);
+		Object function = ScriptableObject.getProperty(functionScopeObject, functionName);
+		
+		if (function != Scriptable.NOT_FOUND && !(function instanceof OverloadableFunctionObject)) {
+			throw new FunctionException("Function already exists and cannot be overloaded because function object does not extends OverloadableFunctionObject");
+		}
+		
+		if (function == Scriptable.NOT_FOUND) {
+			function = new OverloadableFunctionObject(objectFunction, functionName, ObjectFunction.FUNCTION_METHOD, functionScopeObject);
+			functionScopeObject.defineProperty(functionName, function, ScriptableObject.DONTENUM | ScriptableObject.PERMANENT);
+		} else {
+			((OverloadableFunctionObject)function).attachObjectFunction(objectFunction);
+		}
+		
+
 	}
 	
 	public static Object jsToJava(Object jsObj) {
