@@ -1,10 +1,10 @@
-package org.fit.cssbox.scriptbox.script.javascript;
+package org.fit.cssbox.scriptbox.script.javascript.object;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
@@ -16,14 +16,16 @@ import org.mozilla.javascript.Wrapper;
 public class ObjectTopLevel extends TopLevel {	
 	private static final long serialVersionUID = -824471943182669084L;
 
-	private Object globalObject;
-	private BrowserScriptEngine browserScriptEngine;
+	protected Object globalObject;
+	protected JavaScriptEngine scriptEngine;
+	protected ObjectImplementor implementor;
 	
-	public ObjectTopLevel(Object globalObject, BrowserScriptEngine browserScriptEngine) {
+	public ObjectTopLevel(Object globalObject, JavaScriptEngine scriptEngine, ObjectImplementor implementor) {
 		this.globalObject = globalObject;
-		this.browserScriptEngine = browserScriptEngine;
+		this.scriptEngine = scriptEngine;
+		this.implementor = implementor;
 		
-		Context cx = Context.enter();
+		Context cx = scriptEngine.enterContext();
 		try {
 			cx.initStandardObjects(this, true);
 			
@@ -33,20 +35,28 @@ public class ObjectTopLevel extends TopLevel {
 			deleteRhinoUnsafeProperties();
 			sealObject();
 		} finally {
-			Context.exit();
+			scriptEngine.exitContext();
 		}
+	}
+	
+	public ObjectTopLevel(Object globalObject, JavaScriptEngine browserScriptEngine) {
+		this(globalObject, browserScriptEngine, null);
 	}
 	
 	public Object getGlobalObject() {
 		return globalObject;
 	}
 	
-	public BrowserScriptEngine getBrowserScriptEngine() {
-		return browserScriptEngine;
+	public JavaScriptEngine getBrowserScriptEngine() {
+		return scriptEngine;
 	}
 	
-	protected ObjectImplementor implementGlobalObject() {
-		return new ObjectImplementor(globalObject, this, browserScriptEngine);
+	protected void implementGlobalObject() {
+		if (implementor == null) {
+			implementor = new ObjectImplementor(globalObject, scriptEngine);
+		}
+		
+		implementor.implementObject(this);
 	}
 	
 	protected void defineBuiltinProperties() {

@@ -1,5 +1,8 @@
 package org.fit.cssbox.scriptbox.demo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -43,6 +46,12 @@ public class MultipleDocumentBrowser {
         
         // evaluate script
         try {
+			List<String> collection = new ArrayList<String>();
+			collection.add("item 1");
+			engine.put("collection", collection);
+			engine.eval("debug(collection[0]);");
+        	
+        	
 			engine.eval("var variable = '\\nHello, World\\n'; debug(variable);");
 			engine.eval(script);
 			engine.eval("debug(this);");
@@ -54,18 +63,15 @@ public class MultipleDocumentBrowser {
 			engine.eval("variable = 'Hello 2!';");
 			Object variable = engine.get("variable");
 			System.err.println(variable);
-			if (!(variable instanceof String)) {
-				System.err.println("VARIABLE NOT STRING");
-			}
 			
-			if (variable instanceof Wrapper) {
-				System.err.println(((Wrapper)variable).unwrap());
-			}
 			engine.put("window", window);
 			engine.put("retezec", new String("retezec_hodnota"));
 			Object windowJS = engine.get("window");
 			System.err.println(windowJS);
 			engine.eval("debug(window.test);");
+			engine.eval("debug(window.testShutter().method);");
+			//engine.eval("debug(window.testShutter().secretMethod(1,2));");
+			engine.eval("window.testShutter().visibleMethod();");
 			engine.eval("debug(retezec);");
 			engine.eval("debug(retezec.indexOf('h'));");
 			engine.eval("debug(this == window);");

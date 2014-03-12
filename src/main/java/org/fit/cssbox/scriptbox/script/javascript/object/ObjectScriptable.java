@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.javascript;
+package org.fit.cssbox.scriptbox.script.javascript.object;
 
 import java.lang.reflect.Method;
 
@@ -11,6 +11,13 @@ import org.mozilla.javascript.Wrapper;
 public class ObjectScriptable extends ScriptableObject  {
 	private static final long serialVersionUID = 1531587729453175461L;
 
+	public ObjectScriptable() {
+	}
+	
+	public ObjectScriptable(Scriptable scope, Scriptable prototype) {
+		super(scope, prototype);
+	}
+	
 	@Override
 	public String getClassName() {
 		return "ObjectScriptable";

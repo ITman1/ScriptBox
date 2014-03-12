@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.javascript;
+package org.fit.cssbox.scriptbox.script.javascript.object;
 
 import java.lang.reflect.Method;
 

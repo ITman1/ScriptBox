@@ -69,7 +69,7 @@ public class Window extends AbstractWindow {
 		return null;
 	}
 	
-    @ScriptGetter()
+    @ScriptGetter
     public String getTest() {
         return "WINDOW GETTER";
     }
@@ -87,6 +87,27 @@ public class Window extends AbstractWindow {
     @ScriptFunction
     public boolean objectTest(Window window) {
     	return window == this;
+    }
+    
+    public class ShutterTestClass {
+    	@ScriptFunction
+    	public void visibleMethod() {
+    		return;
+    	}
+    	
+    	public void secretMethod(int a, int b) {
+    		return;
+    	}
+    	
+    	public Object getMethod() {
+    		return null;
+    	}
+    	
+    }
+    
+    @ScriptFunction
+    public ShutterTestClass testShutter() {
+    	return new ShutterTestClass();
     }
 
 }

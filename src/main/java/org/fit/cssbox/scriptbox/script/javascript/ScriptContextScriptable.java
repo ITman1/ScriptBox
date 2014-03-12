@@ -6,15 +6,16 @@ import java.util.Set;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 
+import org.fit.cssbox.scriptbox.script.javascript.object.ObjectScriptable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
-public class ContextScriptable extends ObjectScriptable {
+public class ScriptContextScriptable extends ObjectScriptable {
 	private static final long serialVersionUID = 1531587729453175461L;
 
 	private ScriptContext context;
 
-	public ContextScriptable(ScriptContext context) {
+	public ScriptContextScriptable(ScriptContext context) {
 		this.context = context;
 	}
 
@@ -31,6 +32,11 @@ public class ContextScriptable extends ObjectScriptable {
 		synchronized (context) {
 			return context.getAttributesScope(name) != -1;
 		}
+	}
+	
+	@Override
+	public Object get(int index, Scriptable start) {
+		return super.get(index, start);
 	}
 	
 	@Override
