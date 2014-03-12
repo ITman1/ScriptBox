@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.fit.cssbox.scriptbox.script.ScriptAnnotation;
+import org.fit.cssbox.scriptbox.script.ScriptClass;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.object.ObjectScriptable;
 import org.mozilla.javascript.BaseFunction;
@@ -200,7 +203,7 @@ public class SanboxedJavaObject implements Scriptable, Serializable, Wrapper {
 		return wrappedScriptable.hasInstance(instance);
 	}
 	
-	protected boolean isFunctionVisible(BaseFunction function) {
+	protected boolean isFunctionVisible(BaseFunction function) {		
 		String name = function.getFunctionName();
 		String methodsString = function.toString();
 		Class<?>[] parameterTypes = parseMethodSignature(methodsString);

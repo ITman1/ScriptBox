@@ -12,11 +12,13 @@ import org.mozilla.javascript.ScriptableObject;
 
 public class ObjectImplementor {
 	protected Object implementedObject;
+	protected Class<?> implementedObjectType;
 	protected BrowserScriptEngine scriptEngine;
 	protected Set<String> definedProperties;
 	
 	public ObjectImplementor(Object implementedObject, BrowserScriptEngine scriptEngine) {
 		this.implementedObject = implementedObject;
+		this.implementedObjectType = implementedObject.getClass();
 		this.scriptEngine = scriptEngine;
 		this.definedProperties = new HashSet<String>();
 	}

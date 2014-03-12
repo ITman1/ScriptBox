@@ -18,9 +18,8 @@ public class ScriptAnnotationImplementor extends ObjectImplementor {
 
 	@Override
 	protected boolean isGetter(Method method) {
-		Annotation annotation = ScriptAnnotation.getScriptAnnotation(method);
-		if (annotation != null && annotation instanceof ScriptGetter) {
-			boolean isSupported = ScriptAnnotation.isEngineSupported(annotation, scriptEngine);
+		if (method.isAnnotationPresent(ScriptGetter.class)) {
+			boolean isSupported = ScriptAnnotation.isEngineSupported(implementedObjectType, method, scriptEngine);
 			boolean isGetter = super.isGetter(method);
 			
 			return isSupported && isGetter;
@@ -30,9 +29,8 @@ public class ScriptAnnotationImplementor extends ObjectImplementor {
 	
 	@Override
 	protected boolean isSetter(Method method) {
-		Annotation annotation = ScriptAnnotation.getScriptAnnotation(method);
-		if (annotation != null && annotation instanceof ScriptSetter) {
-			boolean isSupported = ScriptAnnotation.isEngineSupported(annotation, scriptEngine);
+		if (method.isAnnotationPresent(ScriptSetter.class)) {
+			boolean isSupported = ScriptAnnotation.isEngineSupported(implementedObjectType, method, scriptEngine);
 			boolean isSetter = super.isGetter(method);
 			
 			return isSupported && isSetter;
@@ -42,9 +40,8 @@ public class ScriptAnnotationImplementor extends ObjectImplementor {
 	
 	@Override
 	protected boolean isFunction(Method method) {
-		Annotation annotation = ScriptAnnotation.getScriptAnnotation(method);
-		if (annotation != null && annotation instanceof ScriptFunction) {
-			boolean isSupported = ScriptAnnotation.isEngineSupported(annotation, scriptEngine);
+		if (method.isAnnotationPresent(ScriptFunction.class)) {
+			boolean isSupported = ScriptAnnotation.isEngineSupported(implementedObjectType, method, scriptEngine);
 			boolean isFunction = super.isFunction(method);
 			
 			return isSupported && isFunction;

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.ScriptAnnotation;
+import org.fit.cssbox.scriptbox.script.ScriptClass;
 import org.fit.cssbox.scriptbox.script.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
@@ -27,9 +28,9 @@ public class ScriptAnnotationShutter implements Shutter {
 	@Override
 	public boolean isFieldVisible(Object instance, String fieldName) {
 		if (fieldName.length() > 0) {
+			Class<?> instanceType = instance.getClass();		
 			char firstCharacter = fieldName.charAt(0);
 			String getterMethodName = "get" + Character.toUpperCase(firstCharacter) + fieldName.substring(1);
-			Class<?> instanceType = instance.getClass();
 			
 			Method method = null;
 			
@@ -39,10 +40,15 @@ public class ScriptAnnotationShutter implements Shutter {
 				return false;
 			}
 			
-			Annotation annotation = ScriptAnnotation.getScriptAnnotation(method);
+			Annotation classAnnotation = instanceType.getAnnotation(ScriptClass.class);
+			boolean allFields = ScriptAnnotation.containsOption(classAnnotation, ScriptClass.ALL_FIELDS);
 			
-			if (annotation != null && annotation instanceof ScriptGetter) {
-				boolean isSupported = ScriptAnnotation.isEngineSupported(annotation, scriptEngine);
+			if (allFields) {
+				return true;
+			}
+			
+			if (method.isAnnotationPresent(ScriptGetter.class)) {
+				boolean isSupported = ScriptAnnotation.isEngineSupported(instanceType, method, scriptEngine);
 				return isSupported;
 			}
 		}
@@ -52,10 +58,16 @@ public class ScriptAnnotationShutter implements Shutter {
 
 	@Override
 	public boolean isMethodVisible(Object instance, Method method) {
-		Annotation annotation = ScriptAnnotation.getScriptAnnotation(method);
+		Class<?> instanceType = instance.getClass();	
+		Annotation classAnnotation = instanceType.getAnnotation(ScriptClass.class);
+		boolean allMethods = ScriptAnnotation.containsOption(classAnnotation, ScriptClass.ALL_METHODS);
 		
-		if (annotation != null && annotation instanceof ScriptFunction) {
-			boolean isSupported = ScriptAnnotation.isEngineSupported(annotation, scriptEngine);
+		if (allMethods) {
+			return true;
+		}
+
+		if (method.isAnnotationPresent(ScriptFunction.class)) {
+			boolean isSupported = ScriptAnnotation.isEngineSupported(instanceType, method, scriptEngine);
 			return isSupported;
 		}
 		
