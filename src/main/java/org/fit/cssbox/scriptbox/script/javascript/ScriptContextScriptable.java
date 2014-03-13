@@ -6,7 +6,7 @@ import java.util.Set;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 
-import org.fit.cssbox.scriptbox.script.javascript.object.ObjectScriptable;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 

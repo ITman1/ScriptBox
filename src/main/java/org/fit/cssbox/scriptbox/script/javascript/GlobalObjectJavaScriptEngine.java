@@ -2,7 +2,9 @@ package org.fit.cssbox.scriptbox.script.javascript;
 
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
-import org.fit.cssbox.scriptbox.script.javascript.object.ObjectTopLevel;
+import org.fit.cssbox.scriptbox.script.javascript.annotation.ScriptAnnotationImplementor;
+import org.fit.cssbox.scriptbox.script.javascript.annotation.ScriptAnnotationTopLevel;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.TopLevel;
 
@@ -19,6 +21,6 @@ public class GlobalObjectJavaScriptEngine extends JavaScriptEngine {
 	@Override
 	protected TopLevel initializeTopLevel() {
 		Object object = ((WindowScriptSettings)scriptSettings).getGlobalObject();
-		return new ObjectTopLevel(object, this, new ScriptAnnotationImplementor(object, GlobalObjectJavaScriptEngine.this));
+		return new ScriptAnnotationTopLevel(object, this);
 	}
 }

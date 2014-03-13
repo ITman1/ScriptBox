@@ -1,6 +1,5 @@
 package org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,16 +8,17 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.object.ObjectScriptable;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
+import org.fit.cssbox.scriptbox.script.javascript.js.NativeJavaCollection;
+import org.fit.cssbox.scriptbox.script.javascript.js.RedirectedToJavaMethod;
+import org.fit.cssbox.scriptbox.script.javascript.js.SriptableWrapper;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
-public class SanboxedJavaObject implements Scriptable, Serializable, Wrapper {
-
+public class SanboxedJavaObject extends SriptableWrapper {
 	private static final long serialVersionUID = 6120524771501878068L;
 
-	protected Scriptable wrappedScriptable;
 	protected Object wrappedObject;
 	protected Class<?> wrappedObjectType;
 	protected Shutter shutter;
@@ -26,7 +26,8 @@ public class SanboxedJavaObject implements Scriptable, Serializable, Wrapper {
 	protected final Map<String, Boolean> visitedFields;
 
 	public SanboxedJavaObject(Scriptable wrappedScriptable, Shutter shutter) {
-		this.wrappedScriptable = wrappedScriptable;
+		super(wrappedScriptable);
+
 		this.shutter = shutter;
 		this.visitedMethods = new HashMap<Method, Boolean>();
 		this.visitedFields = new HashMap<String, Boolean>();
@@ -50,6 +51,17 @@ public class SanboxedJavaObject implements Scriptable, Serializable, Wrapper {
 
 		Object propertyObject = wrappedScriptable.get(name, scope);
 		
+		if (propertyObject instanceof RedirectedToJavaMethod) {
+			RedirectedToJavaMethod redirectedPropety = (RedirectedToJavaMethod)propertyObject;
+			Object instance = redirectedPropety.getOriginInstance();
+			Method method = redirectedPropety.getOriginMethod();
+			boolean isMethodVisible = isFunctionVisible(instance, method);
+			  
+			if (!isMethodVisible) {
+				return NOT_FOUND;
+			}
+		}
+		
 		if (propertyObject != NOT_FOUND) {
 			propertyObject = ObjectScriptable.jsToJava(propertyObject);
 		}
@@ -69,15 +81,6 @@ public class SanboxedJavaObject implements Scriptable, Serializable, Wrapper {
 		}
 
 		return propertyObject;
-	}
-
-	@Override
-	public Object unwrap() {
-		if (wrappedScriptable instanceof Wrapper) {
-			return ((Wrapper) wrappedScriptable).unwrap();
-		}
-		
-		return wrappedScriptable;
 	}
 
 	public static Class<?>[] parseMethodSignature(String signature) {
@@ -127,77 +130,6 @@ public class SanboxedJavaObject implements Scriptable, Serializable, Wrapper {
 		
 		return types;
 	}
-
-	@Override
-	public Object get(int index, Scriptable start) {
-		return wrappedScriptable.get(index, start);
-	}
-
-	@Override
-	public boolean has(String name, Scriptable start) {
-		return wrappedScriptable.has(name, start);
-	}
-
-	@Override
-	public boolean has(int index, Scriptable start) {
-		return wrappedScriptable.has(index, start);
-	}
-
-	@Override
-	public void put(String name, Scriptable start, Object value) {
-		wrappedScriptable.put(name, start, value);
-	}
-
-	@Override
-	public void put(int index, Scriptable start, Object value) {
-		wrappedScriptable.put(index, start, value);
-	}
-
-	@Override
-	public void delete(String name) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void delete(int index) {
-		wrappedScriptable.delete(index);
-	}
-
-	@Override
-	public Scriptable getPrototype() {
-		return wrappedScriptable.getPrototype();
-	}
-
-	@Override
-	public void setPrototype(Scriptable prototype) {
-		wrappedScriptable.setPrototype(prototype);
-	}
-
-	@Override
-	public Scriptable getParentScope() {
-		return wrappedScriptable.getParentScope();
-	}
-
-	@Override
-	public void setParentScope(Scriptable parent) {
-		wrappedScriptable.setParentScope(parent);
-	}
-
-	@Override
-	public Object[] getIds() {
-		return wrappedScriptable.getIds();
-	}
-
-	@Override
-	public Object getDefaultValue(Class<?> hint) {
-		return wrappedScriptable.getDefaultValue(hint);
-	}
-
-	@Override
-	public boolean hasInstance(Scriptable instance) {
-		return wrappedScriptable.hasInstance(instance);
-	}
 	
 	protected boolean isFunctionVisible(BaseFunction function) {		
 		String name = function.getFunctionName();
@@ -215,10 +147,14 @@ public class SanboxedJavaObject implements Scriptable, Serializable, Wrapper {
 			throw new InternalException(e);
 		}
 		
+		return isFunctionVisible(wrappedObject, method);
+	}
+	
+	protected boolean isFunctionVisible(Object instance, Method method) {		
 		Boolean isMethodVisible = visitedMethods.get(method);
 		 
 		if (isMethodVisible == null) {
-			isMethodVisible = shutter.isMethodVisible(wrappedObject, method); 
+			isMethodVisible = shutter.isMethodVisible(instance, method); 
 			visitedMethods.put(method, isMethodVisible);
 		}
 		

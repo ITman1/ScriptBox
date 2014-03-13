@@ -6,11 +6,12 @@ import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.script.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.ScriptSetter;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.ui.bars.BarProp;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class Window {
+public class Window implements ObjectGetter {
 	final public static String DEFAULT_TARGET =  "_blank";
 	final public static String DEFAULT_FEATURES = "";
 	final public static boolean DEFAULT_REAPLACE = false;
@@ -46,7 +47,10 @@ public class Window {
 	protected WindowProxy opener;
 	protected WindowProxy parent;
 	protected Element frameElement;
-
+	
+	// TODO: Change visibility to protected, now for test only
+	public Window() {
+	}
 	
 	public Window(Html5DocumentImpl document) {
 		// Implementation specific and auxiliary properties 
@@ -215,6 +219,16 @@ public class Window {
 	@ScriptFunction
 	public WindowProxy open(String url, String target, String features) {
 		return open(url, target, features, DEFAULT_REAPLACE);
+	}
+
+	@ScriptFunction
+	@Override
+	public Object get(Object arg) {
+		if (arg.equals("foo")) {
+			return "bar";
+		}
+		
+		return ObjectGetter.UNDEFINED_VALUE;
 	}
 	
 	/*

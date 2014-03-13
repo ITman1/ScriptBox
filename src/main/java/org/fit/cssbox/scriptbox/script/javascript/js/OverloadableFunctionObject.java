@@ -1,10 +1,11 @@
-package org.fit.cssbox.scriptbox.script.javascript.object;
+package org.fit.cssbox.scriptbox.script.javascript.js;
 
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectFunction;
 import org.mozilla.javascript.FunctionObject;
 import org.mozilla.javascript.Scriptable;
 

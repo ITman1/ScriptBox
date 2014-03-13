@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.javascript.object;
+package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -11,7 +11,9 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
+import org.mozilla.javascript.FunctionObject;
 import org.mozilla.javascript.ScriptableObject;
 
 public class ObjectImplementor {
@@ -122,6 +124,9 @@ public class ObjectImplementor {
 		Field[] fields = objectClass.getFields();
 		
 		for (Field field : fields) {
+			if (!isProperty(field)) {
+				continue;
+			}
 			String fieldName = field.getName();
 			
 			if (!destinationScope.has(fieldName, destinationScope)) {
@@ -142,7 +147,7 @@ public class ObjectImplementor {
 	}
 	
 	protected boolean isObjectGetter(Method method) {
-		return isIndexedGetter(implementedObjectType, method);
+		return ObjectFunction.isObjectGetterMethod(implementedObjectType, method);
 	}
 	
 	protected boolean isGetter(Method method) {
@@ -162,6 +167,10 @@ public class ObjectImplementor {
 		return !method.equals(toStringMethod) && !isGetter(method) && !isSetter(method) && !isObjectGetter(method);
 	}
 	
+	protected boolean isProperty(Field field) {
+		return true;
+	}
+	
 	protected String extractFieldNameFromGetter(Method method) {
 		return ObjectField.extractFieldNameFromGetter(method);
 	}
@@ -172,19 +181,5 @@ public class ObjectImplementor {
 	
 	protected String extractFunctionName(Method method) {
 		return method.getName();
-	}
-	
-	public static boolean isIndexedGetter(Class<?> clazz, Method getter) {
-		List<Class<?>> interfaces = ClassUtils.getAllInterfaces(clazz);
-		
-		for (Class<?> i : interfaces) {
-			for (Method method : i.getMethods()) {
-				if (getter.equals(method)) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
 	}
 }

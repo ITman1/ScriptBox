@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.javascript.object;
+package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,9 @@ public class ObjectTopLevel extends TopLevel {
 	
 	@Override
 	public Object get(int index, Scriptable start) {
-		if (globalObject instanceof ObjectGetter) {
+		Object object = super.get(index, start);
+		
+		if (object == Scriptable.NOT_FOUND && hasObjectGetter()) {
 			Object value = ((ObjectGetter)globalObject).get(index);
 			
 			if (value != ObjectGetter.UNDEFINED_VALUE) {
@@ -62,12 +64,14 @@ public class ObjectTopLevel extends TopLevel {
 			}
 		}
 		
-		return super.get(index, start);
+		return object;
 	}
 	
 	@Override
 	public Object get(String name, Scriptable start) {
-		if (globalObject instanceof ObjectGetter) {
+		Object object = super.get(name, start);
+		
+		if (object == Scriptable.NOT_FOUND && hasObjectGetter()) {
 			Object value = ((ObjectGetter)globalObject).get(name);
 			
 			if (value != ObjectGetter.UNDEFINED_VALUE) {
@@ -75,7 +79,7 @@ public class ObjectTopLevel extends TopLevel {
 			}
 		}
 		
-		return super.get(name, start);
+		return object;
 	}
 	
 	@Override
@@ -87,6 +91,10 @@ public class ObjectTopLevel extends TopLevel {
 		}
 
 		return ids;
+	}
+	
+	protected boolean hasObjectGetter() {
+		return globalObject instanceof ObjectGetter;
 	}
 	
 	protected void implementGlobalObject() {

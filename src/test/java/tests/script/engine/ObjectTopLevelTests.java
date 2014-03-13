@@ -8,66 +8,19 @@ import javax.script.ScriptException;
 
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.object.ObjectGetter;
-import org.fit.cssbox.scriptbox.script.javascript.object.ObjectTopLevel;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.junit.Test;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.TopLevel;
 
-public class ObjectTopLevelTests {
-	
-	public class TestGlobalObject implements ObjectGetter {
-		public String publicProperty = "public property";
-		protected String protectedProperty = "protected property";
-		private String privateProperty = "private property";
-		
-		public TestGlobalObject publicNestedObject;
-		public TestGlobalObject publicNestedObjectWithGetter;
-		private TestGlobalObject privateNestedObjectWithGetter;
-		
-		public TestGlobalObject(int nestLevel) {
-			if (nestLevel > 0) {
-				publicNestedObject = new TestGlobalObject(nestLevel - 1);
-				publicNestedObjectWithGetter = new TestGlobalObject(nestLevel - 1);
-				privateNestedObjectWithGetter = new TestGlobalObject(nestLevel - 1);
-			}
-		}
-		
-		public TestGlobalObject getPublicNestedObjectWithGetter() {
-			return privateNestedObjectWithGetter;
-		}
-		
-		public TestGlobalObject getPrivateNestedObjectWithGetter() {
-			return privateNestedObjectWithGetter;
-		}
-		
-		public String getConcat() {
-			return "";
-		}
-		
-		public String getConcat(String arg1) {
-			return arg1;
-		}
-		
-		public String getConcat(String arg1, String arg2) {
-			return arg1 + arg2;
-		}
+import tests.script.engine.TestClasses.NestedObjectWithGetter;
 
-		@Override
-		public Object get(Object arg) {
-			if (arg instanceof String) {
-				if (((String)arg).equals("foo")) {
-					return "bar";
-				}
-			}
-			return ObjectGetter.UNDEFINED_VALUE;
-		}
-	}
+public class ObjectTopLevelTests {
 	
 	@Test
 	public void TestEnumerableProperties() throws ScriptException {
 		Map<String, Object> properties = new HashMap<String, Object>();
-		TestGlobalObject globalObject = new TestGlobalObject(2);
+		NestedObjectWithGetter globalObject = new NestedObjectWithGetter(2);
 		JavaScriptEngine engine = getObjectTopLevelScriptEngine(globalObject);
 		
 		engine.put("properties", properties);
@@ -75,7 +28,7 @@ public class ObjectTopLevelTests {
     	
     	// Test for number of enumerable properties
     	// There are 5 from from top level, "propName" defined in JavaScript and properties binded via JSR 223
-    	assertEquals(properties.size(), 9);
+    	assertEquals(properties.size(), 11);
     	
     	/* Test for equality of all properties which have instances in Java */
     	
@@ -94,7 +47,7 @@ public class ObjectTopLevelTests {
 	@Test
 	public void TestFunctionProperties() throws ScriptException {
 		Map<String, Object> retValues = new HashMap<String, Object>();
-		TestGlobalObject globalObject = new TestGlobalObject(2);
+		NestedObjectWithGetter globalObject = new NestedObjectWithGetter(2);
 		JavaScriptEngine engine = getObjectTopLevelScriptEngine(globalObject);
 		
 		engine.put("globalObject", globalObject);
@@ -113,13 +66,15 @@ public class ObjectTopLevelTests {
 	@Test
 	public void TestObjectGetter() throws ScriptException {
 		Map<String, Object> retValues = new HashMap<String, Object>();
-		TestGlobalObject globalObject = new TestGlobalObject(2);
+		NestedObjectWithGetter globalObject = new NestedObjectWithGetter(2);
 		JavaScriptEngine engine = getObjectTopLevelScriptEngine(globalObject);
 		
 		engine.put("retValues", retValues);
-		engine.eval("retValues.put('get', this['foo']);");
+		engine.eval("retValues.put('getFoo', this['foo']);");
+		engine.eval("retValues.put('get0', this[0]);");
 		
-		assertEquals("bar", retValues.get("get"));
+		assertEquals("bar", retValues.get("getFoo"));
+		assertEquals(((Double)retValues.get("get0")) - 1 < 1e-1, true);
 	}
 	
 	protected JavaScriptEngine getObjectTopLevelScriptEngine(final Object object) {

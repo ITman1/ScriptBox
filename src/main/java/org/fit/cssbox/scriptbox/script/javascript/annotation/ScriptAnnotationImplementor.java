@@ -1,5 +1,6 @@
-package org.fit.cssbox.scriptbox.script.javascript;
+package org.fit.cssbox.scriptbox.script.javascript.annotation;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
@@ -8,7 +9,7 @@ import org.fit.cssbox.scriptbox.script.ScriptClass;
 import org.fit.cssbox.scriptbox.script.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.ScriptSetter;
-import org.fit.cssbox.scriptbox.script.javascript.object.ObjectImplementor;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectImplementor;
 
 public class ScriptAnnotationImplementor extends ObjectImplementor {
 		
@@ -39,4 +40,9 @@ public class ScriptAnnotationImplementor extends ObjectImplementor {
 				
 		return isFunction && isSupportedAndValid;
 	}	
+	
+	@Override
+	protected boolean isProperty(Field field) {
+		return false;
+	}
 }

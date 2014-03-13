@@ -10,92 +10,18 @@ import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngineFactory;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 public class MultipleDocumentBrowser {
-
-	public static void main(String[] args) {
-		Window window = new Window(null);
-		WindowScriptSettings settings = new WindowScriptSettings(window);
-        ScriptEngine engine = new WindowScriptEngineFactory().getBrowserScriptEngine(settings);
-        
-		//ScriptEngine engine = new ScriptEngineManager().getEngineByName("js");
-		
-       /* try {
-
-		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-        // evaluate JavaScript code from String
-        //engine.eval("print('Hello, World')");
-        
-     // JavaScript code in a String
-        
-        
-        String script = "function run() { println('run called'); }";
-        
-        // evaluate script
-        try {
-			List<String> collection = new ArrayList<String>();
-			collection.add("item 1");
-			engine.put("collection", collection);
-			engine.eval("debug(collection[0]);");
-        	
-        	
-			engine.eval("var variable = '\\nHello, World\\n'; debug(variable);");
-			engine.eval(script);
-			engine.eval("debug(this);");
-			engine.eval("debug(this.prototype);");
-			/*Object test = engine.get("test");
-			Object com = engine.get("com");
-			System.err.println(test);
-			System.err.println(com);*/
-			engine.eval("variable = 'Hello 2!';");
-			Object variable = engine.get("variable");
-			System.err.println(variable);
-			
-			engine.put("window", window);
-			engine.put("retezec", new String("retezec_hodnota"));
-			Object windowJS = engine.get("window");
-			System.err.println(windowJS);
-			engine.eval("debug(window.test);");
-			engine.eval("debug(window.testShutter().method);");
-			//engine.eval("debug(window.testShutter().secretMethod(1,2));");
-			engine.eval("window.testShutter().visibleMethod();");
-			engine.eval("debug(retezec);");
-			engine.eval("debug(retezec.indexOf('h'));");
-			engine.eval("debug(this == window);");
-			UserAgent userAgent = new UserAgent();
-			BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
-			engine.put("browsingUnit", browsingUnit);
-			engine.eval("debug(browsingUnit.userAgent);");
-			engine.eval("debug('Soucet: ', soucet(1,2))");
-			engine.eval("debug('Overloaded soucet: ', soucet(1,2,4))");
-			engine.eval("debug('Object test: ', objectTest(window));");
-        	engine.eval("var propValue;" +
-			"for(var propName in this) {" +
-			"    nldebug(propName + ';');" +
-			"}");
-		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-        /*Invocable inv = (Invocable) engine;
-
-        // get Runnable interface object from engine. This interface methods
-        // are implemented by script functions with the matching name.
-        Runnable r = inv.getInterface(Runnable.class);
-
-        // start a new thread that runs the script implemented
-        // runnable interface
-        Thread th = new Thread(r);
-        th.start();*/
-
-	}
 	
-	/*public static void main(String[] args) throws Exception  {
+	public static void main(String[] args) throws Exception  {
 		UserAgent userAgent = new UserAgent();
 		BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
 		//browsingUnit.navigate("http://cssbox.sourceforge.net/");
@@ -104,13 +30,15 @@ public class MultipleDocumentBrowser {
 		Object obj = new Object();
 		synchronized (obj) {
 			try {
-				obj.wait(3000); // Just some time until navigation completes
+				obj.wait(5000); // Just some time until navigation completes
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 		
 		Html5DocumentImpl doc = browsingUnit.getWindowBrowsingContext().getActiveDocument();
+		Window window = doc.getWindow();
+		WindowScriptSettings settings = window.getScriptSettings();
 		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();    
 		DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("XML 3.0 LS 3.0");
 		LSSerializer serializer = impl.createLSSerializer();
@@ -119,10 +47,14 @@ public class MultipleDocumentBrowser {
         output.setByteStream(System.out);
         serializer.write(doc, output);
         
+        
+        ScriptEngine engine = new WindowScriptEngineFactory().getBrowserScriptEngine(settings);
+        engine.eval("debug('============================================================='); debug(this['foo']);");
+        
         userAgent.stop();
         
 		return;
-	}*/
+	}
 	
 	/*static protected EventListener domEventListener = new EventListener() {
 

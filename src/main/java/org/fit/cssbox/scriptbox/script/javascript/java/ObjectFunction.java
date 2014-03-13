@@ -1,10 +1,12 @@
-package org.fit.cssbox.scriptbox.script.javascript.object;
+package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.javascript.js.OverloadableFunctionObject;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
@@ -99,5 +101,21 @@ public class ObjectFunction {
 		}
 		
 		return true;
+	}
+	
+	public static Method getObjectGetterMetod(Class<?> clazz) {
+		try {
+			return ClassUtils.getPublicMethod(clazz, ObjectGetter.METHOD_NAME, ObjectGetter.METHOD_ARG_TYPES);
+		} catch (Exception e) {
+			throw new InternalException(e);
+		}
+	}
+	
+	public static boolean isObjectGetterMethod(Class<?> clazz, Method method) {
+		if (ObjectGetter.class.isAssignableFrom(clazz)) {
+			Method getterMethod = ObjectFunction.getObjectGetterMetod(clazz);	
+			return method.equals(getterMethod);
+		}
+		return false;
 	}
 }

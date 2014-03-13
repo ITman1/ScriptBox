@@ -1,9 +1,10 @@
-package org.fit.cssbox.scriptbox.script.javascript.object;
+package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
+import org.fit.cssbox.scriptbox.script.javascript.js.OverloadableFunctionObject;
 import org.mozilla.javascript.NativeJavaClass;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -58,8 +59,6 @@ public class ObjectScriptable extends ScriptableObject  {
 		} else {
 			((OverloadableFunctionObject)function).attachObjectFunction(objectFunction);
 		}
-		
-
 	}
 	
 	public static Object jsToJava(Object jsObj) {

@@ -2,7 +2,13 @@ package org.fit.cssbox.scriptbox.script;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+
+import org.apache.commons.lang3.ClassUtils;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectFunction;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
+import org.mozilla.javascript.Scriptable;
 
 public class ScriptAnnotation {
 	public static boolean isScriptAnnotation(Annotation annotation) {		
@@ -140,5 +146,14 @@ public class ScriptAnnotation {
 		}
 		
 		return engineSupported && hasValidAnnotation;
+	}
+	
+	public static boolean hasSupportedAndValidGetter(Class<?> clazz, BrowserScriptEngine scriptEngine) {
+		if (ObjectGetter.class.isAssignableFrom(clazz)) {
+			Method method = ObjectFunction.getObjectGetterMetod(clazz);			
+			return isSupportedAndValid(ScriptFunction.class, ScriptClass.ALL_METHODS, clazz, method, scriptEngine);
+		}
+		
+		return false;
 	}
 }

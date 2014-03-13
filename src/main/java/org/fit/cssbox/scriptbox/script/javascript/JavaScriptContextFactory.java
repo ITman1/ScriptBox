@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.script.javascript;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.annotation.ScriptAnnotationShutter;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.CollectionsWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.DefaultWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.SandboxWrapFactoryDecorator;
