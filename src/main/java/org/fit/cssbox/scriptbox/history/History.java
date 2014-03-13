@@ -1,5 +1,7 @@
 package org.fit.cssbox.scriptbox.history;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+
 public class History {
 	
 	/*readonly attribute*/
@@ -7,6 +9,12 @@ public class History {
 	
 	/*readonly attribute*/ 
 	protected Object state;
+	
+	private BrowsingContext context;
+	
+	public History(BrowsingContext context) {
+		this.context = context;
+	}
 	
 	public void go(long delta) {
 		

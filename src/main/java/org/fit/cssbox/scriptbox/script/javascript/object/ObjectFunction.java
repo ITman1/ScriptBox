@@ -65,7 +65,7 @@ public class ObjectFunction {
 		//return Context.getUndefinedValue();
 	}
 	
-	public static Object[] castArgs(Class<?>[] expectedTypes, Object[] args) {
+	public static Object[] castArgs(Class<?>[] expectedTypes, Object... args) {
 		if (expectedTypes != null && args != null && expectedTypes.length == args.length && args.length > 0) {
 			Object[] castedArgs = new Object[args.length];
 			for (int i = 0; i < args.length; i++) {
@@ -84,7 +84,7 @@ public class ObjectFunction {
 		return new Object[0];
 	}
 	
-	public static boolean isAssignableTypes(Object[] args, Class<?>[] types) {
+	public static boolean isAssignableTypes(Object[] args, Class<?>... types) {
 		if (args.length != types.length) {
 			return false;
 		}

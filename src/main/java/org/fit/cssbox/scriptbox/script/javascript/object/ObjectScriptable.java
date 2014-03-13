@@ -1,5 +1,6 @@
 package org.fit.cssbox.scriptbox.script.javascript.object;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
@@ -34,8 +35,9 @@ public class ObjectScriptable extends ScriptableObject  {
 	public static void defineObjectField(ScriptableObject fieldScopeObject, String fieldName, ObjectField objectField) {
 		Method fieldGetterMethod = objectField.getFieldGetterMethod();
 		Method fieldSetterMethod = objectField.getFieldSetterMethod();
-		Method wrappedFieldGetterMethod = (fieldGetterMethod == null)? null : ObjectField.GETTER_METHOD;
-		Method wrappedFieldSetterMethod = (fieldSetterMethod == null)? null : ObjectField.SETTER_METHOD;
+		Field field = objectField.getField();
+		Method wrappedFieldGetterMethod = (fieldGetterMethod == null && field == null)? null : ObjectField.GETTER_METHOD;
+		Method wrappedFieldSetterMethod = (fieldSetterMethod == null && field == null)? null : ObjectField.SETTER_METHOD;
 		
 		int attributes = ScriptableObject.DONTENUM;
 		attributes = (fieldSetterMethod == null)? attributes | ScriptableObject.READONLY : attributes;

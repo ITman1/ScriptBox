@@ -9,8 +9,10 @@ import java.util.Set;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.EventLoop;
+import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
+import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
@@ -40,6 +42,8 @@ public class BrowsingContext {
 	protected Element container;
 	protected SessionHistory sessionHistory;
 	protected NavigationController navigationController;
+	protected Location location;
+	protected History history;
 			
 	protected String contextName;
 	
@@ -53,6 +57,8 @@ public class BrowsingContext {
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
 		this.navigationController = new NavigationController(this);
+		this.location = new Location(this);
+		this.history = new History(this);
 		
 		BrowsingContext creatorContext = getCreatorContext();
 		if (creatorContext != null) {
@@ -439,5 +445,13 @@ public class BrowsingContext {
 	
 	public NavigationController getNavigationController() {
 		return navigationController;
+	}
+	
+	public Location getLocation() {
+		return location;
+	}
+	
+	public History getHistory() {
+		return history;
 	}
 }

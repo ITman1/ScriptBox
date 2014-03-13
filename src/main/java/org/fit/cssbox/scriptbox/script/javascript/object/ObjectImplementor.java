@@ -1,12 +1,15 @@
 package org.fit.cssbox.scriptbox.script.javascript.object;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.mozilla.javascript.ScriptableObject;
@@ -58,8 +61,9 @@ public class ObjectImplementor {
 	
 	protected void defineObjectFunctions(ScriptableObject destinationScope) {
  		Class<?> objectClass = implementedObject.getClass();
+ 		Method[] methods = objectClass.getMethods();
  		
-		for (Method method : objectClass.getMethods()) {	
+		for (Method method : methods) {	
 			boolean isFunction = isFunction(method);
 			if (!isFunction) {
 				continue;
@@ -114,6 +118,17 @@ public class ObjectImplementor {
 			ObjectField objectField = new ObjectField(implementedObject, null, objectFieldSetter);
 			defineObjectField(destinationScope, fieldName, objectField);
 		}
+		
+		Field[] fields = objectClass.getFields();
+		
+		for (Field field : fields) {
+			String fieldName = field.getName();
+			
+			if (!destinationScope.has(fieldName, destinationScope)) {
+				ObjectField objectField = new ObjectField(implementedObject, field);
+				defineObjectField(destinationScope, fieldName, objectField);
+			}
+		}
 	}
 	
 	protected void defineObjectFunction(ScriptableObject destinationScope, String methodName, ObjectFunction objectFunction) {
@@ -126,14 +141,16 @@ public class ObjectImplementor {
 		definedFieldProperties.add(fieldName);
 	}
 	
+	protected boolean isObjectGetter(Method method) {
+		return isIndexedGetter(implementedObjectType, method);
+	}
+	
 	protected boolean isGetter(Method method) {
-		String getterName =  method.getName();
-		return getterName.startsWith("get");
+		return ObjectField.isGetter(method);
 	}
 	
 	protected boolean isSetter(Method method) {
-		String setterName =  method.getName();
-		return setterName.startsWith("set");
+		return ObjectField.isSetter(method);
 	}
 	
 	protected boolean isFunction(Method method) {
@@ -142,30 +159,32 @@ public class ObjectImplementor {
 			toStringMethod = implementedObject.getClass().getMethod("toString");
 		} catch (Exception e) {
 		}
-		return !method.equals(toStringMethod) && !isGetter(method) && !isSetter(method);
+		return !method.equals(toStringMethod) && !isGetter(method) && !isSetter(method) && !isObjectGetter(method);
 	}
 	
 	protected String extractFieldNameFromGetter(Method method) {
-		String getterName =  method.getName();
-		Character fourthCharacter = getterName.charAt(3);
-		if (getterName.startsWith("get") && getterName.length() > 3 && Character.isUpperCase(fourthCharacter)) {
-			return (fourthCharacter + "").toLowerCase() + getterName.substring(4);
-		} else {
-			throw new FieldException("Invalid getter name! Getter method should start with 'get' and next character should be upper case!");
-		}
+		return ObjectField.extractFieldNameFromGetter(method);
 	}
 	
 	protected String extractFieldNameFromSetter(Method method) {
-		String setterName =  method.getName();
-		Character fourthCharacter = setterName.charAt(3);
-		if (setterName.startsWith("set") && setterName.length() > 3 && Character.isUpperCase(fourthCharacter)) {
-			return (fourthCharacter + "").toLowerCase() + setterName.substring(4);
-		} else {
-			throw new FieldException("Invalid setter name! Getter method should start with 'set' and next character should be upper case!");
-		}
+		return ObjectField.extractFieldNameFromSetter(method);
 	}
 	
 	protected String extractFunctionName(Method method) {
 		return method.getName();
+	}
+	
+	public static boolean isIndexedGetter(Class<?> clazz, Method getter) {
+		List<Class<?>> interfaces = ClassUtils.getAllInterfaces(clazz);
+		
+		for (Class<?> i : interfaces) {
+			for (Method method : i.getMethods()) {
+				if (getter.equals(method)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 }

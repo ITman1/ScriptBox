@@ -25,13 +25,17 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 		ContextFactory.initGlobal(globalFactory);
 	}
 
-	protected JavaScriptContextFactory contextFactory;
+	protected ContextFactory contextFactory;
 	protected TopLevel topLevel;
 	
 	public JavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
+		this(factory, scriptSettings, null);
+	}
+	
+	public JavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings, ContextFactory contextFactory) {
 		super(factory, scriptSettings);
 
-		contextFactory = new JavaScriptContextFactory(this);
+		this.contextFactory = (contextFactory != null)? contextFactory : new JavaScriptContextFactory(this);
 		topLevel = initializeTopLevel();
 	}
 	

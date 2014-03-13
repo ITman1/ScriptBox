@@ -53,6 +53,32 @@ public class ObjectTopLevel extends TopLevel {
 	}
 	
 	@Override
+	public Object get(int index, Scriptable start) {
+		if (globalObject instanceof ObjectGetter) {
+			Object value = ((ObjectGetter)globalObject).get(index);
+			
+			if (value != ObjectGetter.UNDEFINED_VALUE) {
+				return value;
+			}
+		}
+		
+		return super.get(index, start);
+	}
+	
+	@Override
+	public Object get(String name, Scriptable start) {
+		if (globalObject instanceof ObjectGetter) {
+			Object value = ((ObjectGetter)globalObject).get(name);
+			
+			if (value != ObjectGetter.UNDEFINED_VALUE) {
+				return value;
+			}
+		}
+		
+		return super.get(name, start);
+	}
+	
+	@Override
 	public Object[] getIds() {
 		String[] ids = {};
 		if (implementor != null) {
