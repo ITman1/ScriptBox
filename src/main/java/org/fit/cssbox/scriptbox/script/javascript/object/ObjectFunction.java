@@ -2,8 +2,6 @@ package org.fit.cssbox.scriptbox.script.javascript.object;
 
 import java.lang.reflect.Method;
 
-import javax.script.ScriptException;
-
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;

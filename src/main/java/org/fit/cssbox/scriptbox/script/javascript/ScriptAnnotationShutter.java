@@ -1,6 +1,5 @@
 package org.fit.cssbox.scriptbox.script.javascript;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
@@ -8,7 +7,6 @@ import org.fit.cssbox.scriptbox.script.ScriptAnnotation;
 import org.fit.cssbox.scriptbox.script.ScriptClass;
 import org.fit.cssbox.scriptbox.script.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.ScriptGetter;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox.Shutter;
 
 
@@ -39,18 +37,10 @@ public class ScriptAnnotationShutter implements Shutter {
 			} catch (Exception e) {
 				return false;
 			}
-			
-			Annotation classAnnotation = instanceType.getAnnotation(ScriptClass.class);
-			boolean allFields = ScriptAnnotation.containsOption(classAnnotation, ScriptClass.ALL_FIELDS);
-			
-			if (allFields) {
-				return true;
-			}
-			
-			if (method.isAnnotationPresent(ScriptGetter.class)) {
-				boolean isSupported = ScriptAnnotation.isEngineSupported(instanceType, method, scriptEngine);
-				return isSupported;
-			}
+
+			boolean isSupportedAndValid = ScriptAnnotation.isSupportedAndValid(ScriptGetter.class, ScriptClass.ALL_FIELDS, instanceType, method, scriptEngine);
+
+			return isSupportedAndValid;
 		}
 
 		return false;
@@ -59,19 +49,9 @@ public class ScriptAnnotationShutter implements Shutter {
 	@Override
 	public boolean isMethodVisible(Object instance, Method method) {
 		Class<?> instanceType = instance.getClass();	
-		Annotation classAnnotation = instanceType.getAnnotation(ScriptClass.class);
-		boolean allMethods = ScriptAnnotation.containsOption(classAnnotation, ScriptClass.ALL_METHODS);
+		boolean isSupportedAndValid = ScriptAnnotation.isSupportedAndValid(ScriptFunction.class, ScriptClass.ALL_METHODS, instanceType, method, scriptEngine);
 		
-		if (allMethods) {
-			return true;
-		}
-
-		if (method.isAnnotationPresent(ScriptFunction.class)) {
-			boolean isSupported = ScriptAnnotation.isEngineSupported(instanceType, method, scriptEngine);
-			return isSupported;
-		}
-		
-		return false;
+		return isSupportedAndValid;
 	}
 
 	@Override

@@ -1,74 +1,106 @@
 package org.fit.cssbox.scriptbox.browser;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.history.History;
+import org.fit.cssbox.scriptbox.history.Location;
 import org.fit.cssbox.scriptbox.script.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.ScriptGetter;
-import org.mozilla.javascript.annotations.JSGetter;
+import org.fit.cssbox.scriptbox.ui.bars.BarProp;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-public class Window extends AbstractWindow {
-
-	protected Html5DocumentImpl _document;
-	protected WindowScriptSettings _scriptSettings;
+public class Window {
+	final public static String DEFAULT_TARGET =  "_blank";
+	final public static String DEFAULT_FEATURES = "";
+	final public static boolean DEFAULT_REAPLACE = false;
+	protected Html5DocumentImpl document;
 	
 	public Window(Html5DocumentImpl document) {
-		super(document);
-		_document = document;
-		_scriptSettings = new WindowScriptSettings(this);
-		// TODO Auto-generated constructor stub
+		this.document = document;
 	}
 	
 	public Html5DocumentImpl getDocumentImpl() {
 		return _document;
 	}
+		
+	/* The current browsing context */
 	
-    @ScriptGetter()
-	public WindowScriptSettings getScriptSettings() {
-		return _scriptSettings;
-	}
-
-	@Override
-	protected void close() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void stop() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void focus() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void blur() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected WindowProxy open(String url, String target, String features,
-			boolean replace) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected WindowProxy getter(long index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected Object getter(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	protected WindowProxy window;
+	protected WindowProxy self;
+	protected Document document;
+	protected String name;
+	protected Location location;
+	protected History history;
+	
+	protected BarProp locationbar;
+	protected BarProp menubar;
+	protected BarProp personalbar;
+	protected BarProp scrollbars;
+	protected BarProp statusbar;
+	protected BarProp toolbar;
+	
+	protected String status;
+	protected boolean closed;
+	
+	protected void close();
+	protected void stop();
+	protected void focus();
+	protected void blur();
+	
+	/* Other browsing contexts */
+	protected WindowProxy frames;
+	protected long length;
+	protected WindowProxy top;
+	protected WindowProxy opener;
+	protected WindowProxy parent;
+	protected Element frameElement;
+	
+	public AbstractWindow(Html5DocumentImpl document) {
+		this.document = document;
 	}
 	
+	protected abstract WindowProxy open(String url, String target, String features, boolean replace);
+	protected abstract WindowProxy getter(long index);
+	protected abstract Object getter(String name);
+	
+	public WindowProxy open() {
+		return open(Html5DocumentImpl.DEFAULT_URL_ADDRESS, DEFAULT_TARGET, DEFAULT_FEATURES, DEFAULT_REAPLACE);
+	}
+	
+	protected WindowProxy open(String url) {
+		return open(url, DEFAULT_TARGET, DEFAULT_FEATURES, DEFAULT_REAPLACE);
+	}
+	
+	protected WindowProxy open(String url, String target) {
+		return open(url, target, DEFAULT_FEATURES, DEFAULT_REAPLACE);
+	}
+	
+	protected WindowProxy open(String url, String target, String features) {
+		return open(url, target, features, DEFAULT_REAPLACE);
+	}
+	
+/*
+[Global]
+interface Window : EventTarget {
+TODO:
+  // the user agent
+  readonly attribute Navigator navigator; 
+  readonly attribute External external;
+  readonly attribute ApplicationCache applicationCache;
+
+  // user prompts
+  void alert(optional DOMString message = "");
+  boolean confirm(optional DOMString message = "");
+  DOMString? prompt(optional DOMString message = "", optional DOMString default = "");
+  void print();
+  any showModalDialog(DOMString url, optional any argument);
+
+
+};
+Window implements GlobalEventHandlers;
+Window implements WindowEventHandlers;
+ */
+	/*
     @ScriptGetter
     public String getTest() {
         return "WINDOW GETTER";
@@ -109,5 +141,11 @@ public class Window extends AbstractWindow {
     public ShutterTestClass testShutter() {
     	return new ShutterTestClass();
     }
-
+    
+    	
+    @ScriptGetter()
+	public WindowScriptSettings getScriptSettings() {
+		return _scriptSettings;
+	}
+*/
 }

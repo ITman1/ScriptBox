@@ -1,10 +1,10 @@
 package org.fit.cssbox.scriptbox.script.javascript;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.ScriptAnnotation;
+import org.fit.cssbox.scriptbox.script.ScriptClass;
 import org.fit.cssbox.scriptbox.script.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.ScriptSetter;
@@ -15,37 +15,28 @@ public class ScriptAnnotationImplementor extends ObjectImplementor {
 	public ScriptAnnotationImplementor(Object implementedObject, BrowserScriptEngine browserScriptEngine) {
 		super(implementedObject, browserScriptEngine);
 	}
-
+	
 	@Override
 	protected boolean isGetter(Method method) {
-		if (method.isAnnotationPresent(ScriptGetter.class)) {
-			boolean isSupported = ScriptAnnotation.isEngineSupported(implementedObjectType, method, scriptEngine);
-			boolean isGetter = super.isGetter(method);
-			
-			return isSupported && isGetter;
-		}
-		return false;
+		boolean isGetter = super.isGetter(method);
+		boolean isSupportedAndValid = ScriptAnnotation.isSupportedAndValid(ScriptGetter.class, ScriptClass.ALL_FIELDS, implementedObjectType, method, scriptEngine);
+
+		return isGetter && isSupportedAndValid;
 	}
 	
 	@Override
 	protected boolean isSetter(Method method) {
-		if (method.isAnnotationPresent(ScriptSetter.class)) {
-			boolean isSupported = ScriptAnnotation.isEngineSupported(implementedObjectType, method, scriptEngine);
-			boolean isSetter = super.isGetter(method);
-			
-			return isSupported && isSetter;
-		}
-		return false;
+		boolean isSetter = super.isSetter(method);
+		boolean isSupportedAndValid = ScriptAnnotation.isSupportedAndValid(ScriptSetter.class, ScriptClass.ALL_FIELDS, implementedObjectType, method, scriptEngine);
+				
+		return isSetter && isSupportedAndValid;
 	}
 	
 	@Override
 	protected boolean isFunction(Method method) {
-		if (method.isAnnotationPresent(ScriptFunction.class)) {
-			boolean isSupported = ScriptAnnotation.isEngineSupported(implementedObjectType, method, scriptEngine);
-			boolean isFunction = super.isFunction(method);
-			
-			return isSupported && isFunction;
-		}
-		return false;
+		boolean isFunction = super.isFunction(method);
+		boolean isSupportedAndValid = ScriptAnnotation.isSupportedAndValid(ScriptFunction.class, ScriptClass.ALL_METHODS, implementedObjectType, method, scriptEngine);
+				
+		return isFunction && isSupportedAndValid;
 	}	
 }

@@ -3,23 +3,14 @@ package org.fit.cssbox.scriptbox.demo;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngineFactory;
-import org.mozilla.javascript.Wrapper;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 
 public class MultipleDocumentBrowser {
 

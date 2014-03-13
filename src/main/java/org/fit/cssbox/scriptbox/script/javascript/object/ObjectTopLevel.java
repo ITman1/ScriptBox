@@ -2,6 +2,7 @@ package org.fit.cssbox.scriptbox.script.javascript.object;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
@@ -49,6 +50,17 @@ public class ObjectTopLevel extends TopLevel {
 	
 	public JavaScriptEngine getBrowserScriptEngine() {
 		return scriptEngine;
+	}
+	
+	@Override
+	public Object[] getIds() {
+		String[] ids = {};
+		if (implementor != null) {
+			Set<String> properties = implementor.getDefinedFieldProperties();
+			ids = properties.toArray(new String[properties.size()]);;
+		}
+
+		return ids;
 	}
 	
 	protected void implementGlobalObject() {

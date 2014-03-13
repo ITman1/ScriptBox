@@ -2,10 +2,6 @@ package org.fit.cssbox.scriptbox.script;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
 
 public class ScriptAnnotation {
@@ -16,7 +12,7 @@ public class ScriptAnnotation {
 	}
 	
 	public static boolean containsOption(Annotation classAnnotation, String option) {
-		if (classAnnotation != null) {
+		if (classAnnotation != null && classAnnotation instanceof ScriptClass) {
 			ScriptClass scriptClassAnnotation = (ScriptClass)classAnnotation;
 			String options[] = scriptClassAnnotation.options();
 			
@@ -33,12 +29,26 @@ public class ScriptAnnotation {
 	public static boolean isEngineSupported(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
 		Annotation methodAnnotation = getMethodScriptAnnotation(method);
 		Annotation clazzAnnotation = getClassScriptAnnotation(clazz);
-
-		boolean engineSupported = true;
+		boolean classSupported = false;
+		boolean methodSupported = false;
+		
 		if (clazzAnnotation != null) {
-			engineSupported = engineSupported && isEngineSupported(clazzAnnotation, scriptEngine);
+			classSupported = isEngineSupported(clazzAnnotation, scriptEngine);
 		}
-		engineSupported = engineSupported && isEngineSupported(methodAnnotation, scriptEngine);
+		
+		if (methodAnnotation != null) {
+			methodSupported = isEngineSupported(methodAnnotation, scriptEngine);
+		}
+		
+		boolean engineSupported = false;
+		if (clazzAnnotation != null) {
+			engineSupported = classSupported;
+			if (methodAnnotation != null) {
+				engineSupported = engineSupported && methodSupported;
+			}
+		} else if (methodAnnotation != null) {
+			engineSupported = methodSupported;
+		}
 		
 		return engineSupported;
 	}
@@ -79,6 +89,11 @@ public class ScriptAnnotation {
 		return false;
 	}
 	
+	public static Annotation getClassScriptAnnotation(Method method) {
+		Class<?> clazz = method.getClass();
+		return getClassScriptAnnotation(clazz);
+	}
+	
 	public static Annotation getClassScriptAnnotation(Class<?> clazz) {
 		Annotation clazzAnnotation = clazz.getAnnotation(ScriptClass.class);
 				
@@ -110,5 +125,20 @@ public class ScriptAnnotation {
 		}
 		
 		return returnAnnotation;
+	}
+	
+	public static boolean isSupportedAndValid(Class<? extends Annotation> annotationType, String classOption, Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
+		boolean engineSupported = ScriptAnnotation.isEngineSupported(clazz, method, scriptEngine);
+		boolean hasValidAnnotation = false;
+		
+		Annotation classAnnotation = ScriptAnnotation.getClassScriptAnnotation(method);
+		Annotation methodAnnotation = ScriptAnnotation.getMethodScriptAnnotation(method);
+		if (ScriptAnnotation.containsOption(classAnnotation, classOption)) {
+			hasValidAnnotation = true;
+		} else if (methodAnnotation != null) {
+			hasValidAnnotation = annotationType.isAssignableFrom(methodAnnotation.getClass());
+		}
+		
+		return engineSupported && hasValidAnnotation;
 	}
 }

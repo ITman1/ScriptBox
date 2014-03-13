@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.script.javascript.object;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,17 +15,27 @@ public class ObjectImplementor {
 	protected Object implementedObject;
 	protected Class<?> implementedObjectType;
 	protected BrowserScriptEngine scriptEngine;
-	protected Set<String> definedProperties;
+	protected Set<String> definedFieldProperties;
+	protected Set<String> definedFunctionProperties;
 	
 	public ObjectImplementor(Object implementedObject, BrowserScriptEngine scriptEngine) {
 		this.implementedObject = implementedObject;
 		this.implementedObjectType = implementedObject.getClass();
 		this.scriptEngine = scriptEngine;
-		this.definedProperties = new HashSet<String>();
+		this.definedFieldProperties = new HashSet<String>();
+		this.definedFunctionProperties = new HashSet<String>();
 	}
 	
 	public Object getImplementedObject() {
 		return implementedObject;
+	}
+	
+	public Set<String> getDefinedFieldProperties() {
+		return Collections.unmodifiableSet(definedFieldProperties);
+	}
+	
+	public Set<String> getDefinedFunctionProperties() {
+		return Collections.unmodifiableSet(definedFunctionProperties);
 	}
 	
 	public void implementObject(ScriptableObject destinationScope) {
@@ -33,10 +44,16 @@ public class ObjectImplementor {
 	}
 	
 	public void removeObject(ScriptableObject destinationScope) {
-		for (String property : definedProperties) {
+		for (String property : definedFieldProperties) {
 			destinationScope.delete(property);
 		}
-		definedProperties.clear();
+		
+		for (String property : definedFunctionProperties) {
+			destinationScope.delete(property);
+		}
+		
+		definedFieldProperties.clear();
+		definedFunctionProperties.clear();
 	}
 	
 	protected void defineObjectFunctions(ScriptableObject destinationScope) {
@@ -101,12 +118,12 @@ public class ObjectImplementor {
 	
 	protected void defineObjectFunction(ScriptableObject destinationScope, String methodName, ObjectFunction objectFunction) {
 		ObjectScriptable.defineObjectFunction(destinationScope, methodName, objectFunction);
-		definedProperties.add(methodName);
+		definedFunctionProperties.add(methodName);
 	}
 	
 	protected void defineObjectField(ScriptableObject destinationScope, String fieldName, ObjectField objectField) {
 		ObjectScriptable.defineObjectField(destinationScope, fieldName, objectField);
-		definedProperties.add(fieldName);
+		definedFieldProperties.add(fieldName);
 	}
 	
 	protected boolean isGetter(Method method) {
