@@ -29,11 +29,11 @@ public class ObjectTopLevel extends TopLevel {
 		Context cx = scriptEngine.enterContext();
 		try {
 			cx.initStandardObjects(this, true);
+			deleteRhinoUnsafeProperties();
 			
 			implementGlobalObject();
 			defineBuiltinFunctions();
 			defineBuiltinProperties();
-			deleteRhinoUnsafeProperties();
 			sealObject();
 		} finally {
 			scriptEngine.exitContext();
@@ -86,7 +86,7 @@ public class ObjectTopLevel extends TopLevel {
 	public Object[] getIds() {
 		String[] ids = {};
 		if (implementor != null) {
-			Set<String> properties = implementor.getDefinedFieldProperties();
+			Set<String> properties = implementor.getDefinedProperties();
 			ids = properties.toArray(new String[properties.size()]);;
 		}
 

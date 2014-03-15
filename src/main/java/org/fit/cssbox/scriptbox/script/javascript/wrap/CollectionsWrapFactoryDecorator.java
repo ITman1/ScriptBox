@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
-import org.fit.cssbox.scriptbox.script.javascript.js.NativeJavaCollection;
+import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaCollection;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
@@ -22,7 +22,7 @@ public class CollectionsWrapFactoryDecorator extends WrapFactoryDecorator {
 		boolean isCollection = List.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type) || ObjectGetter.class.isAssignableFrom(type);
         
 		if (isCollection) {
-        	return new NativeJavaCollection(scope, javaObject, staticType);
+        	return new HostedJavaCollection(scope, javaObject, staticType);
         }
         
         return super.wrapAsJavaObject(cx, scope, javaObject, staticType);

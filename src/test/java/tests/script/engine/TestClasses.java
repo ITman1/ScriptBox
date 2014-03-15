@@ -17,6 +17,9 @@ public class TestClasses {
 		public NestedObjectWithGetter publicNestedObjectWithGetter;
 		private NestedObjectWithGetter privateNestedObjectWithGetter;
 		
+		public String publicStringProperty = "publicStringProperty";
+		public String duplicatedPublicStringProperty = "publicStringProperty";
+		
 		public NestedObjectWithGetter(int nestLevel) {
 			if (nestLevel > 0) {
 				publicNestedObject = new NestedObjectWithGetter(nestLevel - 1);
@@ -26,11 +29,25 @@ public class TestClasses {
 		}
 		
 		public NestedObjectWithGetter getPublicNestedObjectWithGetter() {
-			return privateNestedObjectWithGetter;
+			return publicNestedObjectWithGetter;
 		}
 		
 		public NestedObjectWithGetter getPrivateNestedObjectWithGetter() {
 			return privateNestedObjectWithGetter;
+		}
+		
+		public void setPrivateNestedObjectWithGetter(NestedObjectWithGetter object) {
+			privateNestedObjectWithGetter = object;
+		}
+		
+		public String getPublicStringProperty() {
+			duplicatedPublicStringProperty = null;
+			return publicStringProperty;
+		}
+		
+		public void setPublicStringProperty(String value) {
+			publicStringProperty = value;
+			duplicatedPublicStringProperty = value;
 		}
 		
 		public String getConcat() {

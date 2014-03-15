@@ -6,17 +6,15 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
-import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 
-public class NativeJavaCollection extends NativeJavaObject {
+public class HostedJavaCollection extends HostedJavaObject {
 	private static final long serialVersionUID = -369637419233477403L;
 	
 	protected Class<?> javaObjectType;
 	
-	public NativeJavaCollection(Scriptable scope, Object javaObject, Class<?> staticType) {
+	public HostedJavaCollection(Scriptable scope, Object javaObject, Class<?> staticType) {
 		super(scope, javaObject, staticType);
 		
 		javaObjectType = javaObject.getClass();
@@ -26,7 +24,7 @@ public class NativeJavaCollection extends NativeJavaObject {
 	public Object get(int index, Scriptable start) {
 		Object object;
 		
-		object = getterGet(index);
+		object = super.get(index, start);
 		object = (object == Scriptable.NOT_FOUND)? collectionGet(index) : object;
 		
 		return object;
@@ -37,7 +35,6 @@ public class NativeJavaCollection extends NativeJavaObject {
 		Object object;
 		
 		object = super.get(name, start);
-		object = (object == Scriptable.NOT_FOUND)? getterGet(name) : object;
 		object = (object == Scriptable.NOT_FOUND)? collectionGet(name) : object;
 		
 		return object;
@@ -66,38 +63,9 @@ public class NativeJavaCollection extends NativeJavaObject {
 		}
 		
 		if (result != Scriptable.NOT_FOUND && method != null) {
-			result = wrapRedirect(result, javaObject, method);
+			result = new JavaMethodRedirectedWrapper(result, javaObject, method);
 		}
 		
 		return result;
-	}
-	
-	protected Object getterGet(Object key) {
-		Method method = null;
-		Object result = Scriptable.NOT_FOUND;
-		
-		if (javaObject instanceof ObjectGetter) {
-			Object value = ((ObjectGetter)javaObject).get(key);
-			
-			try {
-				method = ClassUtils.getPublicMethod(javaObjectType, ObjectGetter.METHOD_NAME, ObjectGetter.METHOD_ARG_TYPES);
-			} catch (Exception e) {
-				throw new InternalException(e);
-			}
-			
-			if (value != ObjectGetter.UNDEFINED_VALUE) {
-				result = value;
-			}
-		}
-		
-		if (result != Scriptable.NOT_FOUND && method != null) {
-			result = wrapRedirect(result, javaObject, method);
-		}
-		
-		return result;
-	}
-	
-	protected Object wrapRedirect(Object value, Object instance, Method method) {
-		return new RedirectedToJavaMethod(value, instance, method);
 	}
 }

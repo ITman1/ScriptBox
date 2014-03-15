@@ -8,5 +8,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ScriptFunction  {
+	public static final String ENUMERABLE = "enumerable";
+	
 	String[] engines() default {};
+	String[] options() default {ENUMERABLE};
 }

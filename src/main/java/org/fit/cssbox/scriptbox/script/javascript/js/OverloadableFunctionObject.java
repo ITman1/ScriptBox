@@ -41,8 +41,11 @@ public class OverloadableFunctionObject extends FunctionObject {
 			Class<?> methodTypes[] = method.getParameterTypes();
 			
 			Object[] castedArgs = ObjectFunction.castArgs(methodTypes, args);
+			if (castedArgs == null) {
+				continue;
+			}
+			
 			boolean isAssignable = ObjectFunction.isAssignableTypes(castedArgs, methodTypes);
-						
 			if (isAssignable) {
 				return objectFunction;
 			}

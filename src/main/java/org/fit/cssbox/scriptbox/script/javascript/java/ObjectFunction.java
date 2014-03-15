@@ -68,7 +68,7 @@ public class ObjectFunction {
 	}
 	
 	public static Object[] castArgs(Class<?>[] expectedTypes, Object... args) {
-		if (expectedTypes != null && args != null && expectedTypes.length == args.length && args.length > 0) {
+		if (expectedTypes != null && args != null && expectedTypes.length == args.length) {
 			Object[] castedArgs = new Object[args.length];
 			for (int i = 0; i < args.length; i++) {
 				Object arg = args[i];
@@ -83,7 +83,7 @@ public class ObjectFunction {
 			return castedArgs;
 		}
 		
-		return new Object[0];
+		return null;
 	}
 	
 	public static boolean isAssignableTypes(Object[] args, Class<?>... types) {

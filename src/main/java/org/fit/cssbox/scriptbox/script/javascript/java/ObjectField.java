@@ -33,14 +33,18 @@ public class ObjectField {
 	protected Field field;
 	
 	public ObjectField(Object object, Field field) {
-		this.object = object;
-		this.field = field;
+		this(object, null, null, field);
 	}
 	
 	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod) {
+		this(object, fieldGetterMethod, fieldSetterMethod, null);
+	}
+	
+	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod, Field field) {
 		this.object = object;
 		this.fieldGetterMethod = fieldGetterMethod;
 		this.fieldSetterMethod = fieldSetterMethod;
+		this.field = field;
 	}
 	
 	public Object getObject() {
@@ -79,7 +83,7 @@ public class ObjectField {
 		value = ObjectScriptable.jsToJava(value);
 		if (field != null) {
 			try {
-				field.set(obj, value);
+				field.set(object, value);
 			} catch (Exception e) {
 				throw new UnknownException(e);
 			}
@@ -112,7 +116,7 @@ public class ObjectField {
 		
 		if (setterName.startsWith("set") && setterName.length() > 3) {
 			Character fourthCharacter = setterName.charAt(3);
-			return parameterTypes.length == 1 && Character.isUpperCase(fourthCharacter) && returnType != Void.TYPE;
+			return parameterTypes.length == 1 && Character.isUpperCase(fourthCharacter) && returnType == Void.TYPE;
 		}
 				
 		return false;

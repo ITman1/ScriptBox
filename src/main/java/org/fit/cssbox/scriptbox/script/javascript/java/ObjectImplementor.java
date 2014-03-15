@@ -2,6 +2,7 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,45 +21,34 @@ public class ObjectImplementor {
 	protected Object implementedObject;
 	protected Class<?> implementedObjectType;
 	protected BrowserScriptEngine scriptEngine;
-	protected Set<String> definedFieldProperties;
-	protected Set<String> definedFunctionProperties;
+	protected Set<String> definedProperties;
 	
 	public ObjectImplementor(Object implementedObject, BrowserScriptEngine scriptEngine) {
 		this.implementedObject = implementedObject;
 		this.implementedObjectType = implementedObject.getClass();
 		this.scriptEngine = scriptEngine;
-		this.definedFieldProperties = new HashSet<String>();
-		this.definedFunctionProperties = new HashSet<String>();
+		this.definedProperties = new HashSet<String>();
 	}
 	
 	public Object getImplementedObject() {
 		return implementedObject;
 	}
 	
-	public Set<String> getDefinedFieldProperties() {
-		return Collections.unmodifiableSet(definedFieldProperties);
+	public Set<String> getDefinedProperties() {
+		return Collections.unmodifiableSet(definedProperties);
 	}
-	
-	public Set<String> getDefinedFunctionProperties() {
-		return Collections.unmodifiableSet(definedFunctionProperties);
-	}
-	
+
 	public void implementObject(ScriptableObject destinationScope) {
 		defineObjectProperties(destinationScope);
 		defineObjectFunctions(destinationScope);
 	}
 	
 	public void removeObject(ScriptableObject destinationScope) {
-		for (String property : definedFieldProperties) {
+		for (String property : definedProperties) {
 			destinationScope.delete(property);
 		}
 		
-		for (String property : definedFunctionProperties) {
-			destinationScope.delete(property);
-		}
-		
-		definedFieldProperties.clear();
-		definedFunctionProperties.clear();
+		definedProperties.clear();
 	}
 	
 	protected void defineObjectFunctions(ScriptableObject destinationScope) {
@@ -73,7 +63,7 @@ public class ObjectImplementor {
 		
 			String methodName = extractFunctionName(method);
 			
-			ObjectFunction objectFunction = new ObjectFunction(implementedObject, method);
+			ObjectFunction objectFunction = constructObjectFunction(method);
 			defineObjectFunction(destinationScope, methodName, objectFunction);
 		}
 	}
@@ -109,7 +99,7 @@ public class ObjectImplementor {
 			
 			setters.remove(fieldName);
 			
-			ObjectField objectField = new ObjectField(implementedObject, objectFieldGetter, objectFieldSetter);
+			ObjectField objectField = constructObjectField(objectFieldGetter, objectFieldSetter, null);
 			defineObjectField(destinationScope, fieldName, objectField);
 		}
 		
@@ -117,7 +107,7 @@ public class ObjectImplementor {
 			String fieldName = setterEntry.getKey();
 			Method objectFieldSetter = setterEntry.getValue();
 
-			ObjectField objectField = new ObjectField(implementedObject, null, objectFieldSetter);
+			ObjectField objectField = constructObjectField(null, objectFieldSetter, null);
 			defineObjectField(destinationScope, fieldName, objectField);
 		}
 		
@@ -130,20 +120,45 @@ public class ObjectImplementor {
 			String fieldName = field.getName();
 			
 			if (!destinationScope.has(fieldName, destinationScope)) {
-				ObjectField objectField = new ObjectField(implementedObject, field);
+				ObjectField objectField = constructObjectField(null, null, field);
 				defineObjectField(destinationScope, fieldName, objectField);
 			}
 		}
 	}
 	
+	protected ObjectFunction constructObjectFunction(Method method) {
+		return new ObjectFunction(implementedObject, method);
+	}
+	
+	protected ObjectField constructObjectField(Method objectFieldGetter, Method objectFieldSetter, Field objectField) {
+		Class<?> objectClass = implementedObject.getClass();
+		String fieldName = null;
+		
+		if (objectFieldGetter != null) {
+			fieldName = extractFieldNameFromGetter(objectFieldGetter);
+		} else if (objectFieldSetter != null) {
+			fieldName = extractFieldNameFromSetter(objectFieldGetter);
+		} else {
+			fieldName = objectField.getName();
+		}
+		
+		if (objectField == null) {
+			try {
+				objectField = objectClass.getField(fieldName);
+			} catch (Exception e) {}
+		}
+		
+		return new ObjectField(implementedObject, objectFieldGetter, objectFieldSetter, objectField);
+	}
+	
 	protected void defineObjectFunction(ScriptableObject destinationScope, String methodName, ObjectFunction objectFunction) {
 		ObjectScriptable.defineObjectFunction(destinationScope, methodName, objectFunction);
-		definedFunctionProperties.add(methodName);
+		definedProperties.add(methodName);
 	}
 	
 	protected void defineObjectField(ScriptableObject destinationScope, String fieldName, ObjectField objectField) {
 		ObjectScriptable.defineObjectField(destinationScope, fieldName, objectField);
-		definedFieldProperties.add(fieldName);
+		definedProperties.add(fieldName);
 	}
 	
 	protected boolean isObjectGetter(Method method) {
@@ -159,16 +174,11 @@ public class ObjectImplementor {
 	}
 	
 	protected boolean isFunction(Method method) {
-		Method toStringMethod = null;
-		try {
-			toStringMethod = implementedObject.getClass().getMethod("toString");
-		} catch (Exception e) {
-		}
-		return !method.equals(toStringMethod) && !isGetter(method) && !isSetter(method) && !isObjectGetter(method);
+		return !isObjectGetter(method);// && !isGetter(method) && !isSetter(method);
 	}
 	
 	protected boolean isProperty(Field field) {
-		return true;
+		return !Modifier.isStatic(field.getModifiers());
 	}
 	
 	protected String extractFieldNameFromGetter(Method method) {

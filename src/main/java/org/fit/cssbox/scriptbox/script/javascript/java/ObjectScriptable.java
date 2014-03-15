@@ -41,7 +41,7 @@ public class ObjectScriptable extends ScriptableObject  {
 		Method wrappedFieldSetterMethod = (fieldSetterMethod == null && field == null)? null : ObjectField.SETTER_METHOD;
 		
 		int attributes = ScriptableObject.DONTENUM;
-		attributes = (fieldSetterMethod == null)? attributes | ScriptableObject.READONLY : attributes;
+		attributes = (fieldSetterMethod == null && field == null)? attributes | ScriptableObject.READONLY : attributes;
 		
 		fieldScopeObject.defineProperty(fieldName, objectField, wrappedFieldGetterMethod, wrappedFieldSetterMethod, attributes);
 	}
@@ -50,7 +50,9 @@ public class ObjectScriptable extends ScriptableObject  {
 		Object function = ScriptableObject.getProperty(functionScopeObject, functionName);
 		
 		if (function != Scriptable.NOT_FOUND && !(function instanceof OverloadableFunctionObject)) {
-			throw new FunctionException("Function already exists and cannot be overloaded because function object does not extends OverloadableFunctionObject");
+			deleteProperty(functionScopeObject, functionName);
+			function = Scriptable.NOT_FOUND;
+			//throw new FunctionException("Function already exists and cannot be overloaded because function object does not extends OverloadableFunctionObject");
 		}
 		
 		if (function == Scriptable.NOT_FOUND) {
