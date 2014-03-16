@@ -18,7 +18,9 @@ import org.junit.runners.JUnit4;
 import org.junit.runner.RunWith;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.TopLevel;
+import org.mozilla.javascript.Undefined;
 
 import tests.script.engine.TestClasses.NestedObjectWithGetter;
 
@@ -27,21 +29,6 @@ import tests.script.engine.TestClasses.NestedObjectWithGetter;
  */
 @RunWith(JUnit4.class)
 public class DefaultWrapFactoryTests {
-
-	public class DefaultContextFactory extends ContextFactory {
-		
-		@Override
-		protected Context makeContext() {
-			Context cx = super.makeContext();
-			
-			WrapFactoryDecorator wrapFactoryDecorator = new DefaultWrapFactoryDecorator();
-
-			cx.setWrapFactory(wrapFactoryDecorator);
-			
-			return cx;
-		}
-	}
-
 	@Test
 	public void TestEnumerableProperties() throws ScriptException {
 		Map<String, Object> properties = new HashMap<String, Object>();
@@ -85,7 +72,7 @@ public class DefaultWrapFactoryTests {
     	assertEquals("foo", retValues.get("getConcat1"));
     	assertEquals("foobar", retValues.get("getConcat2"));
     	assertEquals(true, retValues.get("equals"));
-    	assertEquals(Math.abs(globalObject.publicNestedObject.hashCode() - (Double)retValues.get("hashCode")) < 1.0, true);
+    	assertEquals(globalObject.publicNestedObject.hashCode(), retValues.get("hashCode"));
 	}
 	
 	@Test
@@ -98,7 +85,7 @@ public class DefaultWrapFactoryTests {
 		engine.eval("retValues.put('publicNestedObject', publicNestedObject.publicNestedObject);");
 		engine.eval("retValues.put('publicProperty', publicNestedObject.publicProperty);");
 		engine.eval("retValues.put('publicNestedObjectWithGetter', publicNestedObject.publicNestedObjectWithGetter);");
-		
+
 		assertEquals(globalObject.publicNestedObject.publicNestedObject, retValues.get("publicNestedObject"));
 		assertEquals(globalObject.publicNestedObject.publicProperty, retValues.get("publicProperty"));
 		assertEquals(globalObject.publicNestedObject.publicNestedObjectWithGetter, retValues.get("publicNestedObjectWithGetter"));
@@ -156,8 +143,26 @@ public class DefaultWrapFactoryTests {
 		assertFalse(globalObject.publicNestedObject.duplicatedPublicStringProperty.equals("new property"));
 	}
 	
+	@Test
+	public void TestObjectGetter() throws ScriptException {
+		Map<String, Object> retValues = new HashMap<String, Object>();
+		NestedObjectWithGetter globalObject = new NestedObjectWithGetter(2);
+		JavaScriptEngine engine = getObjectTopLevelScriptEngine(globalObject);
+		
+		engine.put("retValues", retValues);
+		engine.eval("retValues.put('getFoo', publicNestedObject['foo']);");
+		engine.eval("retValues.put('get0', publicNestedObject[0]);");
+		engine.eval("retValues.put('getStr0', publicNestedObject['str']);");
+		engine.eval("retValues.put('get1', publicNestedObject[1]);");
+		
+		assertEquals("bar", retValues.get("getFoo"));
+		assertEquals(retValues.get("get0"), 1);
+		assertEquals(Undefined.instance, retValues.get("getStr0"));
+		assertEquals(Undefined.instance, retValues.get("get1"));
+	}
+	
 	protected JavaScriptEngine getObjectTopLevelScriptEngine(final Object object) {
-		return new GlobalObjectJavaScriptEngine(null, null, new DefaultContextFactory()) {
+		return new GlobalObjectJavaScriptEngine(null, null, new TestContextFactories.DefaultContextFactory()) {
 			@Override
 			protected TopLevel initializeTopLevel() {
 				return new ObjectTopLevel(object, this);

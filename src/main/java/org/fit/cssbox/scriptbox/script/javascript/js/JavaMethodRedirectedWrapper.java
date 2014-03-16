@@ -27,6 +27,10 @@ public class JavaMethodRedirectedWrapper implements Wrapper {
 
 	@Override
 	public Object unwrap() {
+		if (wrappedObject instanceof Wrapper) {
+			return ((Wrapper) wrappedObject).unwrap();
+		}
+		
 		return wrappedObject;
 	}
 	

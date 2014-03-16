@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script;
+package org.fit.cssbox.scriptbox.script.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,5 +11,5 @@ public @interface ScriptFunction  {
 	public static final String ENUMERABLE = "enumerable";
 	
 	String[] engines() default {};
-	String[] options() default {ENUMERABLE};
+	String[] options() default {};
 }

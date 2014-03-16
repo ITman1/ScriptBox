@@ -22,7 +22,7 @@ public class CollectionsWrapFactoryDecorator extends WrapFactoryDecorator {
 		boolean isCollection = List.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type) || ObjectGetter.class.isAssignableFrom(type);
         
 		if (isCollection) {
-        	return new HostedJavaCollection(scope, javaObject, staticType);
+        	return new HostedJavaCollection(scope, javaObject);
         }
         
         return super.wrapAsJavaObject(cx, scope, javaObject, staticType);

@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
-import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaCollection;
 import org.fit.cssbox.scriptbox.script.javascript.js.JavaMethodRedirectedWrapper;
 import org.fit.cssbox.scriptbox.script.javascript.js.SriptableWrapper;
 import org.mozilla.javascript.BaseFunction;
@@ -165,7 +164,7 @@ public class SanboxedJavaObject extends SriptableWrapper {
 		Boolean isFieldVisible = visitedMethods.get(name);
 		 
 		if (isFieldVisible == null) {
-			isFieldVisible = shutter.isFieldVisible(wrappedObject, name); 
+			//isFieldVisible = shutter.isFieldVisible(wrappedObject, name); 
 			visitedFields.put(name, isFieldVisible);
 		}
 		

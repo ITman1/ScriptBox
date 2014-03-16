@@ -13,7 +13,9 @@ import org.junit.Test;
 import org.junit.runners.JUnit4;
 import org.junit.runner.RunWith;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.TopLevel;
+import org.mozilla.javascript.Undefined;
 
 import tests.script.engine.TestClasses.NestedObjectWithGetter;
 
@@ -35,7 +37,7 @@ public class ObjectTopLevelTests {
     	
     	/* Test for equality of all properties which have instances in Java */
     	
-    	// Top level properties
+    	// Test some enumerated top level properties
     	assertEquals(globalObject.publicProperty, properties.get("publicProperty"));
     	assertEquals(globalObject.publicNestedObject, properties.get("publicNestedObject"));
     	assertEquals(globalObject.getPublicNestedObjectWithGetter(), properties.get("publicNestedObjectWithGetter"));
@@ -63,7 +65,7 @@ public class ObjectTopLevelTests {
     	assertEquals("foo", retValues.get("getConcat1"));
     	assertEquals("foobar", retValues.get("getConcat2"));
     	assertEquals(true, retValues.get("equals"));
-    	assertEquals(Math.abs(globalObject.hashCode() - (Double)retValues.get("hashCode")) < 1.0, true);
+    	assertEquals(globalObject.hashCode(), retValues.get("hashCode"));
 	}
 	
 	@Test
@@ -92,6 +94,9 @@ public class ObjectTopLevelTests {
 		assertEquals(globalObject.publicNestedObject, newNestedObject);
 		assertEquals(globalObject.publicProperty, newPublicProperty);
 		assertEquals(globalObject.publicNestedObjectWithGetter, newNestedObject);
+		
+		engine.eval("retValues.put('staticProperty', this['METHOD_NAME']);");
+		assertEquals(Undefined.instance, retValues.get("staticProperty"));
 	}
 	
 	@Test
@@ -107,9 +112,9 @@ public class ObjectTopLevelTests {
 		engine.eval("retValues.put('get1', this[1]);");
 		
 		assertEquals("bar", retValues.get("getFoo"));
-		assertEquals(((Double)retValues.get("get0")) - 1 < 1e-1, true);
-		assertEquals("undefined", retValues.get("getStr0"));
-		assertEquals("undefined", retValues.get("get1"));
+		assertEquals(retValues.get("get0"), 1);
+		assertEquals(Undefined.instance, retValues.get("getStr0"));
+		assertEquals(Undefined.instance, retValues.get("get1"));
 	}
 	
 	@Test
@@ -159,7 +164,7 @@ public class ObjectTopLevelTests {
 	}
 	
 	protected JavaScriptEngine getObjectTopLevelScriptEngine(final Object object) {
-		return new GlobalObjectJavaScriptEngine(null, null, new ContextFactory()) {
+		return new GlobalObjectJavaScriptEngine(null, null, new TestContextFactories.DefaultContextFactory()) {
 			@Override
 			protected TopLevel initializeTopLevel() {
 				return new ObjectTopLevel(object, this);

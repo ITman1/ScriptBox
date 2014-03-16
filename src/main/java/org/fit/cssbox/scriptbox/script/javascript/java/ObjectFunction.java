@@ -5,13 +5,12 @@ import java.lang.reflect.Method;
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
-import org.fit.cssbox.scriptbox.script.javascript.js.OverloadableFunctionObject;
+import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 
-public class ObjectFunction {	
+public class ObjectFunction extends ObjectMember<Method> {	
 	public final static Method FUNCTION_METHOD;
 	
 	static {
@@ -24,43 +23,17 @@ public class ObjectFunction {
 		FUNCTION_METHOD = functionMethod;
 	}
 	
-	private Object object;
-	private Method functionMethod;
-	
 	public ObjectFunction(Object object, Method functionMethod) {
-		this.object = object;
-		this.functionMethod = functionMethod;
+		this(object, functionMethod, null);
 	}
 	
-	public Object getObject() {
-		return object;
-	}
-
-	public Method getFunctionMethod() {
-		return functionMethod;
+	public ObjectFunction(Object object, Method functionMethod, String[] options) {
+		super(object, functionMethod, options);
 	}
 	
 	public static Object function(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		if (funObj instanceof OverloadableFunctionObject) {
-			
-			OverloadableFunctionObject wrappedFunctionObject = (OverloadableFunctionObject)funObj;
-			ObjectFunction nearestFunctionObject = wrappedFunctionObject.getNearestObjectFunction(args);
-
-			if (nearestFunctionObject == null) {
-				throw new FunctionException("Unable to match nearest function");
-			}
-			
-			Method functionMethod = nearestFunctionObject.functionMethod;
-			Object object = nearestFunctionObject.object;
-			
-			Class<?> expectedTypes[] = functionMethod.getParameterTypes();
-			Object[] castedArgs = castArgs(expectedTypes, args);
-			
-			try {
-				 return functionMethod.invoke(object, castedArgs);
-			} catch (Exception e) {
-				throw new UnknownException(e);
-			}
+		if (funObj instanceof HostedJavaMethod) {
+			((HostedJavaMethod)funObj).call(cx, thisObj, thisObj, args);
 		}
 
 		throw new FunctionException("Function object must be of class WrappedFunctionObject");
@@ -117,5 +90,13 @@ public class ObjectFunction {
 			return method.equals(getterMethod);
 		}
 		return false;
+	}
+	
+	public static boolean isFunction(Class<?> clazz, Method method) {
+		return !isObjectGetterMethod(clazz, method);
+	}
+	
+	public static String extractFunctionName(Method method) {
+		return method.getName();
 	}
 }

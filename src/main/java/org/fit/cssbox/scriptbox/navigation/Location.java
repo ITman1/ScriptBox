@@ -1,7 +1,7 @@
 package org.fit.cssbox.scriptbox.navigation;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.script.ScriptFunction;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 
 // TODO: https://dvcs.w3.org/hg/url/raw-file/tip/Overview.html#urlutils
 public class Location {

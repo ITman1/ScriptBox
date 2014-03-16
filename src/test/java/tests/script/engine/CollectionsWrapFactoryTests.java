@@ -17,26 +17,12 @@ import org.junit.Test;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.TopLevel;
+import org.mozilla.javascript.Undefined;
 
 import tests.script.engine.TestClasses.NestedObjectWithGetter;
 import tests.script.engine.TestClasses.CollectionsContainer;
 
-public class CollectionsWrapFactoryTests {
-	public class CollectionsContextFactory extends ContextFactory {
-				
-		@Override
-		protected Context makeContext() {
-			Context cx = super.makeContext();
-			
-			WrapFactoryDecorator wrapFactoryDecorator = new DefaultWrapFactoryDecorator();
-			wrapFactoryDecorator = new CollectionsWrapFactoryDecorator(wrapFactoryDecorator);
-
-			cx.setWrapFactory(wrapFactoryDecorator);
-			
-			return cx;
-		}
-	}
-	
+public class CollectionsWrapFactoryTests {	
 	@Test
 	public void TestNativeJavaObjectGetter() throws ScriptException {
 		Map<String, Object> retValues = new HashMap<String, Object>();
@@ -65,12 +51,12 @@ public class CollectionsWrapFactoryTests {
 		
 		assertEquals("bar", retValues.get("getFoo"));
 		assertEquals("foobar", retValues.get("get0"));
-		assertEquals("undefined", retValues.get("getStr0"));
-		assertEquals("undefined", retValues.get("get1"));
+		assertEquals(Undefined.instance, retValues.get("getStr0"));
+		assertEquals(Undefined.instance, retValues.get("get1"));
 	}
 
 	protected JavaScriptEngine getCollectionsScriptEngine(final Object object) {
-		return new GlobalObjectJavaScriptEngine(null, null, new CollectionsContextFactory()) {
+		return new GlobalObjectJavaScriptEngine(null, null, new TestContextFactories.CollectionsContextFactory()) {
 			@Override
 			protected TopLevel initializeTopLevel() {
 				return new ObjectTopLevel(object, this);

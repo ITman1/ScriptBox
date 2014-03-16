@@ -1,6 +1,6 @@
 package org.fit.cssbox.scriptbox.script.javascript.annotation;
 
-import org.fit.cssbox.scriptbox.script.ScriptAnnotation;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptAnnotation;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 
@@ -13,6 +13,6 @@ public class ScriptAnnotationTopLevel extends ObjectTopLevel {
 
 	@Override
 	protected boolean hasObjectGetter() {
-		return ScriptAnnotation.hasSupportedAndValidGetter(globalObject.getClass(), scriptEngine);
+		return ScriptAnnotation.testForObjectGetter(globalObject.getClass(), scriptEngine);
 	}
 }

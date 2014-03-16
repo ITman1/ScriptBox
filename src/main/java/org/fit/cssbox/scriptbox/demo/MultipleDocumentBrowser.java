@@ -1,18 +1,12 @@
 package org.fit.cssbox.scriptbox.demo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngineFactory;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;

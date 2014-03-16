@@ -2,12 +2,13 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.mozilla.javascript.Scriptable;
 
-public class ObjectField {
+public class ObjectField extends ObjectMember<Field> {
 	public final static Method GETTER_METHOD;
 	public final static Method SETTER_METHOD;
 	
@@ -27,30 +28,35 @@ public class ObjectField {
 		SETTER_METHOD = classMethod;
 	}
 
-	protected Object object;
 	protected Method fieldGetterMethod;
 	protected Method fieldSetterMethod;
-	protected Field field;
+	protected boolean getOverride;
+	protected boolean setOverride;
 	
 	public ObjectField(Object object, Field field) {
-		this(object, null, null, field);
+		this(object, null, null, field, false, false, null);
 	}
 	
 	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod) {
-		this(object, fieldGetterMethod, fieldSetterMethod, null);
+		this(object, fieldGetterMethod, fieldSetterMethod, null, false, false, null);
 	}
 	
 	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod, Field field) {
-		this.object = object;
-		this.fieldGetterMethod = fieldGetterMethod;
-		this.fieldSetterMethod = fieldSetterMethod;
-		this.field = field;
+		this(object, fieldGetterMethod, fieldSetterMethod, field, false, false, null);
 	}
 	
-	public Object getObject() {
-		return object;
+	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod, Field field, boolean getOverride, boolean setOverride) {
+		this(object, fieldGetterMethod, fieldSetterMethod, field, getOverride, setOverride, null);
 	}
-
+	
+	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod, Field field, boolean getOverride, boolean setOverride, String[] options) {
+		super(object, field, options);
+		this.fieldGetterMethod = fieldGetterMethod;
+		this.fieldSetterMethod = fieldSetterMethod;
+		this.getOverride = getOverride;
+		this.setOverride = setOverride;
+	}
+	
 	public Method getFieldGetterMethod() {
 		return fieldGetterMethod;
 	}
@@ -59,14 +65,11 @@ public class ObjectField {
 		return fieldSetterMethod;
 	}
 	
-	public Field getField() {
-		return field;
-	}
-	
 	public Object gettter(Scriptable obj) {
-		if (field != null) {
+		boolean override = getOverride && fieldGetterMethod != null;
+		if (member != null && !override) {
 			try {
-				return field.get(object);
+				return member.get(object);
 			} catch (Exception e) {
 				throw new UnknownException(e);
 			}
@@ -80,10 +83,11 @@ public class ObjectField {
 	}
 	
 	public void setter(Scriptable obj, Object value) {
+		boolean override = setOverride && fieldSetterMethod != null;
 		value = ObjectScriptable.jsToJava(value);
-		if (field != null) {
+		if (member != null && !override) {
 			try {
-				field.set(object, value);
+				member.set(object, value);
 			} catch (Exception e) {
 				throw new UnknownException(e);
 			}
@@ -122,6 +126,10 @@ public class ObjectField {
 		return false;
 	}
 	
+	public static boolean isField(Field field) {
+		return !Modifier.isStatic(field.getModifiers());
+	}
+	
 	public static String extractFieldNameFromGetter(Method method) {		
 		if (isGetter(method)) {
 			String getterName =  method.getName();
@@ -140,5 +148,9 @@ public class ObjectField {
 		}
 		
 		throw new FieldException("Invalid setter name! Getter method should start with 'set' and next character should be upper case!");
+	}
+	
+	public static String extractFieldName(Field field) {
+		return field.getName();
 	}
 }

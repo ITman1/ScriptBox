@@ -3,8 +3,7 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
-import org.fit.cssbox.scriptbox.script.javascript.js.OverloadableFunctionObject;
+import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
 import org.mozilla.javascript.NativeJavaClass;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -36,7 +35,7 @@ public class ObjectScriptable extends ScriptableObject  {
 	public static void defineObjectField(ScriptableObject fieldScopeObject, String fieldName, ObjectField objectField) {
 		Method fieldGetterMethod = objectField.getFieldGetterMethod();
 		Method fieldSetterMethod = objectField.getFieldSetterMethod();
-		Field field = objectField.getField();
+		Field field = objectField.getMember();
 		Method wrappedFieldGetterMethod = (fieldGetterMethod == null && field == null)? null : ObjectField.GETTER_METHOD;
 		Method wrappedFieldSetterMethod = (fieldSetterMethod == null && field == null)? null : ObjectField.SETTER_METHOD;
 		
@@ -49,17 +48,17 @@ public class ObjectScriptable extends ScriptableObject  {
 	public static void defineObjectFunction(ScriptableObject functionScopeObject, String functionName, ObjectFunction objectFunction) {		
 		Object function = ScriptableObject.getProperty(functionScopeObject, functionName);
 		
-		if (function != Scriptable.NOT_FOUND && !(function instanceof OverloadableFunctionObject)) {
+		if (function != Scriptable.NOT_FOUND && !(function instanceof HostedJavaMethod)) {
 			deleteProperty(functionScopeObject, functionName);
 			function = Scriptable.NOT_FOUND;
 			//throw new FunctionException("Function already exists and cannot be overloaded because function object does not extends OverloadableFunctionObject");
 		}
 		
 		if (function == Scriptable.NOT_FOUND) {
-			function = new OverloadableFunctionObject(objectFunction, functionName, ObjectFunction.FUNCTION_METHOD, functionScopeObject);
+			function = new HostedJavaMethod(functionScopeObject, objectFunction);
 			functionScopeObject.defineProperty(functionName, function, ScriptableObject.DONTENUM | ScriptableObject.PERMANENT);
 		} else {
-			((OverloadableFunctionObject)function).attachObjectFunction(objectFunction);
+			((HostedJavaMethod)function).attachObjectFunction(objectFunction);
 		}
 	}
 	

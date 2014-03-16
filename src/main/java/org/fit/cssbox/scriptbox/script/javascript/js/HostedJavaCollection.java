@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.mozilla.javascript.Scriptable;
 
 public class HostedJavaCollection extends HostedJavaObject {
@@ -14,8 +13,8 @@ public class HostedJavaCollection extends HostedJavaObject {
 	
 	protected Class<?> javaObjectType;
 	
-	public HostedJavaCollection(Scriptable scope, Object javaObject, Class<?> staticType) {
-		super(scope, javaObject, staticType);
+	public HostedJavaCollection(Scriptable scope, Object javaObject) {
+		super(scope, javaObject);
 		
 		javaObjectType = javaObject.getClass();
 	}
@@ -63,7 +62,7 @@ public class HostedJavaCollection extends HostedJavaObject {
 		}
 		
 		if (result != Scriptable.NOT_FOUND && method != null) {
-			result = new JavaMethodRedirectedWrapper(result, javaObject, method);
+			//result = new JavaMethodRedirectedWrapper(result, javaObject, method);
 		}
 		
 		return result;

@@ -2,6 +2,7 @@ package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.WrapFactory;
 
@@ -55,6 +56,7 @@ public class DefaultWrapFactoryDecorator extends WrapFactoryDecorator {
 		super(decorator);
 		
 		factory = new DecoratedWrapFactory();
+		factory.setJavaPrimitiveWrap(false);
 	}
 	
 	@Override
@@ -64,7 +66,7 @@ public class DefaultWrapFactoryDecorator extends WrapFactoryDecorator {
 	
 	@Override
 	public Scriptable wrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, Class<?> staticType) {
-		return new HostedJavaObject(scope, javaObject, staticType);
+		return new HostedJavaObject(scope, javaObject);
 	}
 	
 	@SuppressWarnings("rawtypes")

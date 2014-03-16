@@ -34,7 +34,7 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 	
 	public JavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings, ContextFactory contextFactory) {
 		super(factory, scriptSettings);
-
+		
 		this.contextFactory = (contextFactory != null)? contextFactory : new JavaScriptContextFactory(this);
 		topLevel = initializeTopLevel();
 	}
