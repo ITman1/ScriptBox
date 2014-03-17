@@ -11,8 +11,4 @@ public class ScriptAnnotationTopLevel extends ObjectTopLevel {
 		super(globalObject, browserScriptEngine, new ScriptAnnotationImplementor(globalObject, browserScriptEngine));
 	}
 
-	@Override
-	protected boolean hasObjectGetter() {
-		return ScriptAnnotation.testForObjectGetter(globalObject.getClass(), scriptEngine);
-	}
 }

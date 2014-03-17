@@ -3,7 +3,12 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectField;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectFunction;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJavaClass;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -12,11 +17,16 @@ import org.mozilla.javascript.Wrapper;
 public class ObjectScriptable extends ScriptableObject  {
 	private static final long serialVersionUID = 1531587729453175461L;
 
-	public ObjectScriptable() {
+	protected Object object;
+	
+	public ObjectScriptable(Object object) {
+		this.object = object;
 	}
 	
-	public ObjectScriptable(Scriptable scope, Scriptable prototype) {
+	public ObjectScriptable(Object object, Scriptable scope, Scriptable prototype) {
 		super(scope, prototype);
+		
+		this.object = object;
 	}
 	
 	@Override
@@ -55,7 +65,8 @@ public class ObjectScriptable extends ScriptableObject  {
 		}
 		
 		if (function == Scriptable.NOT_FOUND) {
-			function = new HostedJavaMethod(functionScopeObject, objectFunction);
+			Object object = objectFunction.getObject();
+			function = new HostedJavaMethod(functionScopeObject, object, objectFunction);
 			functionScopeObject.defineProperty(functionName, function, ScriptableObject.DONTENUM | ScriptableObject.PERMANENT);
 		} else {
 			((HostedJavaMethod)function).attachObjectFunction(objectFunction);
@@ -81,4 +92,10 @@ public class ObjectScriptable extends ScriptableObject  {
 			return jsObj;
 		}
 	}
+	
+	public static Object javaToJS(Object object, Scriptable scope) {
+		return Context.javaToJS(object, scope);
+	}
+	
+	
 }

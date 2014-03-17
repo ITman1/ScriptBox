@@ -9,8 +9,9 @@ import javax.script.ScriptContext;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
-public class ScriptContextScriptable extends ObjectScriptable {
+public class ScriptContextScriptable extends ScriptableObject {
 	private static final long serialVersionUID = 1531587729453175461L;
 
 	private ScriptContext context;

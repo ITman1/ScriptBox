@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectGetter;
 
 public class TestClasses {
 	public static class NestedObjectWithGetter implements ObjectGetter {
@@ -94,5 +97,83 @@ public class TestClasses {
 				add("foobar");
 			}
 		};
+	}
+	
+	public static class AnnotatedNestedObjectWithGetter implements ObjectGetter {
+		public String publicProperty = "public property";
+		protected String protectedProperty = "protected property";
+		private String privateProperty = "private property";
+		
+		public NestedObjectWithGetter publicNestedObject;
+		public NestedObjectWithGetter publicNestedObjectWithGetter;
+		private NestedObjectWithGetter privateNestedObjectWithGetter;
+		
+		public String publicStringProperty = "publicStringProperty";
+		public String duplicatedPublicStringProperty = "publicStringProperty";
+		
+		public AnnotatedNestedObjectWithGetter(int nestLevel) {
+			if (nestLevel > 0) {
+				publicNestedObject = new NestedObjectWithGetter(nestLevel - 1);
+				publicNestedObjectWithGetter = new NestedObjectWithGetter(nestLevel - 1);
+				privateNestedObjectWithGetter = new NestedObjectWithGetter(nestLevel - 1);
+			}
+		}
+		
+		public NestedObjectWithGetter getPublicNestedObjectWithGetter() {
+			return publicNestedObjectWithGetter;
+		}
+		
+		@ScriptGetter
+		public NestedObjectWithGetter getPrivateNestedObjectWithGetter() {
+			return privateNestedObjectWithGetter;
+		}
+		
+		@ScriptSetter
+		public void setPrivateNestedObjectWithGetter(NestedObjectWithGetter object) {
+			privateNestedObjectWithGetter = object;
+		}
+		
+		@ScriptGetter
+		public String getPublicStringProperty() {
+			duplicatedPublicStringProperty = null;
+			return publicStringProperty;
+		}
+		
+		@ScriptSetter
+		public void setPublicStringProperty(String value) {
+			publicStringProperty = value;
+			duplicatedPublicStringProperty = value;
+		}
+		
+		@ScriptFunction
+		public String getConcat() {
+			return "";
+		}
+		
+		public String getConcat(String arg1) {
+			return arg1;
+		}
+		
+		public String getConcat(String arg1, String arg2) {
+			return arg1 + arg2;
+		}
+
+		@ScriptFunction
+		@Override
+		public Object get(Object arg) {
+			if (arg instanceof String) {
+				if (((String)arg).equals("foo")) {
+					return "bar";
+				}
+			}
+			
+			if (arg instanceof Integer) {
+				if (((Integer)arg).equals(0)) {
+					return 1;
+				}
+			}
+			
+			return ObjectGetter.UNDEFINED_VALUE;
+		}
 	}
 }

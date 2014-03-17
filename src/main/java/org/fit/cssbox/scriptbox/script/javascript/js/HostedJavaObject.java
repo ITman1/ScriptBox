@@ -8,17 +8,21 @@ import java.util.Set;
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectField;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectFunction;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectMember;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectMembers;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
-import org.mozilla.javascript.Context;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembers;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
 
-public class HostedJavaObject extends ObjectScriptable implements Wrapper {
+/*
+ * Creates scope for java native object.
+ */
+public class HostedJavaObject extends ScriptableObject implements Wrapper {
 
 	private static final long serialVersionUID = 6761328943903362404L;
 
@@ -30,7 +34,7 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 	protected ObjectMembers objectMembers;
 	
 	public HostedJavaObject(Scriptable scope, Object javaObject) {
-		this(scope, getObjectMembers(javaObject));
+		this(scope, ObjectMembers.getObjectMembers(javaObject));
 	}
 	
 	public HostedJavaObject(Scriptable scope, ObjectMembers objectMembers) {
@@ -38,7 +42,7 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 		
 		this.objectMembers = objectMembers;
 		this.javaObject = objectMembers.getObject();
-		this.javaObjectType = objectMembers.getObjectType();
+		this.javaObjectType = this.javaObject.getClass();
 		
 		if (javaObject instanceof ObjectGetter) {
 			Class<?>[] getterArgs = ObjectGetter.METHOD_ARG_TYPES;
@@ -55,13 +59,22 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 	}
 	
 	@Override
+	public String getClassName() {
+		return "HostedJavaObject";
+	}
+	
+	@Override
 	public Object get(int index, Scriptable start) {		
 		Object object;
 		
 		object = super.get(index, start);
 		object = (object == Scriptable.NOT_FOUND)? objectGetterGet(index) : object;
 		
-		return wrapObject(object);
+		if (object != Scriptable.NOT_FOUND) {
+			object = wrapObject(object);
+		}
+		
+		return object;
 	}
 	
 	@Override
@@ -72,7 +85,11 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 		object = (object == Scriptable.NOT_FOUND)? hostGet(name) : object;
 		object = (object == Scriptable.NOT_FOUND)? objectGetterGet(name) : object;
 		
-		return wrapObject(object);
+		if (object != Scriptable.NOT_FOUND) {
+			object = wrapObject(object);
+		}
+		
+		return object;
 	}
 		
 	@Override
@@ -129,16 +146,8 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 		return javaObject;
 	}
 
-	protected Object wrapObject(Object object) {
-		if (object instanceof Scriptable) {
-			return object;
-		}
-		
-		if (object != Scriptable.NOT_FOUND) {
-			object = Context.javaToJS(object, this);
-		}
-		
-		return object;
+	protected Object wrapObject(Object object) {		
+		return ObjectScriptable.javaToJS(object, this);
 	}
 	
 	protected void hostDelete(String name) {
@@ -148,15 +157,15 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 	
 	protected void hostPut(String name, Object value) {
 		if (objectMembers.hasMemberWithName(name)) {
-			Set<ObjectMember<?>> members = objectMembers.getMembersByName(name);
+			Set<ClassMember<?>> members = objectMembers.getMembersByName(name);
 			
 			if (members == null || members.isEmpty()) {
 				throw new FieldException("Scope does not contain property with this name!");
 			}
 
-			ObjectMember<?> firstMember = members.iterator().next();
-			if (firstMember instanceof ObjectField) {
-				hostFieldPut((ObjectField)firstMember, value);
+			ClassMember<?> firstMember = members.iterator().next();
+			if (firstMember instanceof ClassField) {
+				hostFieldPut((ClassField)firstMember, value);
 				return;
 			} else {
 				throw new FieldException("Unsupported operation");
@@ -165,15 +174,15 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 		throw new FieldException("Scope does not contain property with this name!");
 	}
 	
-	protected void hostFieldPut(ObjectField objectField, Object value) {
-		objectField.setter(this, value);
+	protected void hostFieldPut(ClassField objectField, Object value) {
+		objectField.set(this, value);
 	}
 	
 	protected Object hostGet(String name) {
 		Object result = Scriptable.NOT_FOUND;
 		
 		if (objectMembers.hasMemberWithName(name)) {
-			Set<ObjectMember<?>> members = objectMembers.getMembersByName(name);
+			Set<ClassMember<?>> members = objectMembers.getMembersByName(name);
 			
 			if (members == null || members.isEmpty()) {
 				return Scriptable.NOT_FOUND;
@@ -185,17 +194,17 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 		return result;
 	}
 	
-	protected Object wrapGet(Set<ObjectMember<?>> members) {
+	protected Object wrapGet(Set<ClassMember<?>> members) {
 		Object result = Scriptable.NOT_FOUND;
-		ObjectMember<?> firstMember = members.iterator().next();
-		if (firstMember instanceof ObjectField) {
-			result = hostFieldGet((ObjectField)firstMember);
-		} else if (firstMember instanceof ObjectFunction) {
-			Set<ObjectFunction> functions = new HashSet<ObjectFunction>();
+		ClassMember<?> firstMember = members.iterator().next();
+		if (firstMember instanceof ClassField) {
+			result = hostFieldGet((ClassField)firstMember);
+		} else if (firstMember instanceof ClassFunction) {
+			Set<ClassFunction> functions = new HashSet<ClassFunction>();
 			boolean failed = false;
-			for (ObjectMember<?> member : members) {
-				if (member instanceof ObjectFunction) {
-					functions.add((ObjectFunction)member);
+			for (ClassMember<?> member : members) {
+				if (member instanceof ClassFunction) {
+					functions.add((ClassFunction)member);
 				} else {
 					failed = true;
 					break;
@@ -210,12 +219,12 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 
 	}
 	
-	protected Object hostFieldGet(ObjectField objectField) {
-		return objectField.gettter(this);
+	protected Object hostFieldGet(ClassField objectField) {
+		return objectField.get(javaObject);
 	}
 	
-	protected Object hostFunctionGet(Set<ObjectFunction> functions) {
-		return new HostedJavaMethod(this, functions);
+	protected Object hostFunctionGet(Set<ClassFunction> functions) {
+		return new HostedJavaMethod(this, javaObject, functions);
 	}
 	
 	protected Object objectGetterGet(Object key) {
@@ -242,10 +251,4 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper {
 		
 		return result;
 	}
-	
-	protected static ObjectMembers getObjectMembers(Object object) {
-		// TODO: Use cache for object members - reflecting is expensive
-		return new ObjectMembers(object);
-	}
-	
 }

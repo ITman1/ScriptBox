@@ -1,8 +1,13 @@
 package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembers;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolver;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.DefaultClassMembers;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.DefaultClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.WrapFactory;
 
@@ -47,13 +52,24 @@ public class DefaultWrapFactoryDecorator extends WrapFactoryDecorator {
 	}
 	
 	protected DecoratedWrapFactory factory;
+	protected ClassMembersResolverFactory membersResolverFactory;
 	
 	public DefaultWrapFactoryDecorator() {
-		this(null);
+		this(null, null);
 	}
 	
 	public DefaultWrapFactoryDecorator(WrapFactoryDecorator decorator) {
+		this(decorator, null);
+	}
+	
+	public DefaultWrapFactoryDecorator(ClassMembersResolverFactory membersResolverFactory) {
+		this(null, membersResolverFactory);
+	}
+	
+	public DefaultWrapFactoryDecorator(WrapFactoryDecorator decorator, ClassMembersResolverFactory membersResolverFactory) {
 		super(decorator);
+		
+		this.membersResolverFactory = (membersResolverFactory == null)? new DefaultClassMembersResolverFactory() : membersResolverFactory;
 		
 		factory = new DecoratedWrapFactory();
 		factory.setJavaPrimitiveWrap(false);
@@ -66,7 +82,8 @@ public class DefaultWrapFactoryDecorator extends WrapFactoryDecorator {
 	
 	@Override
 	public Scriptable wrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, Class<?> staticType) {
-		return new HostedJavaObject(scope, javaObject);
+		ObjectMembers objectMembers = ObjectMembers.getObjectMembers(javaObject, membersResolverFactory);
+		return new HostedJavaObject(scope, objectMembers);
 	}
 	
 	@SuppressWarnings("rawtypes")

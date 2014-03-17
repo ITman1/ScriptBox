@@ -7,9 +7,9 @@ import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectField;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectFunction;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectGetter;
 
 public class ScriptAnnotation {
 	public static boolean isScriptAnnotation(Annotation annotation) {		
@@ -189,9 +189,8 @@ public class ScriptAnnotation {
 		return isSupportedAndValid;
 	}
 	
-	public static boolean testForObjectGetter(Class<?> clazz, BrowserScriptEngine scriptEngine) {
-		if (ObjectGetter.class.isAssignableFrom(clazz)) {
-			Method method = ObjectFunction.getObjectGetterMetod(clazz);			
+	public static boolean testForObjectGetter(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
+		if (ClassFunction.isObjectGetterMethod(clazz, method)) {	
 			return isSupportedAndValid(ScriptFunction.class, ScriptClass.ALL_METHODS, clazz, method, scriptEngine);
 		}
 		
@@ -206,7 +205,7 @@ public class ScriptAnnotation {
 			ScriptGetter getterAnnotation = (ScriptGetter) annotation;
 			fieldName = getterAnnotation.field();
 			if (fieldName.equals(ScriptGetter.EMPTY)) {
-				fieldName = ObjectField.extractFieldNameFromGetter(method);
+				fieldName = ClassField.extractFieldNameFromGetter(method);
 			}
 		} else {
 			throw new ScriptAnnotationException("Passed method is not script getter!");
@@ -223,7 +222,7 @@ public class ScriptAnnotation {
 			ScriptSetter getterAnnotation = (ScriptSetter) annotation;
 			fieldName = getterAnnotation.field();
 			if (fieldName.equals(ScriptGetter.EMPTY)) {
-				fieldName = ObjectField.extractFieldNameFromSetter(method);
+				fieldName = ClassField.extractFieldNameFromSetter(method);
 			}
 		} else {
 			throw new ScriptAnnotationException("Passed method is not script getter!");
@@ -233,11 +232,11 @@ public class ScriptAnnotation {
 	}
 
 	public static String extractFieldName(Field field) {
-		return ObjectField.extractFieldName(field);
+		return ClassField.extractFieldName(field);
 	}
 
 	public static String extractFunctionName(Method method) {
-		return ObjectFunction.extractFunctionName(method);
+		return ClassFunction.extractFunctionName(method);
 	}
 	
 	protected static boolean isSupportedAndValid(Class<? extends Annotation> annotationType, String classOption, Class<?> clazz, Member member, BrowserScriptEngine scriptEngine) {

@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
-import org.fit.cssbox.scriptbox.script.javascript.js.JavaMethodRedirectedWrapper;
+import org.fit.cssbox.scriptbox.script.javascript.js.ScriptableOriginWrapper;
 import org.fit.cssbox.scriptbox.script.javascript.js.SriptableWrapper;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Scriptable;
@@ -50,8 +50,8 @@ public class SanboxedJavaObject extends SriptableWrapper {
 
 		Object propertyObject = wrappedScriptable.get(name, scope);
 		
-		if (propertyObject instanceof JavaMethodRedirectedWrapper) {
-			JavaMethodRedirectedWrapper redirectedPropety = (JavaMethodRedirectedWrapper)propertyObject;
+		/*if (propertyObject instanceof ScriptableOriginWrapper) {
+			ScriptableOriginWrapper redirectedPropety = (ScriptableOriginWrapper)propertyObject;
 			Object instance = redirectedPropety.getOriginInstance();
 			Method method = redirectedPropety.getOriginMethod();
 			boolean isMethodVisible = isFunctionVisible(instance, method);
@@ -77,7 +77,7 @@ public class SanboxedJavaObject extends SriptableWrapper {
 			if (!isFieldVisible) {
 				return NOT_FOUND;
 			}
-		}
+		}*/
 
 		return propertyObject;
 	}

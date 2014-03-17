@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.javascript.java;
+package org.fit.cssbox.scriptbox.script.javascript.java.reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -6,66 +6,65 @@ import java.lang.reflect.Modifier;
 
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
-import org.mozilla.javascript.Scriptable;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 
-public class ObjectField extends ObjectMember<Field> {
-	public final static Method GETTER_METHOD;
-	public final static Method SETTER_METHOD;
-	
-	static {
-		Method classMethod = null;
-		try {
-			classMethod = ObjectField.class.getMethod("gettter", Scriptable.class);
-		} catch (Exception e) {
-		}
-		GETTER_METHOD = classMethod;
-		
-		classMethod = null;
-		try {
-			classMethod = ObjectField.class.getMethod("setter", Scriptable.class, Object.class);
-		} catch (Exception e) {
-		}
-		SETTER_METHOD = classMethod;
-	}
-
+public class ClassField extends ClassMember<Field> implements MemberField {
 	protected Method fieldGetterMethod;
 	protected Method fieldSetterMethod;
 	protected boolean getOverride;
 	protected boolean setOverride;
 	
-	public ObjectField(Object object, Field field) {
-		this(object, null, null, field, false, false, null);
+	public ClassField(Class<?> clazz, Field field) {
+		this(clazz, null, null, field, false, false, null);
 	}
 	
-	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod) {
-		this(object, fieldGetterMethod, fieldSetterMethod, null, false, false, null);
+	public ClassField(Class<?> clazz, Method fieldGetterMethod, Method fieldSetterMethod) {
+		this(clazz, fieldGetterMethod, fieldSetterMethod, null, false, false, null);
 	}
 	
-	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod, Field field) {
-		this(object, fieldGetterMethod, fieldSetterMethod, field, false, false, null);
+	public ClassField(Class<?> clazz, Method fieldGetterMethod, Method fieldSetterMethod, Field field) {
+		this(clazz, fieldGetterMethod, fieldSetterMethod, field, false, false, null);
 	}
 	
-	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod, Field field, boolean getOverride, boolean setOverride) {
-		this(object, fieldGetterMethod, fieldSetterMethod, field, getOverride, setOverride, null);
+	public ClassField(Class<?> clazz, Method fieldGetterMethod, Method fieldSetterMethod, Field field, boolean getOverride, boolean setOverride) {
+		this(clazz, fieldGetterMethod, fieldSetterMethod, field, getOverride, setOverride, null);
 	}
 	
-	public ObjectField(Object object, Method fieldGetterMethod, Method fieldSetterMethod, Field field, boolean getOverride, boolean setOverride, String[] options) {
-		super(object, field, options);
+	public ClassField(Class<?> clazz, Method fieldGetterMethod, Method fieldSetterMethod, Field field, boolean getOverride, boolean setOverride, String[] options) {
+		super(clazz, field, options);
 		this.fieldGetterMethod = fieldGetterMethod;
 		this.fieldSetterMethod = fieldSetterMethod;
 		this.getOverride = getOverride;
 		this.setOverride = setOverride;
 	}
 	
+	@Override
 	public Method getFieldGetterMethod() {
 		return fieldGetterMethod;
 	}
 	
+	@Override
 	public Method getFieldSetterMethod() {
 		return fieldSetterMethod;
 	}
 	
-	public Object gettter(Scriptable obj) {
+	@Override
+	public boolean hasGetOverride() {
+		return getOverride;
+	}
+	
+	@Override
+	public boolean hasSetOverride() {
+		return setOverride;
+	}
+	
+	public Object get(Object object) {
+		object = ObjectScriptable.jsToJava(object);
+
+		if (!clazz.isInstance(object)) {
+			throw new FieldException("Passed object is not instance of the class to which field belongs to.");
+		}
+		
 		boolean override = getOverride && fieldGetterMethod != null;
 		if (member != null && !override) {
 			try {
@@ -82,9 +81,16 @@ public class ObjectField extends ObjectMember<Field> {
 		}
 	}
 	
-	public void setter(Scriptable obj, Object value) {
-		boolean override = setOverride && fieldSetterMethod != null;
+	public void set(Object object, Object value) {
+		object = ObjectScriptable.jsToJava(object);
 		value = ObjectScriptable.jsToJava(value);
+
+		if (!clazz.isInstance(object)) {
+			throw new FieldException("Passed object is not instance of the class to which field belongs to.");
+		}
+		
+		boolean override = setOverride && fieldSetterMethod != null;
+		
 		if (member != null && !override) {
 			try {
 				member.set(object, value);

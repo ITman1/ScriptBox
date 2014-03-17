@@ -13,14 +13,14 @@ import org.junit.Test;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.TopLevel;
 
-import tests.script.engine.TestClasses.NestedObjectWithGetter;
+import tests.script.engine.TestClasses.AnnotatedNestedObjectWithGetter;
 
-public class ScriptAnnotationTests {
+public class GlobalObjectJavaScriptEngineTests {
 
 	@Test
-	public void TestObjectGetter() throws ScriptException {
+	public void TestObjectEnumeratedProperties() throws ScriptException {
 		Map<String, Object> retValues = new HashMap<String, Object>();
-		NestedObjectWithGetter globalObject = new NestedObjectWithGetter(2);
+		AnnotatedNestedObjectWithGetter globalObject = new AnnotatedNestedObjectWithGetter(2);
 		JavaScriptEngine engine = getScriptAnnotationScriptEngine(globalObject);
 		
 		engine.put("retValues", retValues);
@@ -36,7 +36,7 @@ public class ScriptAnnotationTests {
 	}
 	
 	protected JavaScriptEngine getScriptAnnotationScriptEngine(final Object object) {
-		return new GlobalObjectJavaScriptEngine(null, null, new ContextFactory()) {
+		return new GlobalObjectJavaScriptEngine(null, null) {
 			@Override
 			protected TopLevel initializeTopLevel() {
 				return new ScriptAnnotationTopLevel(object, this);

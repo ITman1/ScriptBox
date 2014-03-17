@@ -1,43 +1,33 @@
-package org.fit.cssbox.scriptbox.script.javascript.java;
+package org.fit.cssbox.scriptbox.script.javascript.java.reflect;
 
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 
-public class ObjectFunction extends ObjectMember<Method> {	
-	public final static Method FUNCTION_METHOD;
+public class ClassFunction extends ClassMember<Method> implements MemberFunction {	
 	
-	static {
-		Method functionMethod = null;
-		try {
-			functionMethod = ObjectFunction.class.getDeclaredMethod("function", Context.class, Scriptable.class, Object[].class, Function.class);
-        } catch (NoSuchMethodException e) {
-        }
-		
-		FUNCTION_METHOD = functionMethod;
+	public ClassFunction(Class<?> clazz, Method functionMethod) {
+		this(clazz, functionMethod, null);
 	}
 	
-	public ObjectFunction(Object object, Method functionMethod) {
-		this(object, functionMethod, null);
+	public ClassFunction(Class<?> clazz, Method functionMethod, String[] options) {
+		super(clazz, functionMethod, options);
 	}
 	
-	public ObjectFunction(Object object, Method functionMethod, String[] options) {
-		super(object, functionMethod, options);
-	}
-	
-	public static Object function(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		if (funObj instanceof HostedJavaMethod) {
-			((HostedJavaMethod)funObj).call(cx, thisObj, thisObj, args);
+	public Object invoke(Object object, Object ...args) {
+		if (!clazz.isInstance(object)) {
+			throw new FunctionException("Passed object is not instance of the class to which function belongs to.");
 		}
-
-		throw new FunctionException("Function object must be of class WrappedFunctionObject");
-		//return Context.getUndefinedValue();
+		
+		try {
+			return member.invoke(object, args);
+		} catch (Exception e) {
+			throw new UnknownException(e);
+		}
 	}
 	
 	public static Object[] castArgs(Class<?>[] expectedTypes, Object... args) {
@@ -86,7 +76,7 @@ public class ObjectFunction extends ObjectMember<Method> {
 	
 	public static boolean isObjectGetterMethod(Class<?> clazz, Method method) {
 		if (ObjectGetter.class.isAssignableFrom(clazz)) {
-			Method getterMethod = ObjectFunction.getObjectGetterMetod(clazz);	
+			Method getterMethod = ClassFunction.getObjectGetterMetod(clazz);	
 			return method.equals(getterMethod);
 		}
 		return false;
