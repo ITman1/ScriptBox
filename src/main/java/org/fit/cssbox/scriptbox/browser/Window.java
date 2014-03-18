@@ -6,7 +6,7 @@ import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.ui.bars.BarProp;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -7,9 +7,9 @@ import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectGetter;
 
 public class ScriptAnnotation {
 	public static boolean isScriptAnnotation(Annotation annotation) {		
@@ -92,6 +92,9 @@ public class ScriptAnnotation {
 			engines = scriptFunction.engines();
 		} else if (annotation instanceof ScriptClass) {
 			ScriptClass scriptClass = (ScriptClass)annotation;
+			engines = scriptClass.engines();
+		} else if (annotation instanceof ScriptField) {
+			ScriptField scriptClass = (ScriptField)annotation;
 			engines = scriptClass.engines();
 		} else {
 			throw new ScriptAnnotationException("Passed annotation is not script annotation!");

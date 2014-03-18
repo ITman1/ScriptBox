@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 
 public class ClassFunction extends ClassMember<Method> implements MemberFunction {	
@@ -36,7 +37,9 @@ public class ClassFunction extends ClassMember<Method> implements MemberFunction
 			for (int i = 0; i < args.length; i++) {
 				Object arg = args[i];
 				Class<?> expectedType = expectedTypes[i];
-				if (arg instanceof Double && (expectedType.equals(Integer.class) || expectedType.equals(int.class))) {
+				if (arg == null) {
+					castedArgs[i] = null;
+				} else if (arg instanceof Double && (expectedType.equals(Integer.class) || expectedType.equals(int.class))) {
 					castedArgs[i] = ((Double)arg).intValue();
 				} else {
 					castedArgs[i] = ObjectScriptable.jsToJava(arg);;
@@ -55,10 +58,14 @@ public class ClassFunction extends ClassMember<Method> implements MemberFunction
 		}
 		
 		for (int i = 0; i < args.length; i++) {
-			Class<?> argClass = args[i].getClass();
+			Class<?> argClass = (args[i] == null)? null : args[i].getClass();
 			Class<?> paramClass = types[i];
 			
-			if (!ClassUtils.isAssignable(argClass, paramClass, true)) {
+			if (paramClass.isPrimitive() && argClass == null) {
+				return false;
+			} else if (!paramClass.isPrimitive() && argClass == null) {
+				continue; 
+			} else if (!ClassUtils.isAssignable(argClass, paramClass, true)) {
 				return false;
 			}
 		}

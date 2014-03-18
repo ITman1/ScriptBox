@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectGetter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.FunctionObject;

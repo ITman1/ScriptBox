@@ -70,7 +70,7 @@ public class HostedJavaMethod extends FunctionObject {
 		Class<?> argsTypes[] = new Class<?>[args.length];
 		
 		for (int i = 0; i < args.length; i++) {
-			argsTypes[i] = args[i].getClass();
+			argsTypes[i] = (args[i] != null)? args[i].getClass() : null;
 		}
 		
 		for (MemberFunction objectFunction : objectFunctions) {

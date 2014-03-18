@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.javascript.java.reflect;
+package org.fit.cssbox.scriptbox.script.javascript.java;
 
 public interface ObjectGetter {
 	public static final Object UNDEFINED_VALUE = new String("undefined");

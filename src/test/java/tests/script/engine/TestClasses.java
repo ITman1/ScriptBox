@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.fit.cssbox.scriptbox.script.annotation.ScriptField;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 
 public class TestClasses {
 	public static class NestedObjectWithGetter implements ObjectGetter {
@@ -109,6 +110,11 @@ public class TestClasses {
 		private NestedObjectWithGetter privateNestedObjectWithGetter;
 		
 		public String publicStringProperty = "publicStringProperty";
+		
+		@ScriptField(engines = {"unsupported"})
+		public String unsupportedEngineProperty = "unsupported";
+		
+		@ScriptField
 		public String duplicatedPublicStringProperty = "publicStringProperty";
 		
 		public AnnotatedNestedObjectWithGetter(int nestLevel) {
@@ -145,11 +151,12 @@ public class TestClasses {
 			duplicatedPublicStringProperty = value;
 		}
 		
-		@ScriptFunction
+		@ScriptFunction(engines = {"javascript"})
 		public String getConcat() {
 			return "";
 		}
 		
+		@ScriptFunction(options = {ScriptFunction.ENUMERABLE})
 		public String getConcat(String arg1) {
 			return arg1;
 		}
@@ -157,7 +164,26 @@ public class TestClasses {
 		public String getConcat(String arg1, String arg2) {
 			return arg1 + arg2;
 		}
+		
+		public String noAnnotationFunction() {
+			return "no annotation";
+		}
 
+		@ScriptGetter(engines = {"unsupported"})
+		String getUnsupportedEngineProperty() {
+			return unsupportedEngineProperty;
+		}
+		
+		@ScriptSetter(engines = {"unsupported"})
+		void setUnsupportedEngineProperty(String value) {
+			unsupportedEngineProperty = value;
+		}
+		
+		@ScriptFunction(engines = {"unsupported"})
+		public String unsupportedEngineFunction() {
+			return "unsupported";
+		}
+		
 		@ScriptFunction
 		@Override
 		public Object get(Object arg) {
