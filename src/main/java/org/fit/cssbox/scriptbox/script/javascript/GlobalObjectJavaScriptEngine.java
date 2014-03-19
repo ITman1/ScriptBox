@@ -18,7 +18,7 @@ public class GlobalObjectJavaScriptEngine extends JavaScriptEngine {
 
 	@Override
 	protected TopLevel initializeTopLevel() {
-		Object object = ((WindowScriptSettings)scriptSettings).getGlobalObject();
+		Object object = scriptSettings.getGlobalObject();
 		return new ScriptAnnotationTopLevel(object, this);
 	}
 }

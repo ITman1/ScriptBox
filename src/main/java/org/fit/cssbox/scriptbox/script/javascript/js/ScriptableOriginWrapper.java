@@ -4,8 +4,6 @@ import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
 import org.mozilla.javascript.Wrapper;
 
 public class ScriptableOriginWrapper implements Wrapper {
-
-	private static final long serialVersionUID = 2656404521462471628L;
 	
 	protected Object wrapped;
 	protected ClassMember<?> origin;

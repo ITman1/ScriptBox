@@ -10,7 +10,6 @@ import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembers;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectField;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectFunction;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
@@ -39,7 +38,7 @@ public class ObjectImplementor {
 		return implementedObject;
 	}
 	
-	public ClassMembers getObjectMembers() {
+	public ObjectMembers getObjectMembers() {
 		return objectMembers;
 	}
 	

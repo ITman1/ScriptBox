@@ -13,7 +13,6 @@ import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembers;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -123,22 +122,8 @@ public class HostedJavaObject extends ScriptableObject implements Wrapper {
 	
 	@Override
 	public Object[] getIds() {
-		Set<String> membersNames = objectMembers.getEnumerableMemberNames();
 		Object[] superIds = super.getAllIds();
-		
-		Object[] returnIds = new Object[membersNames.size() + superIds.length];
-
-		int i = 0;
-		for (; i < superIds.length; i++) {
-			returnIds[i] = superIds[i];
-		}
-		
-		for (String name : membersNames) {
-			returnIds[i] = name;
-			i++;
-		}
-		
-		return returnIds;
+		return getIds(objectMembers, superIds);
 	}
 	
 	@Override
@@ -250,5 +235,23 @@ public class HostedJavaObject extends ScriptableObject implements Wrapper {
 		}
 		
 		return result;
+	}
+	
+	public static Object[] getIds(ObjectMembers objectMembers, Object[] superIds) {
+		Set<String> membersNames = objectMembers.getEnumerableMemberNames();
+		
+		Object[] returnIds = new Object[membersNames.size() + superIds.length];
+
+		int i = 0;
+		for (; i < superIds.length; i++) {
+			returnIds[i] = superIds[i];
+		}
+		
+		for (String name : membersNames) {
+			returnIds[i] = name;
+			i++;
+		}
+		
+		return returnIds;
 	}
 }

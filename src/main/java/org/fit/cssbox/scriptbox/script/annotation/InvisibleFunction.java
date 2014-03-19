@@ -9,10 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Inherited
-public @interface ScriptFunction  {
-	public static final String ENUMERABLE = "enumerable";
-	public static final String[] DEFAULT_OPTIONS = {};
-	
-	String[] engines() default {};
-	String[] options() default {};
+public @interface InvisibleFunction {
 }

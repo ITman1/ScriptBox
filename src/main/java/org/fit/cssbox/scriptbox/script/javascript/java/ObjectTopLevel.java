@@ -2,14 +2,13 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
-import org.mozilla.javascript.FunctionObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.TopLevel;
@@ -58,6 +57,11 @@ public class ObjectTopLevel extends TopLevel {
 	public Object get(int index, Scriptable start) {
 		Object object = super.get(index, start);
 		object = (object == Scriptable.NOT_FOUND)? objectGetterGet(index) : object;
+		
+		if (object != Scriptable.NOT_FOUND) {
+			object = ObjectScriptable.javaToJS(object, this);
+		}
+		
 		return object;
 	}
 	
@@ -65,18 +69,23 @@ public class ObjectTopLevel extends TopLevel {
 	public Object get(String name, Scriptable start) {
 		Object object = super.get(name, start);
 		object = (object == Scriptable.NOT_FOUND)? objectGetterGet(name) : object;
+		
+		if (object != Scriptable.NOT_FOUND) {
+			object = ObjectScriptable.javaToJS(object, this);
+		}
+		
 		return object;
 	}
 	
 	@Override
 	public Object[] getIds() {
-		String[] ids = {};
+		Object[] superIds = {};
+		
 		if (implementor != null) {
-			Set<String> properties = implementor.getEnumerableProperties();
-			ids = properties.toArray(new String[properties.size()]);;
+			return HostedJavaObject.getIds(implementor.getObjectMembers(), superIds);
 		}
 
-		return ids;
+		return superIds;
 	}
 	
 	protected Object objectGetterGet(Object arg) {

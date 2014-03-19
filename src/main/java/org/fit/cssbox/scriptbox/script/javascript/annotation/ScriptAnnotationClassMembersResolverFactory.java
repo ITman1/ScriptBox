@@ -9,11 +9,15 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolver;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
 
 public class ScriptAnnotationClassMembersResolverFactory implements ClassMembersResolverFactory {
 	class ScriptAnnotationClassMembersResolver extends ClassMembersResolver {
+		final String pernament_options[] = {ClassMember.PERNAMENT};
+		final String pernament_enumerable_options[] = {ClassMember.PERNAMENT, ClassMember.ENUMERABLE};
+		
 		protected BrowserScriptEngine scriptEngine;
 		
 		public ScriptAnnotationClassMembersResolver(Class<?> clazz, BrowserScriptEngine browserScriptEngine) {
@@ -38,18 +42,7 @@ public class ScriptAnnotationClassMembersResolverFactory implements ClassMembers
 		
 		@Override
 		public boolean isFunction(Method method) {
-			boolean isPureFunction = 
-					ScriptAnnotation.testForScriptFunction(clazz, method, scriptEngine);
-			boolean isGetterFunction = 
-					ScriptAnnotation.testForScriptGetter(clazz, method, scriptEngine) &&
-					ScriptAnnotation.containsMemberOption(method, ScriptGetter.CALLABLE);
-			boolean isSetterFunction =
-					ScriptAnnotation.testForScriptSetter(clazz, method, scriptEngine) &&
-					ScriptAnnotation.containsMemberOption(method, ScriptSetter.CALLABLE);
-			boolean objectGetterFunction = 
-					ScriptAnnotation.testForObjectGetter(clazz, method, scriptEngine);
-			
-			return (isPureFunction || isGetterFunction || isSetterFunction) && !objectGetterFunction;
+			return ScriptAnnotation.isCallable(clazz, method, scriptEngine);
 		}	
 		
 		@Override
@@ -80,13 +73,17 @@ public class ScriptAnnotationClassMembersResolverFactory implements ClassMembers
 		@Override
 		public ClassField constructClassField(Method objectFieldGetter, Method objectFieldSetter, Field field) {
 			boolean getOverride = ScriptAnnotation.containsMemberOption(objectFieldGetter, ScriptGetter.FIELD_GET_OVERRIDE);
-			boolean setOverride = ScriptAnnotation.containsMemberOption(objectFieldGetter, ScriptSetter.FIELD_SET_OVERRIDE);
-			return new ClassField(clazz, objectFieldGetter, objectFieldSetter, field, getOverride, setOverride);
+			boolean setOverride = ScriptAnnotation.containsMemberOption(objectFieldSetter, ScriptSetter.FIELD_SET_OVERRIDE);
+			boolean enumerable = ScriptAnnotation.isFieldEnumerable(objectFieldGetter, objectFieldSetter, field);
+			String options[] = (enumerable)? pernament_enumerable_options : pernament_options;
+			return new ClassField(clazz, objectFieldGetter, objectFieldSetter, field, getOverride, setOverride, options);
 		}
 	
 		@Override
 		public ClassFunction constructClassFunction(Method method) {
-			return new ClassFunction(clazz, method);
+			boolean enumerable = ScriptAnnotation.isFunctionEnumerable(method);
+			String options[] = (enumerable)? pernament_enumerable_options : pernament_options;
+			return new ClassFunction(clazz, method, options);
 		}
 	}
 	

@@ -1,6 +1,5 @@
 package org.fit.cssbox.scriptbox.script.javascript.annotation;
 
-import org.fit.cssbox.scriptbox.script.annotation.ScriptAnnotation;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 

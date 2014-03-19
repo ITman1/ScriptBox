@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
-import org.fit.cssbox.scriptbox.script.javascript.js.ScriptableOriginWrapper;
 import org.fit.cssbox.scriptbox.script.javascript.js.SriptableWrapper;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Scriptable;

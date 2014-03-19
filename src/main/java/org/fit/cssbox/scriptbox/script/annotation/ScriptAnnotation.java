@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
 
@@ -42,6 +41,10 @@ public class ScriptAnnotation {
 			return false;
 		}
 		
+		return containsOption(option, options);
+	}
+	
+	public static boolean containsOption(String option, String[] options) {
 		for (String currOption : options) {
 			if (currOption.equals(option)) {
 				return true;
@@ -148,9 +151,19 @@ public class ScriptAnnotation {
 				annotationsCounter++;
 				returnAnnotation = scriptAnnotation;
 			}
+			
+			if ((scriptAnnotation = method.getAnnotation(InvisibleFunction.class)) != null) {
+				annotationsCounter++;
+				returnAnnotation = scriptAnnotation;
+			}
 		} else if (member instanceof Field) {
 			Field field = (Field) member;
 			if ((scriptAnnotation = field.getAnnotation(ScriptField.class)) != null) {
+				annotationsCounter++;
+				returnAnnotation = scriptAnnotation;
+			}
+			
+			if ((scriptAnnotation = field.getAnnotation(InvisibleField.class)) != null) {
 				annotationsCounter++;
 				returnAnnotation = scriptAnnotation;
 			}
@@ -170,6 +183,11 @@ public class ScriptAnnotation {
 		boolean isSupportedAndValid = isSupportedAndValid(ScriptGetter.class, ScriptClass.ALL_FIELDS, clazz, method, scriptEngine);
 		boolean isSignatureValid = parameterTypes.length == 0 && returnType != Void.TYPE;;
 		
+		Annotation annotation = getMemberScriptAnnotation(method);
+		if (annotation == null) {
+			isSignatureValid = ClassField.isGetter(method);
+		}
+		
 		return isSupportedAndValid && isSignatureValid;
 	}
 	
@@ -178,6 +196,11 @@ public class ScriptAnnotation {
 		
 		boolean isSupportedAndValid = isSupportedAndValid(ScriptSetter.class, ScriptClass.ALL_FIELDS, clazz, method, scriptEngine);
 		boolean isSignatureValid = parameterTypes.length == 1;
+		
+		Annotation annotation = getMemberScriptAnnotation(method);
+		if (annotation == null) {
+			isSignatureValid = ClassField.isSetter(method);
+		}
 		
 		return isSupportedAndValid && isSignatureValid;
 	}
@@ -207,14 +230,12 @@ public class ScriptAnnotation {
 		if (annotation instanceof ScriptGetter) {
 			ScriptGetter getterAnnotation = (ScriptGetter) annotation;
 			fieldName = getterAnnotation.field();
-			if (fieldName.equals(ScriptGetter.EMPTY)) {
-				fieldName = ClassField.extractFieldNameFromGetter(method);
+			if (!fieldName.equals(ScriptGetter.EMPTY)) {
+				return fieldName;
 			}
-		} else {
-			throw new ScriptAnnotationException("Passed method is not script getter!");
 		}
 		
-		return fieldName;
+		return ClassField.extractFieldNameFromGetter(method);
 	}
 
 	public static String extractFieldNameFromSetter(Method method) {
@@ -224,14 +245,12 @@ public class ScriptAnnotation {
 		if (annotation instanceof ScriptSetter) {
 			ScriptSetter getterAnnotation = (ScriptSetter) annotation;
 			fieldName = getterAnnotation.field();
-			if (fieldName.equals(ScriptGetter.EMPTY)) {
-				fieldName = ClassField.extractFieldNameFromSetter(method);
+			if (!fieldName.equals(ScriptGetter.EMPTY)) {
+				return fieldName;
 			}
-		} else {
-			throw new ScriptAnnotationException("Passed method is not script getter!");
 		}
 		
-		return fieldName;
+		return ClassField.extractFieldNameFromSetter(method);
 	}
 
 	public static String extractFieldName(Field field) {
@@ -242,16 +261,49 @@ public class ScriptAnnotation {
 		return ClassFunction.extractFunctionName(method);
 	}
 	
+	public static boolean isFieldEnumerable(Method objectFieldGetter, Method objectFieldSetter, Field field) {
+		boolean isEnumerable = (field == null)? 
+				containsOption(ScriptField.ENUMERABLE, ScriptField.DEFAULT_OPTIONS) : 
+				containsMemberOption(field, ScriptField.ENUMERABLE);
+		isEnumerable = isEnumerable || containsMemberOption(objectFieldGetter, ScriptGetter.ENUMERABLE_FIELD);
+		isEnumerable = isEnumerable || containsMemberOption(objectFieldSetter, ScriptSetter.ENUMERABLE_FIELD);
+		
+		return isEnumerable;
+	}
+	
+	public static boolean isFunctionEnumerable(Method function) {
+		return containsMemberOption(function, ScriptFunction.ENUMERABLE)
+			|| containsMemberOption(function, ScriptGetter.CALLABLE_ENUMERABLE_GETTER)
+			|| containsMemberOption(function, ScriptSetter.CALLABLE_ENUMERABLE_SETTER);
+	}
+	
+	public static boolean isCallable(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
+		boolean isPureFunction = 
+				ScriptAnnotation.testForScriptFunction(clazz, method, scriptEngine);
+		boolean isGetterFunction = 
+				ScriptAnnotation.testForScriptGetter(clazz, method, scriptEngine) &&
+					(ScriptAnnotation.containsMemberOption(method, ScriptGetter.CALLABLE_GETTER) || 
+					ScriptAnnotation.containsMemberOption(method, ScriptGetter.CALLABLE_ENUMERABLE_GETTER));
+		boolean isSetterFunction =
+				ScriptAnnotation.testForScriptSetter(clazz, method, scriptEngine) &&
+					(ScriptAnnotation.containsMemberOption(method, ScriptSetter.CALLABLE_SETTER) ||
+					ScriptAnnotation.containsMemberOption(method, ScriptSetter.CALLABLE_ENUMERABLE_SETTER));
+		boolean objectGetterFunction = 
+				ScriptAnnotation.testForObjectGetter(clazz, method, scriptEngine);
+		
+		return (isPureFunction || isGetterFunction || isSetterFunction) && !objectGetterFunction;
+	}
+	
 	protected static boolean isSupportedAndValid(Class<? extends Annotation> annotationType, String classOption, Class<?> clazz, Member member, BrowserScriptEngine scriptEngine) {
 		boolean engineSupported = ScriptAnnotation.isEngineSupported(clazz, member, scriptEngine);
 		boolean hasValidAnnotation = false;
 		
-		Annotation classAnnotation = ScriptAnnotation.getClassScriptAnnotation(member);
+		Annotation classAnnotation = ScriptAnnotation.getClassScriptAnnotation(clazz);
 		Annotation methodAnnotation = ScriptAnnotation.getMemberScriptAnnotation(member);
-		if (ScriptAnnotation.containsOption(classAnnotation, classOption)) {
-			hasValidAnnotation = true;
-		} else if (methodAnnotation != null) {
+		if (methodAnnotation != null) {
 			hasValidAnnotation = annotationType.isAssignableFrom(methodAnnotation.getClass());
+		} else if (ScriptAnnotation.containsOption(classAnnotation, classOption)) {
+			hasValidAnnotation = true;
 		}
 		
 		return engineSupported && hasValidAnnotation;
