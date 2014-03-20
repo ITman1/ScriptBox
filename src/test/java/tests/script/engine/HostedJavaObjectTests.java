@@ -15,8 +15,8 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.TopLevel;
 
-import tests.script.engine.TestUtils.AbstractGlobalObjectScriptEngineFactory;
-import tests.script.engine.TestUtils.GlobalObjectScriptEngineTester;
+import tests.script.TestUtils.AbstractGlobalObjectScriptEngineFactory;
+import tests.script.TestUtils.GlobalObjectScriptEngineTester;
 
 @RunWith(JUnit4.class)
 public class HostedJavaObjectTests {

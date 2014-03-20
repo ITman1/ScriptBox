@@ -1,10 +1,14 @@
-package tests.script.engine;
+package tests.script;
 
 import java.util.List;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.UserAgent;
+import org.fit.cssbox.scriptbox.browser.Window;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
@@ -171,6 +175,30 @@ public class TestUtils {
 		
 		protected ScriptEngine getScriptEngine() {
 			return engineFactory.getScriptEngine(globalObject);
+		}
+	}
+	
+	public static class UserAgentWindowTester {
+		protected UserAgent userAgent;
+		
+		public UserAgentWindowTester() {
+			userAgent = new UserAgent();
+		}
+		
+		public Window navigate(String url) {
+			BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
+			browsingUnit.navigate(url);
+			
+			synchronized (this) {
+				try {
+					Thread.sleep(8000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			Html5DocumentImpl doc = browsingUnit.getWindowBrowsingContext().getActiveDocument();
+			return doc.getWindow();
 		}
 	}
 }

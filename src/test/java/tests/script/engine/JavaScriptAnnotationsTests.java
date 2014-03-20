@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.annotation.InvisibleField;
+import org.fit.cssbox.scriptbox.script.annotation.InvisibleFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptField;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
@@ -15,10 +17,10 @@ import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.junit.Test;
 import org.mozilla.javascript.TopLevel;
 
-import tests.script.engine.TestUtils.AbstractGlobalObjectScriptEngineFactory;
-import tests.script.engine.TestUtils.AssertCallback;
-import tests.script.engine.TestUtils.GlobalObjectScriptEngineTester;
-import tests.script.engine.TestUtils.Resetable;
+import tests.script.TestUtils.AbstractGlobalObjectScriptEngineFactory;
+import tests.script.TestUtils.AssertCallback;
+import tests.script.TestUtils.GlobalObjectScriptEngineTester;
+import tests.script.TestUtils.Resetable;
 
 public class JavaScriptAnnotationsTests {
 	
@@ -33,14 +35,17 @@ public class JavaScriptAnnotationsTests {
 				}
 			};
 		}
-		
 	};
 	
 	public static class ScriptClassAnnotatedObject implements Resetable {
+		public String property;
+		@InvisibleField
 		public String invisibleProperty;
 		@ScriptField
 		public String visibleProperty;
 		
+		public void function() {}
+		@InvisibleFunction
 		public void invisibleFunction() {}
 		@ScriptFunction
 		public void visibleFunction() {}
@@ -531,8 +536,10 @@ public class JavaScriptAnnotationsTests {
 	}
 	
 	protected void allFields(ScriptClassAnnotatedObject object, GlobalObjectScriptEngineTester<?> tester) {
-		tester.assertFalse("typeof this['invisibleProperty'] === 'undefined'");
-		tester.assertFalse("typeof this['visibleProperty'] === 'undefined'");
+		tester.assertTrue("typeof this['invisibleProperty'] === 'undefined'");
+		
+		tester.assertFalse("typeof this['property'] === 'undefined'");
+		tester.assertFalse("typeof this['property'] === 'undefined'");
 		tester.assertFalse("typeof this['class'] === 'undefined'");
 	}
 	
@@ -540,26 +547,30 @@ public class JavaScriptAnnotationsTests {
 		tester.assertFalse("typeof this['visibleProperty'] === 'undefined'");
 		
 		tester.assertTrue("typeof this['invisibleProperty'] === 'undefined'");
+		tester.assertTrue("typeof this['property'] === 'undefined'");
 		tester.assertTrue("typeof this['class'] === 'undefined'");
 	}
 	
 	protected void allFunctions(ScriptClassAnnotatedObject object, GlobalObjectScriptEngineTester<?> tester) {
+		tester.assertTrue("typeof this['invisibleFunction'] === 'undefined'");
+		
 		tester.assertFalse("typeof this['equals'] === 'undefined'");
 		tester.assertFalse("typeof this['getClass'] === 'undefined'");
 		tester.assertFalse("typeof this['hashCode'] === 'undefined'");
 		tester.assertFalse("typeof this['reset'] === 'undefined'");
-		tester.assertFalse("typeof this['invisibleFunction'] === 'undefined'");
+		tester.assertFalse("typeof this['function'] === 'undefined'");
 		tester.assertFalse("typeof this['visibleFunction'] === 'undefined'");
 	}
 	
 	protected void visibleFunctions(ScriptClassAnnotatedObject object, GlobalObjectScriptEngineTester<?> tester) {
 		tester.assertFalse("typeof this['visibleFunction'] === 'undefined'");
 		
+		tester.assertTrue("typeof this['invisibleFunction'] === 'undefined'");
 		tester.assertTrue("typeof this['equals'] === 'undefined'");
 		tester.assertTrue("typeof this['getClass'] === 'undefined'");
 		tester.assertTrue("typeof this['hashCode'] === 'undefined'");
 		tester.assertTrue("typeof this['reset'] === 'undefined'");
-		tester.assertTrue("typeof this['invisibleFunction'] === 'undefined'");
+		tester.assertTrue("typeof this['function'] === 'undefined'");
 
 	}
 }

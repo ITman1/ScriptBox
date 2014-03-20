@@ -37,6 +37,7 @@ public class WindowScript extends Script<Reader, WindowScriptSettings> {
 			executionEnviroment.eval(codeEntryPoint);
 		} catch (ScriptException e) {
 			// TODO: Throw exception?
+			e.printStackTrace();
 		}
 		
 	}

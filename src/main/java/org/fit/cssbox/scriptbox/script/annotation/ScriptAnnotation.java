@@ -99,6 +99,10 @@ public class ScriptAnnotation {
 		} else if (annotation instanceof ScriptField) {
 			ScriptField scriptClass = (ScriptField)annotation;
 			engines = scriptClass.engines();
+		} else if (annotation instanceof InvisibleField) {
+			return false;
+		} else if (annotation instanceof InvisibleFunction) {
+			return false;
 		} else {
 			throw new ScriptAnnotationException("Passed annotation is not script annotation!");
 		}

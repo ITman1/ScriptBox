@@ -56,6 +56,17 @@ public class ScriptSettingsStack implements Cloneable {
 		return (settings != null)? settings.scriptSettings : null;
 	}
 	
+	public ScriptSettings<?> getEntryScriptSettings() {
+		int size = _stack.size();
+		for (int i = size; i >= 0; i--) {
+			ScriptSettingsEntry entry = _stack.get(i);
+			if (entry.candidateEntry) {
+				return entry.scriptSettings;
+			}
+		}
+		return null;
+	}
+	
 	public ScriptSettings<?> popIncumbentScriptSettings() {
 		ScriptSettingsEntry settings = _stack.pop();
 		isEmptyCheckpoint();

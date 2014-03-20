@@ -6,7 +6,7 @@ import java.util.Set;
 import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 
-public class WindowBrowsingContext extends BrowsingContext {	
+public class WindowBrowsingContext extends BrowsingContext implements IframeBrowsable {	
 	// Every top-level browsing context has a popup sandboxing flag set, 
 	protected Set<SandboxingFlag> popupSandboxingFlagSet;
 	
@@ -17,7 +17,7 @@ public class WindowBrowsingContext extends BrowsingContext {
 	}
 	
 	public WindowBrowsingContext(BrowsingUnit browsingUnit) {
-		this(browsingUnit, null);
+		this(browsingUnit, DEFAULT_NAME);
 	}
 
 	public BrowsingContext createIFrameContext(Html5IFrameElementImpl iframeElement) {

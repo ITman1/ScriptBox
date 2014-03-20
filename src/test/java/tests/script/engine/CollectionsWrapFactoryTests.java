@@ -18,8 +18,8 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.TopLevel;
 
-import tests.script.engine.TestUtils.AbstractGlobalObjectScriptEngineFactory;
-import tests.script.engine.TestUtils.GlobalObjectScriptEngineTester;
+import tests.script.TestUtils.AbstractGlobalObjectScriptEngineFactory;
+import tests.script.TestUtils.GlobalObjectScriptEngineTester;
 
 public class CollectionsWrapFactoryTests {	
 	
@@ -79,7 +79,7 @@ public class CollectionsWrapFactoryTests {
 	}
 		
 	@Test
-	public void TestNativeJavaObjectCollections() throws ScriptException {
+	public void TestNativeJavaObjectCollections() {
 		tester.assertEquals("foobarMap['foo']", "bar");
 		tester.assertEquals("foobarList[0]", "foobar");
 		tester.assertNull("foobarList['str']");

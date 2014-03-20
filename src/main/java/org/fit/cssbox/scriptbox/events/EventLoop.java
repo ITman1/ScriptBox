@@ -209,6 +209,8 @@ public class EventLoop {
 			// It is OK, task only ended earlier
 		} catch (LifetimeEndedException e) {
 			throw new InterruptedException();
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			_taskScheduler.onTaskFinished(_runningTask);
 		}

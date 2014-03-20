@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.html.dom.HTMLDocumentImpl;
+import org.apache.xerces.dom.NodeImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
@@ -25,6 +26,8 @@ import org.fit.cssbox.scriptbox.url.UrlUtils;
 import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventListener;
 
 public class Html5DocumentImpl extends HTMLDocumentImpl {
 	public enum DocumentReadiness {
@@ -48,6 +51,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 
 	private static final long serialVersionUID = -352261593104316623L;
 	private static final String SCRIPT_TAG_NAME = "script";
+	private static final String IFRAME_TAG_NAME = "iframe";
 
 	private static List<String> SERVER_BASED_SCHEMES;
     static {       
@@ -173,9 +177,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	public Element createElement( String tagName ) throws DOMException {
 		tagName = tagName.toLowerCase(Locale.ENGLISH);
 		
-		if ( tagName.equals(SCRIPT_TAG_NAME)) {
-			Html5ScriptElementImpl scriptElement = new Html5ScriptElementImpl(this, tagName);
-			return scriptElement;
+		if (tagName.equals(SCRIPT_TAG_NAME)) {
+			return new Html5ScriptElementImpl(this, tagName);
+		} else if (tagName.equals(IFRAME_TAG_NAME)) {
+			return new Html5IFrameElementImpl(this, tagName);
 		}
 		
 		return super.createElement(tagName);
@@ -344,5 +349,20 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	public ScriptDOMParser getParser() {
 		return _parser;
+	}
+	
+	@Override
+	protected void addEventListener(NodeImpl node, String type, EventListener listener, boolean useCapture) {
+		super.addEventListener(node, type, listener, useCapture);
+	}
+
+	@Override
+	protected void removeEventListener(NodeImpl node, String type, EventListener listener, boolean useCapture) {
+		super.removeEventListener(node, type, listener, useCapture);
+	}
+
+	@Override
+	protected boolean dispatchEvent(NodeImpl node, Event event) {
+		return super.dispatchEvent(node, event);
 	}
 }

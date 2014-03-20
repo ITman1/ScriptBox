@@ -26,6 +26,8 @@ import org.w3c.dom.Node;
  * it is navigated, to delay the load event of the browsing context container before the new Document is created.
  */
 public class BrowsingContext {
+	public static final String DEFAULT_NAME =  "";
+	
 	public static final String BLANK_KEYWORD =  "_blank";
 	public static final String SELF_KEYWORD = "_self";
 	public static final String PARENT_KEYWORD = "_parent";
@@ -67,15 +69,15 @@ public class BrowsingContext {
 	}
 	
 	public BrowsingContext(BrowsingUnit browsingUnit) {
-		this(browsingUnit, null);
+		this(browsingUnit, DEFAULT_NAME);
 	}
-	
+		
 	public BrowsingContext(BrowsingUnit browsingUnit, String name) {
 		this(null, browsingUnit, name, null);
 	}
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document) {
-		return createNestedContext(document, null, null);
+		return createNestedContext(document, DEFAULT_NAME, null);
 	}
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document, String name) {
@@ -83,7 +85,7 @@ public class BrowsingContext {
 	}
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document, Element container) {
-		return createNestedContext(document, null, container);
+		return createNestedContext(document, DEFAULT_NAME, container);
 	}
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document, String name, Element container) {
@@ -201,6 +203,7 @@ public class BrowsingContext {
 	 * when all of the following conditions are true
 	 */
 	public boolean scriptingEnabled() {
+		BrowsingUnit browsingUnit = getBrowsingUnit();
 		boolean isEnabled = true;
 		
 		isEnabled = isEnabled && browsingUnit.getUserAgent().scriptsSupported();
@@ -291,6 +294,7 @@ public class BrowsingContext {
 
 	/*
 	 * FIXME: Rename local variable to something more clear than a, b, c
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#familiar-with
 	 */
 	public boolean isFamiliarWith(BrowsingContext context) {
 		BrowsingContext a = this;
@@ -325,6 +329,7 @@ public class BrowsingContext {
 	}
 	
 	public BrowsingContext getFirstFamiliar(String name) {
+		BrowsingUnit browsingUnit = getBrowsingUnit();
 		Set<BrowsingContext> contexts = browsingUnit.getUserAgent().getBrowsingContextsByName(name);
 		
 		for (BrowsingContext context : contexts) {
@@ -336,24 +341,54 @@ public class BrowsingContext {
 		return null;
 	}
 	
+	/* http://www.w3.org/html/wg/drafts/html/CR/browsers.html#valid-browsing-context-name */
+	public boolean isValidBrowsingContextName(String name) {
+		return !name.startsWith("_");
+	}
+	
+	/* http://www.w3.org/html/wg/drafts/html/CR/browsers.html#valid-browsing-context-name-or-keyword */
+	public boolean isValidBrowsingContextNameOrKeyword(String name) {
+		return name.equalsIgnoreCase(SELF_KEYWORD) || 
+				name.equalsIgnoreCase(PARENT_KEYWORD) || 
+				name.equalsIgnoreCase(TOP_KEYWORD) || 
+				name.equalsIgnoreCase(BLANK_KEYWORD) || 
+				isValidBrowsingContextName(name);
+	}
+	
+	public boolean isBlankBrowsingContext(String name) {
+		if (name == null) {
+		} else if (name.isEmpty()) {
+		} else if (name.equalsIgnoreCase(SELF_KEYWORD)) {
+		} else if (name.equalsIgnoreCase(PARENT_KEYWORD)) {
+		} else if (name.equalsIgnoreCase(TOP_KEYWORD)) {
+		} else if (!name.equalsIgnoreCase(BLANK_KEYWORD) && (getFirstFamiliar(name) != null)) {
+		} else {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/* http://www.w3.org/html/wg/drafts/html/CR/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name */
 	public BrowsingContext chooseBrowsingContextByName(String name) {
+		BrowsingUnit browsingUnit = getBrowsingUnit();
 		BrowsingContext context = null;
 		
 		if (name == null) {
 			return this;
 		} else if (name.isEmpty()) {
 			return this;
-		} else if (name.equals(SELF_KEYWORD)) {
+		} else if (name.equalsIgnoreCase(SELF_KEYWORD)) {
 			return this;
-		} else if (name.equals(PARENT_KEYWORD)) {
+		} else if (name.equalsIgnoreCase(PARENT_KEYWORD)) {
 			if (!hasParentContext()) {
 				return this;
 			} else {
 				return parentContext;
 			}
-		} else if (name.equals(TOP_KEYWORD)) {
+		} else if (name.equalsIgnoreCase(TOP_KEYWORD)) {
 			return getTopLevelContext();
-		} else if (!name.equals(BLANK_KEYWORD) && (context = getFirstFamiliar(name)) != null) {
+		} else if (!name.equalsIgnoreCase(BLANK_KEYWORD) && (context = getFirstFamiliar(name)) != null) {
 			return context;
 		} else {
 			/*
