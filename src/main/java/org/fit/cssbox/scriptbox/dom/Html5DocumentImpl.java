@@ -12,13 +12,15 @@ import java.util.Set;
 
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.xerces.dom.NodeImpl;
+import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
-import org.fit.cssbox.scriptbox.dom.events.DocumentEventListener;
+import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.security.origins.OriginContainer;
@@ -30,7 +32,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 
-public class Html5DocumentImpl extends HTMLDocumentImpl {
+public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
 	public enum DocumentReadiness {
 		LOADING,
 		INTERACTIVE,
@@ -39,14 +41,14 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	final public static String DEFAULT_URL_ADDRESS = "about:blank";
 	final public static URL DEFAULT_URL;
-    static {       
-    	URL defaultURL = null;
-    	try {
-    		defaultURL = new URL(DEFAULT_URL_ADDRESS); // FIXME: about is not supported!
+	static {	   
+		URL defaultURL = null;
+		try {
+			defaultURL = new URL(DEFAULT_URL_ADDRESS); // FIXME: about is not supported!
 		} catch (MalformedURLException e) {
 		}
-    	DEFAULT_URL = defaultURL;
-    }
+		DEFAULT_URL = defaultURL;
+	}
 	final public static String JAVASCRIPT_SCHEME_NAME = "javascript";
 	final public static String DATA_SCHEME_NAME = "data";
 
@@ -55,12 +57,12 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	private static final String IFRAME_TAG_NAME = "iframe";
 
 	private static List<String> SERVER_BASED_SCHEMES;
-    static {       
-    	SERVER_BASED_SCHEMES = new ArrayList<String>(3);
-    	SERVER_BASED_SCHEMES.add("http");
-    	SERVER_BASED_SCHEMES.add("https");
-    	SERVER_BASED_SCHEMES.add("file");
-    }
+	static {	   
+		SERVER_BASED_SCHEMES = new ArrayList<String>(3);
+		SERVER_BASED_SCHEMES.add("http");
+		SERVER_BASED_SCHEMES.add("https");
+		SERVER_BASED_SCHEMES.add("file");
+	}
 
 	private BrowsingContext _browsingContext;
 	
@@ -138,6 +140,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 		if (recycleWindowDocument != null) {
 			document = new Html5DocumentImpl(browsingContext, address, null, null, false, contentType, parser);
 			document._window = recycleWindowDocument._window;
+			document._window.setDocumentImpl(document);
 		} else {
 			document = new Html5DocumentImpl(browsingContext, address, null, null, true, contentType, parser);
 		}
@@ -352,13 +355,70 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 		return _parser;
 	}
 	
+	@ScriptFunction
+	@Override
+	public void addEventListener(String type, EventListener listener) {
+		addEventListener(type, listener, false);
+	}
+	
+	@ScriptFunction
+	@Override
+	public void addEventListener(String type, EventListener listener, boolean useCapture) {
+		super.addEventListener(type, listener, useCapture);
+	}
+
+	@ScriptFunction
+	@Override
+	public void removeEventListener(String type, EventListener listener) {
+		removeEventListener(type, listener, false);
+	}
+	
+	@ScriptFunction
+	@Override
+	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
+		super.removeEventListener(type, listener, useCapture);
+	}
+	
+	@ScriptFunction
+	public boolean dispatchEvent(Event event) {
+		return super.dispatchEvent(event);
+	}
+	
 	@Override
 	protected void addEventListener(NodeImpl node, String type, EventListener listener, boolean useCapture) {
-		super.addEventListener(node, type, new DocumentEventListener(this, listener), useCapture);
+		super.addEventListener(node, type, listener, useCapture);
 	}
 
 	@Override
 	protected boolean dispatchEvent(NodeImpl node, Event event) {
-		return super.dispatchEvent(node, event);
+		if (!(event instanceof EventImpl)) {
+			return false;
+		}
+		EventImpl evt = (EventImpl)event;
+		
+		// Initialize
+		evt.target = node;
+		evt.stopPropagation = false;
+		evt.preventDefault = false;
+		
+		// Window capture phase
+		evt.currentTarget = _window;
+		evt.eventPhase = Event.CAPTURING_PHASE;
+		_window.dispatchEventFromDocument(evt);
+		
+		if (!evt.stopPropagation) {
+			super.dispatchEvent(node, evt);
+		}
+		
+		// Window bubble phase
+		if (!evt.stopPropagation) {
+			evt.currentTarget = _window;
+			evt.eventPhase = Event.BUBBLING_PHASE;
+			_window.dispatchEventFromDocument(evt);
+		}
+
+		return evt.preventDefault;
 	}
+
+
 }

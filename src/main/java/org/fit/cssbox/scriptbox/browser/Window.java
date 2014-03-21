@@ -2,22 +2,21 @@ package org.fit.cssbox.scriptbox.browser;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.xerces.dom.DOMMessageFormatter;
-import org.apache.xerces.dom.NodeImpl;
 import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.dom.events.DispatcherTask;
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
 import org.fit.cssbox.scriptbox.dom.events.EventHandlerEventListener;
 import org.fit.cssbox.scriptbox.dom.events.EventListenerEntry;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
+import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
@@ -30,9 +29,7 @@ import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.ui.bars.BarProp;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventException;
 import org.w3c.dom.events.EventListener;
 
 public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, WindowEventHandlers {
@@ -239,10 +236,19 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return documentImpl;
 	}
 	
+	public void setDocumentImpl(Html5DocumentImpl documentImpl) {
+		this.document = this.documentImpl = documentImpl;
+	}
+	
 	public WindowScriptSettings getScriptSettings() {
 		return scriptSettings;
 	}
 			
+	public void dispatchEvent(Event event, org.w3c.dom.events.EventTarget target) {
+		Task dispatcherTask = new DispatcherTask(documentImpl, target, event);
+		context.getEventLoop().queueTask(dispatcherTask);
+	}
+	
 	@ScriptGetter
 	public WindowProxy getWindow() {
 		return window;

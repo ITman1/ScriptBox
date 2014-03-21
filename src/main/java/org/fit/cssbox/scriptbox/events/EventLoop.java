@@ -135,6 +135,13 @@ public class EventLoop {
 		}, actionAfter);
 	}
 	
+	public synchronized void spin(Executable actionAfter) throws TaskAbortedException {
+		spinForCondition(new Runnable() {
+			@Override
+			public void run() {}
+		}, actionAfter);
+	}
+	
 	public synchronized void queueTask(Task task) {
 		testForAbort();
 		_taskScheduler.queueTask(task);

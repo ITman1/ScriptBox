@@ -13,6 +13,10 @@ import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
+/** 
+ * This class is not complete!
+ * @deprecated Use Class members resolvers instead for access restrictions
+ */
 public class SanboxedJavaObject extends SriptableWrapper {
 	private static final long serialVersionUID = 6120524771501878068L;
 

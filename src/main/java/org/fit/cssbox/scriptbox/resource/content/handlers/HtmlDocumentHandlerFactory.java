@@ -7,8 +7,10 @@ import java.util.List;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
+import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
@@ -42,7 +44,7 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			}
 		}
 		
-		private class ParseDocumentTask extends Task {
+		private class ParseDocumentTask extends Task {			
 			private Resource resource;
 			
 			public ParseDocumentTask(Resource resource) {
@@ -52,24 +54,30 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			}
 
 			@Override
-			public void execute() throws InterruptedException {
-				ScriptDOMParser scripDomParser = new ScriptDOMParser();
+			public void execute() throws InterruptedException, TaskAbortedException {
+				final ScriptDOMParser scripDomParser = new ScriptDOMParser();
 				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress(), "text/html", scripDomParser);
 				updateSessionHistory(document);
 				
-				Exception exception = null;
-												
-				try {
-					document.setDocumentReadiness(DocumentReadiness.LOADING);
-					scripDomParser.parse(document, new InputSource(resource.getInputStream()));
-				} catch (Exception e) {
-					exception = e;
-					e.printStackTrace();
-				}
-				
-				document.setDocumentReadiness(DocumentReadiness.COMPLETE);
-				context.getEventLoop().queueTask(new ParseDocumentFinishedTask(resource, exception));
-				
+				/* We have to spin first, wait until session is updated, otherwise script execution would fail*/
+				getEventLoop().spin(new Executable() {
+					
+					@Override
+					public void execute() throws TaskAbortedException, InterruptedException {
+						Exception exception = null;
+						
+						try {
+							document.setDocumentReadiness(DocumentReadiness.LOADING);
+							scripDomParser.parse(document, new InputSource(resource.getInputStream()));
+						} catch (Exception e) {
+							exception = e;
+							e.printStackTrace();
+						}
+						
+						document.setDocumentReadiness(DocumentReadiness.COMPLETE);
+						context.getEventLoop().queueTask(new ParseDocumentFinishedTask(resource, exception));
+					}
+				});
 			}
 		}
 		

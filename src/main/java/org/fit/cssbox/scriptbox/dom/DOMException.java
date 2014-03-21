@@ -13,8 +13,7 @@ public class DOMException extends org.w3c.dom.DOMException {
 	public static final short INVALID_NODE_TYPE_ERR = 24;
 	public static final short DATA_CLONE_ERR = 25;
 
-    public DOMException(short code, String message) {
-        super(code, message);
-     }
-	
+	public DOMException(short code, String message) {
+		super(code, message);
+	}
 }

@@ -1,6 +1,8 @@
 package org.fit.cssbox.scriptbox.script.javascript.window;
 
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
@@ -15,13 +17,35 @@ public class FunctionEventHandlerAdapter implements EventHandler {
 
 	@Override
 	public void handleEvent(Event event) {
-		Context cx = Context.getCurrentContext();
 		Scriptable scope = function.getParentScope();
-		Object[] args = {event};
-		function.call(cx, scope, function, args);
+		ObjectTopLevel topLevel = getObjectTopLevel(scope);
+		if (topLevel != null) {
+			Context cx = topLevel.getBrowserScriptEngine().enterContext();
+			try {
+				Object arg = ObjectScriptable.javaToJS(event, scope);
+				Object[] args = {arg};
+				function.call(cx, scope, scope, args);
+			} finally {
+				Context.exit();
+			}
+		}
 	}
 
 	public Function getFunction() {
 		return function;
+	}
+	
+	protected ObjectTopLevel getObjectTopLevel(Scriptable scope) {
+		Scriptable parentScope;
+		while ((parentScope = scope.getParentScope()) != null) {
+			scope = parentScope;
+		}
+		
+		Scriptable prototypeScope = scope.getPrototype();
+		if (prototypeScope instanceof ObjectTopLevel) {
+			return (ObjectTopLevel)prototypeScope;
+		}
+		
+		return null;
 	}
 }

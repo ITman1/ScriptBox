@@ -75,6 +75,8 @@ public abstract class RenderedContentHandler extends ContentHandler {
 				sessionHistory.removeAllAfter(currentEntry);
 				
 				SessionHistoryEntry newEntry = new SessionHistoryEntry(sessionHistory);
+				
+				newEntry.setURL(newDocument.getAddress());
 				newEntry.setSocument(newDocument);
 				sessionHistory.add(newEntry);
 				
