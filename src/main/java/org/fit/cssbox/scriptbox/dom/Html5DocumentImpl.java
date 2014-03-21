@@ -17,6 +17,7 @@ import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
+import org.fit.cssbox.scriptbox.dom.events.DocumentEventListener;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
@@ -353,12 +354,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl {
 	
 	@Override
 	protected void addEventListener(NodeImpl node, String type, EventListener listener, boolean useCapture) {
-		super.addEventListener(node, type, listener, useCapture);
-	}
-
-	@Override
-	protected void removeEventListener(NodeImpl node, String type, EventListener listener, boolean useCapture) {
-		super.removeEventListener(node, type, listener, useCapture);
+		super.addEventListener(node, type, new DocumentEventListener(this, listener), useCapture);
 	}
 
 	@Override

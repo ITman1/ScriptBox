@@ -1,6 +1,19 @@
 package org.fit.cssbox.scriptbox.dom.events;
 
 public interface WindowEventHandlers {
+    public final static String onafterprint_msg = "onafterprint";
+    public final static String onbeforeprint_msg = "onbeforeprint";
+    public final static String onbeforeunload_msg = "onbeforeunload";
+    public final static String onhashchange_msg = "onhashchange";
+    public final static String onmessage_msg = "onmessage";
+    public final static String onoffline_msg = "onoffline";
+    public final static String ononline_msg = "ononline";
+    public final static String onpagehide_msg = "onpagehide";
+    public final static String onpageshow_msg = "onpageshow";
+    public final static String onpopstate_msg = "onpopstate";
+    public final static String onstorage_msg = "onstorage";
+    public final static String onunload_msg = "onunload";
+	
     public EventHandler getOnafterprint();
     public EventHandler getOnbeforeprint();
     //TODO:public void OnBeforeUnloadEventHandler onbeforeunload;

@@ -1,242 +1,184 @@
 package org.fit.cssbox.scriptbox.dom.events;
 
-import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
-import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 
 public interface GlobalEventHandlers {
-	@ScriptGetter
+	public final static String onabort_msg = "onabort";
+	public final static String onblur_msg = "onblur";
+	public final static String oncancel_msg = "oncancel";
+	public final static String oncanplay_msg = "oncanplay";
+	public final static String oncanplaythrough_msg = "oncanplaythrough";
+	public final static String onchange_msg = "onchange";
+	public final static String onclick_msg = "onclick";
+	public final static String onclose_msg = "onclose";
+	public final static String oncuechange_msg = "oncuechange";
+	public final static String ondblclick_msg = "ondblclick";
+	public final static String ondrag_msg = "ondrag";
+	public final static String ondragend_msg = "ondragend";
+	public final static String ondragenter_msg = "ondragenter";
+	public final static String ondragexit_msg = "ondragexit";
+	public final static String ondragleave_msg = "ondragleave";
+	public final static String ondragover_msg = "ondragover";
+	public final static String ondragstart_msg = "ondragstart";
+	public final static String ondrop_msg = "ondrop";
+	public final static String ondurationchange_msg = "ondurationchange";
+	public final static String onemptied_msg = "onemptied";
+	public final static String onended_msg = "onended";
+	public final static String onerror_msg = "onerror";
+	public final static String onfocus_msg = "onfocus";
+	public final static String oninput_msg = "oninput";
+	public final static String oninvalid_msg = "oninvalid";
+	public final static String onkeydown_msg = "onkeydown";
+	public final static String onkeypress_msg = "onkeypress";
+	public final static String onkeyup_msg = "onkeyup";
+	public final static String onload_msg = "onload";
+	public final static String onloadeddata_msg = "onloadeddata";
+	public final static String onloadedmetadata_msg = "onloadedmetadata";
+	public final static String onloadstart_msg = "onloadstart";
+	public final static String onmousedown_msg = "onmousedown";
+	public final static String onmouseenter_msg = "onmouseenter";
+	public final static String onmouseleave_msg = "onmouseleave";
+	public final static String onmousemove_msg = "onmousemove";
+	public final static String onmouseout_msg = "onmouseout";
+	public final static String onmouseover_msg = "onmouseover";
+	public final static String onmouseup_msg = "onmouseup";
+	public final static String onmousewheel_msg = "onmousewheel";
+	public final static String onpause_msg = "onpause";
+	public final static String onplay_msg = "onplay";
+	public final static String onplaying_msg = "onplaying";
+	public final static String onprogress_msg = "onprogress";
+	public final static String onratechange_msg = "onratechange";
+	public final static String onreset_msg = "onreset";
+	public final static String onresize_msg = "onresize";
+	public final static String onscroll_msg = "onscroll";
+	public final static String onseeked_msg = "onseeked";
+	public final static String onseeking_msg = "onseeking";
+	public final static String onselect_msg = "onselect";
+	public final static String onshow_msg = "onshow";
+	public final static String onstalled_msg = "onstalled";
+	public final static String onsubmit_msg = "onsubmit";
+	public final static String onsuspend_msg = "onsuspend";
+	public final static String ontimeupdate_msg = "ontimeupdate";
+	public final static String ontoggle_msg = "ontoggle";
+	public final static String onvolumechange_msg = "onvolumechange";
+	public final static String onwaiting_msg = "onwaiting";
+	
 	public EventHandler getOnabort();
-	@ScriptGetter
 	public EventHandler getOnblur();
-	@ScriptGetter
 	public EventHandler getOncancel();
-	@ScriptGetter
 	public EventHandler getOncanplay();
-	@ScriptGetter 
 	public EventHandler getOncanplaythrough();
-	@ScriptGetter 
 	public EventHandler getOnchange();
-	@ScriptGetter
 	public EventHandler getOnclick();
-	@ScriptGetter
 	public EventHandler getOnclose();
-	@ScriptGetter
 	public EventHandler getOncuechange();
-	@ScriptGetter
 	public EventHandler getOndblclick();
-	@ScriptGetter
 	public EventHandler getOndrag();
-	@ScriptGetter
 	public EventHandler getOndragend();
-	@ScriptGetter
 	public EventHandler getOndragenter();
-	@ScriptGetter
 	public EventHandler getOndragexit();
-	@ScriptGetter
 	public EventHandler getOndragleave();
-	@ScriptGetter
 	public EventHandler getOndragover();
-	@ScriptGetter
 	public EventHandler getOndragstart();
-	@ScriptGetter
 	public EventHandler getOndrop();
-	@ScriptGetter
 	public EventHandler getOndurationchange();
-	@ScriptGetter
 	public EventHandler getOnemptied();
-	@ScriptGetter
 	public EventHandler getOnended();
-	//TODO: OnErrorEventHandler onerror;
-	@ScriptGetter
+	//TODO: OnErrorEventHandler onerr;
 	public EventHandler getOnfocus();
-	@ScriptGetter
 	public EventHandler getOninput();
-	@ScriptGetter
 	public EventHandler getOninvalid();
-	@ScriptGetter
 	public EventHandler getOnkeydown();
-	@ScriptGetter
 	public EventHandler getOnkeypress();
-	@ScriptGetter
 	public EventHandler getOnkeyup();
-	@ScriptGetter
 	public EventHandler getOnload();
-	@ScriptGetter
 	public EventHandler getOnloadeddata();
-	@ScriptGetter
 	public EventHandler getOnloadedmetadata();
-	@ScriptGetter
 	public EventHandler getOnloadstart();
-	@ScriptGetter
 	public EventHandler getOnmousedown();
-	@ScriptGetter
 	public EventHandler getOnmouseenter();
-	@ScriptGetter
 	public EventHandler getOnmouseleave();
-	@ScriptGetter
 	public EventHandler getOnmousemove();
-	@ScriptGetter
 	public EventHandler getOnmouseout();
-	@ScriptGetter
 	public EventHandler getOnmouseover();
-	@ScriptGetter
 	public EventHandler getOnmouseup();
-	@ScriptGetter
 	public EventHandler getOnmousewheel();
-	@ScriptGetter
 	public EventHandler getOnpause();
-	@ScriptGetter
 	public EventHandler getOnplay();
-	@ScriptGetter
 	public EventHandler getOnplaying();
-	@ScriptGetter
 	public EventHandler getOnprogress();
-	@ScriptGetter
 	public EventHandler getOnratechange();
-	@ScriptGetter
 	public EventHandler getOnreset();
-	@ScriptGetter
 	public EventHandler getOnresize();
-	@ScriptGetter
 	public EventHandler getOnscroll();
-	@ScriptGetter
 	public EventHandler getOnseeked();
-	@ScriptGetter
 	public EventHandler getOnseeking();
-	@ScriptGetter
 	public EventHandler getOnselect();
-	@ScriptGetter
 	public EventHandler getOnshow();
-	@ScriptGetter
 	public EventHandler getOnstalled();
-	@ScriptGetter
 	public EventHandler getOnsubmit();
-	@ScriptGetter
 	public EventHandler getOnsuspend();
-	@ScriptGetter
 	public EventHandler getOntimeupdate();
-	@ScriptGetter
 	public EventHandler getOntoggle();
-	@ScriptGetter
 	public EventHandler getOnvolumechange();
-	@ScriptGetter
 	public EventHandler getOnwaiting();
 	
-	@ScriptSetter
 	public void setOnabort(EventHandler handler);
-	@ScriptSetter
 	public void setOnblur(EventHandler handler);
-	@ScriptSetter
 	public void setOncancel(EventHandler handler);
-	@ScriptSetter
 	public void setOncanplay(EventHandler handler);
-	@ScriptSetter
 	public void setOncanplaythrough(EventHandler handler);
-	@ScriptSetter
 	public void setOnchange(EventHandler handler);
-	@ScriptSetter
 	public void setOnclick(EventHandler handler);
-	@ScriptSetter
 	public void setOnclose(EventHandler handler);
-	@ScriptSetter
 	public void setOncuechange(EventHandler handler);
-	@ScriptSetter
 	public void setOndblclick(EventHandler handler);
-	@ScriptSetter
 	public void setOndrag(EventHandler handler);
-	@ScriptSetter
 	public void setOndragend(EventHandler handler);
-	@ScriptSetter
 	public void setOndragenter(EventHandler handler);
-	@ScriptSetter
 	public void setOndragexit(EventHandler handler);
-	@ScriptSetter
 	public void setOndragleave(EventHandler handler);
-	@ScriptSetter
 	public void setOndragover(EventHandler handler);
-	@ScriptSetter
 	public void setOndragstart(EventHandler handler);
-	@ScriptSetter
 	public void setOndrop(EventHandler handler);
-	@ScriptSetter
 	public void setOndurationchange(EventHandler handler);
-	@ScriptSetter
 	public void setOnemptied(EventHandler handler);
-	@ScriptSetter
 	public void setOnended(EventHandler handler);
 	//TODO: OnErrorEventHandler onerror;
-	@ScriptSetter
 	public void setOnfocus(EventHandler handler);
-	@ScriptSetter
 	public void setOninput(EventHandler handler);
-	@ScriptSetter
 	public void setOninvalid(EventHandler handler);
-	@ScriptSetter
 	public void setOnkeydown(EventHandler handler);
-	@ScriptSetter
 	public void setOnkeypress(EventHandler handler);
-	@ScriptSetter
 	public void setOnkeyup(EventHandler handler);
-	@ScriptSetter
 	public void setOnload(EventHandler handler);
-	@ScriptSetter
 	public void setOnloadeddata(EventHandler handler);
-	@ScriptSetter
 	public void setOnloadedmetadata(EventHandler handler);
-	@ScriptSetter
 	public void setOnloadstart(EventHandler handler);
-	@ScriptSetter
 	public void setOnmousedown(EventHandler handler);
-	@ScriptSetter
 	public void setOnmouseenter(EventHandler handler);
-	@ScriptSetter
 	public void setOnmouseleave(EventHandler handler);
-	@ScriptSetter
 	public void setOnmousemove(EventHandler handler);
-	@ScriptSetter
 	public void setOnmouseout(EventHandler handler);
-	@ScriptSetter
 	public void setOnmouseover(EventHandler handler);
-	@ScriptSetter
 	public void setOnmouseup(EventHandler handler);
-	@ScriptSetter
 	public void setOnmousewheel(EventHandler handler);
-	@ScriptSetter
 	public void setOnpause(EventHandler handler);
-	@ScriptSetter
 	public void setOnplay(EventHandler handler);
-	@ScriptSetter
 	public void setOnplaying(EventHandler handler);
-	@ScriptSetter
 	public void setOnprogress(EventHandler handler);
-	@ScriptSetter
 	public void setOnratechange(EventHandler handler);
-	@ScriptSetter
 	public void setOnreset(EventHandler handler);
-	@ScriptSetter
 	public void setOnresize(EventHandler handler);
-	@ScriptSetter
 	public void setOnscroll(EventHandler handler);
-	@ScriptSetter
 	public void setOnseeked(EventHandler handler);
-	@ScriptSetter
 	public void setOnseeking(EventHandler handler);
-	@ScriptSetter
 	public void setOnselect(EventHandler handler);
-	@ScriptSetter
 	public void setOnshow(EventHandler handler);
-	@ScriptSetter
 	public void setOnstalled(EventHandler handler);
-	@ScriptSetter
 	public void setOnsubmit(EventHandler handler);
-	@ScriptSetter
 	public void setOnsuspend(EventHandler handler);
-	@ScriptSetter
 	public void setOntimeupdate(EventHandler handler);
-	@ScriptSetter
 	public void setOntoggle(EventHandler handler);
-	@ScriptSetter
 	public void setOnvolumechange(EventHandler handler);
-	@ScriptSetter
 	public void setOnwaiting(EventHandler handler);
 }

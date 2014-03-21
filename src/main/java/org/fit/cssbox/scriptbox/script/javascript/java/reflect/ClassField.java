@@ -4,9 +4,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.fit.cssbox.scriptbox.dom.events.EventHandler;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
+import org.fit.cssbox.scriptbox.script.javascript.window.FunctionEventHandlerAdapter;
+import org.mozilla.javascript.Function;
 
 public class ClassField extends ClassMember<Field> implements MemberField {
 	protected Method fieldGetterMethod;
@@ -66,25 +69,31 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		}
 		
 		boolean override = getOverride && fieldGetterMethod != null;
+		Object value = null;
 		if (member != null && !override) {
 			try {
-				return member.get(object);
+				value = member.get(object);
 			} catch (Exception e) {
 				throw new UnknownException(e);
 			}
 		} else {
 			try {
-				return fieldGetterMethod.invoke(object);
+				value = fieldGetterMethod.invoke(object);
 			} catch (Exception e) {
 				throw new UnknownException(e);
 			}
 		}
+		
+		return unwrap(value);
 	}
 	
 	public void set(Object object, Object value) {
 		object = ObjectScriptable.jsToJava(object);
 		value = ObjectScriptable.jsToJava(value);
 
+		Class<?> type = getFieldType();
+		value = wrap(type, value);
+		
 		if (!clazz.isInstance(object)) {
 			throw new FieldException("Passed object is not instance of the class to which field belongs to.");
 		}
@@ -105,6 +114,37 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 			}
 		}
 	}	
+	
+	public static Object wrap(Class<?> type, Object value) {
+		if (type.equals(EventHandler.class) && value instanceof Function) {
+			value = new FunctionEventHandlerAdapter((Function)value);
+		}
+		
+		return value;
+	}
+	
+	public static Object unwrap(Object value) {
+		if (value instanceof FunctionEventHandlerAdapter) {
+			value = ((FunctionEventHandlerAdapter)value).getFunction();
+		}
+		
+		return value;
+	}
+	
+	protected Class<?> getFieldType() {
+		Class<?>[] params = fieldSetterMethod.getParameterTypes();
+		Class<?> setterType = (fieldSetterMethod != null && params.length > 0)? params[0] : null;
+		Class<?> getterType = (fieldGetterMethod != null)? fieldGetterMethod.getReturnType() : null;
+		Class<?> memberType = (member != null)? member.getType() : null;
+		
+		if (setterType != null) {
+			return setterType;
+		} else if (getterType != null) {
+			return getterType;
+		} else {
+			return memberType;
+		}
+	}
 	
 	public static boolean isGetter(Method method) {
 		String getterName =  method.getName();

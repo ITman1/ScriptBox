@@ -25,7 +25,9 @@ public class ClassFunction extends ClassMember<Method> implements MemberFunction
 		}
 		
 		try {
-			return member.invoke(object, args);
+			Object returnObject = member.invoke(object, args);
+			
+			return ClassField.unwrap(returnObject);
 		} catch (Exception e) {
 			throw new UnknownException(e);
 		}
@@ -44,6 +46,8 @@ public class ClassFunction extends ClassMember<Method> implements MemberFunction
 				} else {
 					castedArgs[i] = ObjectScriptable.jsToJava(arg);;
 				}
+				
+				castedArgs[i] = ClassField.wrap(expectedTypes[i], castedArgs[i]);
 			}
 			
 			return castedArgs;
