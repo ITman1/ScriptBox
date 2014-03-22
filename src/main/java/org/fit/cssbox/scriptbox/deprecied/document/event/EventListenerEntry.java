@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.document.event;
+package org.fit.cssbox.scriptbox.deprecied.document.event;
 
 import org.w3c.dom.events.EventListener;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

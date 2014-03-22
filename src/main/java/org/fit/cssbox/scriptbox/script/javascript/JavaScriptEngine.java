@@ -30,6 +30,7 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 	protected ContextFactory contextFactory;
 	protected TopLevel topLevel;
 	protected ClassMembersResolverFactory membersFactory;
+	protected Scriptable runtimeScope;
 	
 	public JavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
 		this(factory, scriptSettings, null);
@@ -56,8 +57,8 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 
 		Context cx = enterContext();
 		try {
-			Scriptable windowScope = getRuntimeScope(context);
-			ret = cx.evaluateReader(windowScope, reader, "<inline script>" , 1,  null);
+			Scriptable executionScope = getRuntimeScope(context);
+			ret = cx.evaluateReader(executionScope, reader, "<inline script>" , 1,  null);
 		} catch (Exception ex) {
 			throw new ScriptException(ex);
 		} finally {
@@ -103,12 +104,14 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 	}
 	
 	protected Scriptable getRuntimeScope(ScriptContext context) throws ScriptException {		
-		Scriptable windowScope = new ScriptContextScriptable(context);
+		if (runtimeScope == null) {
+			runtimeScope = new ScriptContextScriptable(context);
+			
+			runtimeScope.setPrototype(topLevel);
+			runtimeScope.setParentScope(null);
+		}
 		
-		windowScope.setPrototype(topLevel);
-		windowScope.setParentScope(null);
-		
-		return windowScope;
+		return runtimeScope;
 	}
 	
 	protected Object unwrap(Object value) {

@@ -1,7 +1,6 @@
 package org.fit.cssbox.scriptbox.browser;
 
 import java.net.URL;
-import java.util.Map;
 
 import javax.script.ScriptEngine;
 
@@ -13,10 +12,6 @@ import org.fit.cssbox.scriptbox.security.origins.Origin;
 public class WindowScriptSettings extends ScriptSettings<Window> {
 
 	private Window _window;
-	protected Map<Class<? extends ScriptEngine>, ScriptEngine> scriptEngines;
-	public void addDocumentScriptEngine(ScriptEngine scriptEngine) {
-		scriptEngines.put(scriptEngine.getClass(), scriptEngine);
-	}
 	
 	public void getDocumentScriptEngine(Class<? extends ScriptEngine> engineClass) {
 		scriptEngines.get(engineClass);

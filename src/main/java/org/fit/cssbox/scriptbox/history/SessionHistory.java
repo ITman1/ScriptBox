@@ -49,9 +49,14 @@ public class SessionHistory {
 		return entries.size();
 	}
 	
-	public void clean() {
-		entries.clear();
-		initSessionHistory();
+	public void discard() {
+		while (!entries.isEmpty()) {
+			SessionHistoryEntry entry = entries.remove(0);
+			Html5DocumentImpl doc = entry.getDocument();
+			if (doc != null) {
+				doc.discard();
+			}
+		}
 	}
 	
 	public void remove(int index) {

@@ -2,6 +2,8 @@ package org.fit.cssbox.scriptbox.script;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
@@ -9,6 +11,12 @@ import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 
 public abstract class ScriptSettings<GlobalObject> {
+	protected Map<String, BrowserScriptEngine> scriptEngines;
+	
+	public ScriptSettings() {
+		scriptEngines = new HashMap<String, BrowserScriptEngine>();
+	}
+	
 	public Collection<BrowserScriptEngineFactory> getExecutionEnviroments() {
 		BrowserScriptEngineManager scriptManager = BrowserScriptEngineManager.getInstance();
 		
@@ -17,9 +25,16 @@ public abstract class ScriptSettings<GlobalObject> {
 	
 	public BrowserScriptEngine getExecutionEnviroment(Script<?, ?> script) {
 		String language = script.getLanguage();
-		BrowserScriptEngineManager scriptManager = BrowserScriptEngineManager.getInstance();
-			
-		return scriptManager.getContent(language, this);
+		
+		BrowserScriptEngine scriptEngine = scriptEngines.get(language);
+		
+		if (scriptEngine == null) {
+			BrowserScriptEngineManager scriptManager = BrowserScriptEngineManager.getInstance();
+			scriptEngine = scriptManager.getContent(language, this);
+			scriptEngines.put(language, scriptEngine);
+		}
+
+		return scriptEngine;
 	}
 	
 	public abstract GlobalObject getGlobalObject();

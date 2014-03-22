@@ -2,7 +2,10 @@ package org.fit.cssbox.scriptbox.browser;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -16,6 +19,7 @@ import org.fit.cssbox.scriptbox.dom.events.EventListenerEntry;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
+import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.navigation.Location;
@@ -26,6 +30,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.ui.bars.BarProp;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,30 +42,12 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	final public static String DEFAULT_FEATURES = "";
 	final public static boolean DEFAULT_REAPLACE = false;
 	
-	protected Map<String, Vector<EventListenerEntry>> listeners;
 	protected Html5DocumentImpl documentImpl;
-	protected WindowScriptSettings scriptSettings;
 	protected BrowsingContext context;
 	
-	/* The current browsing context */
-	
-	protected WindowProxy window;
-	protected WindowProxy self;
-	protected Document document;
-	protected String name;
-	protected Location location;
-	protected History history;
-	
-	protected BarProp locationbar;
-	protected BarProp menubar;
-	protected BarProp personalbar;
-	protected BarProp scrollbars;
-	protected BarProp statusbar;
-	protected BarProp toolbar;
-	
-	protected String status;
-	protected boolean closed;
-		
+	protected Map<String, Vector<EventListenerEntry>> listeners;
+	protected WindowScriptSettings scriptSettings;
+			
 	// Global event handler listeners
 	protected EventHandlerEventListener onabortHandlerListener;
 	protected EventHandlerEventListener onblurHandlerListener;
@@ -139,15 +126,11 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	}
 	
 	public Window(Html5DocumentImpl document) {
+		setDocumentImpl(document);
+		
 		// Implementation specific and auxiliary properties 
 		this.listeners = new HashMap<String, Vector<EventListenerEntry>>();
-		this.documentImpl = document;
 		this.scriptSettings = new WindowScriptSettings(this);
-		this.context = document.getBrowsingContext();
-		
-		this.window = this.context.getWindowProxy();
-		this.self = this.window;
-		this.document = document;
 		
 		// Global event handler listeners
 		this.onabortHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onabort_msg);
@@ -223,12 +206,18 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		this.onunloadHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onunload_msg);
 	}
 	
+	@Override
+	public String toString() {
+		return "[object Window]";
+	}
+	
 	public Html5DocumentImpl getDocumentImpl() {
 		return documentImpl;
 	}
 	
 	public void setDocumentImpl(Html5DocumentImpl documentImpl) {
-		this.document = this.documentImpl = documentImpl;
+		this.documentImpl = documentImpl;
+		this.context = documentImpl.getBrowsingContext();
 	}
 	
 	public WindowScriptSettings getScriptSettings() {
@@ -242,17 +231,17 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	
 	@ScriptGetter
 	public WindowProxy getWindow() {
-		return window;
+		return context.getWindowProxy();
 	}
 	
 	@ScriptGetter
 	public WindowProxy getSelf() {
-		return self;
+		return context.getWindowProxy();
 	}
 
 	@ScriptGetter
 	public Document getDocument() {
-		return document;
+		return documentImpl;
 	}
 
 	@ScriptGetter
@@ -277,57 +266,87 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 
 	@ScriptGetter
 	public BarProp getLocationbar() {
-		return locationbar;
+		// TODO: Implement.
+		return null;
 	}
 
 	@ScriptGetter
 	public BarProp getMenubar() {
-		return menubar;
+		// TODO: Implement.
+		return null;
 	}
 
 	@ScriptGetter
 	public BarProp getPersonalbar() {
-		return personalbar;
+		// TODO: Implement.
+		return null;
 	}
 
 	@ScriptGetter
 	public BarProp getScrollbars() {
-		return scrollbars;
+		// TODO: Implement.
+		return null;
 	}
 
 	@ScriptGetter
 	public BarProp getStatusbar() {
-		return statusbar;
+		// TODO: Implement.
+		return null;
 	}
 
 	@ScriptGetter
 	public BarProp getToolbar() {
-		return toolbar;
+		// TODO: Implement.
+		return null;
 	}
 
 	@ScriptGetter
 	public String getStatus() {
-		return status;
+		// TODO: Implement.
+		return null;
 	}
 
 	@ScriptGetter
 	public boolean getClosed() {
-		return closed;
+		return context.isDiscarded();
 	}
 
 	@ScriptGetter
 	public WindowProxy getFrames() {
-		return frames;
+		return context.getWindowProxy();
 	}
 
 	@ScriptGetter
 	public long getLength() {
-		return length;
+		/*
+		 * if that Window's browsing context shares the same event loop as the responsible document specified
+		 *  by the entry settings object accessing the IDL attribute; otherwise, it must return zero
+		 */
+		EventLoop windowEventLoop = context.getEventLoop();
+		EventLoop resposinbleEventLoop = scriptSettings.getResponsibleDocument().getEventLoop();
+		
+		if (windowEventLoop.equals(resposinbleEventLoop)) {
+			/* the number of child browsing contexts that are nested through 
+			 * elements that are in the Document that is the active document of that Window object
+			 */
+			Collection<BrowsingContext> nestedContexts = context.getNestedContexts();
+			long number = 0;
+			
+			for (BrowsingContext nestedContext : nestedContexts) {
+				if (nestedContext instanceof IFrameBrowsingContext) {
+					number++;
+				}
+			}
+			
+			return number;
+		} else {
+			return 0;
+		}
 	}
 
 	@ScriptGetter
 	public WindowProxy getTop() {
-		return top;
+		return context.getTopLevelContext().getWindowProxy();
 	}
 
 	@ScriptGetter
@@ -337,15 +356,32 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		}
 		return null;
 	}
-
+	
 	@ScriptGetter
 	public WindowProxy getParent() {
-		return parent;
+		return context.getParentContext().getWindowProxy();
 	}
 
 	@ScriptGetter
 	public Element getFrameElement() {
-		return frameElement;
+		/* If d is not a Document in a nested browsing context, return null and abort these steps. */
+		if (!context.isNestedBrowsingContext()) {
+			return null;
+		}
+		
+		/* If the browsing context container's Document does not have the same effective script 
+		 * origin as the effective script origin specified by the entry settings object, then throw 
+		 * a SecurityError exception and abort these steps. */
+		BrowsingContext containerContext = context.getParentContext();
+		Html5DocumentImpl containerDocument = containerContext.getActiveDocument();
+		Origin<?> containerOrigin = containerDocument.getEffectiveScriptOrigin();
+		Origin<?> scriptOrigin = scriptSettings.getEffectiveScriptOrigin();
+		
+		if (!containerOrigin.equals(scriptOrigin)) {
+			throw new DOMException(DOMException.SECURITY_ERR, "SecurityError");
+		}
+		
+		return context.getContainer();
 	}
 	
 	@ScriptFunction
@@ -355,7 +391,13 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	
 	@ScriptFunction
 	public void stop() {
-		throw new UnsupportedOperationException("Method stop() has not been implemented yet!");
+		if (!documentImpl.isUnloadRunning()) {
+			NavigationController controller = context.getNavigationController();
+			controller.cancelAllNavigationAttempts();
+		}
+		
+		Html5DocumentImpl activeDocument = context.getActiveDocument();
+		activeDocument.abort();
 	}
 	
 	@ScriptFunction
@@ -451,8 +493,23 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	@ScriptFunction
 	@Override
 	public Object get(Object arg) {
-		if (arg.equals("foo")) {
-			return "bar";
+		long length = getLength();
+		if (arg instanceof Integer && length > 0) {
+			int index = (Integer)arg;
+			Collection<BrowsingContext> nestedContexts = context.getNestedContexts();
+			List<BrowsingContext> frames = new ArrayList<BrowsingContext>();
+			
+			for (BrowsingContext nestedContext : nestedContexts) {
+				if (nestedContext instanceof IFrameBrowsingContext) {
+					frames.add(nestedContext);
+				}
+			}
+			
+			if (frames.size() > index) {
+				return frames.get(index).getWindowProxy();
+			}
+		} else if (arg instanceof String) {
+			
 		}
 		
 		return ObjectGetter.UNDEFINED_VALUE;

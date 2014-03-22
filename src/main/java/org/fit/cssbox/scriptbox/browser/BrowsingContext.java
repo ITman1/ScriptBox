@@ -33,12 +33,12 @@ public class BrowsingContext {
 	public static final String PARENT_KEYWORD = "_parent";
 	public static final String TOP_KEYWORD = "_top";
 	
-	protected boolean destroyed;
+	protected boolean discarded;
 	protected URL baseURI;
 	
 	protected BrowsingContext parentContext;
 	protected Html5DocumentImpl creatorDocument;
-	protected Set<BrowsingContext> childContexts;
+	protected List<BrowsingContext> childContexts;
 	protected BrowsingUnit browsingUnit;
 	protected WindowProxy windowProxy;
 	protected Element container;
@@ -55,7 +55,7 @@ public class BrowsingContext {
 		this.contextName = contextName;
 		this.container = container;
 		
-		this.childContexts = new HashSet<BrowsingContext>();
+		this.childContexts = new ArrayList<BrowsingContext>();
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
 		this.navigationController = new NavigationController(this);
@@ -94,16 +94,25 @@ public class BrowsingContext {
 		return childContext;
 	}
 
-	public synchronized void destroyContext() {
-		destroyed = true;
+	/*
+	 * When a browsing context is discarded, the strong reference from the user agent itself to the browsing context must be severed, 
+	 * and all the Document objects for all the entries in the browsing context's session history must be discarded as well.
+	 */
+	public synchronized void discard() {
+		discarded = true;
 		navigationController.cancelAllNavigationAttempts();
+		sessionHistory.discard();
+	}
+	
+	public synchronized boolean isDiscarded() {
+		return discarded;
 	}
 	
 	/*
 	 * At any time, one Document in each browsing context is designated the active document. 
 	 */
 	public Html5DocumentImpl getActiveDocument() {
-		if (destroyed) {
+		if (discarded) {
 			return null;
 		} else {
 			SessionHistoryEntry entry = sessionHistory.getCurrentEntry();

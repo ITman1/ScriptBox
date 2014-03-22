@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.document.event;
+package org.fit.cssbox.scriptbox.deprecied.document.event;
 
 import java.util.ArrayList;
 import java.util.Collection;

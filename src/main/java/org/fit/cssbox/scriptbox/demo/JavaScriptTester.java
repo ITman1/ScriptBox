@@ -1,36 +1,20 @@
 package org.fit.cssbox.scriptbox.demo;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-
 import java.awt.BorderLayout;
-
-import javax.swing.JTextArea;
-import javax.swing.JSplitPane;
-
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-
-import javax.swing.JEditorPane;
-
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.BoxLayout;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class JavaScriptTester {
 
@@ -38,6 +22,7 @@ public class JavaScriptTester {
 	private JFrame frame;
 	private JTextField navigationField;
 	private JButton navigateButton;
+	private JTextArea sourceCodeArea;
 	
 	/**
 	 * Create the application.
@@ -107,8 +92,8 @@ public class JavaScriptTester {
 		gbc_scrollPane.gridy = 2;
 		frame.getContentPane().add(scrollPane, gbc_scrollPane);
 		
-		JTextArea textArea = new JTextArea();
-		scrollPane.setViewportView(textArea);
+		sourceCodeArea = new JTextArea();
+		scrollPane.setViewportView(sourceCodeArea);
 		
 		scriptBrowser = new ScriptBrowser();
 		GridBagConstraints gbc_editorPane = new GridBagConstraints();
@@ -152,5 +137,8 @@ public class JavaScriptTester {
 	
 	public ScriptBrowser getScriptBrowser() {
 		return scriptBrowser;
+	}
+	public JTextArea getSourceCodeArea() {
+		return sourceCodeArea;
 	}
 }

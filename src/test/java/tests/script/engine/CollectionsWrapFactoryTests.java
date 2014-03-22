@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.script.ScriptException;
-
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;

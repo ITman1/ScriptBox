@@ -18,11 +18,14 @@ import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
+import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
+import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
+import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.security.origins.OriginContainer;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
 import org.fit.cssbox.scriptbox.url.UrlUtils;
@@ -77,9 +80,9 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
 	private boolean _fullscreenEnabledFlag;
 	private String _contentType;
 	private DocumentReadiness _documentReadiness;
-	private ScriptDOMParser _parser;
+	private ScriptableDocumentParser _parser;
 	
-	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptDOMParser parser) {
+	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {
 		_browsingContext = browsingContext;
 		_address = address;
 		_referrer = referrer;
@@ -134,7 +137,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
 		return createDocument(browsingContext, address, recycleWindowDocument, contentType, null);
 	}
 	
-	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType, ScriptDOMParser parser) {
+	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType, ScriptableDocumentParser parser) {
 		Html5DocumentImpl document = null;
 
 		if (recycleWindowDocument != null) {
@@ -298,6 +301,14 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
 		return _originContainer;
 	}
 	
+	public Origin<?> getOrigin() {
+		return _originContainer.getOrigin();
+	}
+	
+	public Origin<?> getEffectiveScriptOrigin() {
+		return _originContainer.getEffectiveScriptOrigin();
+	}
+	
 	public void implementSandboxing() {
 		if (_browsingContext instanceof WindowBrowsingContext) {
 			setActiveSandboxingFlags(((WindowBrowsingContext)_browsingContext).getPopupSandboxingFlagSet());
@@ -358,7 +369,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
 		return _address == null || _address.equals(DEFAULT_URL);
 	}
 	
-	public ScriptDOMParser getParser() {
+	public ScriptableDocumentParser getParser() {
 		return _parser;
 	}
 	
@@ -389,6 +400,21 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
 	@ScriptFunction
 	public boolean dispatchEvent(Event event) {
 		return super.dispatchEvent(event);
+	}
+	
+	/* See:http://www.w3.org/html/wg/drafts/html/CR/browsers.html#discard-a-document
+	 * TODO: Implement
+	 */
+	public void discard() {
+		
+	}
+	
+	public EventLoop getEventLoop() {
+		return _browsingContext.getEventLoop();
+	}
+	
+	public String getParserSource() {
+		return (_parser != null)? _parser.getParserSource() : null;
 	}
 	
 	@Override

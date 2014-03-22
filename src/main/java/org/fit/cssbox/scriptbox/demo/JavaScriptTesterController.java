@@ -6,11 +6,18 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 public class JavaScriptTesterController {
 	private JavaScriptTester tester;
@@ -47,7 +54,7 @@ public class JavaScriptTesterController {
 		});
 	}
 	
-	public synchronized void navigatePage(String page) {
+	public synchronized void navigatePage(String page) {		
 		browsingUnit.navigate(page);
 		
 		try {
@@ -57,8 +64,30 @@ public class JavaScriptTesterController {
 		}
 		
 		ScriptBrowser browser = tester.getScriptBrowser();
+		BrowsingContext context = browsingUnit.getWindowBrowsingContext();
 		browser.setBrowsingUnit(browsingUnit);
-		browser.refresh();
+		
+		browser.refresh();		
+
+		Html5DocumentImpl doc = context.getActiveDocument();
+		DOMImplementationRegistry registry;
+		try {
+			registry = DOMImplementationRegistry.newInstance();
+			DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("XML 3.0 LS 3.0");
+			LSSerializer serializer = impl.createLSSerializer();
+	        LSOutput output = impl.createLSOutput();
+	        output.setEncoding("UTF-8");
+	        output.setByteStream(System.out);
+	        serializer.write(doc, output);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}    
+
+		
+		JTextArea sourceCodeArea = tester.getSourceCodeArea();
+		String sourceCode = doc.getParserSource();
+		sourceCodeArea.setText(sourceCode);
 	}
 	
 	private void registerEventListeners() {

@@ -60,7 +60,7 @@ public class BrowsingUnit {
 	}
 	
 	public void destroy() {
-		_windowBrowsingContext.destroyContext();
+		_windowBrowsingContext.discard();
 		try {
 			_eventLoop.abort(false);
 		} catch (InterruptedException e) {

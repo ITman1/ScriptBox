@@ -1,10 +1,12 @@
 package org.fit.cssbox.scriptbox.resource.content.handlers;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
+import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.events.Executable;
@@ -55,11 +57,12 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 
 			@Override
 			public void execute() throws InterruptedException, TaskAbortedException {
-				final ScriptDOMParser scripDomParser = new ScriptDOMParser();
+				String encoding = resource.getContentEncoding();
+				final ScriptableDocumentParser scripDomParser = new ScriptableDocumentParser(encoding);
 				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress(), "text/html", scripDomParser);
 				updateSessionHistory(document);
 				
-				/* We have to spin first, wait until session is updated, otherwise script execution would fail*/
+				/* We have to spin first, wait until session is updated, otherwise script execution would fail - it has to have active document this*/
 				getEventLoop().spin(new Executable() {
 					
 					@Override
@@ -68,7 +71,8 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 						
 						try {
 							document.setDocumentReadiness(DocumentReadiness.LOADING);
-							scripDomParser.parse(document, new InputSource(resource.getInputStream()));
+							InputStream is = resource.getInputStream();
+							scripDomParser.parse(document, is);
 						} catch (Exception e) {
 							exception = e;
 							e.printStackTrace();

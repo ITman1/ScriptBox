@@ -8,10 +8,6 @@ import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngineFactory;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 
 public class MultipleDocumentBrowser {
 	
@@ -33,13 +29,7 @@ public class MultipleDocumentBrowser {
 		Html5DocumentImpl doc = browsingUnit.getWindowBrowsingContext().getActiveDocument();
 		Window window = doc.getWindow();
 		WindowScriptSettings settings = window.getScriptSettings();
-		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();    
-		DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("XML 3.0 LS 3.0");
-		LSSerializer serializer = impl.createLSSerializer();
-        LSOutput output = impl.createLSOutput();
-        output.setEncoding("UTF-8");
-        output.setByteStream(System.out);
-        serializer.write(doc, output);
+
         
         
         ScriptEngine engine = new WindowScriptEngineFactory().getBrowserScriptEngine(settings);

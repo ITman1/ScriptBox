@@ -4,6 +4,7 @@ import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
+import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
@@ -107,7 +108,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	}
 	
 	
-	protected Html5DocumentImpl createDocument(BrowsingContext context, URL url, String mimeType, ScriptDOMParser parser) {
+	protected Html5DocumentImpl createDocument(BrowsingContext context, URL url, String mimeType, ScriptableDocumentParser parser) {
 		SessionHistory sessionHistory = context.getSesstionHistory();
 		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 		Html5DocumentImpl currentDocument = currentEntry.getDocument();

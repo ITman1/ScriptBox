@@ -5,7 +5,6 @@ import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.junit.Test;
-import org.w3c.dom.Element;
 
 import tests.script.TestUtils.UserAgentWindowTester;
 
