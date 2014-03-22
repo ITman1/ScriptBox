@@ -1,10 +1,14 @@
-package org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox;
+package org.fit.cssbox.scriptbox.deprecied;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox.Shutter;
 import org.mozilla.javascript.ClassShutter;
 
+/** 
+ * @deprecated
+ */
 public class SandBoxClassShutter implements ClassShutter {
 	private final Map<String, Boolean> visitedClasses;
 

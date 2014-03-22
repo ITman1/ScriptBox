@@ -1,10 +1,13 @@
-package org.fit.cssbox.scriptbox.script.javascript.wrap;
+package org.fit.cssbox.scriptbox.deprecied;
 
-import org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox.SanboxedJavaObject;
+import org.fit.cssbox.scriptbox.script.javascript.wrap.WrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox.Shutter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+/** 
+ * @deprecated
+ */
 public class SandboxWrapFactoryDecorator extends WrapFactoryDecorator {
 
 	protected Shutter shutter;

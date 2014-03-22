@@ -12,8 +12,8 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.annotation.ScriptAnnotationTopLevel;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.junit.Test;
 import org.mozilla.javascript.TopLevel;
 
@@ -31,7 +31,7 @@ public class JavaScriptAnnotationsTests {
 			return new GlobalObjectJavaScriptEngine(this, null) {
 				@Override
 				protected TopLevel initializeTopLevel() {
-					return new ScriptAnnotationTopLevel(object, this);
+					return new ObjectTopLevel(object, this);
 				}
 			};
 		}

@@ -31,7 +31,7 @@ final public class AdapterRegistry {
 	public Adapter getAdapter(Class<?> adapteeClass) {
 		Adapter adapter = null;
 		
-		while ((adapter = getSpecificAdapter(adapteeClass)) == null) {
+		while (adapteeClass != null && (adapter = getSpecificAdapter(adapteeClass)) == null) {
 			adapteeClass = adapteeClass.getSuperclass();
 		}
 		

@@ -128,7 +128,15 @@ public class HostedJavaObject extends ScriptableObject implements Wrapper {
 	
 	@Override
 	public Object unwrap() {
+		if (javaObject instanceof org.fit.cssbox.scriptbox.script.Wrapper) {
+			return ((org.fit.cssbox.scriptbox.script.Wrapper<?>)javaObject).unwrap();
+		}
 		return javaObject;
+	}
+	
+	@Override
+	public String toString() {
+		return javaObject.toString();
 	}
 
 	protected Object wrapObject(Object object) {		

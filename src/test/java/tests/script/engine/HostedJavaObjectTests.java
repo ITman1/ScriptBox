@@ -6,6 +6,8 @@ import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.DefaultClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.DefaultWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.WrapFactoryDecorator;
 import org.junit.Test;
@@ -39,6 +41,11 @@ public class HostedJavaObjectTests {
 				@Override
 				protected TopLevel initializeTopLevel() {
 					return new ObjectTopLevel(object, this);
+				}
+				
+				@Override
+				protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
+					return new DefaultClassMembersResolverFactory();
 				}
 			};
 		}

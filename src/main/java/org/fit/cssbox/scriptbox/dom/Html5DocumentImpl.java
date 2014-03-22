@@ -177,8 +177,15 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
 		return document;
 	}
 	
+	@ScriptFunction
 	@Override
-	public Element createElement( String tagName ) throws DOMException {
+	public Event createEvent(String type) throws DOMException {
+		return super.createEvent(type);
+	}
+	
+	@ScriptFunction
+	@Override
+	public Element createElement( String tagName) throws DOMException {
 		tagName = tagName.toLowerCase(Locale.ENGLISH);
 		
 		if (tagName.equals(SCRIPT_TAG_NAME)) {

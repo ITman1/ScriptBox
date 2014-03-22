@@ -13,7 +13,6 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.TopLevel;
 import org.mozilla.javascript.Undefined;
-import org.mozilla.javascript.Wrapper;
 
 public class ObjectTopLevel extends TopLevel {	
 	private static final long serialVersionUID = -824471943182669084L;
@@ -165,9 +164,9 @@ public class ObjectTopLevel extends TopLevel {
 	}
 	
 	private static String printableString(Object arg) {
-		if (arg instanceof Wrapper) {
+		/*if (arg instanceof Wrapper) {
 			arg = ((Wrapper)arg).unwrap();
-		}
+		}*/
 			
 		String printString;
 		if (arg == null) {

@@ -2,6 +2,9 @@ package org.fit.cssbox.scriptbox.script.javascript.java.reflect;
 
 import java.lang.reflect.Member;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class ClassMember<MemberType extends Member> implements MemberClass<MemberType> {
 	public final static String ENUMERABLE = "enumerable";
 	public final static String PERNAMENT = "pernament";
@@ -39,5 +42,29 @@ public class ClassMember<MemberType extends Member> implements MemberClass<Membe
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder(7, 43).
+			append(clazz).
+			append(member).
+			toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (obj == this)
+			return true;
+		if (!(obj instanceof ClassMember<?>))
+			return false;
+
+		ClassMember<?> rhs = (ClassMember<?>) obj;
+		return new EqualsBuilder().
+			append(clazz, rhs.clazz).
+			append(member, rhs.member).
+			isEquals();
 	}
 }

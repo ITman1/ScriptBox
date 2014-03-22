@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectField;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectFunction;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
@@ -22,7 +24,7 @@ public class ObjectImplementor {
 	protected ObjectMembers objectMembers;
 	protected Set<String> definedProperties;
 	
-	public ObjectImplementor(ObjectMembers objectMembers, BrowserScriptEngine scriptEngine) {
+	public ObjectImplementor(ObjectMembers objectMembers, JavaScriptEngine scriptEngine) {
 		this.objectMembers = objectMembers;
 		this.implementedObject = objectMembers.getObject();
 		this.implementedObjectType = this.implementedObject.getClass();
@@ -30,8 +32,8 @@ public class ObjectImplementor {
 		this.definedProperties = new HashSet<String>();
 	}
 	
-	public ObjectImplementor(Object implementedObject, BrowserScriptEngine scriptEngine) {
-		this(ObjectMembers.getObjectMembers(implementedObject), scriptEngine);
+	public ObjectImplementor(Object implementedObject, JavaScriptEngine scriptEngine) {
+		this(getObjectMembers(implementedObject, scriptEngine), scriptEngine);
 	}
 	
 	public Object getImplementedObject() {
@@ -96,5 +98,9 @@ public class ObjectImplementor {
 		definedProperties.add(fieldName);
 	}
 		
-
+	protected static ObjectMembers getObjectMembers(Object object, JavaScriptEngine engine) {
+		ClassMembersResolverFactory resolverFactory = engine.getClassMembersResolverFactory();
+		ObjectMembers objectMembers = ObjectMembers.getObjectMembers(object, resolverFactory);
+		return objectMembers;
+	}
 }

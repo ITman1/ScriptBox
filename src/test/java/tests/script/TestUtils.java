@@ -150,6 +150,7 @@ public class TestUtils {
 				}
 				resultValue = engine.eval(scriptValue);
 			} catch (ScriptException e) {
+				e.printStackTrace();
 				org.junit.Assert.fail("Unexpected exception: " + e.toString());
 			}
 			

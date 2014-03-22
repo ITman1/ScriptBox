@@ -10,6 +10,8 @@ import javax.script.ScriptException;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.DefaultClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.CollectionsWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.DefaultWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.WrapFactoryDecorator;
@@ -46,6 +48,11 @@ public class CollectionsWrapFactoryTests {
 				@Override
 				protected TopLevel initializeTopLevel() {
 					return new ObjectTopLevel(object, this);
+				}
+				
+				@Override
+				protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
+					return new DefaultClassMembersResolverFactory();
 				}
 			};
 		}

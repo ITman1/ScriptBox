@@ -11,6 +11,8 @@ import javax.script.SimpleBindings;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.javascript.java.reflect.DefaultClassMembersResolverFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
@@ -21,12 +23,13 @@ import org.mozilla.javascript.Wrapper;
 public class JavaScriptEngine extends BrowserScriptEngine {
 
 	static {
-		ContextFactory globalFactory = new JavaScriptContextFactory(null);
+		ContextFactory globalFactory = new JavaScriptContextFactory();
 		ContextFactory.initGlobal(globalFactory);
 	}
 
 	protected ContextFactory contextFactory;
 	protected TopLevel topLevel;
+	protected ClassMembersResolverFactory membersFactory;
 	
 	public JavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
 		this(factory, scriptSettings, null);
@@ -35,8 +38,16 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 	public JavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings, ContextFactory contextFactory) {
 		super(factory, scriptSettings);
 		
+		// This must be set before... JavaScriptContextFactory needs to know members factory
+		this.membersFactory = initializeClassMembersResolverFactory();
+		
 		this.contextFactory = (contextFactory != null)? contextFactory : new JavaScriptContextFactory(this);
-		topLevel = initializeTopLevel();
+
+		this.topLevel = initializeTopLevel();
+	}
+	
+	public ClassMembersResolverFactory getClassMembersResolverFactory() {
+		return membersFactory;
 	}
 	
 	@Override
@@ -85,6 +96,10 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 		}
 		
 		return topLevel;
+	}
+	
+	protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
+		return new DefaultClassMembersResolverFactory();
 	}
 	
 	protected Scriptable getRuntimeScope(ScriptContext context) throws ScriptException {		

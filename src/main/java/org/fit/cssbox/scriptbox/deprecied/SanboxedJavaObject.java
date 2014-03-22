@@ -1,4 +1,4 @@
-package org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox;
+package org.fit.cssbox.scriptbox.deprecied;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.js.SriptableWrapper;
+import org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox.Shutter;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
@@ -155,7 +156,7 @@ public class SanboxedJavaObject extends SriptableWrapper {
 		Boolean isMethodVisible = visitedMethods.get(method);
 		 
 		if (isMethodVisible == null) {
-			isMethodVisible = shutter.isMethodVisible(instance, method); 
+			isMethodVisible = shutter.isMethodVisible(instance.getClass(), method); 
 			visitedMethods.put(method, isMethodVisible);
 		}
 		

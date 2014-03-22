@@ -15,7 +15,7 @@ public class EventListenerEntry {
 	
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(45, 12).
+		return new HashCodeBuilder(46, 12).
 			append(listener).
 			append(useCapture).
 			toHashCode();
