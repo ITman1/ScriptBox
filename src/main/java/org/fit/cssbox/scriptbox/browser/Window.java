@@ -60,16 +60,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	
 	protected String status;
 	protected boolean closed;
-	
-	/* Other browsing contexts */
-	
-	protected WindowProxy frames;
-	protected long length;
-	protected WindowProxy top;
-	protected WindowProxy opener;
-	protected WindowProxy parent;
-	protected Element frameElement;
-	
+		
 	// Global event handler listeners
 	protected EventHandlerEventListener onabortHandlerListener;
 	protected EventHandlerEventListener onblurHandlerListener;
@@ -341,7 +332,10 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 
 	@ScriptGetter
 	public WindowProxy getOpener() {
-		return opener;
+		if (context instanceof AuxiliaryBrowsingContext) {
+			return ((AuxiliaryBrowsingContext)context).getOpenerContext().getWindowProxy();
+		}
+		return null;
 	}
 
 	@ScriptGetter
