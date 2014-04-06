@@ -32,12 +32,13 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.ui.bars.BarProp;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
+import org.w3c.dom.views.AbstractView;
+import org.w3c.dom.views.DocumentView;
 
-public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, WindowEventHandlers {
+public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, WindowEventHandlers, AbstractView {
 	final public static String DEFAULT_TARGET =  "_blank";
 	final public static String DEFAULT_FEATURES = "";
 	final public static boolean DEFAULT_REAPLACE = false;
@@ -240,7 +241,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	}
 
 	@ScriptGetter
-	public Document getDocument() {
+	public DocumentView getDocument() {
 		return documentImpl;
 	}
 

@@ -13,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
+import org.w3c.dom.views.DocumentView;
 
 public class WindowProxy extends Window {
 	BrowsingContext proxyContext;
@@ -74,7 +75,7 @@ public class WindowProxy extends Window {
 
 	@ScriptGetter
 	@Override
-	public Document getDocument() {
+	public DocumentView getDocument() {
 		return proxiedWindow().getDocument();
 	}
 

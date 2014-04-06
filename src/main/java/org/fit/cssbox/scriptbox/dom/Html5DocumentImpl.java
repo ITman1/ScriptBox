@@ -34,8 +34,10 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
+import org.w3c.dom.views.AbstractView;
+import org.w3c.dom.views.DocumentView;
 
-public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
+public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, DocumentView {
 	public enum DocumentReadiness {
 		LOADING,
 		INTERACTIVE,
@@ -451,6 +453,11 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget {
 		}
 
 		return evt.preventDefault;
+	}
+
+	@Override
+	public AbstractView getDefaultView() {
+		return (_browsingContext != null)? _browsingContext.getWindowProxy() : null;
 	}
 
 
