@@ -15,7 +15,6 @@ import org.apache.xerces.dom.CharacterDataImpl;
 import org.apache.xerces.dom.NodeImpl;
 import org.apache.xerces.dom.events.MouseEventImpl;
 import org.fit.cssbox.layout.Box;
-import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
@@ -26,11 +25,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.events.EventTarget;
 
 public class MouseEventsDispatcher extends MouseAdapter {
-	public final static String onmouseleave_msg = "onmouseleave";
-	public final static String onmousemove_msg = "onmousemove";
-	public final static String onmouseout_msg = "onmouseout";
-	public final static String onmouseover_msg = "onmouseover";
-	public final static String onmousewheel_msg = "onmousewheel";
+	
+	protected NodeImpl previousTarget;
+	
+	public MouseEventsDispatcher() {
+		reset();
+	}
+	
+	public void reset() {
+		previousTarget = null;
+	}
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -53,33 +57,71 @@ public class MouseEventsDispatcher extends MouseAdapter {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		return;
-		//dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseenter_msg, false, false);
+		mouseEnter(e);
+		
+		NodeImpl currentTarget = getTargetNode(e);		
+		previousTarget = currentTarget;
 	}
 	
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		return;
-		/*dispatchMouseMotionEvent(e, GlobalEventHandlers.onmousemove_msg);*/
+		NodeImpl currentTarget = getTargetNode(e);
+		
+		if (previousTarget != currentTarget) {
+			mouseEnter(e);
+		}
+		
+		mouseMove(currentTarget, e);
+		
+		previousTarget = currentTarget;
 	}
 	
 	@Override
 	public void mouseExited(MouseEvent e) {
-		return;
-		/*dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseleave_msg, false, false);
-		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseout_msg, true, true);*/
+		mouseExit(e);
+		
+		previousTarget = null;
+	}
+	
+	protected boolean isDescendantNode(Node descendant, Node parent) {
+		while (descendant != null && descendant != parent) {
+			descendant = descendant.getParentNode();
+		}
+		
+		return parent == descendant;
+	}
+	
+	protected void mouseEnter(MouseEvent e) {
+		NodeImpl currentTarget = getTargetNode(e);
+		
+		if (previousTarget == null || !isDescendantNode(currentTarget, previousTarget)) {
+			dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseenter_msg, false, false);
+		}
+
+		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseover_msg, true, true);
+	}
+
+	protected void mouseMove(EventTarget target, MouseEvent e) {
+		NodeImpl currentTarget = getTargetNode(e);
+		
+		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmousemove_msg, true, true);
+		
+		previousTarget = currentTarget;
+	}
+
+	protected void mouseExit(MouseEvent e) {
+		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseout_msg, true, true);
+		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseleave_msg, false, false);
 	}
 	
 	protected void dispatchMouseMotionEvent(MouseEvent e, String argType, boolean canBubble, boolean cancelable) {
 		NodeImpl node = getTargetNode(e);
 		MouseEventImpl event = new MouseEventImpl();
 		Window window = getWindowFromNode(node);
-		Component component = e.getComponent();
-		EventTarget relatedTarget = (component instanceof EventTarget)? (EventTarget)component : null;
-		
+
 		event.initMouseEvent(argType, canBubble, cancelable, window.getWindow(), 
 				0, e.getXOnScreen(), e.getYOnScreen(), e.getX(), e.getY(), 
-				e.isControlDown(), e.isAltDown(), e.isShiftDown(), e.isMetaDown(), (short)0, relatedTarget);
+				e.isControlDown(), e.isAltDown(), e.isShiftDown(), e.isMetaDown(), (short)0, previousTarget);
 		window.dispatchEvent(event, node);
 	}
 	

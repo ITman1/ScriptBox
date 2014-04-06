@@ -46,6 +46,7 @@ public class JavaScriptTesterController {
 			public void run() {
 				try {
 					JFrame window = tester.getWindow();
+					window.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

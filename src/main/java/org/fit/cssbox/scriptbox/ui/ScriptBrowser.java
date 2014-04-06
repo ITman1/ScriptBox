@@ -31,6 +31,7 @@ public class ScriptBrowser extends BrowserPane {
 
 		setCSSBoxAnalyzer(this.analyzer);
 		addMouseListener(mouseDispatcher);
+		addMouseMotionListener(mouseDispatcher);
 	}
 
 	public void refresh() {

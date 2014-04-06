@@ -446,7 +446,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		}
 		
 		// Window bubble phase
-		if (!evt.stopPropagation) {
+		if (!evt.stopPropagation && evt.bubbles) {
 			evt.currentTarget = _window;
 			evt.eventPhase = Event.BUBBLING_PHASE;
 			_window.dispatchEventFromDocument(evt);
