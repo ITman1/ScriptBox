@@ -38,28 +38,43 @@ public class MouseEventsDispatcher extends MouseAdapter {
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		dispatchMouseButtonEvent(e, GlobalEventHandlers.onclick_msg);
+		NodeImpl currentTarget = getTargetNode(e);		
 		
-		if (e.getClickCount() == 2) {
-			dispatchMouseButtonEvent(e, GlobalEventHandlers.ondblclick_msg);
+		if (currentTarget != null) {
+			dispatchMouseButtonEvent(e, GlobalEventHandlers.onclick_msg);
+			
+			if (e.getClickCount() == 2) {
+				dispatchMouseButtonEvent(e, GlobalEventHandlers.ondblclick_msg);
+			}
 		}
 	}
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
-		dispatchMouseButtonEvent(e, GlobalEventHandlers.onmousedown_msg);
+		NodeImpl currentTarget = getTargetNode(e);		
+		
+		if (currentTarget != null) {
+			dispatchMouseButtonEvent(e, GlobalEventHandlers.onmousedown_msg);
+		}
 	}
 	
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		dispatchMouseButtonEvent(e, GlobalEventHandlers.onmouseup_msg);
+		NodeImpl currentTarget = getTargetNode(e);		
+		
+		if (currentTarget != null) {
+			dispatchMouseButtonEvent(e, GlobalEventHandlers.onmouseup_msg);
+		}
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		mouseEnter(e);
-		
 		NodeImpl currentTarget = getTargetNode(e);		
+		
+		if (currentTarget != null) {
+			mouseEnter(e);
+		}
+
 		previousTarget = currentTarget;
 	}
 	
@@ -67,18 +82,24 @@ public class MouseEventsDispatcher extends MouseAdapter {
 	public void mouseMoved(MouseEvent e) {
 		NodeImpl currentTarget = getTargetNode(e);
 		
-		if (previousTarget != currentTarget) {
-			mouseEnter(e);
+		if (currentTarget != null) {
+			if (previousTarget != currentTarget) {
+				mouseEnter(e);
+			}
+			
+			mouseMove(currentTarget, e);
 		}
-		
-		mouseMove(currentTarget, e);
 		
 		previousTarget = currentTarget;
 	}
 	
 	@Override
 	public void mouseExited(MouseEvent e) {
-		mouseExit(e);
+		NodeImpl currentTarget = getTargetNode(e);		
+		
+		if (currentTarget != null) {
+			mouseExit(e);
+		}
 		
 		previousTarget = null;
 	}
@@ -152,16 +173,18 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		Bias[] bias = new Bias[1];
 		Point pt = new Point(x, y);
 		int pos = editor.getUI().viewToModel(editor, pt, bias);
-		SwingBoxDocument swingBoxDocument = (SwingBoxDocument) editor
-				.getDocument();
-		Element element = swingBoxDocument.getCharacterElement(pos);
-		AttributeSet attrSet = element.getAttributes();
-		Object boxObject = attrSet.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
+		
+		if (pos >= 0) {
+			SwingBoxDocument swingBoxDocument = (SwingBoxDocument) editor.getDocument();
+			Element element = swingBoxDocument.getCharacterElement(pos);
+			AttributeSet attrSet = element.getAttributes();
+			Object boxObject = attrSet.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
 
-		if (boxObject instanceof Box) {
-			Box box = (Box) boxObject;
-			Node node = box.getNode();
-			return (node instanceof NodeImpl)? (NodeImpl)node : null;
+			if (boxObject instanceof Box) {
+				Box box = (Box) boxObject;
+				Node node = box.getNode();
+				return (node instanceof NodeImpl)? (NodeImpl)node : null;
+			}
 		}
 		
 		return null;

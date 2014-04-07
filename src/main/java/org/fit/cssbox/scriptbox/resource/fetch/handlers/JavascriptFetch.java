@@ -16,7 +16,7 @@ public class JavascriptFetch extends Fetch {
 	}
 
 	@Override
-	public void fetch() throws IOException {
+	public void fetch(boolean isSafe) throws IOException {
 		// TODO Auto-generated method stub
 	}
 

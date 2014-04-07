@@ -49,14 +49,14 @@ public class BrowsingUnit {
 		return _jointSessionHistory;
 	}
 	
-	public void navigate(String address) {
+	public void navigate(String address) throws MalformedURLException {
+		URL url = new URL(address);
+		navigate(url);
+	}
+	
+	public void navigate(URL url) {
 		NavigationController navigationController = _windowBrowsingContext.getNavigationController();
-		
-		try {
-			URL url = new URL(address);
-			navigationController.navigate(_windowBrowsingContext, url, false, false, true);
-		} catch (MalformedURLException e) {}
-		
+		navigationController.navigate(_windowBrowsingContext, url, false, false, true);		
 	}
 	
 	public void destroy() {

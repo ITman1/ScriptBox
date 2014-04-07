@@ -21,9 +21,9 @@ public abstract class Resource {
 		public void run() {
 			try {
 				is.mark(0);
-				is.read();
+				int count = is.read();
 				is.reset();
-				dataAvailable = true;
+				dataAvailable = count != -1;
 			} catch (IOException e) {
 			}
 		}

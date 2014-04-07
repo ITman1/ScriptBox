@@ -42,6 +42,7 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 					// TODO: Throw/display error
 				} else {
 					// TODO: See: http://www.w3.org/html/wg/drafts/html/CR/syntax.html#the-end
+					navigationAttempt.complete();
 				}
 			}
 		}

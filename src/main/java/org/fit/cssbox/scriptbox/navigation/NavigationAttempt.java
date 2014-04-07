@@ -7,7 +7,11 @@ import java.util.List;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
+import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.events.Task;
+import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerRegistry;
@@ -32,6 +36,9 @@ public abstract class NavigationAttempt {
 		
 		@Override
 		public void onCancelled(NavigationAttempt attempt) {}
+
+		@Override
+		public void onCompleted(NavigationAttempt attempt) {}
 	};
 	
 	protected final Predicate<NavigationAttempt> nonEqualOriginPredicate = new Predicate<NavigationAttempt>() {
@@ -49,7 +56,10 @@ public abstract class NavigationAttempt {
 		}
 	};
 	
+	protected boolean completed;
 	protected boolean matured;
+	protected boolean cancelled;
+	protected Thread asyncPerformThread;
 	protected NavigationController navigationController;
 	protected BrowsingContext sourceBrowsingContext;
 	protected boolean exceptionEnabled;
@@ -80,15 +90,6 @@ public abstract class NavigationAttempt {
 		this.listener = EMPTY_NAVIGATION_ATTEMPT_LISTENER;
 	}
 	
-	public boolean isMatured() {
-		return matured;
-	}
-	
-	public void mature() {
-		matured = true;
-		listener.onMatured(this);
-	}
-	
 	public NavigationController getNavigationController() {
 		return navigationController;
 	}
@@ -109,26 +110,65 @@ public abstract class NavigationAttempt {
 		return replacementEnabled;
 	}
 	
-	public URL getURL() {
+	public synchronized boolean isCompleted() {
+		return completed;
+	}
+	
+	public void complete() {
+		synchronized (this) {
+			completed = true;
+		}
+		
+		listener.onCompleted(this);
+	}
+	
+	public synchronized boolean isMatured() {
+		return matured;
+	}
+	
+	public void mature() {
+		synchronized (this) {
+			matured = true;
+		}
+
+		listener.onMatured(this);
+	}
+	
+	public synchronized URL getURL() {
 		return url;
 	}
 	
+	public synchronized boolean isCancelled() {
+		return cancelled;
+	}
+	
+	public synchronized void cancel() {
+		cancelled = true;
+		
+		// if is already running asynchronous thread then abort it
+		if (asyncPerformThread != null) {
+			asyncPerformThread.interrupt();
+		}
+	}
+	
+	public synchronized String getContentType() {
+		return (resource != null)? resource.getContentType() : null;
+	}
+	
+	// Long duration process - no synchronized
+	
 	public void perform() {
 		perform(EMPTY_NAVIGATION_ATTEMPT_LISTENER);
-	}
-	
-	public void cancel() {
-		listener.onCancelled(this);
-	}
-	
-	public String getContentType() {
-		return (resource != null)? resource.getContentType() : null;
 	}
 	
 	/*
 	 * See: http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate
 	 */
 	public void perform(NavigationAttemptListener listener) {
+		if (cancelled) {
+			return;
+		}
+		
 		this.listener = listener;
 		
 		destinationBrowsingContext = navigationController.getBrowsingContext();
@@ -142,7 +182,7 @@ public abstract class NavigationAttempt {
 		 */
 		if (!isAllowedToNavigate(sourceBrowsingContext, destinationBrowsingContext)) {
 			if (exceptionEnabled) {
-				// TODO: Throw SecurityError exception.
+				throw new DOMException(DOMException.SECURITY_ERR, "SecurityError");
 			}
 			return;
 		}
@@ -154,6 +194,7 @@ public abstract class NavigationAttempt {
 			
 		// 4) If there is already navigation attempt running with the different origin then abort
 		if (navigationController.existsNavigationAttempt(nonEqualOriginPredicate)) {
+			fireCancelled();
 			return;
 		}
 		
@@ -161,60 +202,92 @@ public abstract class NavigationAttempt {
 		
 		// 5) If unload above active document is running then abort
 		if (destinationActiveDocument.isUnloadRunning()) {
+			fireCancelled();
 			return;
 		}
 		
 		// 6) If prompt to unload above active document is running then abort
 		if (destinationActiveDocument.isPromptToUnloadRunning()) {
+			fireCancelled();
 			return;
 		}
 		
 		// 7) Let gone async be false.	
 		goneAsync = false;
 		
-		performFromFragmentIdentifiers();
+		try {
+			performFromFragmentIdentifiers();
+		} catch (InterruptedException e) {
+			fireCancelled();
+		}
 	}
 	
-	protected void performFromFragmentIdentifiers() {
+	protected void performFromFragmentIdentifiers() throws InterruptedException {
+		testForInterruption();
+		
 		// 8) Apply the URL parser for new and old resource and if only fragment is different then navigate to fragment only
 		if (shouldBeFragmentNavigated()) {
 			navigateToFragment(url.getRef());
+			complete();
 			return;
 		}
 				
+		testForInterruption();
+		
 		// 9) Accept new navigation attempt and abort all currently running
 		// FIXME?: Abort document if already exists and all fetches
 		if (goneAsync == false) {
-			navigationController.cancelAllNavigationAttempts();
+			navigationController.cancelNavigationAttempts(new Predicate<NavigationAttempt>() {
+				
+				@Override
+				public boolean apply(NavigationAttempt arg) {
+					return arg != NavigationAttempt.this;
+				}
+			});
 		}
 				
+		testForInterruption();
+		
 		Html5DocumentImpl currentDocument = destinationBrowsingContext.getActiveDocument();
 		
 		// 10) Abort if new navigation does not affects the destination browsing context
 		if (!affectsBrowsingContext()) {
+			fireCancelled();
 			return;
 		}
 				
+		testForInterruption();
+		
 		// 11) Prompt to unload an old document
 		if (goneAsync == false && currentDocument.promptToUnload() == false) {
+			fireCancelled();
 			return;
 		}
+		
+		testForInterruption();
 				
 		// 12) Abort an old document.
 		if (goneAsync == false) {
 			currentDocument.abort();
 		}
 		
+		testForInterruption();
+		
 		// 13) If resource is not fetchable then apply corresponding handler and abort
 		if (!fetchRegistry.isFetchable(url)) {
 			handleUnableToFetch();
+			fireCancelled();
 			return;
 		}
+		
+		testForInterruption();
 		
 		// 14) If we are navigating into iframe context then delay load of whole page
 		if (destinationBrowsingContext instanceof IFrameBrowsingContext) {
 			((IFrameBrowsingContext)destinationBrowsingContext).delayLoadEvents();
 		}
+		
+		testForInterruption();
 		
 		// 15) Obtain the resource, on failure abort
 		// TODO: If the resource has already been obtained then skip
@@ -226,46 +299,79 @@ public abstract class NavigationAttempt {
 		 * algorithm must be invoked from the browsing context scope origin of the browsing context container 
 		 * of the browsing context being navigated, if it has one.
 		 */
-		resource = obtainResource();
-		if (resource == null) {
-			return;
+		synchronized (this) {
+			resource = obtainResource();
+			if (resource == null) {
+				fireCancelled();
+				return;
+			}
 		}
+		
+		testForInterruption();
 		
 		// 16) If gone async is false, return and continue asynchronously
 		if (goneAsync == false) {
-			Thread asyncPerform = new Thread() {
-				@Override
-				public void run() {
-					// 17) Let gone async be true.
-					goneAsync = true;
-					
-					performFromHandleRedirects();
-				}
-			};
-			asyncPerform.start();
-			return;
+			synchronized (this) {
+				asyncPerformThread = new Thread() {
+					@Override
+					public void run() {
+						// 17) Let gone async be true.
+						goneAsync = true;
+						
+						try {
+							performFromHandleRedirects();
+						} catch (InterruptedException e) {
+							fireCancelled();
+						} finally {
+							synchronized (NavigationAttempt.this) {
+								asyncPerformThread = null;
+							}
+						}
+					}
+				};
+				asyncPerformThread.start();
+				return;
+			}
 		} else {		
 			performFromHandleRedirects();
 		}
 	}
 	
-	protected void performFromHandleRedirects() {
+	protected void performFromHandleRedirects() throws InterruptedException {
+		testForInterruption();
+		
 		// 18) Handle redirects and abort on different origins
-		if (resource.shouldRedirect()) {
-			if (resource.isRedirectValid()) {
+		boolean shouldRedirect = false;
+		boolean isRedirectValid = false;
+		synchronized (this) {
+			shouldRedirect = resource.shouldRedirect();
+			isRedirectValid = resource.isRedirectValid();
+		}
+		
+		if (shouldRedirect) {
+			if (isRedirectValid) {
+				url = resource.getRedirectUrl();
 				performFromFragmentIdentifiers();
 			} else {
 				// TODO: Maybe throw an security error.
+				fireCancelled();
 				return;
 			}
 		}
 		
+		testForInterruption();
+		
 		// 19) Wait for incoming byte(s) or abort if resource is empty
 		// FIXME: Wait for 10 seconds - reach it from constant or from User agent settings
-		if (!resource.waitForBytes(10000)) {
-			// TODO: Throw timeout or similar exception
-			return;
+		synchronized (this) {
+			if (!resource.waitForBytes(10000)) {
+				// TODO: Throw timeout or similar exception
+				fireCancelled();
+				return;
+			}
 		}
+		
+		testForInterruption();
 		
 		// 20) TODO: Fallback in prefer-online mode
 		
@@ -274,26 +380,41 @@ public abstract class NavigationAttempt {
 		performFromResourceHandling();
 	}
 	
-	protected void performFromResourceHandling() {
+	protected void performFromResourceHandling() throws InterruptedException {
+		testForInterruption();
+		
 		// 22) Handle resources that are not valid (e.g. do not contain metadata and the content) and attachments
-		if (!resource.isContentValid()) {
-			ContentHandler errorHandler = resource.getErrorHandler();
-			
-			if (errorHandler != null) {
-				errorHandler.process(resource);
+		synchronized (this) {
+			if (!resource.isContentValid()) {
+				ContentHandler errorHandler = resource.getErrorHandler();
+				
+				if (errorHandler != null) {
+					errorHandler.process(resource);
+				}
 			}
 		}
 		
-		if (resource.isAttachment()) {
-			downloadResource();
+		testForInterruption();
+		
+		synchronized (this) {
+			if (resource.isAttachment()) {
+				downloadResource();
+			}
 		}
 		
+		testForInterruption();
+		
 		// 23) Get content type.
-		String contentType = resource.getContentType();
-		if (contentType == null) {
-			// TODO: Maybe throw an exception.
-			return;
+		synchronized (this) {
+			String contentType = resource.getContentType();
+			if (contentType == null) {
+				// TODO: Maybe throw an exception.
+				fireCancelled();
+				return;
+			}
 		}
+		
+		testForInterruption();
 		
 		// 24) and 25) Handling of document and inline contents is merged here, registry is delegated for the distinction
 		ContentHandler handler = resourceHandlerRegistry.getHandlerForNavigationAttempt(this);
@@ -319,7 +440,7 @@ public abstract class NavigationAttempt {
 		fetches.add(fetch);
 		
 		try {
-			fetch.fetch();
+			fetch.fetch(true);
 		} catch (IOException e) {
 			// TODO: Maybe throw exception.
 			return null;
@@ -355,12 +476,28 @@ public abstract class NavigationAttempt {
 		return false;
 	}
 	
+	protected void fireCancelled() {
+		sourceBrowsingContext.getEventLoop().queueTask(new Task(TaskSource.NETWORKING, sourceBrowsingContext) {
+			
+			@Override
+			public void execute() throws TaskAbortedException, InterruptedException {
+				listener.onCancelled(NavigationAttempt.this);
+			}
+		});
+	}
+	
 	protected boolean affectsBrowsingContext() {	
 		return resourceHandlerRegistry.existsErrorHandler(url);
 	}
 	
 	protected void navigateToFragment(String fragment) {
 		
+	}
+	
+	protected synchronized void testForInterruption() throws InterruptedException {
+		if (asyncPerformThread != null && asyncPerformThread.isInterrupted()) {
+			throw new InterruptedException();
+		}
 	}
 	
 	protected BrowsingContext selectEffectiveDestinationContext(BrowsingContext navigatedContext) {

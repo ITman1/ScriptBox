@@ -12,15 +12,9 @@ import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 public class HttpsFetch extends HttpFetch {
 	protected class HttpsResource extends HttpResource {
 
-		public HttpsResource(BrowsingContext context, HttpURLConnection conn) {
-			super(context, conn);
+		public HttpsResource(BrowsingContext context, HttpURLConnection conn, boolean isSafe) {
+			super(context, conn, isSafe);
 		}
-		
-		@Override
-		public boolean isRedirectValid() {
-			URL newUrl = getRedirectUrl();
-			return newUrl != null;
-		}		
 	}
 		
 	public HttpsFetch(BrowsingContext context, URL url, boolean synchronous) {
@@ -32,9 +26,9 @@ public class HttpsFetch extends HttpFetch {
 	}
 
 	@Override
-	protected HttpResource createHttpResource(BrowsingContext context, HttpURLConnection httpConn) {
+	protected HttpResource createHttpResource(BrowsingContext context, HttpURLConnection httpConn, boolean isSafe) {
 		if (httpConn instanceof HttpsURLConnection) {
-			return new HttpsResource(context, httpConn);
+			return new HttpsResource(context, httpConn, isSafe);
 		} else {
 			return null;
 		}

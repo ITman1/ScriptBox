@@ -3,7 +3,9 @@ package org.fit.cssbox.scriptbox.history;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
@@ -22,10 +24,13 @@ public class SessionHistory {
 	protected BrowsingContext context;
 	protected List<SessionHistoryEntry> entries;
 	protected int currentEntryPosition;
+	protected Set<SessionHistoryListener> listeners;
 	
 	public SessionHistory(BrowsingContext context) {
 		this.context = context;
 		this.entries = new ArrayList<SessionHistoryEntry>();
+		this.listeners = new HashSet<SessionHistoryListener>();
+		
 		initSessionHistory();
 	}
 	
@@ -131,6 +136,14 @@ public class SessionHistory {
 	
 	public void traverseHistory(SessionHistoryEntry specifiedEntry) {
 		traverseHistory(context, specifiedEntry);
+	}
+	
+	public void addListener(SessionHistoryListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(SessionHistoryListener listener) {
+		listeners.remove(listener);
 	}
 	
 	public static void traverseHistory(BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry) {
@@ -281,6 +294,15 @@ public class SessionHistory {
 		specifiedDocument.setLatestEntry(specifiedEntry);
 		
 		// TODO: 14) and 15)
+		
+		sessionHistory.fireHistoryTravered(currentEntry, specifiedEntry);
 	}
 	
+	protected void fireHistoryTravered(SessionHistoryEntry fromEntry, SessionHistoryEntry toEntry) {
+		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.TRAVERSED, toEntry, fromEntry);
+		
+		for (SessionHistoryListener listener : listeners) {
+			listener.onHistoryEvent(event);
+		}
+	}
 }

@@ -42,7 +42,7 @@ public class FileFetch extends Fetch {
 	}
 
 	@Override
-	public void fetch() throws IOException {
+	public void fetch(boolean isSafe) throws IOException {
 		URLConnection conn = url.openConnection();
 		fileResource = new FileResource(context, conn);
 	}

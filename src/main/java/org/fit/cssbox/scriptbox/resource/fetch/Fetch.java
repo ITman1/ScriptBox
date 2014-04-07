@@ -32,6 +32,10 @@ public abstract class Fetch implements Closeable {
 	@Override
 	public void close() throws IOException {}
 	
-	public abstract void fetch() throws IOException;
+	public void fetch() throws IOException {
+		fetch(false);
+	}
+	
+	public abstract void fetch(boolean isSafe) throws IOException;
 	public abstract Resource getResource();
 }

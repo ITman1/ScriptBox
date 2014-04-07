@@ -32,10 +32,13 @@ public class HttpFetch extends Fetch {
 		public static final String DISPOSITION_ATTACHMENT = "attachment";
 
 		protected HttpURLConnection conn;
-		public HttpResource(BrowsingContext context, HttpURLConnection conn) {
+		protected boolean isSafeMethod;
+		
+		public HttpResource(BrowsingContext context, HttpURLConnection conn, boolean isSafeMethod) {
 			super(context, conn);
 			
 			this.conn = conn;
+			this.isSafeMethod = isSafeMethod;
 		}
 
 		@Override
@@ -96,6 +99,14 @@ public class HttpFetch extends Fetch {
 		
 		@Override
 		public boolean isRedirectValid() {
+			if (isSafeMethod) {
+				return true;
+			}
+			
+			if (method == HttpMethod.POST) {
+				return true;
+			}
+			
 			URL newUrl = getRedirectUrl();
 			
 			if (newUrl == null) {
@@ -105,7 +116,7 @@ public class HttpFetch extends Fetch {
 			UrlOrigin urlOrigin = new UrlOrigin(url);
 			UrlOrigin newUrlOrigin = new UrlOrigin(newUrl);
 			
-			return urlOrigin.equals(newUrlOrigin) || method == HttpMethod.POST;
+			return urlOrigin.equals(newUrlOrigin);
 		}
 		
 	}
@@ -130,7 +141,7 @@ public class HttpFetch extends Fetch {
 	}
 
 	@Override
-	public void fetch() throws IOException {
+	public void fetch(boolean isSafe) throws IOException {
 		conn = url.openConnection();
 		
 		// FIXME: Replace for non magic text, e.g. constant or provided by user agent
@@ -141,11 +152,11 @@ public class HttpFetch extends Fetch {
 			HttpURLConnection httpConn = (HttpURLConnection) conn;
 			httpConn.setInstanceFollowRedirects(false);
 			
-			httpResource = createHttpResource(context, httpConn);
+			httpResource = createHttpResource(context, httpConn, isSafe);
 		}
 	}
 	
-	protected HttpResource createHttpResource(BrowsingContext context, HttpURLConnection httpConn) {
-		return new HttpResource(context, httpConn);
+	protected HttpResource createHttpResource(BrowsingContext context, HttpURLConnection httpConn, boolean isSafe) {
+		return new HttpResource(context, httpConn, isSafe);
 	}
 }

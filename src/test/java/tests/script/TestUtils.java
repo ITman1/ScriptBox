@@ -1,5 +1,6 @@
 package tests.script;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.script.ScriptEngine;
@@ -188,7 +189,12 @@ public class TestUtils {
 		
 		public Window navigate(String url) {
 			BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
-			browsingUnit.navigate(url);
+			try {
+				browsingUnit.navigate(url);
+			} catch (MalformedURLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			synchronized (this) {
 				try {
