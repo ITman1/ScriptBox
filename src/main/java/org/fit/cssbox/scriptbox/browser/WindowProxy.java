@@ -1,5 +1,7 @@
 package org.fit.cssbox.scriptbox.browser;
 
+import java.util.Collection;
+
 import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
@@ -9,7 +11,6 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.ui.bars.BarProp;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
@@ -241,6 +242,11 @@ public class WindowProxy extends Window {
 		return proxiedWindow().open(url, target, features, replace);
 	}
 
+	@Override
+	public Collection<Object> getKeys() {
+		return proxiedWindow().getKeys();
+	}
+	
 	@ScriptFunction
 	@Override
 	public Object get(Object arg) {

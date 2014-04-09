@@ -26,6 +26,10 @@ public abstract class ScriptSettings<GlobalObject> {
 	public BrowserScriptEngine getExecutionEnviroment(Script<?, ?> script) {
 		String language = script.getLanguage();
 		
+		return getExecutionEnviroment(language);
+	}
+	
+	public BrowserScriptEngine getExecutionEnviroment(String language) {		
 		BrowserScriptEngine scriptEngine = scriptEngines.get(language);
 		
 		if (scriptEngine == null) {

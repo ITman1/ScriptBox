@@ -207,6 +207,19 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		this.onunloadHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onunload_msg);
 	}
 	
+	private List<BrowsingContext> getNestedFrames() {
+		Collection<BrowsingContext> nestedContexts = context.getNestedContexts();
+		List<BrowsingContext> frames = new ArrayList<BrowsingContext>();
+		
+		for (BrowsingContext nestedContext : nestedContexts) {
+			if (nestedContext instanceof IFrameBrowsingContext) {
+				frames.add(nestedContext);
+			}
+		}
+		
+		return frames;
+	}
+	
 	@Override
 	public String toString() {
 		return "[object Window]";
@@ -360,7 +373,8 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	
 	@ScriptGetter
 	public WindowProxy getParent() {
-		return context.getParentContext().getWindowProxy();
+		BrowsingContext parentContext = context.getParentContext();
+		return (parentContext != null)? parentContext.getWindowProxy() : null;
 	}
 
 	@ScriptGetter
@@ -491,20 +505,25 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return targetContext.getWindowProxy();
 	}
 
+	@Override
+	public Collection<Object> getKeys() {
+		List<Object> keys = new ArrayList<Object>();
+		List<BrowsingContext> frames = getNestedFrames();
+		
+		for (int i = 0; i < frames.size(); i++) {
+			keys.add(i);
+		}
+		
+		return keys;
+	}
+	
 	@ScriptFunction
 	@Override
 	public Object get(Object arg) {
 		long length = getLength();
 		if (arg instanceof Integer && length > 0) {
 			int index = (Integer)arg;
-			Collection<BrowsingContext> nestedContexts = context.getNestedContexts();
-			List<BrowsingContext> frames = new ArrayList<BrowsingContext>();
-			
-			for (BrowsingContext nestedContext : nestedContexts) {
-				if (nestedContext instanceof IFrameBrowsingContext) {
-					frames.add(nestedContext);
-				}
-			}
+			List<BrowsingContext> frames = getNestedFrames();
 			
 			if (frames.size() > index) {
 				return frames.get(index).getWindowProxy();

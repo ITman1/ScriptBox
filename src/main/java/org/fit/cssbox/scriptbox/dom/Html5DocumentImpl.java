@@ -17,7 +17,6 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
-import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.events.EventLoop;

@@ -35,11 +35,19 @@ public abstract class Origin<E> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (alias != null) {
-			return alias.equals(obj);
-		} else {
-			return originEquals(obj);
+		if (obj instanceof Origin<?>) {
+			Origin<?> cmpOrigin = (Origin<?>)obj;
+			
+			if (alias != null) {
+				return alias.equals(obj);
+			} else if (cmpOrigin.alias != null) {
+				return equals(cmpOrigin.alias);
+			} else {
+				return originEquals(obj);
+			}
 		}
+		
+		return false;
 	}
 	
 	protected abstract int originHashCode();

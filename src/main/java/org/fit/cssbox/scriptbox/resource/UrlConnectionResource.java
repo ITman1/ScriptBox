@@ -18,7 +18,8 @@ public abstract class UrlConnectionResource extends Resource {
 		
 		this.conn = conn;
 		try {
-			this.is = new BufferedInputStream(conn.getInputStream());
+			InputStream connIs = conn.getInputStream();
+			this.is = new BufferedInputStream(connIs);
 		} catch (IOException e) {
 		}
 	}

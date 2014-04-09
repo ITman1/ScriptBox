@@ -131,7 +131,7 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		return value;
 	}
 	
-	protected Class<?> getFieldType() {
+	public Class<?> getFieldType() {
 		Class<?>[] params = (fieldSetterMethod != null)? fieldSetterMethod.getParameterTypes() : null;
 		Class<?> setterType = (params != null && params.length > 0)? params[0] : null;
 		Class<?> getterType = (fieldGetterMethod != null)? fieldGetterMethod.getReturnType() : null;

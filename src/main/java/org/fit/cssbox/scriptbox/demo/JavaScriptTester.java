@@ -39,6 +39,9 @@ public class JavaScriptTester {
 	private JButton closeSourceCodeButton;
 	private JButton navigateSourceCodeButton;
 	private JButton saveAsSourceCodeButton;
+	private ScriptObjectViewer windowObjectViewer;
+	private ScriptObjectsWatchList objectsWatchList;
+	private JTextField newWatchedVariableField;
 	
 	/**
 	 * Create the application.
@@ -206,7 +209,7 @@ public class JavaScriptTester {
 		
 		JSplitPane innerContentSplitPane = new JSplitPane();
 		innerContentSplitPane.setDividerSize(3);
-		innerContentSplitPane.setResizeWeight(1.0);
+		innerContentSplitPane.setResizeWeight(0.9);
 		contentSplitPane.setLeftComponent(innerContentSplitPane);
 		
 		JPanel scriptBrowserPanel = new JPanel();
@@ -222,14 +225,44 @@ public class JavaScriptTester {
 		scriptBrowser = new ScriptBrowser();
 		scrollPane.setViewportView(scriptBrowser);
 		
+		JPanel scriptObjectsPanel = new JPanel();
+		scriptObjectsPanel.setPreferredSize(new Dimension(200, 10));
+		scriptObjectsPanel.setMinimumSize(new Dimension(200, 10));
+		innerContentSplitPane.setRightComponent(scriptObjectsPanel);
+		scriptObjectsPanel.setLayout(new BorderLayout(0, 0));
+		
+		JSplitPane scriptObjectsSplitPane = new JSplitPane();
+		scriptObjectsSplitPane.setResizeWeight(0.7);
+		scriptObjectsSplitPane.setDividerSize(3);
+		scriptObjectsSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		scriptObjectsPanel.add(scriptObjectsSplitPane, BorderLayout.CENTER);
+		
 		JPanel objectViewerPanel = new JPanel();
-		objectViewerPanel.setPreferredSize(new Dimension(200, 10));
-		objectViewerPanel.setMinimumSize(new Dimension(200, 10));
-		innerContentSplitPane.setRightComponent(objectViewerPanel);
+		scriptObjectsSplitPane.setLeftComponent(objectViewerPanel);
 		objectViewerPanel.setLayout(new BorderLayout(0, 0));
 		
-		JLabel objectViewerLabel = new JLabel("Object viewer");
+		JLabel objectViewerLabel = new JLabel("Window object");
 		objectViewerPanel.add(objectViewerLabel, BorderLayout.NORTH);
+		
+		JScrollPane windowObjectViewerScrollPane = new JScrollPane();
+		objectViewerPanel.add(windowObjectViewerScrollPane);
+		
+		windowObjectViewer = new ScriptObjectViewer();
+		windowObjectViewerScrollPane.setViewportView(windowObjectViewer);
+		
+		JPanel objectsWatchListPanel = new JPanel();
+		scriptObjectsSplitPane.setRightComponent(objectsWatchListPanel);
+		objectsWatchListPanel.setLayout(new BorderLayout(0, 0));
+		
+		JLabel objectsWatchListlabel = new JLabel("Watch list");
+		objectsWatchListPanel.add(objectsWatchListlabel, BorderLayout.NORTH);
+		
+		objectsWatchList = new ScriptObjectsWatchList();
+		objectsWatchListPanel.add(objectsWatchList, BorderLayout.CENTER);
+		
+		newWatchedVariableField = new JTextField();
+		objectsWatchListPanel.add(newWatchedVariableField, BorderLayout.SOUTH);
+		newWatchedVariableField.setColumns(10);
 	}
 	
 	public JEditorPane getSourceCodeEditorPane() {
@@ -272,5 +305,14 @@ public class JavaScriptTester {
 	}
 	public JButton getSaveAsSourceCodeButton() {
 		return saveAsSourceCodeButton;
+	}
+	public ScriptObjectViewer getWindowObjectViewer() {
+		return windowObjectViewer;
+	}
+	public ScriptObjectsWatchList getObjectsWatchList() {
+		return objectsWatchList;
+	}
+	public JTextField getNewWatchedVariableField() {
+		return newWatchedVariableField;
 	}
 }

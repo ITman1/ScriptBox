@@ -14,7 +14,7 @@ public class FunctionEventHandlerAdapter implements EventHandler {
 	public FunctionEventHandlerAdapter(Function function) {
 		this.function = function;
 	}
-
+	
 	@Override
 	public void handleEvent(Event event) {
 		Scriptable scope = function.getParentScope();

@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
-import org.fit.cssbox.scriptbox.history.SessionHistoryEvent;
-import org.fit.cssbox.scriptbox.history.SessionHistoryListener;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent.EventType;
 
 import com.google.common.base.Predicate;

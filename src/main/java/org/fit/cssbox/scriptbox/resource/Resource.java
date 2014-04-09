@@ -80,6 +80,11 @@ public abstract class Resource {
 	
 	public boolean waitForBytes(int timeout) {
 		BufferedInputStream is = getInputStream();
+		
+		if (is == null) {
+			return false;
+		}
+		
 		WaitForDataThread waitForDataThread = new WaitForDataThread(is);
 		
 		waitForDataThread.start();

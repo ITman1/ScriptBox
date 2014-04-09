@@ -3,7 +3,6 @@ package org.fit.cssbox.scriptbox.resource.content;
 import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;

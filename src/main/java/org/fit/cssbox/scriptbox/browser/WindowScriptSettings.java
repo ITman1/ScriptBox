@@ -2,8 +2,6 @@ package org.fit.cssbox.scriptbox.browser;
 
 import java.net.URL;
 
-import javax.script.ScriptEngine;
-
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
@@ -12,10 +10,7 @@ import org.fit.cssbox.scriptbox.security.origins.Origin;
 public class WindowScriptSettings extends ScriptSettings<Window> {
 
 	private Window _window;
-	
-	public void getDocumentScriptEngine(Class<? extends ScriptEngine> engineClass) {
-		scriptEngines.get(engineClass);
-	}
+		
 	public WindowScriptSettings(Window window) {
 		_window = window;
 	}

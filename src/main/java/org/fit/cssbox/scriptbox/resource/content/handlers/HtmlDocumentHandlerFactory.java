@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
@@ -18,7 +17,6 @@ import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
-import org.xml.sax.InputSource;
 
 public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 	private class HtmlDocumentHandler extends RenderedContentHandler {

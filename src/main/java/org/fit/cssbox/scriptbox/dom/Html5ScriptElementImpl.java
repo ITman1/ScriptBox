@@ -9,7 +9,6 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScript;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
-import org.fit.cssbox.scriptbox.document.script.ScriptDOMParser;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;

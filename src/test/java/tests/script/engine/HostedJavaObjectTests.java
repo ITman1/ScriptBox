@@ -2,6 +2,8 @@ package tests.script.engine;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
+
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
@@ -132,6 +134,11 @@ public class HostedJavaObjectTests {
 			protectedProperty = "protected property";
 			publicStringProperty = "publicStringProperty";
 			duplicatedPublicStringProperty = "publicStringProperty";
+		}
+
+		@Override
+		public Collection<Object> getKeys() {
+			return null;
 		}
 	}
 	

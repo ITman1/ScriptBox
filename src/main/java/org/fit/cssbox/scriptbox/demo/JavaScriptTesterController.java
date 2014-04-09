@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -58,7 +61,10 @@ public class JavaScriptTesterController {
 	private ScriptBrowser scriptBrowser;
 	private JTabbedPane sourceCodeTabbedPane;
 	private JTextField navigationField;
+	private JTextField newWatchedVariableField;
 	private JEditorPane sourceCodeEditorPane;
+	private ScriptObjectViewer windowObjectViewer;
+	private ScriptObjectsWatchList scriptObjectsWatchList;
 	
 	private JButton navigateButton;
 	private JButton navigateSourceCodeButton;
@@ -178,7 +184,8 @@ public class JavaScriptTesterController {
 		public void actionPerformed(ActionEvent e) {
 			int index = sourceCodeTabbedPane.getSelectedIndex();
 			JEditorPane pane = getSelectedEditorPane();
-			if (index > 0) {
+			URL fileURL = null;
+			if (index > 0 || loadedDocument != null) {
 				File file = openedFiles.get(index);
 				
 				if (file == null) {
@@ -195,8 +202,7 @@ public class JavaScriptTesterController {
 				
 				if (file != null) {
 					try {
-						URL url = file.toURI().toURL();
-						browsingUnit.navigate(url);
+						fileURL = file.toURI().toURL();
 					} catch (MalformedURLException e1) {
 						e1.printStackTrace();
 						JOptionPane.showMessageDialog(tester.getWindow(),
@@ -205,9 +211,25 @@ public class JavaScriptTesterController {
 							    JOptionPane.ERROR_MESSAGE);
 					}
 				}
-			} else if (loadedDocument != null) {
-				URL address = loadedDocument.getAddress();
-				browsingUnit.navigate(address);
+			}
+			
+			if (fileURL != null) {
+				try {
+					URI uri = fileURL.toURI();
+					File file = new File(uri);
+					FileWriter writer = new FileWriter(file);
+					String str = pane.getText();
+					writer.write(str);
+					writer.close();
+					browsingUnit.navigate(fileURL);
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
 			}
 		}
 	};
@@ -268,6 +290,15 @@ public class JavaScriptTesterController {
 		});
 	}
 
+    protected ActionListener onNewVariableEntered = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String variableName = newWatchedVariableField.getText();
+			scriptObjectsWatchList.addVariable(variableName);
+		}
+	};
+	
 	private void onNavigationCancelled() {
 		loadedDocument = null;
 		navigationAttempt = null;
@@ -284,7 +315,9 @@ public class JavaScriptTesterController {
 		String sourceCode = loadedDocument.getParserSource();
 		sourceCodeEditorPane.setText(sourceCode);
 		
+		windowObjectViewer.refresh();
 		scriptBrowser.refresh();
+		scriptObjectsWatchList.refresh();
 	}
 	
 	private void updateUi() {
@@ -304,7 +337,10 @@ public class JavaScriptTesterController {
 		scriptBrowser = tester.getScriptBrowser();
 		sourceCodeTabbedPane = tester.getSourceCodeTabbedPane();
 		navigationField = tester.getNavigationField();
+		newWatchedVariableField = tester.getNewWatchedVariableField();
 		sourceCodeEditorPane = tester.getSourceCodeEditorPane();
+		windowObjectViewer = tester.getWindowObjectViewer();
+		scriptObjectsWatchList = tester.getObjectsWatchList();
 		
 		navigateButton = tester.getNavigateButton();
 		navigateSourceCodeButton = tester.getNavigateSourceCodeButton();
@@ -314,7 +350,9 @@ public class JavaScriptTesterController {
 		closeSourceCodeButton = tester.getCloseSourceCodeButton();
 		newSourceCodeButton = tester.getNewSourceCodeButton();
 		
+		windowObjectViewer.setBrowsingUnit(browsingUnit);
 		scriptBrowser.setBrowsingUnit(browsingUnit);
+		scriptObjectsWatchList.setBrowsingUnit(browsingUnit);
 	}
 	
 	private void registerEventListeners() {
@@ -327,6 +365,8 @@ public class JavaScriptTesterController {
 		saveAsSourceCodeButton.addActionListener(onSaveAsSourceCodeListener);
 		closeSourceCodeButton.addActionListener(onCloseSourceCodeListener);
 		newSourceCodeButton.addActionListener(onNewSourceCodeListener);
+		
+		newWatchedVariableField.addActionListener(onNewVariableEntered);
 		
 		sessionHistory.addListener(sessionHistoryListener);
 		navigationController.addListener(navigationControllerListener);
@@ -411,6 +451,12 @@ public class JavaScriptTesterController {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		/*String lookAndFeelName = UIManager.getSystemLookAndFeelClassName();
+		try {
+			UIManager.setLookAndFeel(lookAndFeelName);
+		} catch (Exception e) {
+		}*/
+		
 		JavaScriptTesterController controller = new JavaScriptTesterController();
 		controller.showWindow();
 	}

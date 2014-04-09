@@ -3,6 +3,8 @@ package tests.script.engine;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Collection;
+
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.annotation.InvisibleField;
 import org.fit.cssbox.scriptbox.script.annotation.InvisibleFunction;
@@ -277,6 +279,11 @@ public class JavaScriptAnnotationsTests {
 			propertyWithEnumerableSetter = "property with enumerable setter";
 			propertyWithExplicitGetter = "visible property with explicit getter";
 			propertyWithExplicitSetter = "visible property with excplicit setter";
+		}
+
+		@Override
+		public Collection<Object> getKeys() {
+			return null;
 		}
 	}
 	
