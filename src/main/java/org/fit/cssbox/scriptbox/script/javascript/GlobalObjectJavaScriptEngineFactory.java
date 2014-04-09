@@ -35,7 +35,7 @@ public class GlobalObjectJavaScriptEngineFactory extends BrowserScriptEngineFact
 	}
 
 	@Override
-	public BrowserScriptEngine getBrowserScriptEngine(ScriptSettings<?> scriptSettings) {
+	protected BrowserScriptEngine getBrowserScriptEngineProtected(ScriptSettings<?> scriptSettings) {
 		if (scriptSettings instanceof WindowScriptSettings) {
 			BrowserScriptEngine engine = new GlobalObjectJavaScriptEngine(this, (WindowScriptSettings)scriptSettings);
 			return engine;

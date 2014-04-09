@@ -3,6 +3,9 @@ package org.fit.cssbox.scriptbox.demo;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,6 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import jsyntaxpane.DefaultSyntaxKit;
 
@@ -43,8 +48,12 @@ import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 
+import com.google.inject.Key;
+
 public class JavaScriptTesterController {
+	private static ConsoleInjector injector = new ConsoleInjector();
 	private static int NEW_COUNTER = 0;
+	
 	private JavaScriptTester tester;
 	private UserAgent userAgent;
 	private BrowsingUnit browsingUnit;
@@ -55,7 +64,7 @@ public class JavaScriptTesterController {
 	private NavigationAttempt navigationAttempt;
 	private Map<Integer, File> openedFiles;
 	
-	final JFileChooser fileChooser = new JFileChooser();
+	private final JFileChooser fileChooser = new JFileChooser();
 	
 	private ScriptBrowser scriptBrowser;
 	private JTabbedPane sourceCodeTabbedPane;
@@ -255,7 +264,23 @@ public class JavaScriptTesterController {
 		}
 	};
 	
-	public JavaScriptTesterController() {
+	private KeyAdapter scriptObjectsWatchListKeyListener = new KeyAdapter() {
+		@Override
+		public void keyPressed(KeyEvent e) {
+			char pressedKey = e.getKeyChar(); 
+			
+			if (pressedKey == KeyEvent.VK_DELETE) {
+				TreePath path = scriptObjectsWatchList.getSelectionPath();
+				Object selectedNode = path.getPathComponent(1);
+				
+				if (selectedNode instanceof MutableTreeNode) {
+					scriptObjectsWatchList.removeVariable((MutableTreeNode)selectedNode);
+				}
+			}
+		}
+	};
+	
+	public JavaScriptTesterController() {	
 		tester = new JavaScriptTester();
 		userAgent = new JavaScriptTesterUserAgent(tester);
 		
@@ -265,6 +290,7 @@ public class JavaScriptTesterController {
 		navigationController = windowContext.getNavigationController();
 		openedFiles = new HashMap<Integer, File>();
 		
+		registerJavaScriptInjectors();
 		initializeUiComponents();
 		registerEventListeners();
 		
@@ -366,6 +392,7 @@ public class JavaScriptTesterController {
 		newSourceCodeButton.addActionListener(onNewSourceCodeListener);
 		
 		newWatchedVariableField.addActionListener(onNewVariableEntered);
+		scriptObjectsWatchList.addKeyListener(scriptObjectsWatchListKeyListener);
 		
 		sessionHistory.addListener(sessionHistoryListener);
 		navigationController.addListener(navigationControllerListener);
@@ -444,6 +471,12 @@ public class JavaScriptTesterController {
 		JScrollPane scrollPane = (JScrollPane)sourceCodeTabbedPane.getSelectedComponent();
 		JViewport viewport = scrollPane.getViewport(); 
 		return (JEditorPane)viewport.getView(); 
+	}
+	
+	private void registerJavaScriptInjectors() {
+		if (!injector.isRegistered()) {
+			injector.registerScriptContextInject();
+		}
 	}
 	
 	/**

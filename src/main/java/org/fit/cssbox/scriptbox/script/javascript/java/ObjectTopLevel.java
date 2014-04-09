@@ -114,11 +114,8 @@ public class ObjectTopLevel extends TopLevel {
 	}
 	
 	protected void defineBuiltinFunctions() {
-		String builtinFunctions[] = {"debug", "nldebug"};
-		defineFunctionProperties(builtinFunctions, ObjectTopLevel.class, ScriptableObject.DONTENUM | ScriptableObject.PERMANENT);
+
 	}
-	
-	
 	
     private void deleteRhinoUnsafeProperties() {
         delete("JavaAdapter");
@@ -136,47 +133,4 @@ public class ObjectTopLevel extends TopLevel {
         delete("importClass");
         delete("importPackage");
     }
-	
-	public static Object debug(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		printArgs(args, true);
-		return Context.getUndefinedValue();
-	}
-	
-	public static Object nldebug(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		printArgs(args, false);
-		return Context.getUndefinedValue();
-	}
-	
-	private static void printArgs(Object[] args, boolean newLine) {
-		List<String> argsList = new ArrayList<String>();
-		if (args != null) {
-			for (Object arg : args) {
-				String printableString = printableString(arg);
-				argsList.add(printableString);
-			}
-		}
-		String joinedList = StringUtils.join(argsList, ", ");
-		if (newLine) {
-			System.out.println(joinedList);
-		} else {
-			System.out.print(joinedList);
-		}
-	}
-	
-	private static String printableString(Object arg) {
-		/*if (arg instanceof Wrapper) {
-			arg = ((Wrapper)arg).unwrap();
-		}*/
-			
-		String printString;
-		if (arg == null) {
-			printString = "null";
-		} else if (arg instanceof Undefined) {
-			printString = "undefined";
-		} else {
-			printString = arg.toString();
-		}
-
-		return printString;
-	}
 }

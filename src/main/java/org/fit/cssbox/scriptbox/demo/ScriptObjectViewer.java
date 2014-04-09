@@ -46,6 +46,7 @@ public class ScriptObjectViewer extends JTree {
     protected Object rootHostedObject;
     protected DefaultTreeModel treeModel;
     protected BrowsingUnit browsingUnit;
+    protected GlobalObjectJavaScriptEngine scriptEngine;
     protected ClassMembersResolverFactory membersResolverFactory;
 
 	public ScriptObjectViewer() {
@@ -84,14 +85,15 @@ public class ScriptObjectViewer extends JTree {
 		Html5DocumentImpl document = context.getActiveDocument();
 		
 		rootHostedObject = null;
+		scriptEngine = null;
 		membersResolverFactory = null;
 		if (document != null) {
 			Window window = document.getWindow();
 			ScriptSettings<?> settings = window.getScriptSettings();
-			GlobalObjectJavaScriptEngine engine = (GlobalObjectJavaScriptEngine)settings.getExecutionEnviroment("text/javascript");
-
+			
+			scriptEngine = (GlobalObjectJavaScriptEngine)settings.getExecutionEnviroment("text/javascript");
 			rootHostedObject = window;
-			membersResolverFactory = engine.getClassMembersResolverFactory();
+			membersResolverFactory = scriptEngine.getClassMembersResolverFactory();
 		}
 		
 

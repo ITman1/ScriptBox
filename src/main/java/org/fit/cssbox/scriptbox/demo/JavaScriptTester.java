@@ -258,12 +258,17 @@ public class JavaScriptTester {
 		JLabel objectsWatchListlabel = new JLabel("Watch list");
 		objectsWatchListPanel.add(objectsWatchListlabel, BorderLayout.NORTH);
 		
-		objectsWatchList = new ScriptObjectsWatchList();
-		objectsWatchListPanel.add(objectsWatchList, BorderLayout.CENTER);
-		
 		newWatchedVariableField = new JTextField();
 		objectsWatchListPanel.add(newWatchedVariableField, BorderLayout.SOUTH);
 		newWatchedVariableField.setColumns(10);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		objectsWatchListPanel.add(scrollPane, BorderLayout.CENTER);
+		
+		objectsWatchList = new ScriptObjectsWatchList();
+		objectsWatchList.setPreferredSize(new Dimension(0, 0));
+		objectsWatchList.setMinimumSize(new Dimension(0, 0));
+		scrollPane.setViewportView(objectsWatchList);
 	}
 	
 	public JEditorPane getSourceCodeEditorPane() {

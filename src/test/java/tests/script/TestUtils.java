@@ -35,7 +35,7 @@ public class TestUtils {
 		}
 
 		@Override
-		public BrowserScriptEngine getBrowserScriptEngine(ScriptSettings<?> scriptSettings) {
+		protected BrowserScriptEngine getBrowserScriptEngineProtected(ScriptSettings<?> scriptSettings) {
 			return null;
 		}
 
