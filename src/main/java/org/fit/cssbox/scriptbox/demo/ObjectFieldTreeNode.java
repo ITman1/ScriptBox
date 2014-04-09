@@ -133,6 +133,7 @@ public class ObjectFieldTreeNode extends DefaultMutableTreeNode implements Compa
 					try {
 						fieldValue = classField.get(object);
 					} catch (Exception e) {
+						e.printStackTrace();
 						exception = e;
 					}
 					ObjectFieldTreeNode node = new ObjectFieldTreeNode(membersResolverFactory, fieldName, fieldType, fieldValue, exception, recursion);
@@ -152,6 +153,7 @@ public class ObjectFieldTreeNode extends DefaultMutableTreeNode implements Compa
 				try {
 					fieldValue = objectWithGetter.get(key);
 				} catch (Exception e) {
+					e.printStackTrace();
 					exception = e;
 				}
 

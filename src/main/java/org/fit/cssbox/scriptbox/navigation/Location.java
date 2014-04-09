@@ -27,4 +27,9 @@ public class Location {
 	void reload() {
 		
 	}
+	
+	@Override
+	public String toString() {
+		return "[object Location]";
+	}
 }

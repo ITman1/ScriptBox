@@ -43,4 +43,9 @@ public class History {
 	public void replaceState(Object data, /*DOMString*/ String title) {
 		
 	}
+	
+	@Override
+	public String toString() {
+		return "[object History]";
+	}
 }

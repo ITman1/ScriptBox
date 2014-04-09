@@ -31,7 +31,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
-import org.fit.cssbox.scriptbox.ui.bars.BarProp;
+import org.fit.cssbox.scriptbox.ui.BarProp;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
@@ -45,6 +45,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	
 	protected Html5DocumentImpl documentImpl;
 	protected BrowsingContext context;
+	protected UserAgent userAgent;
 	
 	protected Map<String, Vector<EventListenerEntry>> listeners;
 	protected WindowScriptSettings scriptSettings;
@@ -232,6 +233,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	public void setDocumentImpl(Html5DocumentImpl documentImpl) {
 		this.documentImpl = documentImpl;
 		this.context = documentImpl.getBrowsingContext();
+		this.userAgent = context.getBrowsingUnit().getUserAgent();
 	}
 	
 	public WindowScriptSettings getScriptSettings() {
@@ -280,38 +282,32 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 
 	@ScriptGetter
 	public BarProp getLocationbar() {
-		// TODO: Implement.
-		return null;
+		return userAgent.getLocationbar();
 	}
 
 	@ScriptGetter
 	public BarProp getMenubar() {
-		// TODO: Implement.
-		return null;
+		return userAgent.getMenubar();
 	}
 
 	@ScriptGetter
 	public BarProp getPersonalbar() {
-		// TODO: Implement.
-		return null;
+		return userAgent.getPersonalbar();
 	}
 
 	@ScriptGetter
 	public BarProp getScrollbars() {
-		// TODO: Implement.
-		return null;
+		return userAgent.getScrollbars();
 	}
 
 	@ScriptGetter
 	public BarProp getStatusbar() {
-		// TODO: Implement.
-		return null;
+		return userAgent.getStatusbar();
 	}
 
 	@ScriptGetter
 	public BarProp getToolbar() {
-		// TODO: Implement.
-		return null;
+		return userAgent.getToolbar();
 	}
 
 	@ScriptGetter
@@ -397,6 +393,24 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		}
 		
 		return context.getContainer();
+	}
+	
+	@ScriptGetter
+	public Navigator getNavigator() {
+		// TODO Implement
+		return null;
+	}
+	
+	@ScriptGetter
+	public External getExternal() {
+		// TODO Implement
+		return null;
+	}
+	
+	@ScriptGetter
+	public ApplicationCache getApplicationCache() {
+		// TODO Implement
+		return null;
 	}
 	
 	@ScriptFunction
@@ -1492,29 +1506,4 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	public void setOnwaiting(EventHandler handler) {
 		onwaitingHandlerListener.setEventHandler(handler);
 	}
-	
-	/*
-	protected WindowProxy getter(long index);
-	protected Object getter(String name);
-	*/
-	
-/*
-[Global]
-interface Window : EventTarget {
-TODO:
-  // the user agent
-  readonly attribute Navigator navigator; 
-  readonly attribute External external;
-  readonly attribute ApplicationCache applicationCache;
-
-  // user prompts
-  void alert(optional DOMString message = "");
-  boolean confirm(optional DOMString message = "");
-  DOMString? prompt(optional DOMString message = "", optional DOMString default = "");
-  void print();
-  any showModalDialog(DOMString url, optional any argument);
-
-
-};
-*/
 }

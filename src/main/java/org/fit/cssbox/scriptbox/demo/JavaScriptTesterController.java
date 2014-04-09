@@ -22,7 +22,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -257,14 +256,14 @@ public class JavaScriptTesterController {
 	};
 	
 	public JavaScriptTesterController() {
-		openedFiles = new HashMap<Integer, File>();
-		userAgent = new UserAgent();
+		tester = new JavaScriptTester();
+		userAgent = new JavaScriptTesterUserAgent(tester);
+		
 		browsingUnit = userAgent.openBrowsingUnit();
 		windowContext = browsingUnit.getWindowBrowsingContext();
 		sessionHistory = windowContext.getSesstionHistory();
 		navigationController = windowContext.getNavigationController();
-		
-		tester = new JavaScriptTester();
+		openedFiles = new HashMap<Integer, File>();
 		
 		initializeUiComponents();
 		registerEventListeners();

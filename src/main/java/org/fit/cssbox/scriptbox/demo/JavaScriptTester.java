@@ -42,6 +42,7 @@ public class JavaScriptTester {
 	private ScriptObjectViewer windowObjectViewer;
 	private ScriptObjectsWatchList objectsWatchList;
 	private JTextField newWatchedVariableField;
+	private JScrollPane scriptBrowserScrollPane;
 	
 	/**
 	 * Create the application.
@@ -219,11 +220,11 @@ public class JavaScriptTester {
 		JLabel lblNewLabel_1 = new JLabel("Displayed page");
 		scriptBrowserPanel.add(lblNewLabel_1, BorderLayout.NORTH);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scriptBrowserPanel.add(scrollPane, BorderLayout.CENTER);
+		scriptBrowserScrollPane = new JScrollPane();
+		scriptBrowserPanel.add(scriptBrowserScrollPane, BorderLayout.CENTER);
 		
 		scriptBrowser = new ScriptBrowser();
-		scrollPane.setViewportView(scriptBrowser);
+		scriptBrowserScrollPane.setViewportView(scriptBrowser);
 		
 		JPanel scriptObjectsPanel = new JPanel();
 		scriptObjectsPanel.setPreferredSize(new Dimension(200, 10));
@@ -314,5 +315,8 @@ public class JavaScriptTester {
 	}
 	public JTextField getNewWatchedVariableField() {
 		return newWatchedVariableField;
+	}
+	public JScrollPane getScriptBrowserScrollPane() {
+		return scriptBrowserScrollPane;
 	}
 }
