@@ -47,7 +47,7 @@ import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 
 public class JavaScriptTesterController {
-	private static ConsoleInjector injector;
+	private static ConsoleInjector consoleInjector;
 	private static int NEW_COUNTER = 0;
 	
 	private JavaScriptTester tester;
@@ -77,6 +77,9 @@ public class JavaScriptTesterController {
 	private JButton saveAsSourceCodeButton;
 	private JButton closeSourceCodeButton;
 	private JButton newSourceCodeButton;
+	private JButton objectViewerRefreshButton;
+	private JButton objectsWatchListRefreshButton;
+	private JButton consoleClearButton;
 	
 	private NavigationControllerListener navigationControllerListener = new NavigationControllerListener() {
 		@Override
@@ -220,6 +223,30 @@ public class JavaScriptTesterController {
 		}
 	};
 	
+	private ActionListener onObjectViewerRefresh = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			windowObjectViewer.refresh();
+		}
+	};
+	
+	private ActionListener onObjectsWatchListRefresh = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			scriptObjectsWatchList.refresh();
+		}
+	};
+	
+	private ActionListener onConsoleClear = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			consoleInjector.clearConsole();
+		}
+	};
+	
 	private KeyAdapter scriptObjectsWatchListKeyListener = new KeyAdapter() {
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -330,6 +357,9 @@ public class JavaScriptTesterController {
 		saveAsSourceCodeButton = tester.getSaveAsSourceCodeButton();
 		closeSourceCodeButton = tester.getCloseSourceCodeButton();
 		newSourceCodeButton = tester.getNewSourceCodeButton();
+		objectViewerRefreshButton = tester.getObjectViewerRefreshButton();
+		objectsWatchListRefreshButton = tester.getObjectsWatchListRefreshButton();
+		consoleClearButton = tester.getConsoleClearButton();
 		
 		windowObjectViewer.setBrowsingUnit(browsingUnit);
 		scriptBrowser.setBrowsingUnit(browsingUnit);
@@ -346,6 +376,9 @@ public class JavaScriptTesterController {
 		saveAsSourceCodeButton.addActionListener(onSaveAsSourceCodeListener);
 		closeSourceCodeButton.addActionListener(onCloseSourceCodeListener);
 		newSourceCodeButton.addActionListener(onNewSourceCodeListener);
+		objectViewerRefreshButton.addActionListener(onObjectViewerRefresh);
+		objectsWatchListRefreshButton.addActionListener(onObjectsWatchListRefresh);
+		consoleClearButton.addActionListener(onConsoleClear);
 		
 		newWatchedVariableField.addActionListener(onNewVariableEntered);
 		scriptObjectsWatchList.addKeyListener(scriptObjectsWatchListKeyListener);
@@ -490,11 +523,11 @@ public class JavaScriptTesterController {
 	// This must be called before initializing UI components which uses browsing unit, 
 	// because these components creates script engines and there would not be any inject registered.
 	private void registerJavaScriptInjectors() {
-		if (injector == null) {
-			injector = new ConsoleInjector(tester.getConsolePane());
+		if (consoleInjector == null) {
+			consoleInjector = new ConsoleInjector(tester.getConsolePane());
 		}
-		if (!injector.isRegistered()) {
-			injector.registerScriptContextInject();
+		if (!consoleInjector.isRegistered()) {
+			consoleInjector.registerScriptContextInject();
 		}
 	}
 	

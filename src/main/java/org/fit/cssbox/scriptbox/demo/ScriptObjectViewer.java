@@ -101,6 +101,14 @@ public class ScriptObjectViewer extends JTree {
 	
 	protected void refresh(DefaultMutableTreeNode rootNode) {
         treeModel = new DefaultTreeModel(rootNode);
+        
+        /*TreePath rootNodePath = null;
+        Enumeration<TreePath> expandedPaths = null;
+        if (this.rootNode != null) {
+            rootNodePath = new TreePath(this.rootNode);
+            expandedPaths = getExpandedDescendants(rootNodePath);
+        }*/
+
         setModel(treeModel);
         expandPath(new TreePath(rootNode));
 	}

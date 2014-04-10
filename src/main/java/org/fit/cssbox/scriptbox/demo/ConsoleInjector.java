@@ -83,11 +83,7 @@ public class ConsoleInjector extends JavaScriptInjector {
 		
 		@ScriptFunction
 		public void clear() {
-			try {
-				doc.remove(0, doc.getLength());
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			}
+			clearStyledDocument(doc);
 		}
 		
 		@ScriptFunction
@@ -125,7 +121,6 @@ public class ConsoleInjector extends JavaScriptInjector {
 			}
 			
 			final String joinedList = StringUtils.join(argsList, " ");
-
 
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
@@ -169,11 +164,27 @@ public class ConsoleInjector extends JavaScriptInjector {
 	@Override
 	public boolean inject(ScriptContext context) {
 		Console console = new Console(textPane);
-		
 		Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
 		bindings.put("console", console);
 		
 		return true;
 	}
-
+	
+	public void clearConsole() {
+		StyledDocument doc = textPane.getStyledDocument();
+		clearStyledDocument(doc);
+	}
+	
+	protected static void clearStyledDocument(final StyledDocument doc) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					doc.remove(0, doc.getLength());
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+		});		
+	}
 }
