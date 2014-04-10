@@ -5,13 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.tree.MutableTreeNode;
@@ -48,10 +46,8 @@ import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 
-import com.google.inject.Key;
-
 public class JavaScriptTesterController {
-	private static ConsoleInjector injector = new ConsoleInjector();
+	private static ConsoleInjector injector;
 	private static int NEW_COUNTER = 0;
 	
 	private JavaScriptTester tester;
@@ -161,11 +157,13 @@ public class JavaScriptTesterController {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int returnVal = fileChooser.showOpenDialog(tester.getWindow());
+			int returnVal = fileChooser.showSaveDialog(tester.getWindow());
 
 	        if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
-	            saveSourceCodeTab(file);
+	            if (saveSourceCodeTab(file)) {
+	            	setCurrentTabTitleFromFile(file);
+	            }
 	        }
 		}
 	};
@@ -192,52 +190,10 @@ public class JavaScriptTesterController {
 		public void actionPerformed(ActionEvent e) {
 			int index = sourceCodeTabbedPane.getSelectedIndex();
 			JEditorPane pane = getSelectedEditorPane();
-			URL fileURL = null;
-			if (index > 0 || loadedDocument != null) {
-				File file = openedFiles.get(index);
-				
-				if (file == null) {
-					try {
-						file = File.createTempFile("html-page-", ".html");
-					} catch (IOException e1) {
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(tester.getWindow(),
-							    "Unable to create temporary file where to navigate.",
-							    "Internal error",
-							    JOptionPane.ERROR_MESSAGE);
-					} 
-				}
-				
-				if (file != null) {
-					try {
-						fileURL = file.toURI().toURL();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(tester.getWindow(),
-							    "Unable to get URL from file.",
-							    "Internal error",
-							    JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			}
+			String sourceCode = pane.getText();
 			
-			if (fileURL != null) {
-				try {
-					URI uri = fileURL.toURI();
-					File file = new File(uri);
-					FileWriter writer = new FileWriter(file);
-					String str = pane.getText();
-					writer.write(str);
-					writer.close();
-					browsingUnit.navigate(fileURL);
-				} catch (URISyntaxException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
+			if (index > 0 || loadedDocument != null) {
+				navigateSoureCode(sourceCode);
 			}
 		}
 	};
@@ -398,7 +354,58 @@ public class JavaScriptTesterController {
 		navigationController.addListener(navigationControllerListener);
 	}
 	
-	private void saveSourceCodeTab(File file) {
+	private void navigateSoureCode(String sourceCode) {
+		File file = null;
+		FileWriter writer = null;
+		try {
+			file = File.createTempFile("html-page-", ".html");
+			writer = new FileWriter(file);
+			writer.write(sourceCode);
+		} catch (IOException e1) {
+			file = null;
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(tester.getWindow(),
+				    "Unable to create temporary file where to navigate.",
+				    "Internal error",
+				    JOptionPane.ERROR_MESSAGE);
+		} finally {
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		URL fileURL = null;
+		if (file != null) {
+			try {
+				fileURL = file.toURI().toURL();
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(tester.getWindow(),
+					    "Unable to get URL from file.",
+					    "Internal error",
+					    JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	
+	
+		if (fileURL != null) {
+			try {
+				browsingUnit.navigate(fileURL);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				JOptionPane.showMessageDialog(tester.getWindow(),
+					    "Unable to get navigate temporary file with source code.",
+					    "Internal error",
+					    JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+	
+	private boolean saveSourceCodeTab(File file) {
 		int paneIndex = sourceCodeTabbedPane.getSelectedIndex();
 		JEditorPane pane = getSelectedEditorPane(); 
 		
@@ -412,13 +419,22 @@ public class JavaScriptTesterController {
 			}
 
 			writer.close();
+			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(tester.getWindow(),
 				    "Unable to save file with source code.",
 				    "File I/O error",
 				    JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
+	}
+	
+	private void setCurrentTabTitleFromFile(File file) {
+		int paneIndex = sourceCodeTabbedPane.getTabCount() - 1;
+		String filename = file.getName();
+		String paneName = FilenameUtils.removeExtension(filename);
+		sourceCodeTabbedPane.setTitleAt(paneIndex, paneName);
 	}
 	
 	private void openSourceCodeTab(File file) {
@@ -427,9 +443,7 @@ public class JavaScriptTesterController {
 		String sourceCode;
 		try {
 			sourceCode = FileUtils.readFileToString(file);
-			String filename = file.getName();
-			String paneName = FilenameUtils.removeExtension(filename);
-			sourceCodeTabbedPane.setTitleAt(paneIndex, paneName);
+			setCurrentTabTitleFromFile(file);
 			pane.setText(sourceCode);
 			openedFiles.put(paneIndex, file);
 		} catch (IOException e) {
@@ -473,7 +487,12 @@ public class JavaScriptTesterController {
 		return (JEditorPane)viewport.getView(); 
 	}
 	
+	// This must be called before initializing UI components which uses browsing unit, 
+	// because these components creates script engines and there would not be any inject registered.
 	private void registerJavaScriptInjectors() {
+		if (injector == null) {
+			injector = new ConsoleInjector(tester.getConsolePane());
+		}
 		if (!injector.isRegistered()) {
 			injector.registerScriptContextInject();
 		}
@@ -483,11 +502,11 @@ public class JavaScriptTesterController {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		/*String lookAndFeelName = UIManager.getSystemLookAndFeelClassName();
+		String lookAndFeelName = UIManager.getSystemLookAndFeelClassName();
 		try {
 			UIManager.setLookAndFeel(lookAndFeelName);
 		} catch (Exception e) {
-		}*/
+		}
 		
 		JavaScriptTesterController controller = new JavaScriptTesterController();
 		controller.showWindow();
