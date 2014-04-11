@@ -1,16 +1,14 @@
 package org.fit.cssbox.scriptbox.ui;
 
-import java.awt.Rectangle;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import javax.swing.SwingUtilities;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
@@ -20,18 +18,37 @@ import org.fit.cssbox.swingbox.util.CSSBoxAnalyzer;
 public class ScriptBrowser extends BrowserPane {
 	private static final long serialVersionUID = -7720839593115478393L;
 
-	protected BrowsingUnit browsingUnit;
 	protected CSSBoxAnalyzer analyzer;
 	protected MouseEventsDispatcher mouseDispatcher = new MouseEventsDispatcher();
+	protected ScriptBrowserHyperlinkHandler hyperlinkHandler;
+	
+	protected ScriptBrowserUserAgent userAgent;
+	protected BrowsingUnit browsingUnit;
 
-	public void setBrowsingUnit(BrowsingUnit browsingUnit) {
-		this.browsingUnit = browsingUnit;
+	public ScriptBrowser() {
+		this.userAgent = new ScriptBrowserUserAgent(this);
+		browsingUnit = userAgent.openBrowsingUnit();
+		
 		this.analyzer = new ScriptAnalyzer(
 				browsingUnit.getWindowBrowsingContext());
 
+		if (hyperlinkHandler != null) {
+			removeHyperlinkListener(hyperlinkHandler);
+		}
+		hyperlinkHandler = new ScriptBrowserHyperlinkHandler(browsingUnit);
+		
+		addHyperlinkListener(hyperlinkHandler);
 		setCSSBoxAnalyzer(this.analyzer);
 		addMouseListener(mouseDispatcher);
 		addMouseMotionListener(mouseDispatcher);
+	}
+	
+	public ScriptBrowserUserAgent getUserAgent() {
+		return userAgent;
+	}
+	
+	public BrowsingUnit getBrowsingUnit() {
+		return browsingUnit;
 	}
 
 	public void refresh() {
@@ -39,52 +56,39 @@ public class ScriptBrowser extends BrowserPane {
 			
 			@Override
 			public void execute() throws TaskAbortedException, InterruptedException {
+				/* Create and prepare document */
 				EditorKit kit = getEditorKit();
 
 				if (kit == null) {
 					return;
-
 				}
-
-				URL address = browsingUnit.getWindowBrowsingContext()
-						.getActiveDocument().getAddress();
 
 				Document document = kit.createDefaultDocument();
 				InputStream in = null;
+				
+				/* Get information about content to render */
+				
+				BrowsingContext context = browsingUnit.getWindowBrowsingContext();
+				Html5DocumentImpl activeDocument = context.getActiveDocument();
+				URL documentAddress = activeDocument.getAddress();
+				String contentType = activeDocument.getContentType();
+				
+				/* Set document properties */
+		        setContentType(contentType);
+		        document.putProperty(Document.StreamDescriptionProperty, documentAddress);
 
+		        /* Render document */
+				
 				try {
 					kit.read(in, document, 0);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (BadLocationException e) {
-					// TODO Auto-generated catch block
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
-				// set the document to the component
+				/* Set the document to the component */
 				setDocument(document);
 
-				final String reference = address.getRef();
-				// Have to scroll after painted.
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						Rectangle top = new Rectangle(0, 0, 1, 1); // top of pane
-						Rectangle bottom = new Rectangle(0, getHeight() - 1, 1, 1);
-						if (reference != null) {
-							// scroll down and back to reference to get reference
-							// the topmost item
-							scrollRectToVisible(bottom);
-							scrollToReference(reference);
-						} else {
-							// scroll to the top of the new page
-							scrollRectToVisible(top);
-						}
-					}
-				});
-
-				/*
+				/* TODO?:
 				 * SwingUtilities.invokeLater(new Runnable() {
 				 * 
 				 * @Override public void run() { firePropertyChange("page", oldPage,
@@ -92,8 +96,11 @@ public class ScriptBrowser extends BrowserPane {
 				 */
 			}
 		});
-		
-		
-
 	}
+	
+	// TODO: Remove!!!!!
+    public boolean scrollToReferenceWithBoolean(String reference) {
+    	scrollToReference(reference);
+        return true;
+    }
 }

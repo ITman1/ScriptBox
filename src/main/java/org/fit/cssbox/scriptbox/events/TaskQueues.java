@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -38,6 +39,14 @@ public class TaskQueues extends HashMap<TaskSource, List<Task>> {
 		}
 		
 		return null;
+	}
+	
+	public synchronized void filter(Predicate<Task> predicate) {
+		Set<TaskSource> sources = keySet();
+		
+		for (TaskSource source : sources) {
+			filter(source, predicate);
+		}
 	}
 	
 	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {

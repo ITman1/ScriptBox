@@ -20,6 +20,7 @@ import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.events.EventLoop;
+import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
@@ -31,8 +32,12 @@ import org.fit.cssbox.scriptbox.url.UrlUtils;
 import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
+import org.w3c.dom.html.HTMLBaseElement;
+import org.w3c.dom.html.HTMLElement;
 import org.w3c.dom.views.AbstractView;
 import org.w3c.dom.views.DocumentView;
 
@@ -82,8 +87,17 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	private String _contentType;
 	private DocumentReadiness _documentReadiness;
 	private ScriptableDocumentParser _parser;
+	private Task unloadTask;
+	
+	private boolean _salvageableFlag;
+	private boolean _firedUnloadFlag;
+	private boolean _pageShowingFlag;
 	
 	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {
+		_salvageableFlag = true;
+		_firedUnloadFlag = false;
+		_pageShowingFlag = false;
+		
 		_browsingContext = browsingContext;
 		_address = address;
 		_referrer = referrer;
@@ -203,6 +217,22 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	
 	public BrowsingContext getBrowsingContext() {
 		return _browsingContext;
+	}
+	
+	public HTMLBaseElement getBaseElement() {
+		HTMLElement head = getHead();
+		NodeList baseElements = head.getElementsByTagName("base");
+		
+		if (baseElements.getLength() == 1) {
+			Node baseElement = baseElements.item(0);
+			
+			if (baseElement instanceof HTMLBaseElement) {
+				return (HTMLBaseElement)baseElement;
+			}
+		}
+		
+		return null;
+
 	}
 	
 	/*
@@ -338,8 +368,21 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return false;
 	}
 	
-	public void unload(boolean recycle) {
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unload-a-document
+	 */
+	public synchronized void unload(boolean recycle) {
+		unloadTask = getEventLoop().getRunningTask();
 		
+		/*
+		 * TODO: Implement
+		 */
+		
+		unloadTask = null;
+	}
+	
+	public synchronized Task getUnloadTask() {
+		return unloadTask;
 	}
 	
 	public Window getWindow() {
@@ -407,7 +450,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * TODO: Implement
 	 */
 	public void discard() {
-		
+		_browsingContext = null;
 	}
 	
 	public EventLoop getEventLoop() {
@@ -459,5 +502,73 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return (_browsingContext != null)? _browsingContext.getWindowProxy() : null;
 	}
 
+	/*
+	 * TODO:
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unloading-document-cleanup-steps
+	 */
+	public void runUnloadingDocumentCleanupSteps() {
+		
+	}
+	
+	/*
+	 * TODO:
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#abort-a-document
+	 */
+	@Override
+	public void abort() {
+		if (_browsingContext != null) {
+			Collection<BrowsingContext> contexts = _browsingContext.getNestedContexts();
+			
+			for (BrowsingContext context : contexts) {
+				Html5DocumentImpl activeDocument = context.getActiveDocument();
+				activeDocument.abort();
+				
+				if (!activeDocument.isSalvageableFlag()) {
+					_salvageableFlag = false;
+				}
+			}
+			
+			/*
+			 * TODO:
+			 * Cancel any instances of the fetch algorithm in the context of this Document, 
+			 * discarding any tasks queued for them, and discarding any further data received 
+			 * from the network for them. If this resulted in any instances of the fetch algorithm 
+			 * being canceled or any queued tasks or any network data getting discarded, then set the 
+			 * Document's salvageable state to false.
+			 */
+			
+			if (_parser != null && _parser.isActive()) {
+				_parser.abort();
+				_salvageableFlag = false;
+			}
+		} else {
+			_salvageableFlag = false;
+		}
+		
 
+	}
+
+	public boolean isSalvageableFlag() {
+		return _salvageableFlag;
+	}
+
+	public void setSalvageableFlag(boolean salvageableFlag) {
+		this._salvageableFlag = salvageableFlag;
+	}
+
+	public boolean isFiredUnloadFlag() {
+		return _firedUnloadFlag;
+	}
+
+	public void setFiredUnloadFlag(boolean firedUnloadFlag) {
+		this._firedUnloadFlag = firedUnloadFlag;
+	}
+
+	public boolean isPageShowingFlag() {
+		return _pageShowingFlag;
+	}
+
+	public void setPageShowingFlag(boolean pageShowingFlag) {
+		this._pageShowingFlag = pageShowingFlag;
+	}
 }

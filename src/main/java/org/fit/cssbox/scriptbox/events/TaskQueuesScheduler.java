@@ -134,6 +134,11 @@ public abstract class TaskQueuesScheduler {
 		taskQueues.filter(source, predicate);
 	}
 	
+	public synchronized void filter(Predicate<Task> predicate) {
+		testForAbort();
+		taskQueues.filter(predicate);
+	}
+	
 	protected void testForAbort() {
 		if (aborted) {
 			throw ABORTED_EXCEPTION;

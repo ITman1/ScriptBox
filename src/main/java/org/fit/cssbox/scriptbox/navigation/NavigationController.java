@@ -7,8 +7,18 @@ import java.util.List;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.events.EventLoop;
+import org.fit.cssbox.scriptbox.events.Task;
+import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent.EventType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.html.HTMLAnchorElement;
+import org.w3c.dom.html.HTMLAreaElement;
+import org.w3c.dom.html.HTMLBaseElement;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
@@ -75,6 +85,94 @@ public class NavigationController {
 		attempt.perform(navigationAttemptListener);
 		
 		return attempt;
+	}
+	
+	public static void followHyperlink(Element subject) {
+       	followHyperlink(subject, null);
+	}
+	
+	public static boolean isLinkableElement(Element element) {
+   		if (element instanceof HTMLAnchorElement) {
+   			return true;
+   		} else if (element instanceof HTMLAreaElement) {
+   			return true;
+   		}
+   		
+   		return false;
+	}
+	
+	public static String getTargetFromElement(Element element) {
+   		String targetAttr = null;
+   		if (element instanceof HTMLAnchorElement) {
+   			targetAttr = ((HTMLAnchorElement)element).getTarget();
+   		} else if (element instanceof HTMLAreaElement) {
+   			targetAttr = ((HTMLAreaElement)element).getTarget();
+   		}
+   		
+   		return targetAttr;
+	}
+	
+	public static String getHrefFromElement(Element element) {
+   		String targetAttr = null;
+   		if (element instanceof HTMLAnchorElement) {
+   			targetAttr = ((HTMLAnchorElement)element).getHref();
+   		} else if (element instanceof HTMLAreaElement) {
+   			targetAttr = ((HTMLAreaElement)element).getHref();
+   		}
+   		
+   		return targetAttr;
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/links.html#following-hyperlinks
+	 */
+	public static void followHyperlink(Element subject, BrowsingContext specificSource) {
+       	boolean _replace = false;
+       	Document _subjectDocument = subject.getOwnerDocument();
+       	
+       	if (!(_subjectDocument instanceof Html5DocumentImpl)) {
+       		return;
+       	}
+       	
+       	Html5DocumentImpl subjectDocument = (Html5DocumentImpl)_subjectDocument;
+       	final BrowsingContext source = subjectDocument.getBrowsingContext();
+       	BrowsingContext _target = null;
+       	
+       	String targetAttr = null;
+       	HTMLBaseElement baseElement = subjectDocument.getBaseElement();
+       	
+       	if (specificSource != null) {
+       		_target = specificSource;
+       	} else if (isLinkableElement(subject) && (targetAttr = getTargetFromElement(subject)) != null) {
+       		_target = source.chooseBrowsingContextByName(targetAttr);
+       		_replace = source.isBlankBrowsingContext(targetAttr);
+       	} else if (isLinkableElement(subject) && targetAttr == null && baseElement != null && (targetAttr = baseElement.getTarget()) != null) {
+       		_target = source.chooseBrowsingContextByName(targetAttr);
+       		_replace = source.isBlankBrowsingContext(targetAttr);
+       	} else {
+       		_target = source;
+       	}
+       	final BrowsingContext target = _target;
+       	final boolean replace = _replace;
+       	
+       	String hrefString = getHrefFromElement(subject);
+       	
+       	URL baseUrl = subjectDocument.getAddress();
+       	try {
+			final URL resultUrl = new URL(baseUrl, hrefString);
+			EventLoop eventLoop = subjectDocument.getEventLoop();
+			eventLoop.queueTask(new Task(TaskSource.DOM_MANIPULATION, source) {
+				
+				@Override
+				public void execute() throws TaskAbortedException, InterruptedException {
+					NavigationController controller = target.getNavigationController();
+					controller.navigate(source, resultUrl, false, false, replace);
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+       	
 	}
 	
 	public synchronized void cancelAllNavigationAttempts() {

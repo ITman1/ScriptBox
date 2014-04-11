@@ -40,10 +40,10 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		NodeImpl currentTarget = getTargetNode(e);		
 		
 		if (currentTarget != null) {
-			dispatchMouseButtonEvent(e, GlobalEventHandlers.onclick_msg);
+			dispatchMouseButtonEvent(e, GlobalEventHandlers.onclick);
 			
 			if (e.getClickCount() == 2) {
-				dispatchMouseButtonEvent(e, GlobalEventHandlers.ondblclick_msg);
+				dispatchMouseButtonEvent(e, GlobalEventHandlers.ondblclick);
 			}
 		}
 	}
@@ -53,7 +53,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		NodeImpl currentTarget = getTargetNode(e);		
 		
 		if (currentTarget != null) {
-			dispatchMouseButtonEvent(e, GlobalEventHandlers.onmousedown_msg);
+			dispatchMouseButtonEvent(e, GlobalEventHandlers.onmousedown);
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		NodeImpl currentTarget = getTargetNode(e);		
 		
 		if (currentTarget != null) {
-			dispatchMouseButtonEvent(e, GlobalEventHandlers.onmouseup_msg);
+			dispatchMouseButtonEvent(e, GlobalEventHandlers.onmouseup);
 		}
 	}
 
@@ -115,23 +115,23 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		NodeImpl currentTarget = getTargetNode(e);
 		
 		if (previousTarget == null || !isDescendantNode(currentTarget, previousTarget)) {
-			dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseenter_msg, false, false);
+			dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseenter, false, false);
 		}
 
-		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseover_msg, true, true);
+		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseover, true, true);
 	}
 
 	protected void mouseMove(EventTarget target, MouseEvent e) {
 		NodeImpl currentTarget = getTargetNode(e);
 		
-		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmousemove_msg, true, true);
+		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmousemove, true, true);
 		
 		previousTarget = currentTarget;
 	}
 
 	protected void mouseExit(MouseEvent e) {
-		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseout_msg, true, true);
-		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseleave_msg, false, false);
+		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseout, true, true);
+		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseleave, false, false);
 	}
 	
 	protected void dispatchMouseMotionEvent(MouseEvent e, String argType, boolean canBubble, boolean cancelable) {

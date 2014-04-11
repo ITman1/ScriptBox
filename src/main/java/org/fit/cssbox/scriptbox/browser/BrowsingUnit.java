@@ -16,6 +16,8 @@ public class BrowsingUnit {
 	private WindowBrowsingContext _windowBrowsingContext;
 	private ScriptSettingsStack _scriptSettingsStack;
 	
+	private boolean _discarded;
+	
 	public BrowsingUnit(UserAgent userAgent) {
 		_userAgent = userAgent;
 		
@@ -59,11 +61,23 @@ public class BrowsingUnit {
 		navigationController.navigate(_windowBrowsingContext, url, false, false, true);		
 	}
 	
-	public void destroy() {
-		_windowBrowsingContext.discard();
-		try {
-			_eventLoop.abort(false);
-		} catch (InterruptedException e) {
+	public boolean isDiscarded() {
+		return _discarded;
+	}
+	
+	public void discard() {
+		if (!_discarded) {
+			_windowBrowsingContext.discard();
+			try {
+				_eventLoop.abort(false);
+			} catch (InterruptedException e) {
+			}
+			
+			_jointSessionHistory = null;
+			_windowBrowsingContext = null;
+			_scriptSettingsStack = null;
+			
+			_discarded = true;
 		}
 	}
 }

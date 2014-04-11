@@ -34,7 +34,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
-import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
@@ -51,7 +50,6 @@ public class JavaScriptTesterController {
 	private static int NEW_COUNTER = 0;
 	
 	private JavaScriptTester tester;
-	private UserAgent userAgent;
 	private BrowsingUnit browsingUnit;
 	private BrowsingContext windowContext;
 	private SessionHistory sessionHistory;
@@ -265,9 +263,8 @@ public class JavaScriptTesterController {
 	
 	public JavaScriptTesterController() {	
 		tester = new JavaScriptTester();
-		userAgent = new JavaScriptTesterUserAgent(tester);
+		browsingUnit = tester.getScriptBrowser().getBrowsingUnit();
 		
-		browsingUnit = userAgent.openBrowsingUnit();
 		windowContext = browsingUnit.getWindowBrowsingContext();
 		sessionHistory = windowContext.getSesstionHistory();
 		navigationController = windowContext.getNavigationController();
@@ -362,7 +359,6 @@ public class JavaScriptTesterController {
 		consoleClearButton = tester.getConsoleClearButton();
 		
 		windowObjectViewer.setBrowsingUnit(browsingUnit);
-		scriptBrowser.setBrowsingUnit(browsingUnit);
 		scriptObjectsWatchList.setBrowsingUnit(browsingUnit);
 	}
 	

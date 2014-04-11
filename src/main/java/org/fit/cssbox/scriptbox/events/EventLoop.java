@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.events;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
@@ -157,9 +158,24 @@ public class EventLoop {
 		_taskScheduler.removeAllTasks(task);
 	}
 	
+	public synchronized void removeAllTasksWithDocument(final Html5DocumentImpl document) {
+		testForAbort();
+		_taskScheduler.filter(new Predicate<Task>() {
+			@Override
+			public boolean apply(Task task) {
+				return task.getDocument() != document;
+			}
+		});
+	}
+	
 	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {
 		testForAbort();
 		_taskScheduler.filter(source, predicate);
+	}
+	
+	public synchronized void filter(Predicate<Task> predicate) {
+		testForAbort();
+		_taskScheduler.filter(predicate);
 	}
 	
 	public synchronized Task getRunningTask() {

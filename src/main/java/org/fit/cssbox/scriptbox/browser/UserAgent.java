@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.ui.BarProp;
+import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 import org.fit.cssbox.scriptbox.url.UrlUtils;
 
 public class UserAgent {
@@ -22,7 +23,25 @@ public class UserAgent {
 		}
 	}
 	
+	public static class NoScrollBarsProp extends ScrollBarsProp {
+		@ScriptGetter
+		@Override
+		public boolean getVisible() {
+			return false;
+		}
+		
+		@Override
+		public void scroll(int xCoord, int yCoord) {
+		}
+
+		@Override
+		public boolean scrollToFragment(String fragment) {
+			return true;
+		}
+	}
+	
 	private static BarProp noBarAvailable = new NoBarProp();
+	private static NoScrollBarsProp noScrollBarsAvailable = new NoScrollBarsProp();
 	
 	private List<BrowsingUnit> _browsingUnits;
 	
@@ -56,7 +75,7 @@ public class UserAgent {
 	
 	public void destroyBrowsingUnit(BrowsingUnit browsingUnit) {
 		if (_browsingUnits.remove(browsingUnit)) {
-			browsingUnit.destroy();
+			browsingUnit.discard();
 		}
 	}
 	
@@ -79,8 +98,8 @@ public class UserAgent {
 		return noBarAvailable;
 	}
 
-	public BarProp getScrollbars() {
-		return noBarAvailable;
+	public ScrollBarsProp getScrollbars() {
+		return noScrollBarsAvailable;
 	}
 
 	public BarProp getStatusbar() {

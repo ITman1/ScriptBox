@@ -16,6 +16,7 @@ import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
+import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -95,17 +96,68 @@ public class BrowsingContext {
 	}
 
 	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#closing-browsing-contexts
+	 */
+	public synchronized void close() {
+		Html5DocumentImpl document = getActiveDocument();
+		
+		if (document != null) {
+			boolean unloadDocument = document.promptToUnload();
+			
+			if (unloadDocument) {
+				document.unload(false);
+			}
+			
+			// TODO: Here could be fired event that context has been closed and UI could react to this
+			
+			discard();
+		}
+	}
+	
+	/*
 	 * When a browsing context is discarded, the strong reference from the user agent itself to the browsing context must be severed, 
 	 * and all the Document objects for all the entries in the browsing context's session history must be discarded as well.
 	 */
-	public synchronized void discard() {
-		discarded = true;
-		navigationController.cancelAllNavigationAttempts();
-		sessionHistory.discard();
+	public synchronized void discard() {	
+		if (!discarded) {
+			navigationController.cancelAllNavigationAttempts();
+			sessionHistory.discard();
+			
+			if (parentContext != null) {
+				parentContext.childContexts.remove(this);
+			}
+			
+			browsingUnit = null;
+			parentContext = null;
+			sessionHistory = null;
+			
+			discarded = true;
+		}
 	}
 	
 	public synchronized boolean isDiscarded() {
 		return discarded;
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#discard-a-document
+	 */
+	public synchronized void discardActiveDocument() {
+		Html5DocumentImpl document = getActiveDocument();
+		
+		if (document != null) {
+			document.setSalvageableFlag(false);
+			document.runUnloadingDocumentCleanupSteps();
+			document.abort();
+			
+			EventLoop eventLoop = getEventLoop();
+			eventLoop.removeAllTasksWithDocument(document);
+			
+			Collection<BrowsingContext> childBrowsingContexts = getNestedContexts();
+			for (BrowsingContext childBrowsingContext : childBrowsingContexts) {
+				childBrowsingContext.discard();
+			}
+		}
 	}
 	
 	/*
@@ -480,7 +532,11 @@ public class BrowsingContext {
 	}*/
 	
 	public boolean scrollToFragment(String fragment) {
-		return false;
+		BrowsingUnit browsingUnit = getBrowsingUnit();
+		UserAgent agent = browsingUnit.getUserAgent();
+		ScrollBarsProp scrollbars = agent.getScrollbars();
+		
+		return scrollbars.scrollToFragment(fragment);
 	}
 	
 	public Element getContainer() {

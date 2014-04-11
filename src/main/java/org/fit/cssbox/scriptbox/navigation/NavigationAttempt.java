@@ -227,7 +227,8 @@ public abstract class NavigationAttempt {
 		
 		// 8) Apply the URL parser for new and old resource and if only fragment is different then navigate to fragment only
 		if (shouldBeFragmentNavigated()) {
-			navigateToFragment(url.getRef());
+			String fragment = url.getRef();
+			destinationBrowsingContext.scrollToFragment(fragment);
 			complete();
 			return;
 		}
@@ -488,10 +489,6 @@ public abstract class NavigationAttempt {
 	
 	protected boolean affectsBrowsingContext() {	
 		return resourceHandlerRegistry.existsErrorHandler(url);
-	}
-	
-	protected void navigateToFragment(String fragment) {
-		
 	}
 	
 	protected synchronized void testForInterruption() throws InterruptedException {

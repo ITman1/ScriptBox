@@ -62,6 +62,8 @@ public class SessionHistory {
 				doc.discard();
 			}
 		}
+		
+		context = null;
 	}
 	
 	public void remove(int index) {

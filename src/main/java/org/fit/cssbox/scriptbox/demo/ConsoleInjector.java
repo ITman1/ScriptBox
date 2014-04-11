@@ -122,23 +122,31 @@ public class ConsoleInjector extends JavaScriptInjector {
 			
 			final String joinedList = StringUtils.join(argsList, " ");
 
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						doc.insertString(doc.getLength(), " " + header + " ", attr);
-						doc.insertString(doc.getLength(), " - " + joinedList + "\n", null);
-						
-						if (scrollPane != null) {
-							JScrollBar vertical = scrollPane.getVerticalScrollBar();
-							vertical.setValue(vertical.getMaximum());
-						}
-						
-					} catch (BadLocationException e) {
-						e.printStackTrace();
+			if (SwingUtilities.isEventDispatchThread()) {
+				consolePrint(header, joinedList, attr);
+	        } else {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						consolePrint(header, joinedList, attr);
 					}
+				});
+	        }
+		}
+		
+		private void consolePrint(String header, String joinedList, SimpleAttributeSet attr) {
+			try {
+				doc.insertString(doc.getLength(), " " + header + " ", attr);
+				doc.insertString(doc.getLength(), " - " + joinedList + "\n", null);
+				
+				if (scrollPane != null) {
+					JScrollBar vertical = scrollPane.getVerticalScrollBar();
+					vertical.setValue(vertical.getMaximum());
 				}
-			});
+				
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		private String printableString(Object arg) {			
@@ -176,15 +184,23 @@ public class ConsoleInjector extends JavaScriptInjector {
 	}
 	
 	protected static void clearStyledDocument(final StyledDocument doc) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					doc.remove(0, doc.getLength());
-				} catch (BadLocationException e) {
-					e.printStackTrace();
-				}
-			}
-		});		
+		if (SwingUtilities.isEventDispatchThread()) {
+			clearStyledDocumentImpl(doc);
+        } else {
+    		SwingUtilities.invokeLater(new Runnable() {
+    			@Override
+    			public void run() {
+    				clearStyledDocumentImpl(doc);
+    			}
+    		});
+        }
+	}
+	
+	protected static void clearStyledDocumentImpl(final StyledDocument doc) {
+		try {
+			doc.remove(0, doc.getLength());
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 	}
 }

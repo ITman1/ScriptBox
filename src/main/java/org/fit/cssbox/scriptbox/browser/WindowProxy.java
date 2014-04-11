@@ -242,6 +242,12 @@ public class WindowProxy extends Window {
 		return proxiedWindow().open(url, target, features, replace);
 	}
 
+	@ScriptFunction
+	@Override
+	public void scroll(int xCoord, int yCoord) {
+		proxiedWindow().scroll(xCoord, yCoord);
+	}
+	
 	@Override
 	public Collection<Object> getKeys() {
 		return proxiedWindow().getKeys();

@@ -61,4 +61,14 @@ public class ScriptableDocumentParser {
 	public boolean hasStyleSheetBlockScripts() {
 		return _parser.hasStyleSheetBlockScripts();
 	}
+	
+	public boolean isActive() {
+		return false;
+	}
+	
+	public void abort() {
+		if (_parser != null) {
+			_parser.abort();
+		}
+	}
 }

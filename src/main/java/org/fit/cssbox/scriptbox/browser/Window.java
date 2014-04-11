@@ -32,6 +32,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.ui.BarProp;
+import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
@@ -135,77 +136,77 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		this.scriptSettings = new WindowScriptSettings(this);
 		
 		// Global event handler listeners
-		this.onabortHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onabort_msg);
-		this.onblurHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onblur_msg);
-		this.oncancelHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oncancel_msg);
-		this.oncanplayHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oncanplay_msg);
-		this.oncanplaythroughHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oncanplaythrough_msg);
-		this.onchangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onchange_msg);
-		this.onclickHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onclick_msg);
-		this.oncloseHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onclose_msg);
-		this.oncuechangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oncuechange_msg);
-		this.ondblclickHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondblclick_msg);
-		this.ondragHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondrag_msg);
-		this.ondragendHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragend_msg);
-		this.ondragenterHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragenter_msg);
-		this.ondragexitHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragexit_msg);
-		this.ondragleaveHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragleave_msg);
-		this.ondragoverHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragover_msg);
-		this.ondragstartHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragstart_msg);
-		this.ondropHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondrop_msg);
-		this.ondurationchangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondurationchange_msg);
-		this.onemptiedHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onemptied_msg);
-		this.onendedHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onended_msg);
-		this.onfocusHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onfocus_msg);
-		this.oninputHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oninput_msg);
-		this.oninvalidHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oninvalid_msg);
-		this.onkeydownHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onkeydown_msg);
-		this.onkeypressHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onkeypress_msg);
-		this.onkeyupHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onkeyup_msg);
-		this.onloadHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onload_msg);
-		this.onloadeddataHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onloadeddata_msg);
-		this.onloadedmetadataHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onloadedmetadata_msg);
-		this.onloadstartHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onloadstart_msg);
-		this.onmousedownHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmousedown_msg);
-		this.onmouseenterHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseenter_msg);
-		this.onmouseleaveHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseleave_msg);
-		this.onmousemoveHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmousemove_msg);
-		this.onmouseoutHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseout_msg);
-		this.onmouseoverHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseover_msg);
-		this.onmouseupHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseup_msg);
-		this.onmousewheelHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmousewheel_msg);
-		this.onpauseHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onpause_msg);
-		this.onplayHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onplay_msg);
-		this.onplayingHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onplaying_msg);
-		this.onprogressHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onprogress_msg);
-		this.onratechangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onratechange_msg);
-		this.onresetHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onreset_msg);
-		this.onresizeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onresize_msg);
-		this.onscrollHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onscroll_msg);
-		this.onseekedHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onseeked_msg);
-		this.onseekingHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onseeking_msg);
-		this.onselectHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onselect_msg);
-		this.onshowHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onshow_msg);
-		this.onstalledHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onstalled_msg);
-		this.onsubmitHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onsubmit_msg);
-		this.onsuspendHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onsuspend_msg);
-		this.ontimeupdateHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ontimeupdate_msg);
-		this.ontoggleHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ontoggle_msg);
-		this.onvolumechangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onvolumechange_msg);
-		this.onwaitingHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onwaiting_msg);
+		this.onabortHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onabort);
+		this.onblurHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onblur);
+		this.oncancelHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oncancel);
+		this.oncanplayHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oncanplay);
+		this.oncanplaythroughHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oncanplaythrough);
+		this.onchangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onchange);
+		this.onclickHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onclick);
+		this.oncloseHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onclose);
+		this.oncuechangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oncuechange);
+		this.ondblclickHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondblclick);
+		this.ondragHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondrag);
+		this.ondragendHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragend);
+		this.ondragenterHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragenter);
+		this.ondragexitHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragexit);
+		this.ondragleaveHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragleave);
+		this.ondragoverHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragover);
+		this.ondragstartHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondragstart);
+		this.ondropHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondrop);
+		this.ondurationchangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondurationchange);
+		this.onemptiedHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onemptied);
+		this.onendedHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onended);
+		this.onfocusHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onfocus);
+		this.oninputHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oninput);
+		this.oninvalidHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oninvalid);
+		this.onkeydownHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onkeydown);
+		this.onkeypressHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onkeypress);
+		this.onkeyupHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onkeyup);
+		this.onloadHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onload);
+		this.onloadeddataHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onloadeddata);
+		this.onloadedmetadataHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onloadedmetadata);
+		this.onloadstartHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onloadstart);
+		this.onmousedownHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmousedown);
+		this.onmouseenterHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseenter);
+		this.onmouseleaveHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseleave);
+		this.onmousemoveHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmousemove);
+		this.onmouseoutHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseout);
+		this.onmouseoverHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseover);
+		this.onmouseupHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmouseup);
+		this.onmousewheelHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onmousewheel);
+		this.onpauseHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onpause);
+		this.onplayHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onplay);
+		this.onplayingHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onplaying);
+		this.onprogressHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onprogress);
+		this.onratechangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onratechange);
+		this.onresetHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onreset);
+		this.onresizeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onresize);
+		this.onscrollHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onscroll);
+		this.onseekedHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onseeked);
+		this.onseekingHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onseeking);
+		this.onselectHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onselect);
+		this.onshowHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onshow);
+		this.onstalledHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onstalled);
+		this.onsubmitHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onsubmit);
+		this.onsuspendHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onsuspend);
+		this.ontimeupdateHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ontimeupdate);
+		this.ontoggleHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ontoggle);
+		this.onvolumechangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onvolumechange);
+		this.onwaitingHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onwaiting);
 		
 		// Window handler listeners
-		this.onafterprintHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onafterprint_msg);
-		this.onbeforeprintHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onbeforeprint_msg);
-		this.onhashchangeHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onhashchange_msg);
-		this.onmessageHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onmessage_msg);
-		this.onofflineHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onoffline_msg);
-		this.ononlineHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.ononline_msg);
-		this.onpagehideHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onpagehide_msg);
-		this.onpageshowHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onpageshow_msg);
-		this.onpopstateHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onpopstate_msg);
-		this.onstorageHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onstorage_msg);
-		this.onunloadHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onunload_msg);
+		this.onafterprintHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onafterprint);
+		this.onbeforeprintHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onbeforeprint);
+		this.onhashchangeHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onhashchange);
+		this.onmessageHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onmessage);
+		this.onofflineHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onoffline);
+		this.ononlineHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.ononline);
+		this.onpagehideHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onpagehide);
+		this.onpageshowHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onpageshow);
+		this.onpopstateHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onpopstate);
+		this.onstorageHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onstorage);
+		this.onunloadHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onunload);
 	}
 	
 	private List<BrowsingContext> getNestedFrames() {
@@ -519,6 +520,16 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return targetContext.getWindowProxy();
 	}
 
+	// FIXME?: Everybody who gets proxy can scroll, is that correct? Should not be here check against origins or script setting stack?
+	@ScriptFunction
+	public void scroll(int xCoord, int yCoord) {
+		ScrollBarsProp scrollBars = userAgent.getScrollbars();
+		
+		if (scrollBars != null) {
+			scrollBars.scroll(xCoord, yCoord);
+		}
+	}
+	
 	@Override
 	public Collection<Object> getKeys() {
 		List<Object> keys = new ArrayList<Object>();
