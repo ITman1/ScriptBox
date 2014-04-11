@@ -74,6 +74,13 @@ public abstract class Resource {
 		return null;
 	}
 	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#override-url
+	 */
+	public URL getOverrideAddress() {
+		return null;
+	}
+	
 	public String getReferrer() {
 		return "";
 	}

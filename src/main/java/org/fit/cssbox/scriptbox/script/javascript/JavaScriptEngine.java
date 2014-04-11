@@ -17,11 +17,11 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.TopLevel;
-import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
 public class JavaScriptEngine extends BrowserScriptEngine {
-
+	public static final String JAVASCRIPT_LANGUAGE = "text/javascript";
+	
 	static {
 		ContextFactory globalFactory = new JavaScriptContextFactory();
 		ContextFactory.initGlobal(globalFactory);
@@ -123,10 +123,6 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 			value = ((Wrapper)value).unwrap();
 		}
 
-		if (value == null || value instanceof Undefined) {
-			return null;
-		} else {
-			return value;
-		}
+		return value;
 	}
 }

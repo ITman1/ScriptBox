@@ -19,26 +19,18 @@
  */
 package org.fit.cssbox.scriptbox.ui;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
 
-import org.apache.xerces.dom.NodeImpl;
 import org.fit.cssbox.layout.Box;
-import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.swingbox.util.Constants;
 import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
-import org.w3c.dom.html.HTMLAnchorElement;
 
 public class ScriptBrowserHyperlinkHandler extends DefaultHyperlinkHandler
 {

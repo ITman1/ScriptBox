@@ -43,15 +43,15 @@ public class FetchRegistry {
 		return registeredFetchHandlers.containsKey(scheme);
 	}
 	
-	public Fetch getFetch(BrowsingContext context, URL url) {
-		return getFetchProtected(context, url, null);
+	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+		return getFetchProtected(sourceContext, destinationContext, url, null);
 	}
 	
-	public Fetch getFetch(BrowsingContext context, URL url, boolean synchronous) {
-		return getFetchProtected(context, url, synchronous);
+	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
+		return getFetchProtected(sourceContext, destinationContext, url, synchronous);
 	}
 	
-	protected Fetch getFetchProtected(BrowsingContext context, URL url, Boolean synchronous) {
+	protected Fetch getFetchProtected(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, Boolean synchronous) {
 		Set<Class<? extends Fetch>> fetchHandlers = registeredFetchHandlers.get(url.getProtocol());
 		
 		if (fetchHandlers != null) {
@@ -59,9 +59,9 @@ public class FetchRegistry {
 				Fetch fetch = null;
 				
 				if (synchronous != null) {
-					fetch = instantizeFetch(fetchClass, context, url, synchronous);
+					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url, synchronous);
 				} else {
-					fetch = instantizeFetch(fetchClass, context, url);
+					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url);
 				}
 				
 				if (fetch == null) {
@@ -109,12 +109,12 @@ public class FetchRegistry {
 		}
 	}
 	
-	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext context, URL url, boolean synchronous) {
+	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
 		Fetch fetch = null;
 		
 		try {
-			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, URL.class, boolean.class);
-			Object newInstance = contructor.newInstance(context, url, synchronous);
+			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, BrowsingContext.class, URL.class, boolean.class);
+			Object newInstance = contructor.newInstance(sourceContext, destinationContext, url, synchronous);
 			
 			if (newInstance instanceof Fetch) {
 				fetch = (Fetch)newInstance;
@@ -125,12 +125,12 @@ public class FetchRegistry {
 		return fetch;
 	}
 	
-	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext context, URL url) {
+	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		Fetch fetch = null;
 		
 		try {
-			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, URL.class);
-			Object newInstance = contructor.newInstance(context, url);
+			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, BrowsingContext.class, URL.class);
+			Object newInstance = contructor.newInstance(sourceContext, destinationContext, url);
 			
 			if (newInstance instanceof Fetch) {
 				fetch = (Fetch)newInstance;

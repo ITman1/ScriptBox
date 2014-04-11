@@ -13,6 +13,7 @@ import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineManager;
+import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -21,7 +22,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	private static final long serialVersionUID = 4725269642619675257L;
 	private static final String ASYNC_ATTR_NAME = "async";
 	private static final String DEFER_ATTR_NAME = "defer";
-	private static final String DEFAULT_SCRIPT_MIME_TYPE = "text/javascript";
+	private static final String DEFAULT_SCRIPT_MIME_TYPE = JavaScriptEngine.JAVASCRIPT_LANGUAGE;
 	
 	private boolean _alreadyStarted;
 	private boolean _parserInserted;

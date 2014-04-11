@@ -134,6 +134,10 @@ public abstract class NavigationAttempt {
 		listener.onMatured(this);
 	}
 	
+	public synchronized Resource getResource() {
+		return resource;
+	}
+	
 	public synchronized URL getURL() {
 		return url;
 	}
@@ -392,6 +396,9 @@ public abstract class NavigationAttempt {
 				if (errorHandler != null) {
 					errorHandler.process(resource);
 				}
+				
+				fireCancelled();
+				return;
 			}
 		}
 		
@@ -436,7 +443,11 @@ public abstract class NavigationAttempt {
 	}
 	
 	protected Resource obtainResource() {
-		Fetch fetch = fetchRegistry.getFetch(destinationBrowsingContext, url);
+		Fetch fetch = fetchRegistry.getFetch(sourceBrowsingContext, destinationBrowsingContext, url);
+		
+		if (fetch == null) {
+			return null;
+		}
 		
 		fetches.add(fetch);
 		

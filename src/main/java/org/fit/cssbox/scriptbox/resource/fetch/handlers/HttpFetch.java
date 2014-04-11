@@ -125,12 +125,12 @@ public class HttpFetch extends Fetch {
 	protected URLConnection conn;
 	protected HttpMethod method;
 
-	public HttpFetch(BrowsingContext context, URL url, boolean synchronous) {
-		super(context, url, synchronous);
+	public HttpFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
+		super(sourceContext, destinationContext, url, synchronous);
 	}
 	
-	public HttpFetch(BrowsingContext context, URL url) {
-		super(context, url);
+	public HttpFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+		super(sourceContext, destinationContext, url);
 		
 		method = HttpMethod.GET;
 	}
@@ -152,7 +152,7 @@ public class HttpFetch extends Fetch {
 			HttpURLConnection httpConn = (HttpURLConnection) conn;
 			httpConn.setInstanceFollowRedirects(false);
 			
-			httpResource = createHttpResource(context, httpConn, isSafe);
+			httpResource = createHttpResource(destinationContext, httpConn, isSafe);
 		}
 	}
 	

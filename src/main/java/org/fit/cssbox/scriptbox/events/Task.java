@@ -14,6 +14,8 @@ import org.w3c.dom.Element;
 public abstract class Task implements Executable {
 	private Html5DocumentImpl _document;
 	private TaskSource _source;
+	protected boolean started;
+	protected boolean finished;
 	
 	private Task(TaskSource source) {
 		_source = source;
@@ -67,9 +69,32 @@ public abstract class Task implements Executable {
 	public EventLoop getEventLoop() {
 		return getBrowsingUnit().getEventLoop();
 	}
-		
-	public void onCancellation() {
-		
+	
+	public synchronized boolean isRunning() {
+		return started && !finished;
+	}
+	
+	public synchronized boolean isStarted() {
+		return started;
+	}
+	
+	public synchronized boolean isFinished() {
+		return finished;
+	}
+	
+	public synchronized void join() throws InterruptedException {
+		if (!finished) {
+			wait();
+		}
+	}
+	
+	protected synchronized void onStarted() {
+		started = true;
+	}
+	
+	protected synchronized void onFinished() {
+		finished = true;
+		notifyAll();
 	}
 	
 	public abstract void execute() throws TaskAbortedException, InterruptedException;

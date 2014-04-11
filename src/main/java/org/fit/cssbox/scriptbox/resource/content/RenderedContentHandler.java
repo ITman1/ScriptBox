@@ -17,6 +17,7 @@ import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.UpdateNavigationAttempt;
+import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 import org.w3c.dom.Element;
@@ -79,7 +80,9 @@ public abstract class RenderedContentHandler extends ContentHandler {
 				
 				SessionHistoryEntry newEntry = new SessionHistoryEntry(sessionHistory);
 				
-				newEntry.setURL(newDocument.getAddress());
+				Resource resource = navigationAttempt.getResource();
+				URL entryAddress = (resource != null)? resource.getAddress() : newDocument.getAddress();
+				newEntry.setURL(entryAddress);
 				newEntry.setSocument(newDocument);
 				sessionHistory.add(newEntry);
 				

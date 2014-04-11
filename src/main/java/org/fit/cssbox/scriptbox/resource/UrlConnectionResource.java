@@ -10,21 +10,24 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 
 public abstract class UrlConnectionResource extends Resource {
 	protected URLConnection conn;
-	protected BrowsingContext context;
 	protected BufferedInputStream is;
 
 	public UrlConnectionResource(BrowsingContext context, URLConnection conn) {
 		super(context);
 		
 		this.conn = conn;
-		try {
-			InputStream connIs = conn.getInputStream();
-			this.is = new BufferedInputStream(connIs);
-		} catch (IOException e) {
-		}
 	}
 	
 	public BufferedInputStream getInputStream() {
+		if (is == null) {
+			InputStream connIs;
+			try {
+				connIs = conn.getInputStream();
+				is = new BufferedInputStream(connIs);
+			} catch (IOException e) {
+			}
+		}
+
 		return is;
 	}
 	

@@ -5,10 +5,34 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 
 import com.google.common.base.Predicate;
 
 public class EventLoop {
+	protected class TaskWrapper extends Task {
+		protected Task wrappedTask;
+				
+		public TaskWrapper(Task wrappedTask) {
+			super(wrappedTask.getTaskSource(), wrappedTask.getBrowsingContext());
+			this.wrappedTask = wrappedTask;
+		}
+
+		@Override
+		public void execute() throws TaskAbortedException, InterruptedException {
+			try {
+				synchronized (wrappedTask) {
+					wrappedTask.onStarted();
+				}
+				wrappedTask.execute();
+			} finally {
+				synchronized (wrappedTask) {
+					wrappedTask.onFinished();
+				}
+			}
+		}
+	}
+	
 	protected class ExecutionThread extends Thread {
 		@Override
 		public void run() {
@@ -65,6 +89,10 @@ public class EventLoop {
 		this(browsingUnit, new RoundRobinScheduler());
 	}
 			
+	public synchronized Thread getEventThread() {
+		return executionThread;
+	}
+	
 	/*
 	 * throws InterruptedException if we are aborting current thread or if it occurs on join
 	 */
@@ -145,7 +173,16 @@ public class EventLoop {
 	
 	public synchronized void queueTask(Task task) {
 		testForAbort();
-		_taskScheduler.queueTask(task);
+		_taskScheduler.queueTask(new TaskWrapper(task));
+	}
+	
+	public synchronized void queueTaskAndWait(Task task) throws InterruptedException {
+		testForAbort();
+		
+		Task blockingTask = new TaskWrapper(task);
+		
+		_taskScheduler.queueTask(blockingTask);
+		blockingTask.join();
 	}
 	
 	public synchronized void removeFirstTask(Task task) {

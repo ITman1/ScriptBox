@@ -33,18 +33,18 @@ public class FileFetch extends Fetch {
 	
 	Resource fileResource;
 	
-	public FileFetch(BrowsingContext context, URL url, boolean synchronous) {
-		super(context, url, synchronous);
+	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
+		super(sourceContext, destinationContext, url, synchronous);
 	}
 	
-	public FileFetch(BrowsingContext context, URL url) {
-		super(context, url);
+	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+		super(sourceContext, destinationContext, url);
 	}
 
 	@Override
 	public void fetch(boolean isSafe) throws IOException {
 		URLConnection conn = url.openConnection();
-		fileResource = new FileResource(context, conn);
+		fileResource = new FileResource(destinationContext, conn);
 	}
 
 	@Override

@@ -3,6 +3,8 @@ package org.fit.cssbox.scriptbox.script;
 import java.io.Reader;
 import java.net.URL;
 
+import javax.script.ScriptException;
+
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 
@@ -12,6 +14,8 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	protected String language;
 	protected boolean mutedErrorsFlag;
 	protected ScriptSettingsTemplate settings;
+	protected Object result;
+	protected Exception exception;
 	
 	public Script(Reader source, URL sourceURL, String language, ScriptSettingsTemplate settings, boolean mutedErrorsFlag) {
 		this.source = source;
@@ -43,6 +47,14 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 		return settings;
 	}
 	
+	public Object getResult() {
+		return result;
+	}
+	
+	public Exception getException() {
+		return exception;
+	}
+	
 	protected void jumpToCodeEntryPoint(CodeEntryPoint codeEntryPoint) {		
 		if (!prepareRunCallback(settings)) {
 			return;
@@ -51,7 +63,14 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 		BrowserScriptEngine executionEnviroment = obtainExecutionEnviroment(settings);
 		
 		if (executionEnviroment != null) {
-			executeCodeEntryPoint(executionEnviroment, codeEntryPoint);
+			try {
+				exception = null;
+				result = executeCodeEntryPoint(executionEnviroment, codeEntryPoint);
+			} catch (ScriptException e) {
+				e.printStackTrace();
+				exception = e;
+				result = null;
+			}
 		}
 		
 		cleanupAfterRunningCallback();
@@ -119,5 +138,5 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	}
 	
 	protected abstract CodeEntryPoint obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader source);
-	protected abstract void executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, CodeEntryPoint codeEntryPoint);
+	protected abstract Object executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, CodeEntryPoint codeEntryPoint) throws ScriptException;
 }

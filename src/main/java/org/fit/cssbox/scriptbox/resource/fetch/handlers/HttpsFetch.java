@@ -17,12 +17,12 @@ public class HttpsFetch extends HttpFetch {
 		}
 	}
 		
-	public HttpsFetch(BrowsingContext context, URL url, boolean synchronous) {
-		super(context, url, synchronous);
+	public HttpsFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
+		super(sourceContext, destinationContext, url, synchronous);
 	}
 	
-	public HttpsFetch(BrowsingContext context, URL url) {
-		super(context, url);
+	public HttpsFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+		super(sourceContext, destinationContext, url);
 	}
 
 	@Override

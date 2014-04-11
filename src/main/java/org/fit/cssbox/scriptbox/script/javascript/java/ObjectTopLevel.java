@@ -1,18 +1,11 @@
 package org.fit.cssbox.scriptbox.script.javascript.java;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.TopLevel;
-import org.mozilla.javascript.Undefined;
 
 public class ObjectTopLevel extends TopLevel {	
 	private static final long serialVersionUID = -824471943182669084L;

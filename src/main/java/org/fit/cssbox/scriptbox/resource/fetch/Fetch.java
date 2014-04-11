@@ -8,17 +8,19 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.resource.Resource;
 
 public abstract class Fetch implements Closeable {
-	protected BrowsingContext context;
+	protected BrowsingContext destinationContext;
+	protected BrowsingContext sourceContext;
 	protected URL url;
 	protected boolean synchronous;
 	
-	public Fetch(BrowsingContext context, URL url, boolean synchronous) {
-		this.context = context;
+	public Fetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
+		this.sourceContext = sourceContext;
+		this.destinationContext = destinationContext;
 		this.url = url;
 	}
 	
-	public Fetch(BrowsingContext context, URL url) {
-		this(context, url, true);
+	public Fetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+		this(sourceContext, destinationContext, url, true);
 	}
 	
 	public boolean isValid() {

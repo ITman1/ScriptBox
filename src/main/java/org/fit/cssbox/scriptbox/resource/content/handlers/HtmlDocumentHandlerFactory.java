@@ -1,6 +1,7 @@
 package org.fit.cssbox.scriptbox.resource.content.handlers;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,8 +58,10 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			@Override
 			public void execute() throws InterruptedException, TaskAbortedException {
 				String encoding = resource.getContentEncoding();
+				URL address = (resource.getOverrideAddress() != null)? resource.getOverrideAddress() : resource.getAddress();
+				
 				final ScriptableDocumentParser scripDomParser = new ScriptableDocumentParser(encoding);
-				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), resource.getAddress(), "text/html", scripDomParser);
+				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), address, "text/html", scripDomParser);
 				updateSessionHistory(document);
 				
 				/* We have to spin first, wait until session is updated, otherwise script execution would fail - it has to have active document this*/

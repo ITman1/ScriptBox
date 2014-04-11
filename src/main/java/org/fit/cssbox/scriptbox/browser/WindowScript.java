@@ -32,13 +32,7 @@ public class WindowScript extends Script<Reader, WindowScriptSettings> {
 	}
 
 	@Override
-	protected void executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader codeEntryPoint) {
-		try {
-			executionEnviroment.eval(codeEntryPoint);
-		} catch (ScriptException e) {
-			// TODO: Throw exception?
-			e.printStackTrace();
-		}
-		
+	protected Object executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader codeEntryPoint) throws ScriptException {
+		return executionEnviroment.eval(codeEntryPoint);		
 	}
 }

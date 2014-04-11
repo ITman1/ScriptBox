@@ -12,6 +12,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.FunctionObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Undefined;
 
 public class HostedJavaMethod extends FunctionObject {
 	public final static Method FUNCTION_METHOD;
@@ -100,12 +101,14 @@ public class HostedJavaMethod extends FunctionObject {
 		}
 		
 		Method functionMethod = nearestFunctionObject.getMember();
+		Class<?> returnType = functionMethod.getReturnType();
 		
 		Class<?> expectedTypes[] = functionMethod.getParameterTypes();
 		Object[] castedArgs = ClassFunction.castArgs(expectedTypes, args);
 		
 		try {
-			 return functionMethod.invoke(object, castedArgs);
+			 Object returned = functionMethod.invoke(object, castedArgs);
+			 return (returnType == Void.class)? Undefined.instance : returned;
 		} catch (Exception e) {
 			throw new UnknownException(e);
 		}

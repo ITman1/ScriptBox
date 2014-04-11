@@ -14,6 +14,7 @@ import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
 
 public class ScriptObjectViewer extends JTree {
@@ -91,7 +92,7 @@ public class ScriptObjectViewer extends JTree {
 			Window window = document.getWindow();
 			ScriptSettings<?> settings = window.getScriptSettings();
 			
-			scriptEngine = (GlobalObjectJavaScriptEngine)settings.getExecutionEnviroment("text/javascript");
+			scriptEngine = (GlobalObjectJavaScriptEngine)settings.getExecutionEnviroment(JavaScriptEngine.JAVASCRIPT_LANGUAGE);
 			rootHostedObject = window;
 			membersResolverFactory = scriptEngine.getClassMembersResolverFactory();
 		}
