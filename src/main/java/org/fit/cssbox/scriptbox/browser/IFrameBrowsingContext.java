@@ -6,8 +6,7 @@ import java.util.Set;
 import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 
-public class IFrameBrowsingContext extends BrowsingContext implements IframeBrowsable {
-	
+public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 	// Every nested browsing context has an iframe sandboxing flag set
 	protected Set<SandboxingFlag> iframeSandboxingFlagSet;
 	protected boolean seamlessBrowsingFlag;
@@ -23,12 +22,6 @@ public class IFrameBrowsingContext extends BrowsingContext implements IframeBrow
 		if (iframeElement.getSeamless()) {
 			iframeSandboxingFlagSet.add(SandboxingFlag.SEAMLESS_IFRAMES_FLAG);
 		}
-	}
-	
-	public BrowsingContext createIFrameContext(Html5IFrameElementImpl iframeElement) {
-		BrowsingContext childContext = new IFrameBrowsingContext(this, iframeElement);
-		childContexts.add(childContext);
-		return childContext;
 	}
 	
 	public Set<SandboxingFlag> getIframeSandboxingFlagSet() {

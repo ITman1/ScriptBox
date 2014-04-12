@@ -13,7 +13,7 @@ import org.apache.xerces.xni.XMLLocator;
 import org.apache.xerces.xni.XNIException;
 import org.cyberneko.html.parsers.DOMParser;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.browser.IframeBrowsable;
+import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
@@ -189,8 +189,8 @@ public class ScriptDOMParser extends DOMParser {
 		if (src != null && !src.isEmpty() && document instanceof Html5DocumentImpl) {
 			Html5DocumentImpl documentImpl = (Html5DocumentImpl)document;
 			BrowsingContext context = documentImpl.getBrowsingContext();
-			if (context instanceof IframeBrowsable) {
-				IframeBrowsable iframeBrowsableContext = (IframeBrowsable) context;
+			if (context instanceof IFrameContainerBrowsingContext) {
+				IFrameContainerBrowsingContext iframeBrowsableContext = (IFrameContainerBrowsingContext) context;
 				BrowsingContext iframeContext = iframeBrowsableContext.createIFrameContext(iframeElement);
 				
 				NavigationController controller = iframeContext.getNavigationController();

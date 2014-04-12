@@ -210,17 +210,15 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		this.onunloadHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onunload);
 	}
 	
-	private List<BrowsingContext> getNestedFrames() {
-		Collection<BrowsingContext> nestedContexts = context.getNestedContexts();
-		List<BrowsingContext> frames = new ArrayList<BrowsingContext>();
-		
-		for (BrowsingContext nestedContext : nestedContexts) {
-			if (nestedContext instanceof IFrameBrowsingContext) {
-				frames.add(nestedContext);
-			}
+	private List<IFrameBrowsingContext> getNestedFrames() {
+		if (context instanceof IFrameContainerBrowsingContext) {
+			IFrameContainerBrowsingContext iframeContainerContext = (IFrameContainerBrowsingContext)context;
+			List<IFrameBrowsingContext> iframes = iframeContainerContext.getDocumentIframes(documentImpl);
+			
+			return iframes;
 		}
 		
-		return frames;
+		return IFrameContainerBrowsingContext.EMPTY_IFRAMES;
 	}
 	
 	@Override
@@ -370,19 +368,15 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 			/* the number of child browsing contexts that are nested through 
 			 * elements that are in the Document that is the active document of that Window object
 			 */
-			Collection<BrowsingContext> nestedContexts = context.getNestedContexts();
-			long number = 0;
-			
-			for (BrowsingContext nestedContext : nestedContexts) {
-				if (nestedContext instanceof IFrameBrowsingContext) {
-					number++;
-				}
+			if (context instanceof IFrameContainerBrowsingContext) {
+				IFrameContainerBrowsingContext iframeContainerContext = (IFrameContainerBrowsingContext)context;
+				List<IFrameBrowsingContext> iframes = iframeContainerContext.getDocumentIframes(documentImpl);
+				
+				return iframes.size();
 			}
-			
-			return number;
-		} else {
-			return 0;
 		}
+			
+		return 0;
 	}
 
 	@ScriptGetter
@@ -563,7 +557,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	@Override
 	public Collection<Object> getKeys() {
 		List<Object> keys = new ArrayList<Object>();
-		List<BrowsingContext> frames = getNestedFrames();
+		List<IFrameBrowsingContext> frames = getNestedFrames();
 		
 		for (int i = 0; i < frames.size(); i++) {
 			keys.add(i);
@@ -578,7 +572,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		long length = getLength();
 		if (arg instanceof Integer && length > 0) {
 			int index = (Integer)arg;
-			List<BrowsingContext> frames = getNestedFrames();
+			List<IFrameBrowsingContext> frames = getNestedFrames();
 			
 			if (frames.size() > index) {
 				return frames.get(index).getWindowProxy();

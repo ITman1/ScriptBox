@@ -91,7 +91,7 @@ public class BrowsingContext {
 	
 	public BrowsingContext createNestedContext(Html5DocumentImpl document, String name, Element container) {
 		BrowsingContext childContext = new BrowsingContext(this, null, name, container);
-		childContexts.add(childContext);
+		addChildContext(childContext);
 		return childContext;
 	}
 
@@ -124,7 +124,7 @@ public class BrowsingContext {
 			sessionHistory.discard();
 			
 			if (parentContext != null) {
-				parentContext.childContexts.remove(this);
+				parentContext.removeChildContext(this);
 			}
 			
 			browsingUnit = null;
@@ -553,5 +553,13 @@ public class BrowsingContext {
 	
 	public History getHistory() {
 		return history;
+	}
+	
+	protected void removeChildContext(BrowsingContext child) {
+		childContexts.remove(child);
+	}
+	
+	protected void addChildContext(BrowsingContext child) {
+		childContexts.add(child);
 	}
 }
