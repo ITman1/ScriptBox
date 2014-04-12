@@ -18,6 +18,7 @@ import org.fit.cssbox.scriptbox.dom.events.EventHandlerEventListener;
 import org.fit.cssbox.scriptbox.dom.events.EventListenerEntry;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
+import org.fit.cssbox.scriptbox.dom.events.TrustedEventImpl;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
@@ -244,6 +245,35 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	public void dispatchEvent(Event event, org.w3c.dom.events.EventTarget target) {
 		Task dispatcherTask = new DispatcherTask(documentImpl, target, event);
 		context.getEventLoop().queueTask(dispatcherTask);
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#fire-a-simple-event
+	 */
+	public boolean fireSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target) {
+		return fireSimpleEvent(eventName, target, false, false);
+	}
+	
+	public boolean fireSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target, boolean bubbles, boolean cancelable) {
+		EventImpl event = new EventImpl();
+		event.initEvent(eventName, bubbles, cancelable);
+		
+		target.dispatchEvent(event);
+		
+		return event.stopPropagation;
+	}
+	
+	public void dispatchSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target) {
+		dispatchSimpleEvent(eventName, target, false, false);
+	}
+	
+	public void dispatchSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target, boolean bubbles, boolean cancelable) {
+		EventImpl event = new EventImpl();
+		event.initEvent(eventName, bubbles, cancelable);
+		
+		target.dispatchEvent(event);
+		
+		dispatchEvent(event, target);
 	}
 	
 	@ScriptGetter
@@ -619,7 +649,14 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 			return evt.preventDefault;
 		}
 
-		evt.target = this;
+		if (event instanceof TrustedEventImpl) {
+			TrustedEventImpl trusted = (TrustedEventImpl)event ;
+			EventTarget targetOverride = trusted.getTargetOverride();
+			evt.target = (targetOverride != null)? targetOverride : this;
+		} else {
+			evt.target = this;
+		}
+		
 		evt.stopPropagation = false;
 		evt.preventDefault = false;
 				

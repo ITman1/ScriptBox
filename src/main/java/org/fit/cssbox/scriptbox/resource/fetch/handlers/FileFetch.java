@@ -5,6 +5,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
@@ -33,8 +34,8 @@ public class FileFetch extends Fetch {
 	
 	Resource fileResource;
 	
-	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
-		super(sourceContext, destinationContext, url, synchronous);
+	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
 	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
@@ -42,13 +43,13 @@ public class FileFetch extends Fetch {
 	}
 
 	@Override
-	public void fetch(boolean isSafe) throws IOException {
+	protected void fetchImpl() throws IOException {
 		URLConnection conn = url.openConnection();
 		fileResource = new FileResource(destinationContext, conn);
 	}
 
 	@Override
-	public Resource getResource() {
+	protected Resource getResourceImpl() {
 		return fileResource;
 	}
 }

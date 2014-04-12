@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.fetch.handlers.FileFetch;
 import org.fit.cssbox.scriptbox.resource.fetch.handlers.HttpFetch;
 import org.fit.cssbox.scriptbox.resource.fetch.handlers.HttpsFetch;
@@ -44,14 +45,14 @@ public class FetchRegistry {
 	}
 	
 	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
-		return getFetchProtected(sourceContext, destinationContext, url, null);
+		return getFetchProtected(sourceContext, destinationContext, url, null, null, null, null);
 	}
 	
-	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
-		return getFetchProtected(sourceContext, destinationContext, url, synchronous);
+	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+		return getFetchProtected(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
-	protected Fetch getFetchProtected(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, Boolean synchronous) {
+	protected Fetch getFetchProtected(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, Boolean synchronous, Boolean manualRedirect, Boolean isSafe, Task onFinishTask) {
 		Set<Class<? extends Fetch>> fetchHandlers = registeredFetchHandlers.get(url.getProtocol());
 		
 		if (fetchHandlers != null) {
@@ -59,7 +60,7 @@ public class FetchRegistry {
 				Fetch fetch = null;
 				
 				if (synchronous != null) {
-					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url, synchronous);
+					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 				} else {
 					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url);
 				}
@@ -109,12 +110,12 @@ public class FetchRegistry {
 		}
 	}
 	
-	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
+	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		Fetch fetch = null;
 		
 		try {
-			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, BrowsingContext.class, URL.class, boolean.class);
-			Object newInstance = contructor.newInstance(sourceContext, destinationContext, url, synchronous);
+			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, BrowsingContext.class, URL.class, boolean.class, boolean.class, boolean.class, Task.class);
+			Object newInstance = contructor.newInstance(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 			
 			if (newInstance instanceof Fetch) {
 				fetch = (Fetch)newInstance;

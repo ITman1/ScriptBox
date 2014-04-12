@@ -71,17 +71,17 @@ public class JavascriptFetch extends HttpFetch {
 			return is != null;
 		}
 	}	
-	
+		
 	public JavascriptFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		super(sourceContext, destinationContext, url);
 	}
 
 	@Override
-	public void fetch(boolean isSafe) throws IOException {
+	protected void fetchImpl() throws IOException {
 	}
 
 	@Override
-	public Resource getResource() {
+	protected Resource getResourceImpl() {
 		JavaScriptURLConnection connection = new JavaScriptURLConnection(url, sourceContext, destinationContext);
 		try {
 			connection.connect();

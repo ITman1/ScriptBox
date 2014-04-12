@@ -17,7 +17,11 @@ import org.fit.cssbox.scriptbox.browser.IframeBrowsable;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
+import org.fit.cssbox.scriptbox.events.Task;
+import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
@@ -25,14 +29,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class ScriptDOMParser extends DOMParser {
-	protected boolean parserAborted;
-	private int scriptNestingLevel;
-	private boolean parserPauseFlag;
-	private Html5ScriptElementImpl pendingParsingBlockingScript;
-	private boolean hasStyleSheetBlockScripts; // FIXME: Is never set, info
-												// about style sheets is not
-												// propagated here
-	private Object pauseMonitor;
+	private ScriptableDocumentParser _parser;
+
 	private Html5DocumentImpl _document;
 	private String _charset;
 	private XMLLocator _locator;
@@ -41,11 +39,10 @@ public class ScriptDOMParser extends DOMParser {
 		return fDocument;
 	}
 
-	public ScriptDOMParser(Html5DocumentImpl document, String charset) {
-		_document = document;
+	public ScriptDOMParser(ScriptableDocumentParser parser, String charset) {
+		_parser = parser;
+		_document = parser.getDocument();
 		_charset = charset;
-		
-		pauseMonitor = new Object();
 	}
 
 	@Override
@@ -182,27 +179,9 @@ public class ScriptDOMParser extends DOMParser {
 			}
 		}
 	}
+
 	
-	public void pauseParsing() {
-		parserPauseFlag = true;
-		
-		synchronized (pauseMonitor) {
-			while (parserPauseFlag) {
-				try {
-					pauseMonitor.wait();
-				} catch (Exception e) {}
-			}
-		}
-	}
-	
-	public void resumeParsing() {
-		synchronized (pauseMonitor) {
-			parserPauseFlag = false;
-			pauseMonitor.notifyAll();
-		}
-	}
-	
-	/* Simplified, does not follow the norm */
+	/* Simplified, does not follow the spec */
 	protected void endHtml5IframeElement (Html5IFrameElementImpl iframeElement) {
 		Document document = iframeElement.getOwnerDocument();
 		String src = iframeElement.getSrc();
@@ -217,7 +196,7 @@ public class ScriptDOMParser extends DOMParser {
 				NavigationController controller = iframeContext.getNavigationController();
 				URL newUrl;
 				try {
-					newUrl = new URL(documentImpl.getAddress(), src);
+					newUrl = new URL(documentImpl.getBaseAddress(), src);
 					controller.navigate(context, newUrl, false, false, true);
 				} catch (MalformedURLException e) {
 					// TODO: Throw exception?
@@ -229,87 +208,139 @@ public class ScriptDOMParser extends DOMParser {
 		}
 	}
 	
-	protected void endHtml5ScriptElement(Html5ScriptElementImpl scriptElement) {		
+	protected void endHtml5ScriptElement(final Html5ScriptElementImpl scriptElement) {		
 		// TODO: 1) Perform a microtask checkpoint.
 		// TODO: 2) Provide a stable state.
 		// FIXME: 3), 4), 5) and 6) are somehow done following the HTML4, fix it to HTML5
 		
-		// 7) Increment the parser's script nesting level by one.
-		incrementScriptNestingLevel();
-		
-		// 8) Prepare the script.
-		scriptElement.prepareScript();
-		
-		// 9) Decrement the parser's script nesting level by one. 
-		//	If the parser's script nesting level is zero, then set the parser pause flag to false.
-		decrementScriptNestingLevel();
-		
-		// TODO: 10) Let the insertion point have the value of the old insertion point. 
-		
-		// 11) If there is a pending parsing-blocking script, then:
-		if (pendingParsingBlockingScript != null) {
-			// 11.1) Set the parser pause flag to true, and abort the processing of any nested invocations of the tokenizer
-			if (scriptNestingLevel != 0) {
-				pauseParsing();
-			} 
-			// 11.2) Run these steps:
-			else {
-				while (pendingParsingBlockingScript != null) {
-					// 11.2.1) Let the script be the pending parsing-blocking script. 
-					scriptElement = pendingParsingBlockingScript;
-					
-					// TODO: 11.2.2) Block the tokenizer for this instance of the HTML parser.
-					
-					// 11.2.3) If the parser's Document has a style sheet that is blocking scripts 
-					//		 or the script's "ready to be parser-executed" flag is not set
-					if (hasStyleSheetBlockScripts || !scriptElement.isReadyToBeParserExecuted()) {
-						// TODO: Spin the event loop until the parser's Document has no style sheet that is
-						//	   blocking scripts and the script's "ready to be parser-executed" flag is set
-					}
-					
-					// 11.2.4) If this parser has been aborted in the meantime, abort these steps.
-					if (parserAborted) {
-						return;
-					}
-					
-					// TODO: 11.2.5) Unblock the tokenizer for this instance of the HTML parser
-					
-					// TODO: 11.2.6) Let the insertion point be just before the next input character.
-					
-					// 11.2.7) Increment the parser's script nesting level by one.
+		// Because we run in a separate thread, run at least execution in the correct one
+		try {
+			_document.getEventLoop().queueTaskAndWait(new Task(TaskSource.NETWORKING, _document) {
+
+				@Override
+				public void execute() throws TaskAbortedException, InterruptedException {
+					// 7) Increment the parser's script nesting level by one.
 					incrementScriptNestingLevel();
 					
-					// 11.2.8) Execute the script.
-					scriptElement.executeScript();
+					// 8) Prepare the script.
+					scriptElement.prepareScript();
 					
-					// 11.2.9) Decrement the parser's script nesting level by one.
+					// 9) Decrement the parser's script nesting level by one. 
+					//	If the parser's script nesting level is zero, then set the parser pause flag to false.
 					decrementScriptNestingLevel();
-					
-					// TODO: 11.2.10) Let the insertion point be undefined again.
-					
-					// 11.2.11) If there is once again a pending parsing-blocking script, then repeat
 				}
+				
+			});
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			throw new UnknownException(e);
+		}
+		
 
+		
+		// TODO: 10) Let the insertion point have the value of the old insertion point. 
+
+		executePendingParsingBlockingScript();
+	}
+	
+	protected void executePendingParsingBlockingScript() {
+		// 11) If there is a pending parsing-blocking script, then:
+		Html5ScriptElementImpl script = null;
+		synchronized (_parser) {
+			Html5ScriptElementImpl pendingParsingBlockingScript = _parser.getPendingParsingBlockingScript();
+			if (pendingParsingBlockingScript != null) {
+				// 11.1) Set the parser pause flag to true, and abort the processing of any nested invocations of the tokenizer
+				int scriptNestingLevel = _parser.getScriptNestingLevel();
+				if (scriptNestingLevel != 0) {
+					_parser.setPauseFlag(true);
+				} 
+				// 11.2) Run these steps:
+				else {
+					// 11.2.1) Let the script be the pending parsing-blocking script. 
+					script = pendingParsingBlockingScript;
+					_parser.setPendingParsingBlockingScript(null);
+				}
 			}
+		}
+		
+		if (script != null) {
+			// TODO: 11.2.2) Block the tokenizer for this instance of the HTML parser.
+			
+			synchronized (_parser) {				
+				boolean shouldWait;
+				// 11.2.3) If the parser's Document has a style sheet that is blocking scripts 
+				//		 or the script's "ready to be parser-executed" flag is not set
+				do {
+					boolean hasStyleSheetBlockScripts = _parser.hasStyleSheetBlockScripts();
+					boolean isReadyToBeParserExecuted = script.isReadyToBeParserExecuted();
+					shouldWait = (hasStyleSheetBlockScripts || !isReadyToBeParserExecuted);
+					
+					// TODO: Spin the event loop until the parser's Document has no style sheet that is
+					//	   blocking scripts and the script's "ready to be parser-executed" flag is set
+					if (shouldWait) {
+						try {
+							_parser.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							throw new UnknownException(e);
+						}
+					}
+
+				} while (shouldWait);
+			}
+			
+			// TODO: 11.2.4) If this parser has been aborted in the meantime, abort these steps.
+			
+			// TODO: 11.2.5) Unblock the tokenizer for this instance of the HTML parser
+						
+			// TODO: 11.2.6) Let the insertion point be just before the next input character.
+						
+			// Because we run in a separate thread, run at least execution in the correct one
+			final Html5ScriptElementImpl scriptElement = script;
+			try {
+				_document.getEventLoop().queueTaskAndWait(new Task(TaskSource.NETWORKING, _document) {
+
+					@Override
+					public void execute() throws TaskAbortedException, InterruptedException {
+						// 11.2.7) Increment the parser's script nesting level by one.
+						incrementScriptNestingLevel();
+						
+						// 11.2.8) Execute the script.
+						scriptElement.executeScript();
+						
+						// 11.2.9) Decrement the parser's script nesting level by one.
+						decrementScriptNestingLevel();
+					}
+				});
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				throw new UnknownException(e);
+			}
+				
+			// TODO: 11.2.10) Let the insertion point be undefined again.
+					
+			// 11.2.11) If there is once again a pending parsing-blocking script, then repeat
+			executePendingParsingBlockingScript();
 		}
 	}
 	
 	protected void incrementScriptNestingLevel() {
-		scriptNestingLevel++;
+		synchronized (_parser) {
+			int scriptNestingLevel = _parser.getScriptNestingLevel();
+			scriptNestingLevel++;
+			_parser.setScriptNestingLevel(scriptNestingLevel);
+		}
 	}
 
 	protected void decrementScriptNestingLevel() {
-		scriptNestingLevel--;
-		if (scriptNestingLevel == 0) {
-			resumeParsing();
+		synchronized (_parser) {
+			int scriptNestingLevel = _parser.getScriptNestingLevel();
+			scriptNestingLevel--;
+			_parser.setScriptNestingLevel(scriptNestingLevel);
+			
+			if (scriptNestingLevel == 0) {
+				_parser.setPauseFlag(false);
+			}
 		}
-	}
-	
-	public int getScriptNestingLevel() {
-		return scriptNestingLevel;
-	}
-	
-	public boolean hasStyleSheetBlockScripts() {
-		return hasStyleSheetBlockScripts;
 	}
 }

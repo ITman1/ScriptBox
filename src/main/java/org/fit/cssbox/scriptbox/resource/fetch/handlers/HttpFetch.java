@@ -10,6 +10,7 @@ import javax.mail.internet.ContentDisposition;
 import javax.mail.internet.ParseException;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
@@ -125,8 +126,8 @@ public class HttpFetch extends Fetch {
 	protected URLConnection conn;
 	protected HttpMethod method;
 
-	public HttpFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
-		super(sourceContext, destinationContext, url, synchronous);
+	public HttpFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
 	public HttpFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
@@ -136,12 +137,12 @@ public class HttpFetch extends Fetch {
 	}
 
 	@Override
-	public Resource getResource() {
+	protected Resource getResourceImpl() {
 		return httpResource;
 	}
 
 	@Override
-	public void fetch(boolean isSafe) throws IOException {
+	protected void fetchImpl() throws IOException {
 		conn = url.openConnection();
 		
 		// FIXME: Replace for non magic text, e.g. constant or provided by user agent

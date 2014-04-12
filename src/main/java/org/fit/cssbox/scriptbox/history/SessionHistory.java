@@ -156,6 +156,7 @@ public class SessionHistory {
 		traverseHistory(specifiedBrowsingContext, specifiedEntry, replacementEnabled, false);
 	}
 	
+	@SuppressWarnings("unused")
 	public static void traverseHistory(final BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents ) {
 		/*
 		 * 1) If there is no longer a Document object for the entry in question, 

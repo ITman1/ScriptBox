@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.fit.cssbox.scriptbox.document.script.ParserFinishedTask;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
@@ -26,23 +26,37 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 			super(navigationAttempt);
 		}
 
-		private class ParseDocumentFinishedTask extends Task {
-			protected Exception exception;
-			
-			public ParseDocumentFinishedTask(Resource resource, Exception exception) {
-				super(TaskSource.NETWORKING, resource.getBrowsingContext());
-				
-				this.exception = exception;
+		private class ParseDocumentFinishedTask extends ParserFinishedTask {			
+			public ParseDocumentFinishedTask(Html5DocumentImpl document) {
+				super(TaskSource.NETWORKING, document);
 			}
 
 			@Override
 			public void execute() throws InterruptedException {
 				if (exception != null) {
-					// TODO: Throw/display error
+					navigationAttempt.cancel();
 				} else {
-					// TODO: See: http://www.w3.org/html/wg/drafts/html/CR/syntax.html#the-end
 					navigationAttempt.complete();
 				}
+			}
+		}
+		
+		private class ParseDocumentExecutable implements Executable {			
+
+			private Html5DocumentImpl document;
+			private ScriptableDocumentParser scripDomParser;
+			private Resource resource;
+			
+			public ParseDocumentExecutable(Html5DocumentImpl document, ScriptableDocumentParser scripDomParser, Resource resource) {
+				this.document = document;
+				this.scripDomParser = scripDomParser;
+				this.resource = resource;
+			}
+			
+			@Override
+			public void execute() throws TaskAbortedException, InterruptedException {
+				InputStream is = resource.getInputStream();
+				scripDomParser.parse(document, is, new ParseDocumentFinishedTask(document));
 			}
 		}
 		
@@ -61,29 +75,11 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 				URL address = (resource.getOverrideAddress() != null)? resource.getOverrideAddress() : resource.getAddress();
 				
 				final ScriptableDocumentParser scripDomParser = new ScriptableDocumentParser(encoding);
-				final Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), address, "text/html", scripDomParser);
+				Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), address, "text/html", scripDomParser);
 				updateSessionHistory(document);
 				
 				/* We have to spin first, wait until session is updated, otherwise script execution would fail - it has to have active document this*/
-				getEventLoop().spin(new Executable() {
-					
-					@Override
-					public void execute() throws TaskAbortedException, InterruptedException {
-						Exception exception = null;
-						
-						try {
-							document.setDocumentReadiness(DocumentReadiness.LOADING);
-							InputStream is = resource.getInputStream();
-							scripDomParser.parse(document, is);
-						} catch (Exception e) {
-							exception = e;
-							e.printStackTrace();
-						}
-						
-						document.setDocumentReadiness(DocumentReadiness.COMPLETE);
-						context.getEventLoop().queueTask(new ParseDocumentFinishedTask(resource, exception));
-					}
-				});
+				getEventLoop().spin(new ParseDocumentExecutable(document, scripDomParser, resource));
 			}
 		}
 		

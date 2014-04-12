@@ -103,7 +103,7 @@ public class DefaultShutter implements Shutter {
 	}
 
 	@Override
-	public boolean isMethodVisible(Class<?> type, Method method) {Class<?> clazz = method.getDeclaringClass();
+	public boolean isMethodVisible(Class<?> type, Method method) {
 		FunctionRecord classFunction = new FunctionRecord(type, method);
 		return visibleFunctions.contains(classFunction) || hasAllMethodsModifier(type, method);
 	}

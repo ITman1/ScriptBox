@@ -5,7 +5,6 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 
 import com.google.common.base.Predicate;
 
@@ -163,7 +162,7 @@ public class EventLoop {
 			}
 		}, actionAfter);
 	}
-	
+
 	public synchronized void spin(Executable actionAfter) throws TaskAbortedException {
 		spinForCondition(new Runnable() {
 			@Override
@@ -176,12 +175,11 @@ public class EventLoop {
 		_taskScheduler.queueTask(new TaskWrapper(task));
 	}
 	
-	public synchronized void queueTaskAndWait(Task task) throws InterruptedException {
-		testForAbort();
-		
+	public void queueTaskAndWait(Task task) throws InterruptedException {
 		Task blockingTask = new TaskWrapper(task);
 		
-		_taskScheduler.queueTask(blockingTask);
+		queueTask(blockingTask);
+
 		blockingTask.join();
 	}
 	

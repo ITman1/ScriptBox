@@ -25,6 +25,8 @@ public class ContentHandlerRegistry extends MimeContentRegistryBase<ContentHandl
 
 	private static ContentHandlerRegistry instance;
 
+	// TODO: Custom error handlers
+	@SuppressWarnings("unused")
 	private Map<String, Set<Class<? extends ErrorHandler>>> registeredErrorHandlers;
 
 	private ContentHandlerRegistry() {

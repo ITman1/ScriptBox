@@ -6,6 +6,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 
 @FetchPreamble (protocols = {"https"})
@@ -17,8 +18,8 @@ public class HttpsFetch extends HttpFetch {
 		}
 	}
 		
-	public HttpsFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous) {
-		super(sourceContext, destinationContext, url, synchronous);
+	public HttpsFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
 	public HttpsFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {

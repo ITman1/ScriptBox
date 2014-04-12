@@ -31,6 +31,7 @@ import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
 import org.fit.cssbox.scriptbox.url.UrlUtils;
 import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -75,6 +76,9 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 
 	private BrowsingContext _browsingContext;
 	
+	@SuppressWarnings("unused")
+	private int _ignoreDestructiveWritesCounter;
+	
 	// Every Document has an active sandboxing flag set
 	private Set<SandboxingFlag> _activeSandboxingFlagSet;
 	
@@ -97,6 +101,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		_salvageableFlag = true;
 		_firedUnloadFlag = false;
 		_pageShowingFlag = false;
+		_ignoreDestructiveWritesCounter = 0;
 		
 		_browsingContext = browsingContext;
 		_address = address;
@@ -223,7 +228,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		HTMLElement head = getHead();
 		NodeList baseElements = head.getElementsByTagName("base");
 		
-		if (baseElements.getLength() == 1) {
+		if (baseElements.getLength() > 0) {
 			Node baseElement = baseElements.item(0);
 			
 			if (baseElement instanceof HTMLBaseElement) {
@@ -232,6 +237,76 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		}
 		
 		return null;
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#fallback-base-url
+	 */
+	public URL getFallbackBaseAddress() {
+		
+		/* 1) If the Document is an iframe srcdoc document, then return the document base URL of the 
+		 * Document's browsing context's browsing context container's Document and abort these steps.
+		 */
+		
+		IFrameBrowsingContext iframeContext = (_browsingContext instanceof IFrameBrowsingContext)? (IFrameBrowsingContext)_browsingContext : null;
+		Element _iframeElement = (iframeContext != null)? iframeContext.getContainer() : null;
+		Html5IFrameElementImpl iframeElement = (_iframeElement instanceof Html5IFrameElementImpl)? (Html5IFrameElementImpl)_iframeElement : null;
+		if (iframeElement != null && iframeElement.getSrcdoc() != null) {
+			Document _iframeDocument = iframeElement.getOwnerDocument();
+			Html5DocumentImpl iframeDocument = (_iframeDocument instanceof Html5DocumentImpl)? (Html5DocumentImpl)_iframeDocument : null;
+			
+			if (iframeDocument != null) {
+				URL url = iframeDocument.getBaseAddress();
+				return url;
+			}
+		} 
+		
+		/*
+		 * 2) If the document's address is about:blank, and the Document's browsing context has a creator 
+		 * browsing context, then return the document base URL of the creator Document, and abort these steps.
+		 */
+		
+		Html5DocumentImpl creatorDocument = _browsingContext.getCreatorDocument();
+		if (_address != null && _address.equals(DEFAULT_URL) && creatorDocument != null) {
+			URL url = creatorDocument.getBaseAddress();
+			return url;
+		}
+		
+		/*
+		 * 3) Return the document's address.
+		 */
+		return _address;
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#document-base-url
+	 */
+	public URL getBaseAddress() {
+		HTMLBaseElement baseElement = getBaseElement();
+		URL baseURL = null;
+		try {
+			baseURL = (baseElement != null)? new URL(baseElement.getHref()) : null;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+		/*
+		 * 1) If there is no base element that has an href attribute in the Document, 
+		 * then the document base URL is the Document's fallback base URL
+		 */
+		if (baseURL == null) {
+			return getFallbackBaseAddress();
+		}
+		
+		/*
+		 * TODO?: Implement frozen URL?
+		 * http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#frozen-base-url
+		 */
+		/*
+		 * 2) Otherwise, the document base URL is the frozen base URL of the first 
+		 * base element in the Document that has an href attribute, in tree order.
+		 */
+		return baseURL;
 
 	}
 	
@@ -571,4 +646,18 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	public void setPageShowingFlag(boolean pageShowingFlag) {
 		this._pageShowingFlag = pageShowingFlag;
 	}
+	
+	public synchronized void incrementIgnoreDestructiveWritesCounter() {
+		_ignoreDestructiveWritesCounter++;
+	}
+	
+	public synchronized void decrementIgnoreDestructiveWritesCounter() {
+		_ignoreDestructiveWritesCounter--;
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+	
 }

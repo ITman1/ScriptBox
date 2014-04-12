@@ -7,6 +7,7 @@ import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
 public class Html5IFrameElementImpl extends HTMLIFrameElementImpl implements Html5IFrameElement {
 
 	private static final long serialVersionUID = -2859222900868725576L;
+	private static final String SRCDOC_ATTR_NAME = "srcdoc";
 
 	public Html5IFrameElementImpl(HTMLDocumentImpl owner, String name) {
 		super(owner, name);
@@ -27,5 +28,12 @@ public class Html5IFrameElementImpl extends HTMLIFrameElementImpl implements Htm
 		//TODO: Implement according to http://www.w3.org/html/wg/drafts/html/CR/embedded-content-0.html#in-seamless-mode
 		return false;
 	}
-	
+
+	public String getSrcdoc() {
+		return getAttribute(SRCDOC_ATTR_NAME);
+	}
+
+	public void setSrcdoc(String value) {
+		setAttribute(SRCDOC_ATTR_NAME, value);
+	}
 }

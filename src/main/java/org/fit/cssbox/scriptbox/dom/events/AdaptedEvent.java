@@ -17,7 +17,7 @@ public class AdaptedEvent<EventTypeImpl extends EventImpl> implements Event, Wra
 	public AdaptedEvent(EventTypeImpl eventImpl) {
 		this.eventImpl = eventImpl;
 	}
-	
+
 	@ScriptGetter
 	@Override
 	public String getType() {

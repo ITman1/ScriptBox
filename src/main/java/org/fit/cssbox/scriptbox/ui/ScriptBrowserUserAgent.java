@@ -85,7 +85,7 @@ public class ScriptBrowserUserAgent extends UserAgent {
 				// scroll down and back to reference to get reference
 				// the topmost item
 				browser.scrollRectToVisible(bottom);
-				scrollSuccess = browser.scrollToReferenceWithBoolean(fragment);
+				scrollSuccess = browser.tryScrollToReference(fragment);
 			} else {
 				// scroll to the top of the new page
 				browser.scrollRectToVisible(top);

@@ -147,11 +147,15 @@ public abstract class NavigationAttempt {
 	}
 	
 	public synchronized void cancel() {
-		cancelled = true;
-		
-		// if is already running asynchronous thread then abort it
-		if (asyncPerformThread != null) {
-			asyncPerformThread.interrupt();
+		if (!cancelled) {
+			cancelled = true;
+			
+			// if is already running asynchronous thread then abort it
+			if (asyncPerformThread != null) {
+				asyncPerformThread.interrupt();
+			} else {
+				fireCancelled();
+			}
 		}
 	}
 	
@@ -443,7 +447,7 @@ public abstract class NavigationAttempt {
 	}
 	
 	protected Resource obtainResource() {
-		Fetch fetch = fetchRegistry.getFetch(sourceBrowsingContext, destinationBrowsingContext, url);
+		Fetch fetch = fetchRegistry.getFetch(sourceBrowsingContext, destinationBrowsingContext, url, true, true, true, null);
 		
 		if (fetch == null) {
 			return null;
@@ -452,7 +456,7 @@ public abstract class NavigationAttempt {
 		fetches.add(fetch);
 		
 		try {
-			fetch.fetch(true);
+			fetch.fetch();
 		} catch (IOException e) {
 			// TODO: Maybe throw exception.
 			return null;

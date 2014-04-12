@@ -67,28 +67,59 @@ public class UrlUtils {
 	static public boolean identicalComponents(URL url1, URL url2, UrlComponent ...components) {
 		Set<UrlComponent> componentsSet = new HashSet<UrlComponent>();
 		
-		if (componentsSet.contains(UrlComponent.PROTOCOL) && !url1.getProtocol().equals(url2.getProtocol())) {
+		for (UrlComponent component : components) {
+			componentsSet.add(component);
+		}
+		
+		String protocol1 = url1.getProtocol();
+		String protocol2 = url2.getProtocol();
+		if (componentsSet.contains(UrlComponent.PROTOCOL) && (protocol1 != null || protocol2 != null)) {
+			if ((protocol1 != null && protocol2 == null && !protocol1.equals(protocol2)) || 
+					(protocol1 == null && protocol2 != null && !protocol2.equals(protocol1)) || !protocol2.equals(protocol1)) {
+				return false;
+			}
+		}
+		
+		String host1 = url1.getHost();
+		String host2 = url2.getHost();
+		if (componentsSet.contains(UrlComponent.HOST) && (host1 != null || host2 != null)) {
+			if ((host1 != null && host2 == null && !host1.equals(host2)) || 
+					(host1 == null && host2 != null && !host2.equals(host1)) || !host2.equals(host1)) {
+				return false;
+			}
+		}
+		
+		int port1 = url1.getPort();
+		int port2 = url2.getPort();
+		if (componentsSet.contains(UrlComponent.PORT) && port1 != port2) {
 			return false;
 		}
 		
-		if (componentsSet.contains(UrlComponent.HOST) && !url1.getHost().equals(url2.getHost())) {
-			return false;
+		String path1 = url1.getPath();
+		String path2 = url2.getPath();
+		if (componentsSet.contains(UrlComponent.PATH) && (path1 != null || path2 != null)) {
+			if ((path1 != null && path2 == null && !path1.equals(path2)) || 
+					(path1 == null && path2 != null && !path2.equals(path1)) || !path2.equals(path1)) {
+				return false;
+			}
 		}
 		
-		if (componentsSet.contains(UrlComponent.PORT) && url1.getPort() != url2.getPort()) {
-			return false;
+		String query1 = url1.getQuery();
+		String query2 = url2.getQuery();
+		if (componentsSet.contains(UrlComponent.QUERY) && (query1 != null || query2 != null)) {
+			if ((query1 != null && query2 == null && !query1.equals(query2)) || 
+					(query1 == null && query2 != null && !query2.equals(query1)) || !query2.equals(query1)) {
+				return false;
+			}
 		}
 		
-		if (componentsSet.contains(UrlComponent.PATH) && !url1.getPath().equals(url2.getPath())) {
-			return false;
-		}
-		
-		if (componentsSet.contains(UrlComponent.QUERY) && !url1.getQuery().equals(url2.getQuery())) {
-			return false;
-		}
-		
-		if (componentsSet.contains(UrlComponent.REF) && !url1.getRef().equals(url2.getRef())) {
-			return false;
+		String ref1 = url1.getRef();
+		String ref2 = url2.getRef();
+		if (componentsSet.contains(UrlComponent.REF) && (ref1 != null || ref2 != null)) {
+			if ((ref1 != null && ref2 == null && !ref1.equals(ref2)) || 
+					(ref1 == null && ref2 != null && !ref2.equals(ref1)) || !ref2.equals(ref1)) {
+				return false;
+			}
 		}
 		
 		return true;
