@@ -156,6 +156,14 @@ public class HttpFetch extends Fetch {
 	}
 
 	@Override
+	public void close() throws IOException {
+		if (conn != null) {
+			conn.getInputStream().close();
+			conn = null;
+		}
+	}
+	
+	@Override
 	protected Resource getResourceImpl() {
 		return httpResource;
 	}

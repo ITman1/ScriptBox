@@ -30,6 +30,8 @@ import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 
+import com.sun.org.apache.xml.internal.resolver.helpers.FileURL;
+
 @FetchPreamble (protocols = {"file"})
 public class FileFetch extends Fetch {
 	
@@ -51,7 +53,8 @@ public class FileFetch extends Fetch {
 		}
 	}
 	
-	Resource fileResource;
+	protected URLConnection conn;
+	protected Resource fileResource;
 	
 	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
@@ -60,10 +63,18 @@ public class FileFetch extends Fetch {
 	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		super(sourceContext, destinationContext, url);
 	}
-
+	
+	@Override
+	public void close() throws IOException {
+		if (conn != null) {
+			conn.getInputStream().close();
+			conn = null;
+		}
+	}
+	
 	@Override
 	protected void fetchImpl() throws IOException {
-		URLConnection conn = url.openConnection();
+		conn = url.openConnection();
 		fileResource = new FileResource(destinationContext, conn);
 	}
 
