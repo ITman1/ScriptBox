@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.dom.events;
+package org.fit.cssbox.scriptbox.dom.events.script;
 
 import org.apache.xerces.dom.events.MouseEventImpl;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;

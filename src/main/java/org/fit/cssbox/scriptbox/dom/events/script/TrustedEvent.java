@@ -1,5 +1,5 @@
 /**
- * EventAdapter.java
+ * AdaptedTrustedEvent.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,27 +17,29 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.dom.events;
+package org.fit.cssbox.scriptbox.dom.events.script;
 
-import org.apache.xerces.dom.events.EventImpl;
-import org.fit.cssbox.scriptbox.script.javascript.wrap.adapter.Adapter;
+import org.fit.cssbox.scriptbox.dom.events.EventTarget;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 
-public class EventAdapter implements Adapter {
-	@Override
-	public Object getProvider(Object obj) {
-		if (obj instanceof EventImpl) {
-			return new AdaptedEvent<EventImpl>((EventImpl)obj);
-		}
-		return null;
+public class TrustedEvent extends Event {
+	protected boolean isTrusted;
+	protected EventTarget targetOverride;
+		
+	@ScriptGetter
+	public boolean getIsTrusted() {
+		return isTrusted;
+	}
+	
+	public EventTarget getTargetOverride() {
+		return targetOverride;
 	}
 
-	@Override
-	public Class<?> getAdapteeClass() {
-		return EventImpl.class;
+	public void initEvent(String eventTypeArg, boolean canBubbleArg, boolean cancelableArg, boolean isTrusted, EventTarget targetOverride) {
+		super.initEvent(eventTypeArg, canBubbleArg, cancelableArg);
+		
+		this.isTrusted = isTrusted;
+		this.targetOverride = targetOverride;
 	}
 
-	@Override
-	public Class<?> getResultClass() {
-		return AdaptedEvent.class;
-	}
 }

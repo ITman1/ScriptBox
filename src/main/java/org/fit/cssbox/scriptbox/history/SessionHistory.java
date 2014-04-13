@@ -22,6 +22,7 @@ package org.fit.cssbox.scriptbox.history;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +30,11 @@ import java.util.Set;
 import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
+import org.fit.cssbox.scriptbox.dom.events.script.HashChangeEvent;
+import org.fit.cssbox.scriptbox.dom.events.script.PopStateEvent;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
@@ -38,8 +43,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 public class SessionHistory {
-
-	
 	protected BrowsingContext context;
 	protected List<SessionHistoryEntry> entries;
 	protected int currentEntryPosition;
@@ -113,6 +116,12 @@ public class SessionHistory {
 		remove(index - 1);
 	}
 	
+	public void removeAllAfterCurrentEntry() {
+		SessionHistoryEntry currentEntry = getCurrentEntry();
+		
+		removeAllAfter(currentEntry);
+	}
+	
 	public void removeAllAfter(SessionHistoryEntry entry) {
 		int index = entries.indexOf(entry) + 1;
 		
@@ -122,12 +131,14 @@ public class SessionHistory {
 	}
 	
 	public void filter(Predicate<SessionHistoryEntry> predicate) {
-		entries.clear();
 		Iterables.addAll(entries, Iterables.filter(entries, predicate));
 	}
 	
 	public void add(SessionHistoryEntry entry) {
-		entries.add(entry);
+		if (entry.getSessionHistory() == this) {
+			entries.add(entry);
+			entry.setVisited(new Date());
+		}
 	}
 	
 	private void initSessionHistory() {
@@ -135,7 +146,7 @@ public class SessionHistory {
 		Html5DocumentImpl blankDocument = Html5DocumentImpl.createBlankDocument(context);
 		blankDocument.implementSandboxing();
 		
-		blankPageEntry.setSocument(blankDocument);
+		blankPageEntry.setDocument(blankDocument);
 		
 		blankPageEntry.setURL(blankDocument.getAddress());
 		
@@ -167,6 +178,19 @@ public class SessionHistory {
 		listeners.remove(listener);
 	}
 	
+	public void removeAllTopLevelDocumentFamilyTasks() {
+		final BrowsingUnit browsingUnit = context.getBrowsingUnit();
+		browsingUnit.getEventLoop().filter(TaskSource.HISTORY_TRAVERSAL, new Predicate<Task>() {
+			
+			@Override
+			public boolean apply(Task task) {
+				BrowsingContext topLevel = browsingUnit.getWindowBrowsingContext();
+				Collection<Html5DocumentImpl> documentFamily = topLevel.getDocumentFamily();
+				return !documentFamily.contains(task.getDocument());
+			}
+		});
+	}
+	
 	public static void traverseHistory(BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry) {
 		traverseHistory(specifiedBrowsingContext, specifiedEntry, false, false);
 	}
@@ -174,53 +198,37 @@ public class SessionHistory {
 	public static void traverseHistory(BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry, boolean replacementEnabled) {
 		traverseHistory(specifiedBrowsingContext, specifiedEntry, replacementEnabled, false);
 	}
-	
-	@SuppressWarnings("unused")
+
 	public static void traverseHistory(final BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents ) {
-		/*
-		 * 1) If there is no longer a Document object for the entry in question, 
-		 * navigate the browsing context to the resource and abort.
-		 */
+		// 1) If there is no longer a Document object for the entry in question, 
+		// navigate the browsing context to the resource and abort.
 		if (specifiedEntry.getDocument() == null) {
 			BrowsingContext context = specifiedEntry.getSessionHistory().getBrowsingContext();
 			context.getNavigationController().update(specifiedEntry);
 			return;
 		}
-		
-		/*
-		 * TODO:
-		 * 2) If the current entry's title was not set by the pushState() or replaceState() methods, then set its title 
-		 * to the value returned by the document.title IDL attribute. 
-		 */
-		
-		/*
-		 * TODO: 
-		 * 3) If appropriate, update the current entry in the browsing context's Document object's History object to reflect any state that the 
-		 * user agent wishes to persist. The entry is then said to be an entry with persisted user state.
-		 */
-		
 
 		SessionHistory sessionHistory = specifiedEntry.getSessionHistory();
 		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 		Html5DocumentImpl currentDocument = currentEntry.getDocument();
 		Html5DocumentImpl specifiedDocument = specifiedEntry.getDocument();
 		
-		/*
-		 * 4) If the specified entry has a different Document object than the current entry, then run the following sub-steps.
-		 */
-		if (currentEntry != null && specifiedEntry.getDocument() != currentEntry.getDocument()) {
+		// 2) If the current entry's title was not set by the pushState() or replaceState() methods, 
+		// then set its title to document.title IDL attribute. 	
+		if (!currentEntry.hasPushedStateTitle()) {
+			String persistedTitle = currentDocument.getTitle();
+			currentEntry.setTitle(persistedTitle);
+		}
+		
+		// 3) Update the current entry to reflect any state that we want to persist.
+		currentEntry.updatePersistedUserState();
+		
+		// 4) If the specified entry has a different Document object than the current entry, then run the following sub-steps.
+		if (specifiedEntry.getDocument() != currentEntry.getDocument()) {
 			// 4.1) Remove any tasks queued by the history traversal task source that are associated with 
 			// any Document objects in the top-level browsing context's document family.
-			final BrowsingUnit browsingUnit = specifiedBrowsingContext.getBrowsingUnit();
-			browsingUnit.getEventLoop().filter(TaskSource.HISTORY_TRAVERSAL, new Predicate<Task>() {
-				
-				@Override
-				public boolean apply(Task task) {
-					BrowsingContext topLevel = browsingUnit.getWindowBrowsingContext();
-					Collection<Html5DocumentImpl> documentFamily = topLevel.getDocumentFamily();
-					return !documentFamily.contains(task.getDocument());
-				}
-			});
+			SessionHistory specifiedSessionHistory = specifiedBrowsingContext.getSesstionHistory();
+			specifiedSessionHistory.removeAllTopLevelDocumentFamilyTasks();
 			
 			// 4.2) If the origin of the Document of the specified entry is not the same as the origin 
 			// of the Document of the current entry, then run the following sub-sub-steps
@@ -231,12 +239,12 @@ public class SessionHistory {
 			if (!specifiedEntryDocumentOrigin.equals(currentEntryDocumentOrigin)) {
 				String browsingContextName = specifiedBrowsingContext.getName();
 				for (SessionHistoryEntry entry : sessionEntries) {
-					if (currentEntry.hasSameDocumentOrigin(entry)) {
+					if (currentEntry.hasSameDocumentOrigin(entry) && entry.isContiguous(currentEntry)) {
 						entry.setBrowsingContextName(browsingContextName);
 					}
 				}
 				if (specifiedBrowsingContext.isTopLevelBrowsingContext() && !(specifiedBrowsingContext instanceof AuxiliaryBrowsingContext)) {
-					specifiedBrowsingContext.setName(null);
+					specifiedBrowsingContext.setName("");
 				}
 			}
 			
@@ -249,8 +257,8 @@ public class SessionHistory {
 				specifiedBrowsingContext.setName(specifiedBrowsingContextName);
 				
 				for (SessionHistoryEntry entry : sessionEntries) {
-					if (specifiedEntry.hasSameDocumentOrigin(entry)) {
-						entry.setBrowsingContextName(null);
+					if (specifiedEntry.hasSameDocumentOrigin(entry) && entry.isContiguous(specifiedEntry)) {
+						entry.setBrowsingContextName("");
 					}
 				}
 			}
@@ -274,9 +282,11 @@ public class SessionHistory {
 			specifiedUriFragment = specifiedURI.getRef();
 			currentUriFragment = currentURI.getRef();
 			
-			if (specifiedUriFragment != null && currentUriFragment != null) {
-				if (!specifiedUriFragment.equals(currentUriFragment) && specifiedDocument == currentDocument) {
-					hashChanged = true;
+			if (specifiedDocument == currentDocument) {
+				if (specifiedUriFragment != null && currentUriFragment != null) {
+					if (!specifiedUriFragment.equals(currentUriFragment)) {
+						hashChanged = true;
+					}
 				}
 			}
 		}
@@ -293,16 +303,20 @@ public class SessionHistory {
 			specifiedBrowsingContext.scrollToFragment(specifiedUriFragment);
 		}
 		
-		// TODO: 9) If the entry is an entry with persisted user state, the user agent may update aspects of the document
+		// 9) If the entry is an entry with persisted user state, the user agent may update aspects of the document
 		// and its rendering, for instance the scroll position or values of form fields, that it had previously recorded. 
+		specifiedEntry.applyPersistedUserState();
 		
 		// 10) If the entry is a state object entry, let state be a structured clone of that state object. Otherwise, let state be null.
 		StateObject state = null;
 		if (specifiedEntry.hasStateObject()) {
-			state = specifiedEntry.getStateObject().clone();
+			StateObject stateObject = specifiedEntry.getStateObject();
+			state = stateObject.clone();
 		}
 		
-		// TODO: 11) Set history.state to state.
+		// 11) Set history.state to state.
+		History history = specifiedDocument.getHistory();
+		history.setState(state);
 		
 		// 12) Let state changed be true if the Document of the specified entry has a latest entry, 
 		// and that entry is not the specified entry; otherwise let it be false.
@@ -315,7 +329,32 @@ public class SessionHistory {
 		// 13) Let the latest entry of the Document of the specified entry be the specified entry.
 		specifiedDocument.setLatestEntry(specifiedEntry);
 		
-		// TODO: 14) and 15)
+		// 14) Fire PopStateEvent and HashChangeEvent
+		Window windowTarget = specifiedDocument.getWindow();
+		
+		if (hashChanged) {
+			HashChangeEvent hashChangeEvent = new HashChangeEvent();
+			String oldURL = currentURI.toExternalForm();
+			String newURL = specifiedURI.toExternalForm();
+			hashChangeEvent.initEvent(WindowEventHandlers.onpopstate, true, false, true, null, oldURL, newURL);
+		
+			if (asynchronousEvents) {
+				windowTarget.dispatchEvent(hashChangeEvent, windowTarget);
+			} else {
+				windowTarget.dispatchEvent(hashChangeEvent);
+			}
+		}
+		
+		if (stateChanged) {
+			PopStateEvent popStateEvent = new PopStateEvent();
+			popStateEvent.initEvent(WindowEventHandlers.onpopstate, true, false, true, null, state);
+			
+			if (asynchronousEvents) {
+				windowTarget.dispatchEvent(popStateEvent, windowTarget);
+			} else {
+				windowTarget.dispatchEvent(popStateEvent);
+			}
+		}
 		
 		sessionHistory.fireHistoryTravered(currentEntry, specifiedEntry);
 	}

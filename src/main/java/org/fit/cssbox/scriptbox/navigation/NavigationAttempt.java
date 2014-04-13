@@ -31,6 +31,8 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
+import org.fit.cssbox.scriptbox.history.SessionHistory;
+import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerRegistry;
@@ -255,7 +257,7 @@ public abstract class NavigationAttempt {
 		// 8) Apply the URL parser for new and old resource and if only fragment is different then navigate to fragment only
 		if (shouldBeFragmentNavigated()) {
 			String fragment = url.getRef();
-			destinationBrowsingContext.scrollToFragment(fragment);
+			navigateToFragmentIdentifier(fragment);
 			complete();
 			return;
 		}
@@ -456,6 +458,36 @@ public abstract class NavigationAttempt {
 			// 26) If unknown type then download the resource
 			downloadResource();
 		}
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#scroll-to-fragid
+	 */
+	protected void navigateToFragmentIdentifier(String fragment) {
+		SessionHistory sessionHistory = destinationBrowsingContext.getSesstionHistory();
+		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
+		
+		// 1) Remove all the entries in the browsing context's session history after the current entry
+		
+		sessionHistory.removeAllAfterCurrentEntry();
+		
+		// 2) Remove any tasks queued by Document family object
+		
+		sessionHistory.removeAllTopLevelDocumentFamilyTasks();
+		
+		// 3) Append a new entry at the end of the History object 
+		
+		SessionHistoryEntry newEntry = new SessionHistoryEntry(sessionHistory);
+		
+		newEntry.setDocument(currentEntry.getDocument());
+		newEntry.setURL(url);
+		newEntry.setBrowsingContextName(currentEntry.getBrowsingContextName());
+		newEntry.setPpersistedUserState(currentEntry.getPersistedUserState());
+		newEntry.setStateObject(currentEntry.getStateObject());
+		
+		// 4) Traverse the history to the new entry
+		
+		sessionHistory.traverseHistory(newEntry);
 	}
 	
 	/*

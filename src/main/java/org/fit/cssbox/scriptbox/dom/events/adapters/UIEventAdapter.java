@@ -1,5 +1,5 @@
 /**
- * TrustedEventAdapter.java
+ * UIEventAdapter.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,27 +17,28 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.dom.events;
+package org.fit.cssbox.scriptbox.dom.events.adapters;
 
-import org.apache.xerces.dom.events.EventImpl;
+import org.apache.xerces.dom.events.UIEventImpl;
+import org.fit.cssbox.scriptbox.dom.events.script.AdaptedUIEvent;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.adapter.Adapter;
 
-public class TrustedEventAdapter implements Adapter {
+public class UIEventAdapter implements Adapter {
 	@Override
 	public Object getProvider(Object obj) {
-		if (obj instanceof EventImpl) {
-			return new AdaptedTrustedEvent((TrustedEventImpl)obj);
+		if (obj instanceof UIEventImpl) {
+			return new AdaptedUIEvent<UIEventImpl>((UIEventImpl)obj);
 		}
 		return null;
 	}
 
 	@Override
 	public Class<?> getAdapteeClass() {
-		return TrustedEventImpl.class;
+		return UIEventImpl.class;
 	}
 
 	@Override
 	public Class<?> getResultClass() {
-		return AdaptedTrustedEvent.class;
+		return AdaptedUIEvent.class;
 	}
 }

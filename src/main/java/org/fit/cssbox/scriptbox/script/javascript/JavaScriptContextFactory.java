@@ -19,10 +19,9 @@
 
 package org.fit.cssbox.scriptbox.script.javascript;
 
-import org.fit.cssbox.scriptbox.dom.events.EventAdapter;
-import org.fit.cssbox.scriptbox.dom.events.MouseEventAdapter;
-import org.fit.cssbox.scriptbox.dom.events.TrustedEventAdapter;
-import org.fit.cssbox.scriptbox.dom.events.UIEventAdapter;
+import org.fit.cssbox.scriptbox.dom.events.adapters.EventAdapter;
+import org.fit.cssbox.scriptbox.dom.events.adapters.MouseEventAdapter;
+import org.fit.cssbox.scriptbox.dom.events.adapters.UIEventAdapter;
 import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.AdapterWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.CollectionsWrapFactoryDecorator;
@@ -46,8 +45,7 @@ public class JavaScriptContextFactory extends ContextFactory {
 		this.scriptEngine = scriptEngine;
 		this.membersResolverFactory = scriptEngine.getClassMembersResolverFactory();
 		this.adapterRegistry = new AdapterRegistry();
-		
-		this.adapterRegistry.registerAdapter(TrustedEventAdapter.class);
+
 		this.adapterRegistry.registerAdapter(EventAdapter.class);
 		this.adapterRegistry.registerAdapter(UIEventAdapter.class);
 		this.adapterRegistry.registerAdapter(MouseEventAdapter.class);

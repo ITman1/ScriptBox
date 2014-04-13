@@ -17,18 +17,17 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.dom.events;
+package org.fit.cssbox.scriptbox.dom.events.script;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.xerces.dom.events.UIEventImpl;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.w3c.dom.views.AbstractView;
 
-public class KeyboardEvent extends UIEventImpl {
+public class KeyboardEvent extends UIEvent {
 	public static final String DOM_MODIFIER_CONTROL  = "Control";
 	public static final String DOM_MODIFIER_SHIFT    = "Shift";
 	public static final String DOM_MODIFIER_ALT      = "Alt";

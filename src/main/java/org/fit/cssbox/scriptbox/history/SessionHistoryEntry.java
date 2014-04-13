@@ -24,15 +24,17 @@ import java.util.Date;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
+import org.fit.cssbox.scriptbox.url.UrlUtils;
+import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
 
 public class SessionHistoryEntry {
 	private URL _url;
 	private String _title;
 	private Html5DocumentImpl _document;
 	private History _history;
-	private int _scrollPositionX;
-	private int _scrollPositionY;
 	
+	private boolean _pushStateTitleOrigin;
+	private PersistedUserState _persistedUserState;
 	private Date _visitedDate;
 	private SessionHistory _sessionHistory;
 	private String _browsingContextName;
@@ -41,6 +43,14 @@ public class SessionHistoryEntry {
 	public SessionHistoryEntry(SessionHistory sessionHistory) {
 		_sessionHistory = sessionHistory;
 	}
+	
+	public boolean isContiguous(SessionHistoryEntry entry) {
+		boolean identicalUrls = UrlUtils.identicalComponents(_url, entry._url, 
+				UrlComponent.PROTOCOL, UrlComponent.HOST, UrlComponent.PORT, 
+				UrlComponent.PATH, UrlComponent.QUERY);
+		
+		return _document == entry._document && identicalUrls;
+	} 
 		
 	public URL getURL() {
 		return _url;
@@ -54,32 +64,26 @@ public class SessionHistoryEntry {
 		return _document;
 	}
 	
-	public void setSocument(Html5DocumentImpl document) {
+	public void setDocument(Html5DocumentImpl document) {
 		_document = document;
-	}
-	
-	public int getScrollPositionX() {
-		return _scrollPositionX;
-	}
-	
-	public void setScrollPositionX(int scrollPositionX) {
-		_scrollPositionX = scrollPositionX;
-	}
-	
-	public int getScrollPositionY() {
-		return _scrollPositionY;
-	}
-	
-	public void setScrollPositionY(int scrollPositionY) {
-		_scrollPositionY = scrollPositionY;
 	}
 	
 	public String getTitle() {
 		return _title;
 	}
 	
-	public void setTitle(String title) {
+	public void setTitle(String title, boolean pushStateTitleOrigin) {
 		_title = title;
+		
+		_pushStateTitleOrigin = pushStateTitleOrigin;
+	}
+	
+	public boolean hasPushedStateTitle() {
+		return _pushStateTitleOrigin;
+	}
+	
+	public void setTitle(String title) {
+		setTitle(title, false);
 	}
 	
 	public History getHistory() {
@@ -118,17 +122,43 @@ public class SessionHistoryEntry {
 		return false;
 	}
 	
-	// FIXME: Implement.
 	public boolean hasPersistedUserState() {
-		return false;
+		return _persistedUserState != null;
 	}
 	
-	// FIXME: Implement.
 	public boolean hasStateObject() {
-		return false;
+		return _stateObject != null;
 	}
 	
 	public StateObject getStateObject() {
 		return _stateObject;
+	}
+	
+	public void setStateObject(StateObject stateObject) {
+		_stateObject = stateObject;
+	}
+	
+	public void updatePersistedUserState() {
+		if (_persistedUserState == null && PersistedUserState.shouldPersist(_document)) {
+			_persistedUserState = new PersistedUserState(_document);
+		}
+	
+		if (_persistedUserState != null) {
+			_persistedUserState.updateState();
+		}
+	}
+	
+	public void applyPersistedUserState() {	
+		if (_persistedUserState != null) {
+			_persistedUserState.applyState();
+		}
+	}
+
+	public PersistedUserState getPersistedUserState() {
+		return _persistedUserState;
+	}
+
+	public void setPpersistedUserState(PersistedUserState persistedUserState) {
+		this._persistedUserState = persistedUserState;
 	}
 }

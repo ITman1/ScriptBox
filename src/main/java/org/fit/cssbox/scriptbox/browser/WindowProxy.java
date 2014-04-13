@@ -30,6 +30,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.ui.BarProp;
+import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
@@ -143,7 +144,7 @@ public class WindowProxy extends Window {
 
 	@ScriptGetter
 	@Override
-	public BarProp getScrollbars() {
+	public ScrollBarsProp getScrollbars() {
 		return proxiedWindow().getScrollbars();
 	}
 

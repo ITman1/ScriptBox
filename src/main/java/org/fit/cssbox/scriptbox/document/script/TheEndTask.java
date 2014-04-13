@@ -26,7 +26,7 @@ import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
-import org.fit.cssbox.scriptbox.dom.events.TrustedEventImpl;
+import org.fit.cssbox.scriptbox.dom.events.script.TrustedEvent;
 import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
@@ -160,7 +160,7 @@ public class TheEndTask extends ParserFinishedTask {
 				// 7.1) Set the current document readiness to "complete".
 				document.setDocumentReadiness(DocumentReadiness.COMPLETE);
 				
-				TrustedEventImpl event = new TrustedEventImpl();
+				TrustedEvent event = new TrustedEvent();
 				event.initEvent("load", false, false, true, document);
 				window.dispatchEvent(event);
 			}

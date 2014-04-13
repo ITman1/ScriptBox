@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.html.dom.HTMLDocumentImpl;
@@ -40,6 +41,7 @@ import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
+import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
@@ -101,6 +103,13 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	// Every Document has an active sandboxing flag set
 	private Set<SandboxingFlag> _activeSandboxingFlagSet;
 	
+	/*
+	 * FIXME: This should be stored inside SessionHistory. For simplification it is here.
+	 * Each Document object in a browsing context's session history is associated 
+	 * with a unique History object which must all model the same underlying session history.
+	 */
+	protected History _history;
+	
 	private OriginContainer<DocumentOrigin> _originContainer;
 	private URL _address;
 	private String _referrer;
@@ -117,6 +126,8 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	private boolean _pageShowingFlag;
 	
 	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {
+		_history = new History(this);
+		
 		_salvageableFlag = true;
 		_firedUnloadFlag = false;
 		_pageShowingFlag = false;
@@ -677,6 +688,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	@Override
 	public String toString() {
 		return super.toString();
+	}
+	
+	public History getHistory() {
+		return _history;
 	}
 	
 }

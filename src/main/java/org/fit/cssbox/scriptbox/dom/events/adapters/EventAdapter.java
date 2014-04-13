@@ -1,5 +1,5 @@
 /**
- * MouseEventAdapter.java
+ * EventAdapter.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,29 +17,28 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.dom.events;
+package org.fit.cssbox.scriptbox.dom.events.adapters;
 
-import org.apache.xerces.dom.events.MouseEventImpl;
+import org.apache.xerces.dom.events.EventImpl;
+import org.fit.cssbox.scriptbox.dom.events.script.AdaptedEvent;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.adapter.Adapter;
 
-public class MouseEventAdapter implements Adapter {
-
+public class EventAdapter implements Adapter {
 	@Override
 	public Object getProvider(Object obj) {
-		if (obj instanceof MouseEventImpl) {
-			return new AdaptedMouseEvent<MouseEventImpl>((MouseEventImpl)obj);
+		if (obj instanceof EventImpl) {
+			return new AdaptedEvent<EventImpl>((EventImpl)obj);
 		}
 		return null;
 	}
 
 	@Override
 	public Class<?> getAdapteeClass() {
-		return MouseEventImpl.class;
+		return EventImpl.class;
 	}
 
 	@Override
 	public Class<?> getResultClass() {
-		return AdaptedMouseEvent.class;
+		return AdaptedEvent.class;
 	}
-
 }

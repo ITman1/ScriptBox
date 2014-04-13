@@ -31,6 +31,9 @@ import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 
+/*
+ * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#joint-session-history
+ */
 public class JointSessionHistory {
 	private class VisitedComparator implements Comparator<SessionHistoryEntry> {
 	    public int compare(SessionHistoryEntry e1, SessionHistoryEntry e2) {
@@ -83,6 +86,10 @@ public class JointSessionHistory {
 		_browsingUnit = browsingUnit;
 		
 		_historyEntries = new ArrayList<SessionHistoryEntry>();
+	}
+	
+	public int getLength() {
+		return _historyEntries.size();
 	}
 	
 	public void traverse(int delta) {

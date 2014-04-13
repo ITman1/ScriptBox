@@ -1,5 +1,5 @@
 /**
- * AdaptedTrustedEvent.java
+ * AdaptedUIEvent.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,19 +17,35 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.dom.events;
+package org.fit.cssbox.scriptbox.dom.events.script;
 
+import org.apache.xerces.dom.events.UIEventImpl;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
+import org.w3c.dom.events.UIEvent;
+import org.w3c.dom.views.AbstractView;
 
-public class AdaptedTrustedEvent extends AdaptedEvent<TrustedEventImpl> {
+public class AdaptedUIEvent<UIEventTypeImpl extends UIEventImpl> extends AdaptedEvent<UIEventTypeImpl> implements UIEvent {
 
-	public AdaptedTrustedEvent(TrustedEventImpl eventImpl) {
+	public AdaptedUIEvent(UIEventTypeImpl eventImpl) {
 		super(eventImpl);
 	}
-	
-	@ScriptGetter
-	public boolean getIsTrusted() {
-		return eventImpl.isTrusted;
-	}
 
+	@ScriptGetter
+	@Override
+    public AbstractView getView() {
+        return eventImpl.getView();
+    }
+
+	@ScriptGetter
+	@Override
+    public int getDetail() {
+        return eventImpl.getDetail();
+    }
+
+	@ScriptGetter
+	@Override
+    public void initUIEvent(String typeArg, boolean canBubbleArg, boolean cancelableArg, 
+    		AbstractView viewArg, int detailArg) {
+    	eventImpl.initUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
+    }
 }

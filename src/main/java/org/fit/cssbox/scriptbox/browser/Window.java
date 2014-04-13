@@ -37,8 +37,8 @@ import org.fit.cssbox.scriptbox.dom.events.EventHandlerEventListener;
 import org.fit.cssbox.scriptbox.dom.events.EventListenerEntry;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
-import org.fit.cssbox.scriptbox.dom.events.TrustedEventImpl;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
+import org.fit.cssbox.scriptbox.dom.events.script.TrustedEvent;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
@@ -325,7 +325,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 
 	@ScriptGetter
 	public History getHistory() {
-		return context.getHistory();
+		return documentImpl.getHistory();
 	}
 
 	@ScriptGetter
@@ -344,7 +344,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	}
 
 	@ScriptGetter
-	public BarProp getScrollbars() {
+	public ScrollBarsProp getScrollbars() {
 		return userAgent.getScrollbars();
 	}
 
@@ -662,8 +662,8 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 			return evt.preventDefault;
 		}
 
-		if (event instanceof TrustedEventImpl) {
-			TrustedEventImpl trusted = (TrustedEventImpl)event ;
+		if (event instanceof TrustedEvent) {
+			TrustedEvent trusted = (TrustedEvent)event ;
 			EventTarget targetOverride = trusted.getTargetOverride();
 			evt.target = (targetOverride != null)? targetOverride : this;
 		} else {

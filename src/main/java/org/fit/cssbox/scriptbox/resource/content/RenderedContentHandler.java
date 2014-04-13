@@ -86,7 +86,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 				SessionHistory sessionHistory = updateEntry.getSessionHistory();
 						
 				// TODO: Update also any other entries that referenced the same document as that entry
-				updateEntry.setSocument(newDocument);
+				updateEntry.setDocument(newDocument);
 				sessionHistory.traverseHistory(updateEntry);
 			} else {
 				SessionHistory sessionHistory = context.getSesstionHistory();
@@ -99,7 +99,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 				Resource resource = navigationAttempt.getResource();
 				URL entryAddress = (resource != null)? resource.getAddress() : newDocument.getAddress();
 				newEntry.setURL(entryAddress);
-				newEntry.setSocument(newDocument);
+				newEntry.setDocument(newDocument);
 				sessionHistory.add(newEntry);
 				
 				sessionHistory.traverseHistory(newEntry, navigationAttempt.hasReplacementEnabled());

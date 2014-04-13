@@ -57,6 +57,16 @@ public class UserAgent {
 		public boolean scrollToFragment(String fragment) {
 			return true;
 		}
+
+		@Override
+		public int getScrollPositionX() {
+			return -1;
+		}
+
+		@Override
+		public int getScrollPositionY() {
+			return -1;
+		}
 	}
 	
 	private static BarProp noBarAvailable = new NoBarProp();

@@ -62,7 +62,7 @@ Project is still in phase of development and targets the experimental frame
 of new HTML 5.1 specification which has not been released yet, so bugs may 
 occur in the current implementation or also in specification itself.
 
-If run into any bug, please report on:  
+If you run into any bug, please report on:  
    https://github.com/ITman1/ScriptBox/issues
 
 ## Issue list:
@@ -71,7 +71,7 @@ If run into any bug, please report on:
       - This error may occur if you are running Sun JDK compiler  
       - It is known bug: 
           http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6857918
-      - **Solution:** use JDK 8 ot use different compiler than `javac` eg. Edifact Java Compiler (EJC)
+      - **Solution:** use JDK 8 or use different compiler than `javac` eg. Edifact Java Compiler (EJC)
 
 ## Contact and credits
                              

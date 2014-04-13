@@ -20,7 +20,13 @@
 package org.fit.cssbox.scriptbox.history;
 
 public class StateObject {
+	protected StateObject object;
+	
+	public StateObject (StateObject object) {
+		this.object = object;
+	}
+	
 	public StateObject clone() {
-		return null;
+		return object;
 	}
 }

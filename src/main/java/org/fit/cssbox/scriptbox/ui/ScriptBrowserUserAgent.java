@@ -111,6 +111,24 @@ public class ScriptBrowserUserAgent extends UserAgent {
 				scrollSuccess = false;
 			}
 		}
+
+		@Override
+		public int getScrollPositionX() {
+			if (scrollPane != null) {
+				JScrollBar hsb = scrollPane.getHorizontalScrollBar();
+				return hsb.getValue();
+			}
+			return 0;
+		}
+
+		@Override
+		public int getScrollPositionY() {
+			if (scrollPane != null) {
+				JScrollBar vsb = scrollPane.getVerticalScrollBar();				
+				return vsb.getValue();
+			}
+			return 0;
+		}
 	}
 	
 	protected ScriptBrowser browser;
