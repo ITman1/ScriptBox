@@ -38,6 +38,8 @@ import org.fit.cssbox.scriptbox.dom.events.script.PopStateEvent;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
+import org.fit.cssbox.scriptbox.url.UrlUtils;
+import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -69,7 +71,14 @@ public class SessionHistory {
 	}
 	
 	public void setCurrentEntry(SessionHistoryEntry entry) {
-		currentEntryPosition = entries.indexOf(entry);
+		if (entry.getSessionHistory() == this) {
+			int newPosition = entries.indexOf(entry);
+			
+			if (newPosition != -1) {
+				currentEntryPosition = newPosition;
+				fireCurrentEntryChanged(entry);
+			}
+		}
 	}
 	
 	public int getLength() {
@@ -77,12 +86,16 @@ public class SessionHistory {
 	}
 	
 	public void discard() {
-		while (!entries.isEmpty()) {
-			SessionHistoryEntry entry = entries.remove(0);
-			Html5DocumentImpl doc = entry.getDocument();
-			if (doc != null) {
-				doc.discard();
+		if (context != null) {
+			while (!entries.isEmpty()) {
+				SessionHistoryEntry entry = entries.remove(0);
+				Html5DocumentImpl doc = entry.getDocument();
+				if (doc != null) {
+					doc.discard();
+				}
 			}
+			
+			fireHistoryDestroyed();
 		}
 		
 		context = null;
@@ -94,14 +107,24 @@ public class SessionHistory {
 		}
 	
 		if (entries.size() > index) {
-			entries.remove(index);
+			SessionHistoryEntry entry = entries.remove(index);
 			
+			boolean currentChanged = false;
 			if (index < currentEntryPosition) {
 				currentEntryPosition--;
+				currentChanged = true;
 			}
 			
 			if (entries.isEmpty()) {
 				currentEntryPosition = -1;
+				currentChanged = true;
+			}
+			
+			fireEntryRemoved(entry);
+			
+			if (currentChanged) {
+				SessionHistoryEntry currentEntry = getCurrentEntry();
+				fireCurrentEntryChanged(currentEntry);
 			}
 		}
 	}
@@ -138,6 +161,8 @@ public class SessionHistory {
 		if (entry.getSessionHistory() == this) {
 			entries.add(entry);
 			entry.setVisited(new Date());
+			
+			fireEntryInserted(entry);
 		}
 	}
 	
@@ -147,7 +172,7 @@ public class SessionHistory {
 		blankDocument.implementSandboxing();
 		
 		blankPageEntry.setDocument(blankDocument);
-		
+		blankPageEntry.setVisited(new Date());
 		blankPageEntry.setURL(blankDocument.getAddress());
 		
 		entries.add(blankPageEntry);
@@ -249,7 +274,7 @@ public class SessionHistory {
 			}
 			
 			// 4.3) Make the specified entry's Document object the active document of the browsing context.
-			sessionHistory.setCurrentEntry(specifiedEntry);
+			sessionHistory.currentEntryPosition = sessionHistory.entries.indexOf(specifiedEntry);
 			
 			// 4.4) If the specified entry has a browsing context name stored with it, then run the following sub-sub-steps
 			String specifiedBrowsingContextName = specifiedEntry.getBrowsingContextName();
@@ -273,22 +298,11 @@ public class SessionHistory {
 		
 		// 6) If the specified entry has a URL whose fragment identifier differs from that of the current entry
 		boolean hashChanged = false;
-		URL specifiedURI = specifiedDocument.getAddress();
-		URL currentURI = currentDocument.getAddress();
-		String specifiedUriFragment = null;
-		String currentUriFragment = null;
+		URL specifiedURI = specifiedEntry.getURL();
+		URL currentURI = currentEntry.getURL();
 		
-		if (specifiedURI != null && currentURI != null) {
-			specifiedUriFragment = specifiedURI.getRef();
-			currentUriFragment = currentURI.getRef();
-			
-			if (specifiedDocument == currentDocument) {
-				if (specifiedUriFragment != null && currentUriFragment != null) {
-					if (!specifiedUriFragment.equals(currentUriFragment)) {
-						hashChanged = true;
-					}
-				}
-			}
+		if (specifiedDocument == currentDocument) {
+			hashChanged = !UrlUtils.identicalComponents(specifiedURI, currentURI, UrlComponent.REF);
 		}
 		
 		// 7) If the traversal was initiated with replacement enabled, remove  
@@ -299,6 +313,7 @@ public class SessionHistory {
 		
 		// 8) If the specified entry is not an entry with persisted user state, but 
 		// its URL has a fragment identifier, scroll to the fragment identifier.
+		String specifiedUriFragment =  specifiedURI.getRef();
 		if (!specifiedEntry.hasPersistedUserState() && specifiedUriFragment != null && !specifiedUriFragment.isEmpty()) {
 			specifiedBrowsingContext.scrollToFragment(specifiedUriFragment);
 		}
@@ -336,7 +351,7 @@ public class SessionHistory {
 			HashChangeEvent hashChangeEvent = new HashChangeEvent();
 			String oldURL = currentURI.toExternalForm();
 			String newURL = specifiedURI.toExternalForm();
-			hashChangeEvent.initEvent(WindowEventHandlers.onpopstate, true, false, true, null, oldURL, newURL);
+			hashChangeEvent.initEvent(WindowEventHandlers.onhashchange, true, false, true, null, oldURL, newURL);
 		
 			if (asynchronousEvents) {
 				windowTarget.dispatchEvent(hashChangeEvent, windowTarget);
@@ -356,13 +371,53 @@ public class SessionHistory {
 			}
 		}
 		
+		// 15) The current entry is now the specified entry
+		sessionHistory.setCurrentEntry(specifiedEntry);
+		
 		sessionHistory.fireHistoryTravered(currentEntry, specifiedEntry);
 	}
 	
 	protected void fireHistoryTravered(SessionHistoryEntry fromEntry, SessionHistoryEntry toEntry) {
 		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.TRAVERSED, toEntry, fromEntry);
+		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
 		
-		for (SessionHistoryListener listener : listeners) {
+		for (SessionHistoryListener listener : listenersCopy) {
+			listener.onHistoryEvent(event);
+		}
+	}
+	
+	protected void fireEntryInserted(SessionHistoryEntry entry) {
+		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.INSERTED, entry, null);
+		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
+		
+		for (SessionHistoryListener listener : listenersCopy) {
+			listener.onHistoryEvent(event);
+		}
+	}
+	
+	protected void fireEntryRemoved(SessionHistoryEntry entry) {
+		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.REMOVED, entry, null);
+		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
+		
+		for (SessionHistoryListener listener : listenersCopy) {
+			listener.onHistoryEvent(event);
+		}
+	}
+	
+	protected void fireCurrentEntryChanged(SessionHistoryEntry entry) {
+		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.CURRENT_CHANGED, entry, null);
+		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
+		
+		for (SessionHistoryListener listener : listenersCopy) {
+			listener.onHistoryEvent(event);
+		}
+	}
+	
+	protected void fireHistoryDestroyed() {
+		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.DESTROYED, null, null);
+		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
+		
+		for (SessionHistoryListener listener : listenersCopy) {
 			listener.onHistoryEvent(event);
 		}
 	}

@@ -24,11 +24,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
+import org.fit.cssbox.scriptbox.history.StateObject;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.fit.cssbox.scriptbox.script.javascript.window.FunctionEventHandlerAdapter;
 import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Scriptable;
 
 public class ClassField extends ClassMember<Field> implements MemberField {
 	protected Method fieldGetterMethod;
@@ -134,17 +136,23 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		}
 	}	
 	
+	// FIXME: It could be here some adapter/registry mechanism here, not hard coded...
 	public static Object wrap(Class<?> type, Object value) {
 		if (type.equals(EventHandler.class) && value instanceof Function) {
 			value = new FunctionEventHandlerAdapter((Function)value);
+		} else if (type.equals(StateObject.class) && value instanceof Object) {
+			value = new StateObject(value);
 		}
 		
 		return value;
 	}
 	
+	// FIXME: It could be here some adapter/registry mechanism here, not hard coded...
 	public static Object unwrap(Object value) {
 		if (value instanceof FunctionEventHandlerAdapter) {
 			value = ((FunctionEventHandlerAdapter)value).getFunction();
+		} else if (value instanceof StateObject) {
+			value = ((StateObject)value).getObject();
 		}
 		
 		return value;

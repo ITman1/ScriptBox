@@ -28,6 +28,7 @@ public class NavigationControllerEvent extends EventObject {
 	public enum EventType {
 		NAVIGATION_CANCELLED,
 		NAVIGATION_COMPLETED,
+		NAVIGATION_MATURED,
 		NAVIGATION_NEW,
 		DESTROYED
 	};
@@ -42,6 +43,7 @@ public class NavigationControllerEvent extends EventObject {
 			case NAVIGATION_CANCELLED:
 			case NAVIGATION_COMPLETED:
 			case NAVIGATION_NEW:
+			case NAVIGATION_MATURED:
 				this.attempt = attempt;
 			case DESTROYED:
 				this.eventType = eventType;

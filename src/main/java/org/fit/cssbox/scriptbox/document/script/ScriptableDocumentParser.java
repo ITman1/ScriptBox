@@ -32,6 +32,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
+import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -206,11 +207,17 @@ public class ScriptableDocumentParser {
 	}
 	
 	public synchronized void abort() {
-		if (_parser != null) {
-			_parser.abort();
+		if (!aborted) {
+			if (_parser != null) {
+				try {
+					_parser.abort();
+				} catch (Exception e) {
+					
+				}
+			}
+			
+			aborted = true;
 		}
-		
-		aborted = true;
 	}
 	
 	/*
@@ -239,6 +246,8 @@ public class ScriptableDocumentParser {
 				Exception exception = null;
 				try {
 					_parser.parse(parserSource);
+				} catch (LifetimeEndedException e) { // we only aborted
+					exception = e;
 				} catch (Exception e) {
 					e.printStackTrace();
 					exception = e;

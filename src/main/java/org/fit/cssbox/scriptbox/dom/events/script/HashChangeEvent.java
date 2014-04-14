@@ -28,4 +28,9 @@ public class HashChangeEvent extends TrustedEvent {
 		this.oldURL = oldURL;
 		this.oldURL = oldURL;
 	}
+	
+	@Override
+	public String toString() {
+		return "[object HashChangeEvent]";
+	}
 }

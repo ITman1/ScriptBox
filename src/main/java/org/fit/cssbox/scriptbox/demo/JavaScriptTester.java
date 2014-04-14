@@ -41,6 +41,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
@@ -71,7 +72,10 @@ public class JavaScriptTester {
 	private JButton objectViewerRefreshButton;
 	private JButton objectsWatchListRefreshButton;
 	private JButton consoleClearButton;
-
+	private JLabel statusLabel;
+	private JButton historyBackButton;
+	private JButton historyForwardButton;
+	
 	/**
 	 * Create the application.
 	 */
@@ -121,10 +125,10 @@ public class JavaScriptTester {
 		navigateButton = new JButton("navigate");
 		navigationButtonsPanel.add(navigateButton);
 
-		JButton historyBackButton = new JButton("<-");
+		historyBackButton = new JButton("<-");
 		navigationButtonsPanel.add(historyBackButton);
 
-		JButton historyForwardButton = new JButton("->");
+		historyForwardButton = new JButton("->");
 		navigationButtonsPanel.add(historyForwardButton);
 
 		JSplitPane containerSplitPane = new JSplitPane();
@@ -290,14 +294,14 @@ public class JavaScriptTester {
 		
 		JPanel objectViewerHeaderPanel = new JPanel();
 		objectViewerPanel.add(objectViewerHeaderPanel, BorderLayout.NORTH);
-				objectViewerHeaderPanel.setLayout(new BorderLayout(0, 0));
+		objectViewerHeaderPanel.setLayout(new BorderLayout(0, 0));
 		
-				JLabel objectViewerLabel = new JLabel("Window object");
-				objectViewerHeaderPanel.add(objectViewerLabel);
-				objectViewerLabel.setPreferredSize(new Dimension(71, 18));
+		JLabel objectViewerLabel = new JLabel("Window object");
+		objectViewerHeaderPanel.add(objectViewerLabel);
+		objectViewerLabel.setPreferredSize(new Dimension(71, 18));
 				
-				objectViewerRefreshButton = new JButton("refresh");
-				objectViewerHeaderPanel.add(objectViewerRefreshButton, BorderLayout.EAST);
+		objectViewerRefreshButton = new JButton("refresh");
+		objectViewerHeaderPanel.add(objectViewerRefreshButton, BorderLayout.EAST);
 
 		JPanel objectsWatchListPanel = new JPanel();
 		objectsWatchListPanel.setPreferredSize(new Dimension(10, 150));
@@ -319,14 +323,14 @@ public class JavaScriptTester {
 		
 		JPanel objectsWatchListHeaderPanel = new JPanel();
 		objectsWatchListPanel.add(objectsWatchListHeaderPanel, BorderLayout.NORTH);
-				objectsWatchListHeaderPanel.setLayout(new BorderLayout(0, 0));
+		objectsWatchListHeaderPanel.setLayout(new BorderLayout(0, 0));
 		
-				JLabel objectsWatchListlabel = new JLabel("Watch list");
-				objectsWatchListHeaderPanel.add(objectsWatchListlabel);
-				objectsWatchListlabel.setPreferredSize(new Dimension(47, 18));
+		JLabel objectsWatchListlabel = new JLabel("Watch list");
+		objectsWatchListHeaderPanel.add(objectsWatchListlabel);
+		objectsWatchListlabel.setPreferredSize(new Dimension(47, 18));
 				
-				objectsWatchListRefreshButton = new JButton("refresh");
-				objectsWatchListHeaderPanel.add(objectsWatchListRefreshButton, BorderLayout.EAST);
+		objectsWatchListRefreshButton = new JButton("refresh");
+		objectsWatchListHeaderPanel.add(objectsWatchListRefreshButton, BorderLayout.EAST);
 
 		JPanel consolePanel = new JPanel();
 		sideBarSplitPane.setRightComponent(consolePanel);
@@ -344,16 +348,23 @@ public class JavaScriptTester {
 		
 		JPanel consoleHeaderPanel = new JPanel();
 		consolePanel.add(consoleHeaderPanel, BorderLayout.NORTH);
-				consoleHeaderPanel.setLayout(new BorderLayout(0, 0));
+		consoleHeaderPanel.setLayout(new BorderLayout(0, 0));
 		
-				JLabel consoleLabel = new JLabel("Console");
-				consoleHeaderPanel.add(consoleLabel);
-				consoleLabel.setPreferredSize(new Dimension(38, 18));
-				consoleLabel.setLabelFor(consolePane);
+		JLabel consoleLabel = new JLabel("Console");
+		consoleHeaderPanel.add(consoleLabel);
+		consoleLabel.setPreferredSize(new Dimension(38, 18));
+		consoleLabel.setLabelFor(consolePane);
 				
-				consoleClearButton = new JButton("clear");
-				consoleClearButton.setPreferredSize(new Dimension(67, 23));
-				consoleHeaderPanel.add(consoleClearButton, BorderLayout.EAST);
+		consoleClearButton = new JButton("clear");
+		consoleClearButton.setPreferredSize(new Dimension(67, 23));
+		consoleHeaderPanel.add(consoleClearButton, BorderLayout.EAST);
+				
+		JPanel statusBar = new JPanel();
+		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		containerPanel.add(statusBar, BorderLayout.SOUTH);
+				
+		statusLabel = new JLabel("(no content loaded)");
+		statusBar.add(statusLabel);
 	}
 
 	public JEditorPane getSourceCodeEditorPane() {
@@ -427,13 +438,28 @@ public class JavaScriptTester {
 	public JComboBox<Demo> getDemoComboBox() {
 		return demoComboBox;
 	}
+	
 	public JButton getObjectViewerRefreshButton() {
 		return objectViewerRefreshButton;
 	}
+	
 	public JButton getObjectsWatchListRefreshButton() {
 		return objectsWatchListRefreshButton;
 	}
+	
 	public JButton getConsoleClearButton() {
 		return consoleClearButton;
+	}
+	
+	public JLabel getStatusLabel() {
+		return statusLabel;
+	}
+	
+	public JButton getHistoryBackButton() {
+		return historyBackButton;
+	}
+
+	public JButton getHistoryForwardButton() {
+		return historyForwardButton;
 	}
 }

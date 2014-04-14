@@ -94,7 +94,7 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 				URL address = (resource.getOverrideAddress() != null)? resource.getOverrideAddress() : resource.getAddress();
 				
 				final ScriptableDocumentParser scripDomParser = new ScriptableDocumentParser(encoding);
-				Html5DocumentImpl document = createDocument(resource.getBrowsingContext(), address, "text/html", scripDomParser);
+				Html5DocumentImpl document = getRenderableDocument(resource.getBrowsingContext(), address, "text/html", scripDomParser);
 				updateSessionHistory(document);
 				
 				/* We have to spin first, wait until session is updated, otherwise script execution would fail - it has to have active document this*/

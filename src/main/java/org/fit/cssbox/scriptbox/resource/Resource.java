@@ -49,6 +49,7 @@ public abstract class Resource {
 	};
 	
 	protected BrowsingContext context;
+	protected boolean aborted;
 
 	public Resource(BrowsingContext context) {
 		this.context = context;
@@ -67,6 +68,10 @@ public abstract class Resource {
 		InputStream is = getInputStream();
 		
 		return is != null && contentType != null && !contentType.isEmpty();
+	}
+	
+	public void abort() {
+		aborted = true;
 	}
 	
 	public boolean isAttachment() {

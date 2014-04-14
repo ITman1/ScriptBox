@@ -21,33 +21,29 @@ package org.fit.cssbox.scriptbox.history;
 
 import java.util.EventObject;
 
-public class SessionHistoryEvent extends EventObject {
+public class JointSessionHistoryEvent extends EventObject {
 
 	private static final long serialVersionUID = -879099242022721983L;
 
 	public enum EventType {
+		POSITION_CHANGED,
+		LENGTH_CHANGED,
 		TRAVERSED,
-		INSERTED,
-		CURRENT_CHANGED,
-		REMOVED,
-		DESTROYED
 	};
 	
 	private EventType eventType;
 	private SessionHistoryEntry target;
 	private SessionHistoryEntry relatedTarget;
 	
-	public SessionHistoryEvent(SessionHistory sessionHistory, EventType eventType, SessionHistoryEntry target, SessionHistoryEntry relatedTarget) {
-		super(sessionHistory);
-		
+	public JointSessionHistoryEvent(JointSessionHistory jointSessionHistory, EventType eventType, SessionHistoryEntry target, SessionHistoryEntry relatedTarget) {
+		super(jointSessionHistory);
+
 		switch (eventType) {
 			case TRAVERSED:
 				this.relatedTarget = relatedTarget;
-			case CURRENT_CHANGED:
-			case INSERTED:
-			case REMOVED:
 				this.target = target;
-			case DESTROYED:
+			case POSITION_CHANGED:
+			case LENGTH_CHANGED:
 				this.eventType = eventType;
 		}
 	}

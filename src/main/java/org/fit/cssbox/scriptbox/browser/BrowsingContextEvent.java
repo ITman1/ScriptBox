@@ -17,33 +17,27 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.history;
+package org.fit.cssbox.scriptbox.browser;
 
 import java.util.EventObject;
 
-public class SessionHistoryEvent extends EventObject {
+public class BrowsingContextEvent extends EventObject {
 
 	private static final long serialVersionUID = -879099242022721983L;
 
 	public enum EventType {
-		TRAVERSED,
 		INSERTED,
-		CURRENT_CHANGED,
 		REMOVED,
 		DESTROYED
 	};
 	
 	private EventType eventType;
-	private SessionHistoryEntry target;
-	private SessionHistoryEntry relatedTarget;
+	private BrowsingContext target;
 	
-	public SessionHistoryEvent(SessionHistory sessionHistory, EventType eventType, SessionHistoryEntry target, SessionHistoryEntry relatedTarget) {
-		super(sessionHistory);
+	public BrowsingContextEvent(BrowsingContext source, EventType eventType, BrowsingContext target) {
+		super(source);
 		
 		switch (eventType) {
-			case TRAVERSED:
-				this.relatedTarget = relatedTarget;
-			case CURRENT_CHANGED:
 			case INSERTED:
 			case REMOVED:
 				this.target = target;
@@ -56,12 +50,7 @@ public class SessionHistoryEvent extends EventObject {
 		return eventType;
 	}
 
-	public SessionHistoryEntry getTarget() {
+	public BrowsingContext getTarget() {
 		return target;
 	}
-
-	public SessionHistoryEntry getRelatedTarget() {
-		return relatedTarget;
-	}
-
 }

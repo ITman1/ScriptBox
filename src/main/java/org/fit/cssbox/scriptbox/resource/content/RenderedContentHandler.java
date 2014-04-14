@@ -33,6 +33,9 @@ import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
+import org.fit.cssbox.scriptbox.navigation.NavigationController;
+import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
+import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.scriptbox.navigation.UpdateNavigationAttempt;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
@@ -85,7 +88,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 				SessionHistoryEntry updateEntry = ((UpdateNavigationAttempt)navigationAttempt).getSessionHistoryEntry();
 				SessionHistory sessionHistory = updateEntry.getSessionHistory();
 						
-				// TODO: Update also any other entries that referenced the same document as that entry
+				// TODO?: Update also any other entries that referenced the same document as that entry
 				updateEntry.setDocument(newDocument);
 				sessionHistory.traverseHistory(updateEntry);
 			} else {
@@ -113,9 +116,39 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		}
 		
 	}
+	
+	protected NavigationControllerListener abortDocumentListener = new NavigationControllerListener() {
+		
+		@Override
+		public void onNavigationEvent(NavigationControllerEvent event) {
+			NavigationAttempt attempt = event.getNavigationAttempt();
+			
+			if (attempt == navigationAttempt) {
+				switch (event.getEventType()) {
+				case NAVIGATION_NEW:
+					break;
+				case DESTROYED:
+				case NAVIGATION_CANCELLED:
+					if (renderableDocument != null) {
+						renderableDocument.abort();
+					}
+				case NAVIGATION_COMPLETED:
+				case NAVIGATION_MATURED:
+					navigationController.removeListener(abortDocumentListener);
+					break;
+				}
+			}
+		}
+	};
+	
+	protected Html5DocumentImpl renderableDocument;
+	NavigationController navigationController;
 
 	public RenderedContentHandler(NavigationAttempt navigationAttempt) {
 		super(navigationAttempt);
+		
+		navigationController = navigationAttempt.getNavigationController();
+		navigationController.addListener(abortDocumentListener);
 	}
 	
 	/*
@@ -127,9 +160,12 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		Html5DocumentImpl taskDocument = (currentEntry != null)? currentEntry.getDocument() : null;
 		context.getEventLoop().queueTask(new UpdateSessionHistoryTask(taskDocument, newDocument));
 	}
-	
-	
-	protected Html5DocumentImpl createDocument(BrowsingContext context, URL url, String mimeType, ScriptableDocumentParser parser) {
+		
+	protected Html5DocumentImpl getRenderableDocument(BrowsingContext context, URL url, String mimeType, ScriptableDocumentParser parser) {
+		if (renderableDocument != null) {
+			return renderableDocument;
+		}
+		
 		SessionHistory sessionHistory = context.getSesstionHistory();
 		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 		Html5DocumentImpl currentDocument = currentEntry.getDocument();
@@ -142,10 +178,10 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		
 		// FIXME: 2) Set the document's referrer to the address of the resource from which Request-URIs 
 		// are obtained as determined when the fetch algorithm obtained the resource
-		Html5DocumentImpl newDocument = Html5DocumentImpl.createDocument(context, url, recycleWindowDocument, mimeType, parser);
+		renderableDocument = Html5DocumentImpl.createDocument(context, url, recycleWindowDocument, mimeType, parser);
 		
 		// 3) Implement the sandboxing for the Document.
-		newDocument.implementSandboxing();
+		renderableDocument.implementSandboxing();
 		
 		// 4) ...
 		boolean hasSandboxedFullscreen = false;
@@ -170,9 +206,9 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		fullscreenEnabled = fullscreenEnabled && (parentDocument == null || parentDocument.isFullscreenEnabledFlag());
 		
 		if (!hasSandboxedFullscreen && fullscreenEnabled) {
-			newDocument.setEnableFullscreenFlag(true);
+			renderableDocument.setEnableFullscreenFlag(true);
 		}
 		
-		return newDocument;
+		return renderableDocument;
 	}
 }

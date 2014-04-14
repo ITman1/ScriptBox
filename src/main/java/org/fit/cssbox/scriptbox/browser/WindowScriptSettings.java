@@ -60,18 +60,19 @@ public class WindowScriptSettings extends ScriptSettings<Window> {
 
 	@Override
 	public Object getReferrerSource() {
-		// TODO Auto-generated method stub
+		// TODO: Should be set
 		return null;
 	}
 
 	@Override
 	public String getUrlCharacterEncoding() {
+		// TODO: Should be set
 		return null;
 	}
 
 	@Override
 	public URL getBaseUrl() {
-		return getResposibleBrowsingContext().getBaseURL();
+		return getResponsibleDocument().getBaseAddress();
 	}
 
 	@Override

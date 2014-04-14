@@ -27,6 +27,9 @@ import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
+import org.mozilla.javascript.ConsString;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Undefined;
 
 public class ClassFunction extends ClassMember<Method> implements MemberFunction {	
 	
@@ -70,6 +73,9 @@ public class ClassFunction extends ClassMember<Method> implements MemberFunction
 					
 					if (maybeVarargs) {
 						for (int i = expectedTypes.length - 1; i < args.length; i++) {
+							if (args[i] == null) {
+								continue;
+							}
 							Class<?> argType = args[i].getClass();
 							
 							if (!ClassUtils.isAssignable(argType, arrayType)) {
@@ -105,10 +111,15 @@ public class ClassFunction extends ClassMember<Method> implements MemberFunction
 					Class<?> expectedType = expectedTypes[i];
 					if (arg == null) {
 						castedArgs[i] = null;
+					} else if (arg == Undefined.instance) {
+						castedArgs[i] = null;
+					} else if (arg instanceof ConsString) {
+						castedArgs[i] = ((ConsString)arg).toString();
 					} else if (arg instanceof Double && (expectedType.equals(Integer.class) || expectedType.equals(int.class))) {
 						castedArgs[i] = ((Double)arg).intValue();
 					} else {
-						castedArgs[i] = ObjectScriptable.jsToJava(arg);;
+						castedArgs[i] = ObjectScriptable.jsToJava(arg);
+						//castedArgs[i] = Context.jsToJava(castedArgs[i], expectedType);
 					}
 					
 					castedArgs[i] = ClassField.wrap(expectedTypes[i], castedArgs[i]);

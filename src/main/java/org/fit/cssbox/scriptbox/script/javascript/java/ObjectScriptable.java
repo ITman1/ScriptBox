@@ -33,7 +33,7 @@ import org.mozilla.javascript.Wrapper;
 
 public class ObjectScriptable extends ScriptableObject  {
 	private static final long serialVersionUID = 1531587729453175461L;
-
+	
 	protected Object object;
 	
 	public ObjectScriptable(Object object) {

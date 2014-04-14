@@ -64,7 +64,8 @@ public class BrowsingContext {
 	protected SessionHistory sessionHistory;
 	protected NavigationController navigationController;
 	protected Location location;
-			
+	protected Set<BrowsingContextListener> listeners;		
+	
 	protected String contextName;
 	
 	protected BrowsingContext(BrowsingContext parentContext, BrowsingUnit browsingUnit, String contextName, Element container) {
@@ -73,6 +74,7 @@ public class BrowsingContext {
 		this.contextName = contextName;
 		this.container = container;
 		
+		this.listeners = new HashSet<BrowsingContextListener>();
 		this.childContexts = new ArrayList<BrowsingContext>();
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
@@ -124,30 +126,40 @@ public class BrowsingContext {
 				document.unload(false);
 			}
 			
-			// TODO: Here could be fired event that context has been closed and UI could react to this
-			
 			discard();
 		}
+	}
+	
+	public void addListener(BrowsingContextListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(BrowsingContextListener listener) {
+		listeners.remove(listener);
 	}
 	
 	/*
 	 * When a browsing context is discarded, the strong reference from the user agent itself to the browsing context must be severed, 
 	 * and all the Document objects for all the entries in the browsing context's session history must be discarded as well.
 	 */
-	public synchronized void discard() {	
+	public void discard() {	
 		if (!discarded) {
-			navigationController.cancelAllNavigationAttempts();
-			sessionHistory.discard();
+			synchronized (this) {
+				navigationController.cancelAllNavigationAttempts();
+				sessionHistory.discard();
+				
+				if (parentContext != null) {
+					parentContext.removeChildContext(this);
+				}
+				
+				browsingUnit = null;
+				parentContext = null;
+				sessionHistory = null;
+				
+				discarded = true;
+			}			
 			
-			if (parentContext != null) {
-				parentContext.removeChildContext(this);
-			}
-			
-			browsingUnit = null;
-			parentContext = null;
-			sessionHistory = null;
-			
-			discarded = true;
+			fireBrowsingContextDestroyed();
 		}
 	}
 	
@@ -568,10 +580,57 @@ public class BrowsingContext {
 	}
 	
 	protected void removeChildContext(BrowsingContext child) {
-		childContexts.remove(child);
+		synchronized (this) {
+			childContexts.remove(child);
+		}
+
+		fireBrowsingContextRemoved(child);
 	}
 	
 	protected void addChildContext(BrowsingContext child) {
-		childContexts.add(child);
+		synchronized (this) {
+			childContexts.add(child);
+		}
+		
+		fireBrowsingContextInserted(child);
+	}
+	
+	protected void fireBrowsingContextInserted(BrowsingContext context) {
+		BrowsingContextEvent event = new BrowsingContextEvent(this, BrowsingContextEvent.EventType.INSERTED, context);
+		Set<BrowsingContextListener> listenersCopy = new HashSet<BrowsingContextListener>(listeners);
+		
+		for (BrowsingContextListener listener : listenersCopy) {
+			listener.onBrowsingContextEvent(event);
+		}
+		
+		if (parentContext != null) {
+			parentContext.fireBrowsingContextInserted(context);
+		}
+	}
+	
+	protected void fireBrowsingContextRemoved(BrowsingContext context) {
+		BrowsingContextEvent event = new BrowsingContextEvent(this, BrowsingContextEvent.EventType.REMOVED, context);
+		Set<BrowsingContextListener> listenersCopy = new HashSet<BrowsingContextListener>(listeners);
+		
+		for (BrowsingContextListener listener : listenersCopy) {
+			listener.onBrowsingContextEvent(event);
+		}
+		
+		if (parentContext != null) {
+			parentContext.fireBrowsingContextRemoved(context);
+		}
+	}
+	
+	protected void fireBrowsingContextDestroyed() {
+		BrowsingContextEvent event = new BrowsingContextEvent(this, BrowsingContextEvent.EventType.DESTROYED, null);
+		Set<BrowsingContextListener> listenersCopy = new HashSet<BrowsingContextListener>(listeners);
+		
+		for (BrowsingContextListener listener : listenersCopy) {
+			listener.onBrowsingContextEvent(event);
+		}
+		
+		if (parentContext != null) {
+			parentContext.fireBrowsingContextDestroyed();
+		}
 	}
 }

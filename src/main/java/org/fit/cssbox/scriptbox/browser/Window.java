@@ -68,6 +68,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	protected BrowsingContext context;
 	protected UserAgent userAgent;
 	
+	// FIXME: When it gets fire there should be copy for case that we remove listener while processing event
 	protected Map<String, Vector<EventListenerEntry>> listeners;
 	protected WindowScriptSettings scriptSettings;
 			

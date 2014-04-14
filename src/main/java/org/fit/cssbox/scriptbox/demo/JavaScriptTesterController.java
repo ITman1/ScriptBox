@@ -36,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -44,6 +45,8 @@ import javax.swing.JViewport;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -54,10 +57,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.history.SessionHistory;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
+import org.fit.cssbox.scriptbox.history.JointSessionHistory;
+import org.fit.cssbox.scriptbox.history.JointSessionHistoryEvent;
+import org.fit.cssbox.scriptbox.history.JointSessionHistoryListener;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
-import org.fit.cssbox.scriptbox.history.SessionHistoryEvent;
-import org.fit.cssbox.scriptbox.history.SessionHistoryListener;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
@@ -70,8 +74,8 @@ public class JavaScriptTesterController {
 	
 	private JavaScriptTester tester;
 	private BrowsingUnit browsingUnit;
+	private JointSessionHistory jointSessionHistory;
 	private BrowsingContext windowContext;
-	private SessionHistory sessionHistory;
 	private NavigationController navigationController;
 	private Html5DocumentImpl loadedDocument;
 	private NavigationAttempt navigationAttempt;
@@ -87,6 +91,10 @@ public class JavaScriptTesterController {
 	private ScriptObjectViewer windowObjectViewer;
 	private ScriptObjectsWatchList scriptObjectsWatchList;
 	
+	private JLabel statusLabel;
+	
+	private JButton historyBackButton;
+	private JButton historyForwardButton;
 	private JButton navigateButton;
 	private JButton navigateSourceCodeButton;
 	private JButton openSourceCodeButton;
@@ -98,12 +106,20 @@ public class JavaScriptTesterController {
 	private JButton objectsWatchListRefreshButton;
 	private JButton consoleClearButton;
 	
+	private NavigationControllerEvent.EventType navigationResult;
+	private SessionHistoryEntry currentEntry;
+	private boolean navigationFieldSetByUser;
+	
 	private NavigationControllerListener navigationControllerListener = new NavigationControllerListener() {
 		@Override
 		public void onNavigationEvent(final NavigationControllerEvent event) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					switch (event.getEventType()) {
+					navigationResult = event.getEventType();
+					
+					switch (navigationResult) {
+					case NAVIGATION_MATURED:
+						break;
 					case DESTROYED:
 					case NAVIGATION_CANCELLED:
 						navigationAttempt = null;
@@ -125,18 +141,33 @@ public class JavaScriptTesterController {
 		}
     };
 	
-	private SessionHistoryListener sessionHistoryListener = new SessionHistoryListener() {
+	private JointSessionHistoryListener jointSessionHistoryListener = new JointSessionHistoryListener() {
 		@Override
-		public void onHistoryEvent(final SessionHistoryEvent event) {
-			if (event.getEventType() == SessionHistoryEvent.EventType.TRAVERSED) {
-				SessionHistoryEntry currentEntry = event.getTarget();
-				final String urlString = currentEntry.getURL().toExternalForm();
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						navigationField.setText(urlString);
-					}
-				});
+		public void onHistoryEvent(final JointSessionHistoryEvent event) {
+			if (event.getEventType() != JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
+				return;
 			}
+			
+			final SessionHistoryEntry whereTraversed = jointSessionHistory.getCurrentEntry();
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					Html5DocumentImpl newDocument = whereTraversed.getDocument();
+					BrowsingContext browsingContext = newDocument.getBrowsingContext();
+					
+					if (newDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE && browsingContext.isTopLevelBrowsingContext()) {
+						updateScriptBox();
+					}
+					
+					if (browsingContext.isTopLevelBrowsingContext()) {
+						currentEntry = whereTraversed;
+						navigationFieldSetByUser = false;
+					}
+					
+					
+					updateUi();
+				}
+			});
+			
 		}
     };
 	
@@ -185,6 +216,24 @@ public class JavaScriptTesterController {
 	            	setCurrentTabTitleFromFile(file);
 	            }
 	        }
+		}
+	};
+	
+	private DocumentListener onNavigationFieldChangedListener = new DocumentListener() {
+		
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			navigationFieldSetByUser = true;
+		}
+		
+		@Override
+		public void insertUpdate(DocumentEvent e) {
+			navigationFieldSetByUser = true;
+		}
+		
+		@Override
+		public void changedUpdate(DocumentEvent e) {
+			navigationFieldSetByUser = true;
 		}
 	};
 	
@@ -240,8 +289,21 @@ public class JavaScriptTesterController {
 		}
 	};
 	
+	private ActionListener onHistoryBackListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			jointSessionHistory.traverse(-1);
+		}
+	};
+	
+	private ActionListener onHistoryForwardListener = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			jointSessionHistory.traverse(1);
+		}
+	};
+	
 	private ActionListener onObjectViewerRefresh = new ActionListener() {
-		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			windowObjectViewer.refresh();
@@ -282,11 +344,13 @@ public class JavaScriptTesterController {
 	
 	public JavaScriptTesterController() {	
 		tester = new JavaScriptTester();
+		
 		browsingUnit = tester.getScriptBrowser().getBrowsingUnit();
 		
+		jointSessionHistory = browsingUnit.getJointSessionHistory();
 		windowContext = browsingUnit.getWindowBrowsingContext();
-		sessionHistory = windowContext.getSesstionHistory();
 		navigationController = windowContext.getNavigationController();
+		
 		openedFiles = new HashMap<Integer, File>();
 		
 		registerJavaScriptInjectors();
@@ -333,14 +397,18 @@ public class JavaScriptTesterController {
 		navigationAttempt = attempt;
 	}
 	
-	private void onNavigationCompleted() {
+	private void onNavigationCompleted() {	
+		updateScriptBox();
+	}
+	
+	private void updateScriptBox() {
 		loadedDocument = windowContext.getActiveDocument();		
 		
 		String sourceCode = loadedDocument.getParserSource();
 		sourceCodeEditorPane.setText(sourceCode);
 		
-		windowObjectViewer.refresh();
 		scriptBrowser.refresh();
+		windowObjectViewer.refresh();
 		scriptObjectsWatchList.refresh();
 	}
 	
@@ -355,6 +423,27 @@ public class JavaScriptTesterController {
 		} else {
 			navigateButton.setText("Navigate");
 		}
+		
+		if (navigationResult != null) {
+			if (navigationResult == NavigationControllerEvent.EventType.NAVIGATION_CANCELLED) {
+				statusLabel.setText("navigation cancelled");
+			} else if (navigationResult == NavigationControllerEvent.EventType.NAVIGATION_COMPLETED) {
+				statusLabel.setText("navigation completed");
+			} else if (navigationResult == NavigationControllerEvent.EventType.NAVIGATION_NEW) {
+				statusLabel.setText("(loading)");
+			}
+		}
+		
+		int historyPosition = jointSessionHistory.getPosition();
+		int historyLength = jointSessionHistory.getLength();
+		
+		historyBackButton.setEnabled(historyPosition != - 1 && historyPosition != 0);
+		historyForwardButton.setEnabled(historyPosition != historyLength - 1);
+		
+		if (currentEntry != null && !navigationFieldSetByUser) {
+			final String urlString = currentEntry.getURL().toExternalForm();
+			navigationField.setText(urlString);
+		}
 	}
 	
 	private void initializeUiComponents() {
@@ -366,6 +455,9 @@ public class JavaScriptTesterController {
 		windowObjectViewer = tester.getWindowObjectViewer();
 		scriptObjectsWatchList = tester.getObjectsWatchList();
 		
+		statusLabel = tester.getStatusLabel();
+		historyBackButton = tester.getHistoryBackButton();
+		historyForwardButton = tester.getHistoryForwardButton();
 		navigateButton = tester.getNavigateButton();
 		navigateSourceCodeButton = tester.getNavigateSourceCodeButton();
 		openSourceCodeButton = tester.getOpenSourceCodeButton();
@@ -384,6 +476,8 @@ public class JavaScriptTesterController {
 	private void registerEventListeners() {
 		sourceCodeTabbedPane.addChangeListener(onTabChangedListener);
 		
+		historyBackButton.addActionListener(onHistoryBackListener);
+		historyForwardButton.addActionListener(onHistoryForwardListener);
 		navigateButton.addActionListener(onNavigateListener);
 		navigateSourceCodeButton.addActionListener(onNavigateSourceCodeButton);
 		openSourceCodeButton.addActionListener(onOpenSourceCodeListener);
@@ -398,8 +492,10 @@ public class JavaScriptTesterController {
 		newWatchedVariableField.addActionListener(onNewVariableEntered);
 		scriptObjectsWatchList.addKeyListener(scriptObjectsWatchListKeyListener);
 		
-		sessionHistory.addListener(sessionHistoryListener);
+		jointSessionHistory.addListener(jointSessionHistoryListener);
 		navigationController.addListener(navigationControllerListener);
+		
+		navigationField.getDocument().addDocumentListener(onNavigationFieldChangedListener);
 	}
 	
 	private void navigateSoureCode(String sourceCode) {

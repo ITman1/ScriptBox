@@ -156,7 +156,6 @@ public class History {
 			Html5DocumentImpl responsibleDocument = settings.getResponsibleDocument();
 			UrlOrigin absoluteUrlOrigin = new UrlOrigin(absoluteURL);
 			Origin<?> responsibleDocumentOrigin = responsibleDocument.getOrigin();
-			URL responsibleDocumentAddress = responsibleDocument.getAddress();
 			boolean pathQueryDiffers = !UrlUtils.identicalComponents(absoluteURL, address, 
 					UrlComponent.PATH, UrlComponent.QUERY);
 			
@@ -220,6 +219,8 @@ public class History {
 	}
 	
 	protected void throwSecurityError() {
+		
+		
 		throw new DOMException(DOMException.SECURITY_ERR, "SecurityError");
 	}
 }

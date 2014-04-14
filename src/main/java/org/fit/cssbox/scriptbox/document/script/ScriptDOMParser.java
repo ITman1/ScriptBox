@@ -38,6 +38,7 @@ import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
@@ -50,6 +51,7 @@ import org.xml.sax.SAXException;
 public class ScriptDOMParser extends DOMParser {
 	private ScriptableDocumentParser _parser;
 
+	private boolean aborted;
 	private Html5DocumentImpl _document;
 	private String _charset;
 	private XMLLocator _locator;
@@ -158,6 +160,12 @@ public class ScriptDOMParser extends DOMParser {
 	 */
 	@Override
 	public void startElement(QName element, XMLAttributes attributes, Augmentations augs) throws XNIException {
+		synchronized (this) {
+			if (aborted) {
+				throw new LifetimeEndedException();
+			}
+		}
+		
 		/**
 		 * Creates new element and inserts it into the document. It fulfills some 
 		 * demands of the HTML5 specification, but not all!
@@ -362,4 +370,9 @@ public class ScriptDOMParser extends DOMParser {
 			}
 		}
 	}
+	
+	@Override
+    public synchronized void abort () {
+        aborted = true;
+    }
 }

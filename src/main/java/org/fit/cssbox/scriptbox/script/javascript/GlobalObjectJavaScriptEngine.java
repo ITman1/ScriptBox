@@ -19,7 +19,7 @@
 
 package org.fit.cssbox.scriptbox.script.javascript;
 
-import org.apache.xerces.dom.ElementImpl;
+import org.apache.html.dom.HTMLElementImpl;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
@@ -47,7 +47,7 @@ public class GlobalObjectJavaScriptEngine extends JavaScriptEngine {
 	@Override
 	protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
 		DefaultShutter explicitGrantShutter = new DefaultShutter();
-		explicitGrantShutter.addVisibleClass(ElementImpl.class, true, false);
+		explicitGrantShutter.addVisibleClass(HTMLElementImpl.class, true, false);
 		ClassMembersResolverFactory factory = new ScriptAnnotationClassMembersResolverFactory(this, explicitGrantShutter);
 		return factory;
 	}

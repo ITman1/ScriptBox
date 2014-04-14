@@ -36,7 +36,9 @@ public abstract class Fetch implements Closeable {
 	protected boolean manualRedirect;
 	protected boolean isSafe;
 	protected Task onFinishTask;
+	protected boolean closed;
 	protected boolean finished;
+	protected Resource resourceImpl;
 	
 	public Fetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		this.fetchRegistry = FetchRegistry.getInstance();
@@ -67,7 +69,13 @@ public abstract class Fetch implements Closeable {
 	}
 	
 	@Override
-	public void close() throws IOException {}
+	public synchronized void close() throws IOException {
+		if (!closed && resourceImpl != null) {
+			resourceImpl.abort();
+		}
+		
+		closed = true;
+	}
 	
 	public synchronized void fetch() throws IOException {
 		if (finished) {
@@ -98,7 +106,15 @@ public abstract class Fetch implements Closeable {
 	}
 	
 	public synchronized Resource getResource() {
-		return (finished)? getResourceImpl() : null;
+		if (finished && !closed) {
+			if (resourceImpl == null) {
+				resourceImpl = getResourceImpl();
+			}
+
+			return resourceImpl;
+		} else {
+			return null;
+		}
 	}
 	
 	protected synchronized void onFetchCompleted() {

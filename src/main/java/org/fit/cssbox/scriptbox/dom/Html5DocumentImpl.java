@@ -137,7 +137,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		_address = address;
 		_referrer = referrer;
 		_contentType = contentType;
-		_documentReadiness = DocumentReadiness.COMPLETE;
+		_documentReadiness = (parser == null)? DocumentReadiness.COMPLETE : DocumentReadiness.LOADING;
 		_activeSandboxingFlagSet = new HashSet<SandboxingFlag>();
 		_parser = parser;
 		
@@ -694,4 +694,17 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return _history;
 	}
 	
+	/*
+	 * https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html#dom-document-exitfullscreen
+	 */
+	public void exitFullscreen() {
+		
+	}
+	
+	/*
+	 * https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html#fully-exit-fullscreen
+	 */
+	public void fullyExitFullscreen() {
+		
+	}
 }

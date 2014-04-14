@@ -19,4 +19,9 @@ public class PopStateEvent extends TrustedEvent {
 		
 		this.state = state;
 	}
+	
+	@Override
+	public String toString() {
+		return "[object PopStateEvent]";
+	}
 }

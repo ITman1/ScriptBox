@@ -28,6 +28,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
@@ -115,6 +116,10 @@ public abstract class NavigationAttempt {
 		return navigationController;
 	}
 	
+	public BrowsingContext getDestinationBrowsingContext() {
+		return destinationBrowsingContext;
+	}
+	
 	public BrowsingContext getSourceBrowsingContext() {
 		return sourceBrowsingContext;
 	}
@@ -136,11 +141,17 @@ public abstract class NavigationAttempt {
 	}
 	
 	public void complete() {
+		boolean wasCompleted = false;
+		boolean isCancelled = false;
 		synchronized (this) {
+			isCancelled = cancelled;
+			wasCompleted = completed;
 			completed = true;
 		}
 		
-		listener.onCompleted(this);
+		if (!isCancelled && !wasCompleted) {
+			listener.onCompleted(this);
+		}
 	}
 	
 	public synchronized boolean isMatured() {
@@ -148,11 +159,17 @@ public abstract class NavigationAttempt {
 	}
 	
 	public void mature() {
+		boolean wasMatured = false;
+		boolean isCancelled = false;
 		synchronized (this) {
+			isCancelled = cancelled;
+			wasMatured = matured;
 			matured = true;
 		}
 
-		listener.onMatured(this);
+		if (!isCancelled && !wasMatured) {
+			listener.onMatured(this);
+		}
 	}
 	
 	public synchronized Resource getResource() {
@@ -168,7 +185,7 @@ public abstract class NavigationAttempt {
 	}
 	
 	public synchronized void cancel() {
-		if (!cancelled) {
+		if (!cancelled && !matured && !completed) {
 			cancelled = true;
 			
 			// if is already running asynchronous thread then abort it
@@ -176,6 +193,14 @@ public abstract class NavigationAttempt {
 				asyncPerformThread.interrupt();
 			} else {
 				fireCancelled();
+			}
+			
+			for (Fetch fetch : fetches) {
+				try {
+					fetch.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -229,10 +254,13 @@ public abstract class NavigationAttempt {
 		
 		Html5DocumentImpl destinationActiveDocument = destinationBrowsingContext.getActiveDocument();
 		
-		// 5) If unload above active document is running then abort
-		if (destinationActiveDocument.isUnloadRunning()) {
-			fireCancelled();
-			return;
+		// 5) If traverse the history by a delta algorithm stepped to unload active document then abort
+		synchronized (destinationActiveDocument) {
+			Task unloadTask = destinationActiveDocument.getUnloadTask();
+			if (unloadTask != null && unloadTask.getTaskSource() == TaskSource.HISTORY_TRAVERSAL) {
+				fireCancelled();
+				return;
+			}
 		}
 		
 		// 6) If prompt to unload above active document is running then abort
@@ -265,15 +293,8 @@ public abstract class NavigationAttempt {
 		testForInterruption();
 		
 		// 9) Accept new navigation attempt and abort all currently running
-		// FIXME?: Abort document if already exists and all fetches
 		if (goneAsync == false) {
-			navigationController.cancelNavigationAttempts(new Predicate<NavigationAttempt>() {
-				
-				@Override
-				public boolean apply(NavigationAttempt arg) {
-					return arg != NavigationAttempt.this;
-				}
-			});
+			navigationController.cancelAllNonMaturedNavigationAttempts(destinationBrowsingContext, this);
 		}
 				
 		testForInterruption();
@@ -482,12 +503,13 @@ public abstract class NavigationAttempt {
 		newEntry.setDocument(currentEntry.getDocument());
 		newEntry.setURL(url);
 		newEntry.setBrowsingContextName(currentEntry.getBrowsingContextName());
-		newEntry.setPpersistedUserState(currentEntry.getPersistedUserState());
 		newEntry.setStateObject(currentEntry.getStateObject());
+		
+		sessionHistory.add(newEntry);
 		
 		// 4) Traverse the history to the new entry
 		
-		sessionHistory.traverseHistory(newEntry);
+		sessionHistory.traverseHistory(newEntry, false, true);
 	}
 	
 	/*
@@ -544,13 +566,19 @@ public abstract class NavigationAttempt {
 	}
 	
 	protected void fireCancelled() {
-		sourceBrowsingContext.getEventLoop().queueTask(new Task(TaskSource.NETWORKING, sourceBrowsingContext) {
-			
-			@Override
-			public void execute() throws TaskAbortedException, InterruptedException {
-				listener.onCancelled(NavigationAttempt.this);
-			}
-		});
+		EventLoop eventLoop = sourceBrowsingContext.getEventLoop();
+		Thread loopThread = eventLoop.getEventThread();
+		
+		if (Thread.currentThread() == loopThread) {
+			listener.onCancelled(NavigationAttempt.this);
+		} else {
+			eventLoop.queueTask(new Task(TaskSource.NETWORKING, sourceBrowsingContext) {
+				@Override
+				public void execute() throws TaskAbortedException, InterruptedException {
+					listener.onCancelled(NavigationAttempt.this);
+				}
+			});
+		}
 	}
 	
 	protected boolean affectsBrowsingContext() {	

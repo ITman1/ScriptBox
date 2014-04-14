@@ -1,5 +1,5 @@
 /**
- * StateObject.java
+ * SessionHistoryListener.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,20 +17,10 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.history;
+package org.fit.cssbox.scriptbox.browser;
 
-public class StateObject {
-	protected Object object;
-	
-	public StateObject (Object object) {
-		this.object = object;
-	}
-	
-	public StateObject clone() {
-		return this;
-	}
-	
-	public Object getObject() {
-		return object;
-	}
+import java.util.EventListener;
+
+public interface BrowsingContextListener extends EventListener {
+	public void onBrowsingContextEvent(BrowsingContextEvent event);
 }

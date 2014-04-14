@@ -40,10 +40,12 @@ public class BrowsingUnit {
 	public BrowsingUnit(UserAgent userAgent) {
 		_userAgent = userAgent;
 		
+		_scriptSettingsStack = new ScriptSettingsStack();
+		
 		_windowBrowsingContext = new WindowBrowsingContext(this);
+		
 		_jointSessionHistory = new JointSessionHistory(this);
 		_eventLoop = new EventLoop(this);
-		_scriptSettingsStack = new ScriptSettingsStack();
 	}
 	
 	public UserAgent getUserAgent() {

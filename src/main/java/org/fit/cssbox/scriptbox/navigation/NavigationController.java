@@ -21,6 +21,7 @@ package org.fit.cssbox.scriptbox.navigation;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +48,10 @@ public class NavigationController {
 		
 		@Override
 		public void onMatured(NavigationAttempt attempt) {
-
+			synchronized (NavigationController.this) {
+				removeNavigationAttempt(attempt);
+				fireNavigationAttemptEvent(attempt, EventType.NAVIGATION_MATURED);
+			}
 		}
 		
 		@Override
@@ -89,7 +93,10 @@ public class NavigationController {
 		this.navigationAttempts = new ArrayList<NavigationAttempt>();
 	}
 	
-
+	public synchronized List<NavigationAttempt> getAllNavigationAttempts() {
+		return Collections.unmodifiableList(navigationAttempts);
+	}
+	
 	public synchronized NavigationAttempt update(SessionHistoryEntry entry) {
 		UpdateNavigationAttempt attempt = new UpdateNavigationAttempt(this, entry);
 			
@@ -193,6 +200,30 @@ public class NavigationController {
 		}
        	
 	}
+		
+	public synchronized void cancelAllNonMaturedNavigationAttempts(final BrowsingContext specifiedDesinationContext, final NavigationAttempt excludeAttempt) {
+		cancelNavigationAttempts(new Predicate<NavigationAttempt>() {
+			
+			@Override
+			public boolean apply(NavigationAttempt attempt) {
+				BrowsingContext destinationContext = attempt.getDestinationBrowsingContext();
+				
+				if (attempt == excludeAttempt) {
+					return false;
+				}
+				
+				if (destinationContext == specifiedDesinationContext && !attempt.isMatured()) {
+					return true;
+				}
+				
+				return false;
+			}
+		});
+	}
+	
+	public synchronized void cancelAllNonMaturedNavigationAttempts(final BrowsingContext specifiedDesinationContext) {
+		cancelAllNonMaturedNavigationAttempts(specifiedDesinationContext, null);
+	}
 	
 	public synchronized void cancelAllNavigationAttempts() {
 		ImmutableList<NavigationAttempt> attempts = ImmutableList.copyOf(navigationAttempts);
@@ -203,21 +234,18 @@ public class NavigationController {
 	}
 	
 	public synchronized void cancelNavigationAttempts(Predicate<NavigationAttempt> attemptPredicate) {
-		synchronized (navigationAttempts) {
-			for (NavigationAttempt attempt : navigationAttempts) {
-				if (attemptPredicate.apply(attempt)) {
-					attempt.cancel();
-				}
+		for (NavigationAttempt attempt : navigationAttempts) {
+			if (attemptPredicate.apply(attempt)) {
+				attempt.cancel();
 			}
 		}
 	}
 	
-	public boolean existsNavigationAttempt(Predicate<NavigationAttempt> attemptPredicate) {
-		synchronized (navigationAttempts) {
-			for (NavigationAttempt attempt : navigationAttempts) {
-				if (attemptPredicate.apply(attempt)) {
-					return true;
-				}
+	public synchronized boolean existsNavigationAttempt(Predicate<NavigationAttempt> attemptPredicate) {
+
+		for (NavigationAttempt attempt : navigationAttempts) {
+			if (attemptPredicate.apply(attempt)) {
+				return true;
 			}
 		}
 		
@@ -238,8 +266,9 @@ public class NavigationController {
 	
 	private void fireNavigationAttemptEvent(NavigationAttempt attempt, NavigationControllerEvent.EventType eventType) {
 		NavigationControllerEvent event = new NavigationControllerEvent(this, eventType, attempt);
-		
-		for (NavigationControllerListener listener : listeners) {
+		Set<NavigationControllerListener> listenersCopy = new HashSet<NavigationControllerListener>(listeners);
+				
+		for (NavigationControllerListener listener : listenersCopy) {
 			listener.onNavigationEvent(event);
 		}
 	}

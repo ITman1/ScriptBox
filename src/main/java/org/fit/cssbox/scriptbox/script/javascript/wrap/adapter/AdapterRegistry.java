@@ -52,6 +52,9 @@ final public class AdapterRegistry {
 		
 		while (adapteeClass != null && (adapter = getSpecificAdapter(adapteeClass)) == null) {
 			adapteeClass = adapteeClass.getSuperclass();
+			
+			break; // FIXME?: This solves that all classes which did not needed the adapter, 
+			// were adapted instead. eg. TrustedEvent, PopStateEvent, HashChangeEvent, so this is why is here break...
 		}
 		
 		return adapter;

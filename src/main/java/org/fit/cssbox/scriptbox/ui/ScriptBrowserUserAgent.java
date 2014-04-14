@@ -40,22 +40,18 @@ public class ScriptBrowserUserAgent extends UserAgent {
 	}
 	
 	public static class UiScrollBarsProp extends ScrollBarsProp {
-		private JScrollPane scrollPane;
 		private ScriptBrowser browser;
 		private boolean scrollSuccess;
 		
 		UiScrollBarsProp(ScriptBrowser browser) {
 			this.browser = browser;
-			
-			Container container = browser.getParent();
-			if (container instanceof JScrollPane) {
-				scrollPane = (JScrollPane) container;
-			}
 		}
 		
 		@ScriptGetter
 		@Override
 		public boolean getVisible() {
+			JScrollPane scrollPane = getScrollPane();
+			
 			if (scrollPane != null) {
 				JScrollBar vsb = scrollPane.getVerticalScrollBar();
 				JScrollBar hsb = scrollPane.getHorizontalScrollBar();
@@ -67,6 +63,8 @@ public class ScriptBrowserUserAgent extends UserAgent {
 		
 		@Override
 		public void scroll(int xCoord, int yCoord) {
+			JScrollPane scrollPane = getScrollPane();
+			
 			if (scrollPane != null) {
 				JScrollBar vsb = scrollPane.getVerticalScrollBar();
 				JScrollBar hsb = scrollPane.getHorizontalScrollBar();
@@ -114,6 +112,8 @@ public class ScriptBrowserUserAgent extends UserAgent {
 
 		@Override
 		public int getScrollPositionX() {
+			JScrollPane scrollPane = getScrollPane();
+			
 			if (scrollPane != null) {
 				JScrollBar hsb = scrollPane.getHorizontalScrollBar();
 				return hsb.getValue();
@@ -123,11 +123,24 @@ public class ScriptBrowserUserAgent extends UserAgent {
 
 		@Override
 		public int getScrollPositionY() {
+			JScrollPane scrollPane = getScrollPane();
+			
 			if (scrollPane != null) {
 				JScrollBar vsb = scrollPane.getVerticalScrollBar();				
 				return vsb.getValue();
 			}
 			return 0;
+		}
+		
+		protected JScrollPane getScrollPane() {
+			Container container = browser.getParent();
+			container = (container != null)? container.getParent() : null;
+			
+			if (container instanceof JScrollPane) {
+				return (JScrollPane) container;
+			}
+			
+			return null;
 		}
 	}
 	

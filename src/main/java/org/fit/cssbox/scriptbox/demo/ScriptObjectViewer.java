@@ -30,6 +30,7 @@ import javax.swing.tree.TreePath;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.Window;
+import org.fit.cssbox.scriptbox.browser.WindowProxy;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
@@ -63,7 +64,7 @@ public class ScriptObjectViewer extends JTree {
 	}
 	
     protected DefaultMutableTreeNode rootNode;
-    protected Object rootHostedObject;
+    protected WindowProxy rootHostedObject;
     protected DefaultTreeModel treeModel;
     protected BrowsingUnit browsingUnit;
     protected GlobalObjectJavaScriptEngine scriptEngine;
@@ -112,8 +113,8 @@ public class ScriptObjectViewer extends JTree {
 			ScriptSettings<?> settings = window.getScriptSettings();
 			
 			scriptEngine = (GlobalObjectJavaScriptEngine)settings.getExecutionEnviroment(JavaScriptEngine.JAVASCRIPT_LANGUAGE);
-			rootHostedObject = window;
-			membersResolverFactory = scriptEngine.getClassMembersResolverFactory();
+			rootHostedObject = context.getWindowProxy();
+			membersResolverFactory = scriptEngine.getClassMembersResolverFactory(); // FIXME?: We are supposing that this does not changes in other contexts
 		}
 		
 
