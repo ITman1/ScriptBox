@@ -20,6 +20,7 @@ public class PopStateEvent extends TrustedEvent {
 		this.state = state;
 	}
 	
+	@ScriptFunction
 	@Override
 	public String toString() {
 		return "[object PopStateEvent]";

@@ -19,8 +19,9 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.java;
 
+import org.fit.cssbox.scriptbox.script.java.ClassFunction;
+import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;

@@ -27,11 +27,11 @@ import java.util.Set;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.ui.BarProp;
 import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
-import org.fit.cssbox.scriptbox.url.UrlUtils;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
 
 public class UserAgent {
 	static {
-		UrlUtils.registerUrlHandlerPackage("org.fit.cssbox.scriptbox.url");
+		URLUtilsHelper.registerUrlHandlerPackage("org.fit.cssbox.scriptbox.url");
 	}
 	
 	public static class NoBarProp extends BarProp {

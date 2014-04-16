@@ -42,12 +42,36 @@ import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
-import org.fit.cssbox.scriptbox.url.UrlUtils;
-import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 
 import com.google.common.base.Predicate;
 
 public abstract class NavigationAttempt {
+	protected class AsyncPerformThread extends Thread {
+		@Override
+		public void run() {
+			// 17) Let gone async be true.
+			goneAsync = true;
+			
+			try {
+				performFromHandleRedirects();
+			} catch (InterruptedException e) {
+				fireCancelled();
+			} finally {
+				synchronized (NavigationAttempt.this) {
+					asyncPerformThread = null;
+				}
+			}
+		}
+		
+		@Override
+		public String toString() {
+			String sourceUrl = (url != null)? url.toExternalForm() : "(no url)";
+			return "NavigationAttempt Thread - " + sourceUrl;
+		}
+	};
+	
 	protected final static NavigationAttemptListener EMPTY_NAVIGATION_ATTEMPT_LISTENER = new NavigationAttemptListener() {
 		
 		@Override
@@ -81,7 +105,7 @@ public abstract class NavigationAttempt {
 	protected boolean completed;
 	protected boolean matured;
 	protected boolean cancelled;
-	protected Thread asyncPerformThread;
+	protected AsyncPerformThread asyncPerformThread;
 	protected NavigationController navigationController;
 	protected BrowsingContext sourceBrowsingContext;
 	protected boolean exceptionEnabled;
@@ -185,7 +209,7 @@ public abstract class NavigationAttempt {
 	}
 	
 	public synchronized void cancel() {
-		if (!cancelled && !matured && !completed) {
+		if (!cancelled && !completed) {
 			cancelled = true;
 			
 			// if is already running asynchronous thread then abort it
@@ -303,7 +327,7 @@ public abstract class NavigationAttempt {
 		
 		// 10) Abort if new navigation does not affects the destination browsing context
 		if (!affectsBrowsingContext()) {
-			fireCancelled();
+			asyncCancel();
 			return;
 		}
 				
@@ -311,7 +335,7 @@ public abstract class NavigationAttempt {
 		
 		// 11) Prompt to unload an old document
 		if (goneAsync == false && currentDocument.promptToUnload() == false) {
-			fireCancelled();
+			asyncCancel();
 			return;
 		}
 		
@@ -327,7 +351,7 @@ public abstract class NavigationAttempt {
 		// 13) If resource is not fetchable then apply corresponding handler and abort
 		if (!fetchRegistry.isFetchable(url)) {
 			handleUnableToFetch();
-			fireCancelled();
+			asyncCancel();
 			return;
 		}
 		
@@ -353,7 +377,7 @@ public abstract class NavigationAttempt {
 		synchronized (this) {
 			resource = obtainResource();
 			if (resource == null) {
-				fireCancelled();
+				asyncCancel();
 				return;
 			}
 		}
@@ -363,23 +387,7 @@ public abstract class NavigationAttempt {
 		// 16) If gone async is false, return and continue asynchronously
 		if (goneAsync == false) {
 			synchronized (this) {
-				asyncPerformThread = new Thread() {
-					@Override
-					public void run() {
-						// 17) Let gone async be true.
-						goneAsync = true;
-						
-						try {
-							performFromHandleRedirects();
-						} catch (InterruptedException e) {
-							fireCancelled();
-						} finally {
-							synchronized (NavigationAttempt.this) {
-								asyncPerformThread = null;
-							}
-						}
-					}
-				};
+				asyncPerformThread = new AsyncPerformThread();
 				asyncPerformThread.start();
 				return;
 			}
@@ -405,7 +413,7 @@ public abstract class NavigationAttempt {
 				performFromFragmentIdentifiers();
 			} else {
 				// TODO: Maybe throw an security error.
-				fireCancelled();
+				asyncCancel();
 				return;
 			}
 		}
@@ -417,7 +425,7 @@ public abstract class NavigationAttempt {
 		synchronized (this) {
 			if (!resource.waitForBytes(10000)) {
 				// TODO: Throw timeout or similar exception
-				fireCancelled();
+				asyncCancel();
 				return;
 			}
 		}
@@ -443,7 +451,7 @@ public abstract class NavigationAttempt {
 					errorHandler.process(resource);
 				}
 				
-				fireCancelled();
+				asyncCancel();
 				return;
 			}
 		}
@@ -463,7 +471,7 @@ public abstract class NavigationAttempt {
 			String contentType = resource.getContentType();
 			if (contentType == null) {
 				// TODO: Maybe throw an exception.
-				fireCancelled();
+				asyncCancel();
 				return;
 			}
 		}
@@ -555,7 +563,7 @@ public abstract class NavigationAttempt {
 	protected boolean shouldBeFragmentNavigated() {
 		Html5DocumentImpl currentDocument = destinationBrowsingContext.getActiveDocument();
 		URL currentURL = currentDocument.getAddress();
-		boolean identicalUrls = UrlUtils.identicalComponents(url, currentURL, UrlComponent.PROTOCOL, UrlComponent.HOST, UrlComponent.PORT, UrlComponent.PATH, UrlComponent.QUERY);
+		boolean identicalUrls = URLUtilsHelper.identicalComponents(url, currentURL, UrlComponent.PROTOCOL, UrlComponent.HOST, UrlComponent.PORT, UrlComponent.PATH, UrlComponent.QUERY);
 				
 		String fragment = url.getRef();
 		if (identicalUrls && fragment != null) {
@@ -563,6 +571,16 @@ public abstract class NavigationAttempt {
 		}
 		
 		return false;
+	}
+	
+	protected synchronized void asyncCancel() throws InterruptedException {
+		if (!cancelled && !completed) {
+			if (asyncPerformThread == Thread.currentThread()) {
+				throw new InterruptedException();
+			}
+			
+			cancel();
+		}
 	}
 	
 	protected void fireCancelled() {

@@ -65,6 +65,7 @@ public class Event extends EventImpl {
 		super.initEvent(eventTypeArg, canBubbleArg, cancelableArg);
 	}
 	
+	@ScriptFunction
 	@Override
 	public String toString() {
 		return "[object Event]";

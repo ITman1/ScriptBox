@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -36,12 +34,12 @@ public abstract class BrowserScriptEngineFactory extends MimeContentFactoryBase<
 	protected static final String UNSUPORTED_OPERATION_MESSAGE = "Operation is not supported for browser script engine!";
 	protected static final List<String> EMPTY_STRING_LIST = new ArrayList<String>();
 	
-	protected Set<ScriptContextInject> scriptContextsInjects;
+	protected List<ScriptContextInject> scriptContextsInjects;
 	
 	public abstract String getEngineShortName();
 	
 	public BrowserScriptEngineFactory() {
-		scriptContextsInjects = new TreeSet<ScriptContextInject>();
+		scriptContextsInjects = new ArrayList<ScriptContextInject>();
 	}
 	
 	public BrowserScriptEngine getBrowserScriptEngine(ScriptSettings<?> scriptSettings) {
@@ -113,19 +111,21 @@ public abstract class BrowserScriptEngineFactory extends MimeContentFactoryBase<
 		throw new UnsupportedOperationException(UNSUPORTED_OPERATION_MESSAGE);
 	}
 	
-	public void registerScriptContextsInject(ScriptContextInject inject) {
+	public synchronized void registerScriptContextsInject(ScriptContextInject inject) {
 		scriptContextsInjects.add(inject);
+		
+		Collections.sort(scriptContextsInjects);
 	}
 	
-	public void unregisterScriptContextsInject(ScriptContextInject inject) {
+	public synchronized void unregisterScriptContextsInject(ScriptContextInject inject) {
 		scriptContextsInjects.remove(inject);
 	}
 	
-	public Collection<ScriptContextInject> getScriptContextsInjects() {
-		return Collections.unmodifiableSet(scriptContextsInjects);
+	public synchronized Collection<ScriptContextInject> getScriptContextsInjects() {
+		return Collections.unmodifiableList(scriptContextsInjects);
 	}
 	
-	protected void installScriptContextInjects(BrowserScriptEngine scriptEngine) {
+	protected synchronized void installScriptContextInjects(BrowserScriptEngine scriptEngine) {
 		ScriptContext context = scriptEngine.getContext();
 		
 		for (ScriptContextInject inject : scriptContextsInjects) {

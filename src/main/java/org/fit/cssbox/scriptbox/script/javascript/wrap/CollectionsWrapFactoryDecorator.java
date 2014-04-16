@@ -22,7 +22,7 @@ package org.fit.cssbox.scriptbox.script.javascript.wrap;
 import java.util.List;
 import java.util.Map;
 
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaCollection;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;

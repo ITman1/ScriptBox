@@ -38,8 +38,8 @@ import org.fit.cssbox.scriptbox.dom.events.script.PopStateEvent;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
-import org.fit.cssbox.scriptbox.url.UrlUtils;
-import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -167,7 +167,7 @@ public class SessionHistory {
 	}
 	
 	private void initSessionHistory() {
-		SessionHistoryEntry blankPageEntry = new SessionHistoryEntry(this);
+		SessionHistoryEntry blankPageEntry = new SessionHistoryEntry(this, true);
 		Html5DocumentImpl blankDocument = Html5DocumentImpl.createBlankDocument(context);
 		blankDocument.implementSandboxing();
 		
@@ -302,7 +302,7 @@ public class SessionHistory {
 		URL currentURI = currentEntry.getURL();
 		
 		if (specifiedDocument == currentDocument) {
-			hashChanged = !UrlUtils.identicalComponents(specifiedURI, currentURI, UrlComponent.REF);
+			hashChanged = !URLUtilsHelper.identicalComponents(specifiedURI, currentURI, UrlComponent.REF);
 		}
 		
 		// 7) If the traversal was initiated with replacement enabled, remove  

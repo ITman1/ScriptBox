@@ -28,6 +28,25 @@ import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.Resource;
 
 public abstract class Fetch implements Closeable {
+	protected class AsyncFetchThread extends Thread {
+		@Override
+		public void run() {
+			try {
+				fetchImpl();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				onFetchCompleted();
+			}
+		}
+		
+		@Override
+		public String toString() {
+			String sourceUrl = (url != null)? url.toExternalForm() : "(no url)";
+			return "Fetch Thread - " + sourceUrl;
+		}
+	};
+	
 	protected FetchRegistry fetchRegistry;
 	protected BrowsingContext destinationContext;
 	protected BrowsingContext sourceContext;
@@ -83,19 +102,7 @@ public abstract class Fetch implements Closeable {
 		}
 		
 		if (synchronous == false) {
-			Thread asyncThread = new Thread() {
-				@Override
-				public void run() {
-					try {
-						fetchImpl();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} finally {
-						onFetchCompleted();
-					}
-
-				}
-			};
+			AsyncFetchThread asyncThread = new AsyncFetchThread();
 			asyncThread.start();
 			return;
 		} else {		

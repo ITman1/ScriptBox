@@ -104,6 +104,7 @@ public class AdaptedMouseEvent<MouseEventTypeImpl extends MouseEventImpl> extend
                 buttonArg, relatedTargetArg);
     }
 	
+	@ScriptFunction
 	@Override
 	public String toString() {
 		return "[object MouseEvent]";

@@ -29,7 +29,7 @@ import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import com.google.common.base.Predicate;
 
 public abstract class TaskQueuesScheduler {	
-	protected class ExecutionThread extends Thread {
+	protected class TaskQueuesSchedulerThread extends Thread {
 		@Override
 		public void run() {
 			try {
@@ -42,6 +42,11 @@ public abstract class TaskQueuesScheduler {
 				cleanupJobs();
 			}
 		};
+		
+		@Override
+		public String toString() {
+			return TaskQueuesScheduler.this.getClass().getSimpleName() + " Thread";
+		}
 	};
 	
 	protected static final LifetimeEndedException ABORTED_EXCEPTION = new LifetimeEndedException("Task queues scheduler has been aborted!");
@@ -54,14 +59,14 @@ public abstract class TaskQueuesScheduler {
 	protected Task lastStartedTask;
 	protected long lastStartedTaskTime;
 	
-	protected ExecutionThread executionThread;
+	protected TaskQueuesSchedulerThread executionThread;
 	
 	public TaskQueuesScheduler() {
 		this.taskQueues = new TaskQueues();
 		this.scheduledTasks = new LinkedList<Task>();
 		this.pauseMonitor = new Object();
 		
-		executionThread = new ExecutionThread();
+		executionThread = new TaskQueuesSchedulerThread();
 		executionThread.start();
 	}
 	

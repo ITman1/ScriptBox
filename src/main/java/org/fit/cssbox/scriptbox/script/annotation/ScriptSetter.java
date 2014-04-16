@@ -33,7 +33,7 @@ public @interface ScriptSetter  {
 	public static final String CALLABLE_SETTER = "callable";
 	public static final String CALLABLE_ENUMERABLE_SETTER = "enum_callable";
 	public static final String FIELD_SET_OVERRIDE = "field_override";
-	public static final String EMPTY = "empty";
+	public static final String EMPTY = "";
 	public static final String[] DEFAULT_OPTIONS = {ENUMERABLE_FIELD, FIELD_SET_OVERRIDE};
 	
 	String[] engines() default {};

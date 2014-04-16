@@ -19,11 +19,12 @@
 
 package org.fit.cssbox.scriptbox.deprecied;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox.Shutter;
+import org.fit.cssbox.scriptbox.script.java.Shutter;
 
 /** 
  * @deprecated
@@ -66,6 +67,13 @@ public class ScriptAnnotationShutter implements Shutter {
 	public boolean isMethodVisible(Class<?> type, Method method) {
 		/*Class<?> instanceType = instance.getClass();
 		return ScriptAnnotation.testForScriptFunction(instanceType, method, scriptEngine);*/
+		return false;
+	}
+
+	@Override
+	public boolean isConstructorVisible(Class<?> type,
+			Constructor<?> constructor) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

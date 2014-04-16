@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.DefaultClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.DefaultClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.CollectionsWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.DefaultWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.WrapFactoryDecorator;

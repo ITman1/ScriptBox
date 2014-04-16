@@ -19,13 +19,20 @@
 
 package org.fit.cssbox.scriptbox.history;
 
-public class StateObject {
+public class StateObject implements Cloneable {
 	protected Object object;
 	
 	public StateObject (Object object) {
 		this.object = object;
 	}
 	
+	/*
+	 * TODO:
+	 * http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#structured-clone
+	 * (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
 	public StateObject clone() {
 		return this;
 	}

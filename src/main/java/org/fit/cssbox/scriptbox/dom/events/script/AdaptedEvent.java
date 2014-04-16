@@ -97,6 +97,7 @@ public class AdaptedEvent<EventTypeImpl extends EventImpl> implements Event, Wra
 		eventImpl.initEvent(eventTypeArg, canBubbleArg, cancelableArg);
 	}
 	
+	@ScriptFunction
 	@Override
 	public String toString() {
 		return "[object Event]";

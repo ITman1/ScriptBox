@@ -64,7 +64,7 @@ public class TheEndTask extends ParserFinishedTask {
 	@Override
 	public void execute() throws TaskAbortedException, InterruptedException {
 		Html5DocumentImpl document = getDocument();
-		
+
 		// 1) Set the current document readiness to "interactive" and the insertion point to undefined.
 		document.setDocumentReadiness(DocumentReadiness.INTERACTIVE);
 		

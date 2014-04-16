@@ -63,15 +63,14 @@ public class ScriptBrowserUserAgent extends UserAgent {
 		
 		@Override
 		public void scroll(int xCoord, int yCoord) {
-			JScrollPane scrollPane = getScrollPane();
+			final Rectangle rect = new Rectangle(xCoord, yCoord, 0, 0);
 			
-			if (scrollPane != null) {
-				JScrollBar vsb = scrollPane.getVerticalScrollBar();
-				JScrollBar hsb = scrollPane.getHorizontalScrollBar();
-				
-				vsb.setValue(yCoord);
-				hsb.setValue(xCoord);
-			}
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					browser.scrollRectToVisible(rect);
+				}
+			});		
 		}
 		
 		@Override
@@ -95,7 +94,7 @@ public class ScriptBrowserUserAgent extends UserAgent {
 			return scrollSuccess;
 		}
 		
-		public void scrollToFragmentImpl(String fragment) {
+		protected void scrollToFragmentImpl(String fragment) {
 			Rectangle top = new Rectangle(0, 0, 1, 1); // top of pane
 			Rectangle bottom = new Rectangle(0, browser.getHeight() - 1, 1, 1);
 			if (fragment != null) {
@@ -112,24 +111,14 @@ public class ScriptBrowserUserAgent extends UserAgent {
 
 		@Override
 		public int getScrollPositionX() {
-			JScrollPane scrollPane = getScrollPane();
-			
-			if (scrollPane != null) {
-				JScrollBar hsb = scrollPane.getHorizontalScrollBar();
-				return hsb.getValue();
-			}
-			return 0;
+			Rectangle rect = browser.getVisibleRect();
+			return new Double(rect.getX()).intValue();
 		}
 
 		@Override
 		public int getScrollPositionY() {
-			JScrollPane scrollPane = getScrollPane();
-			
-			if (scrollPane != null) {
-				JScrollBar vsb = scrollPane.getVerticalScrollBar();				
-				return vsb.getValue();
-			}
-			return 0;
+			Rectangle rect = browser.getVisibleRect();
+			return new Double(rect.getY()).intValue();
 		}
 		
 		protected JScrollPane getScrollPane() {

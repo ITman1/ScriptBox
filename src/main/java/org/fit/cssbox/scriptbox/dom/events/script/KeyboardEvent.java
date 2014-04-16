@@ -93,6 +93,7 @@ public class KeyboardEvent extends UIEvent {
 		this.altKey = tokens.contains(DOM_MODIFIER_ALT);
 	}
 	
+	@ScriptFunction
 	@Override
 	public String toString() {
 		return "[object KeyboardEvent]";

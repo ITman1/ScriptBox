@@ -20,14 +20,16 @@
 package org.fit.cssbox.scriptbox.script.annotation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.java.ClassConstructor;
+import org.fit.cssbox.scriptbox.script.java.ClassField;
+import org.fit.cssbox.scriptbox.script.java.ClassFunction;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
 
 public class ScriptAnnotation {
 	public static boolean isScriptAnnotation(Annotation annotation) {		
@@ -112,6 +114,9 @@ public class ScriptAnnotation {
 		} else if (annotation instanceof ScriptFunction) {
 			ScriptFunction scriptFunction = (ScriptFunction)annotation;
 			engines = scriptFunction.engines();
+		} else if (annotation instanceof ScriptConstructor) {
+			ScriptConstructor scriptConstructor = (ScriptConstructor)annotation;
+			engines = scriptConstructor.engines();
 		} else if (annotation instanceof ScriptClass) {
 			ScriptClass scriptClass = (ScriptClass)annotation;
 			engines = scriptClass.engines();
@@ -190,6 +195,12 @@ public class ScriptAnnotation {
 				annotationsCounter++;
 				returnAnnotation = scriptAnnotation;
 			}
+		} else if (member instanceof Constructor<?>) {
+			Constructor<?> constructor = (Constructor<?>) member;
+			if ((scriptAnnotation = constructor.getAnnotation(ScriptConstructor.class)) != null) {
+				annotationsCounter++;
+				returnAnnotation = scriptAnnotation;
+			}
 		}
 				
 		if (annotationsCounter > 1) {
@@ -226,6 +237,11 @@ public class ScriptAnnotation {
 		}
 		
 		return isSupportedAndValid && isSignatureValid;
+	}
+	
+	public static boolean testForScriptConstructor(Class<?> clazz, Constructor<?> constructor, BrowserScriptEngine scriptEngine) {
+		boolean isSupportedAndValid = isSupportedAndValid(ScriptConstructor.class, ScriptClass.ALL_CONSTRUCTORS, clazz, constructor, scriptEngine);
+		return isSupportedAndValid;
 	}
 	
 	public static boolean testForScriptFunction(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
@@ -322,9 +338,9 @@ public class ScriptAnnotation {
 		boolean hasValidAnnotation = false;
 		
 		Annotation classAnnotation = ScriptAnnotation.getClassScriptAnnotation(clazz);
-		Annotation methodAnnotation = ScriptAnnotation.getMemberScriptAnnotation(member);
-		if (methodAnnotation != null) {
-			hasValidAnnotation = annotationType.isAssignableFrom(methodAnnotation.getClass());
+		Annotation memberAnnotation = ScriptAnnotation.getMemberScriptAnnotation(member);
+		if (memberAnnotation != null) {
+			hasValidAnnotation = annotationType.isAssignableFrom(memberAnnotation.getClass());
 		} else if (ScriptAnnotation.containsOption(classAnnotation, classOption)) {
 			hasValidAnnotation = true;
 		}

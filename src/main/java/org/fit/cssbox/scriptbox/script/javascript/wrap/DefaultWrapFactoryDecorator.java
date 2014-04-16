@@ -19,9 +19,9 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.DefaultClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
+import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.DefaultClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;

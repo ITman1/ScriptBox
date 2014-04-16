@@ -20,6 +20,7 @@
 package org.fit.cssbox.scriptbox.dom.events.script;
 
 import org.apache.xerces.dom.events.UIEventImpl;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.w3c.dom.events.UIEvent;
 import org.w3c.dom.views.AbstractView;
@@ -42,6 +43,12 @@ public class AdaptedUIEvent<UIEventTypeImpl extends UIEventImpl> extends Adapted
         return eventImpl.getDetail();
     }
 
+	@ScriptFunction
+	@Override
+	public String toString() {
+		return "[object UIEvent]";
+	}
+	
 	@ScriptGetter
 	@Override
     public void initUIEvent(String typeArg, boolean canBubbleArg, boolean cancelableArg, 

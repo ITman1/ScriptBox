@@ -22,8 +22,8 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectField;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectFunction;
+import org.fit.cssbox.scriptbox.script.java.ObjectField;
+import org.fit.cssbox.scriptbox.script.java.ObjectFunction;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJavaClass;

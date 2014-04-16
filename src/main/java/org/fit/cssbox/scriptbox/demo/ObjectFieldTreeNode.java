@@ -28,11 +28,11 @@ import java.util.Map.Entry;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
+import org.fit.cssbox.scriptbox.script.java.ClassField;
+import org.fit.cssbox.scriptbox.script.java.ClassMember;
+import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Function;
 

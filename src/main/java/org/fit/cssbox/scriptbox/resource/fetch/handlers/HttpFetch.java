@@ -35,8 +35,8 @@ import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
-import org.fit.cssbox.scriptbox.url.UrlUtils;
-import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 
 @FetchPreamble (protocols = {"http"})
 public class HttpFetch extends Fetch {
@@ -107,7 +107,7 @@ public class HttpFetch extends Fetch {
 					String urlFragment = url.getRef();
 					
 					if (urlFragment != null) {
-						newUrl = UrlUtils.setComponent(newUrl, UrlComponent.REF, urlFragment);
+						newUrl = URLUtilsHelper.setComponent(newUrl, UrlComponent.REF, urlFragment);
 					}
 						
 				} catch (MalformedURLException e) {

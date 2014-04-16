@@ -19,10 +19,14 @@
 
 package org.fit.cssbox.scriptbox.events;
 
+import java.net.URL;
+
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
+import org.fit.cssbox.scriptbox.exceptions.WrappedException;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 
 import com.google.common.base.Predicate;
@@ -51,7 +55,7 @@ public class EventLoop {
 		}
 	}
 	
-	protected class ExecutionThread extends Thread {
+	protected class EventLoopThread extends Thread {
 		@Override
 		public void run() {
 			try {
@@ -64,6 +68,15 @@ public class EventLoop {
 				cleanupJobs();
 			}
 		};
+		
+		@Override
+		public String toString() {
+			BrowsingContext context = _browsingUnit.getWindowBrowsingContext();
+			Html5DocumentImpl document = context.getActiveDocument();
+			URL address = (document != null)? document.getAddress() : null;
+			String sourceUrl = (address != null)? address.toExternalForm() : "(no url)";
+			return "EventLoop Thread - " + sourceUrl;
+		}
 	};
 	
 	protected class SpinEventLoopResumeTask extends Task {
@@ -93,13 +106,13 @@ public class EventLoop {
 	protected Task _runningTask;
 	protected boolean _aborted;
 	
-	protected ExecutionThread executionThread;
+	protected EventLoopThread executionThread;
 		
 	public EventLoop(BrowsingUnit browsingUnit, TaskQueuesScheduler taskScheduler) {
 		_taskScheduler = taskScheduler;
 		_browsingUnit = browsingUnit;
 
-		executionThread = new ExecutionThread();
+		executionThread = new EventLoopThread();
 		executionThread.start();
 	}
 	
@@ -287,7 +300,7 @@ public class EventLoop {
 		} catch (LifetimeEndedException e) {
 			throw new InterruptedException();
 		} catch (Exception e) {
-			e.printStackTrace();
+			reportException(e);
 		} finally {
 			_taskScheduler.onTaskFinished(_runningTask);
 		}
@@ -295,6 +308,14 @@ public class EventLoop {
 		if (executionThread.isInterrupted()) {
 			throw new InterruptedException();
 		}
+	}
+	
+	protected void reportException(Exception e) {
+		if (e instanceof WrappedException) {
+			e = ((WrappedException)e).unwrap();
+		}
+		
+		e.printStackTrace();
 	}
 	
 	protected void testForAbort() {

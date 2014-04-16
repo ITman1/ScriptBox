@@ -33,7 +33,7 @@ public @interface ScriptGetter {
 	public static final String CALLABLE_GETTER = "callable";
 	public static final String CALLABLE_ENUMERABLE_GETTER = "enum_callable";
 	public static final String FIELD_GET_OVERRIDE = "field_override";
-	public static final String EMPTY = "empty";
+	public static final String EMPTY = "";
 	public static final String[] DEFAULT_OPTIONS = {ENUMERABLE_FIELD, FIELD_GET_OVERRIDE};
 	
 	String[] engines() default {};

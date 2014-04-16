@@ -30,7 +30,6 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
-import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
@@ -63,7 +62,6 @@ public class BrowsingContext {
 	protected Element container;
 	protected SessionHistory sessionHistory;
 	protected NavigationController navigationController;
-	protected Location location;
 	protected Set<BrowsingContextListener> listeners;		
 	
 	protected String contextName;
@@ -79,7 +77,6 @@ public class BrowsingContext {
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
 		this.navigationController = new NavigationController(this);
-		this.location = new Location(this);
 		
 		BrowsingContext creatorContext = getCreatorContext();
 		if (creatorContext != null) {
@@ -194,14 +191,14 @@ public class BrowsingContext {
 	public Html5DocumentImpl getActiveDocument() {
 		if (discarded) {
 			return null;
-		} else {
+		} else if (sessionHistory != null) {
 			SessionHistoryEntry entry = sessionHistory.getCurrentEntry();
 			if (entry != null) {
 				return entry.getDocument();
-			} else {
-				return null;
 			}
 		}
+		
+		return null;
 	}
 	
 	public boolean hasCreatorDocument() {
@@ -573,10 +570,6 @@ public class BrowsingContext {
 	
 	public NavigationController getNavigationController() {
 		return navigationController;
-	}
-	
-	public Location getLocation() {
-		return location;
 	}
 	
 	protected void removeChildContext(BrowsingContext child) {

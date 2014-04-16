@@ -23,10 +23,11 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.fit.cssbox.scriptbox.script.java.ClassFunction;
+import org.fit.cssbox.scriptbox.script.java.InvocableMember;
+import org.fit.cssbox.scriptbox.script.java.MemberFunction;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.MemberFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.FunctionObject;
@@ -86,38 +87,15 @@ public class HostedJavaMethod extends FunctionObject {
 		this.objectFunctions.add(objectFunction);
 	}
 	
-	public MemberFunction getNearestObjectFunction(Object[] args) {
-		Class<?> argsTypes[] = new Class<?>[args.length];
-		
-		for (int i = 0; i < args.length; i++) {
-			argsTypes[i] = (args[i] != null)? args[i].getClass() : null;
-		}
-		
-		for (MemberFunction objectFunction : objectFunctions) {
-			Method method = objectFunction.getMember();
-			Class<?> methodTypes[] = method.getParameterTypes();
-			
-			Object[] castedArgs = ClassFunction.castArgs(methodTypes, args);
-			if (castedArgs == null) {
-				continue;
-			}
-			
-			boolean isAssignable = ClassFunction.isAssignableTypes(castedArgs, methodTypes);
-			if (isAssignable) {
-				return objectFunction;
-			}
-		}
-		
-		return null;
-	}
-	
 	@Override
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		MemberFunction nearestFunctionObject = getNearestObjectFunction(args);
+		InvocableMember<?> nearestInvocable = getNearestObjectFunction(args, objectFunctions);
 
-		if (nearestFunctionObject == null) {
+		if (nearestInvocable == null) {
 			throw new FunctionException("Unable to match nearest function");
 		}
+		
+		MemberFunction nearestFunctionObject = (MemberFunction)nearestInvocable;
 		
 		Method functionMethod = nearestFunctionObject.getMember();
 		Class<?> returnType = functionMethod.getReturnType();
@@ -131,5 +109,29 @@ public class HostedJavaMethod extends FunctionObject {
 		} catch (Exception e) {
 			throw new UnknownException(e);
 		}
+	}
+	
+	public static InvocableMember<?> getNearestObjectFunction(Object[] args, Set<? extends InvocableMember<?>> invocableMembers) {
+		Class<?> argsTypes[] = new Class<?>[args.length];
+		
+		for (int i = 0; i < args.length; i++) {
+			argsTypes[i] = (args[i] != null)? args[i].getClass() : null;
+		}
+		
+		for (InvocableMember<?> invocableMember : invocableMembers) {
+			Class<?> methodTypes[] = invocableMember.getParameterTypes();
+			
+			Object[] castedArgs = ClassFunction.castArgs(methodTypes, args);
+			if (castedArgs == null) {
+				continue;
+			}
+			
+			boolean isAssignable = ClassFunction.isAssignableTypes(castedArgs, methodTypes);
+			if (isAssignable) {
+				return invocableMember;
+			}
+		}
+		
+		return null;
 	}
 }

@@ -34,7 +34,7 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	protected boolean mutedErrorsFlag;
 	protected ScriptSettingsTemplate settings;
 	protected Object result;
-	protected Exception exception;
+	protected ScriptException exception;
 	
 	public Script(Reader source, URL sourceURL, String language, ScriptSettingsTemplate settings, boolean mutedErrorsFlag) {
 		this.source = source;
@@ -70,7 +70,7 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 		return result;
 	}
 	
-	public Exception getException() {
+	public ScriptException getException() {
 		return exception;
 	}
 	

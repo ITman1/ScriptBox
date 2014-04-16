@@ -153,8 +153,8 @@ public class JavaScriptTesterController {
 				public void run() {
 					Html5DocumentImpl newDocument = whereTraversed.getDocument();
 					BrowsingContext browsingContext = newDocument.getBrowsingContext();
-					
-					if (newDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE && browsingContext.isTopLevelBrowsingContext()) {
+
+					if (newDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE && browsingContext.isTopLevelBrowsingContext() && newDocument.isActiveDocument()) {
 						updateScriptBox();
 					}
 					

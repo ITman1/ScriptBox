@@ -25,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
@@ -91,6 +92,10 @@ public class JavascriptFetch extends HttpFetch {
 		}
 	}	
 		
+	public JavascriptFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
+	}
+	
 	public JavascriptFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		super(sourceContext, destinationContext, url);
 	}

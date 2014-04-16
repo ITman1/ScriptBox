@@ -27,6 +27,8 @@ import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
+import org.fit.cssbox.scriptbox.script.javascript.injectors.URLInjector;
+import org.fit.cssbox.scriptbox.script.javascript.injectors.XMLHttpRequestInjector;
 
 public class GlobalObjectJavaScriptEngineFactory extends BrowserScriptEngineFactory {
 
@@ -47,6 +49,11 @@ public class GlobalObjectJavaScriptEngineFactory extends BrowserScriptEngineFact
 	private static final String ENGINE_VERSION = "0.9";
 	private static final String LANGUAGE_NAME = "ECMAScript";
 	private static final String LANGUAGE_VERSION = "1.8";
+	
+	public GlobalObjectJavaScriptEngineFactory() {
+		registerScriptContextsInject(new URLInjector());
+		registerScriptContextsInject(new XMLHttpRequestInjector());
+	}
 	
 	@Override
 	public List<String> getExplicitlySupportedMimeTypes() {

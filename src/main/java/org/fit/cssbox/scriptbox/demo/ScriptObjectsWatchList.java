@@ -41,12 +41,15 @@ public class ScriptObjectsWatchList extends ScriptObjectViewer {
 	
 	@Override
 	public void refresh() {
+		updateScriptEngine();
+		
 		if (watchedListRoot == null) {
 			watchedListRoot = new DefaultMutableTreeNode();
 		}
 		
 		if (watchedListRoot.getChildCount() > 0) {
 			ObjectFieldTreeNode child = (ObjectFieldTreeNode)watchedListRoot.getFirstChild();
+			child.removeAllChildren();
 			
 			do {
 				String fieldName = child.getFieldName();

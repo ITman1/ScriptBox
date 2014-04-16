@@ -19,28 +19,38 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.js;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.fit.cssbox.scriptbox.script.java.ClassConstructor;
+import org.fit.cssbox.scriptbox.script.java.ClassField;
+import org.fit.cssbox.scriptbox.script.java.ClassFunction;
+import org.fit.cssbox.scriptbox.script.java.ClassMember;
+import org.fit.cssbox.scriptbox.script.java.InvocableMember;
+import org.fit.cssbox.scriptbox.script.java.MemberConstructor;
+import org.fit.cssbox.scriptbox.script.java.MemberFunction;
+import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.ObjectException;
+import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
+import org.mozilla.javascript.BaseFunction;
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
 /*
  * Creates scope for java native object.
  */
-public class HostedJavaObject extends ScriptableObject implements Wrapper {
+public class HostedJavaObject extends BaseFunction implements Wrapper {
 
 	private static final long serialVersionUID = 6761328943903362404L;
 
@@ -79,6 +89,45 @@ public class HostedJavaObject extends ScriptableObject implements Wrapper {
 	@Override
 	public String getClassName() {
 		return "HostedJavaObject";
+	}
+	
+	@Override
+	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
+		Scriptable result = createObject(cx, scope);
+		
+		Set<ClassConstructor> constructors = objectMembers.getConstructors();
+		
+		if (constructors == null || constructors.isEmpty()) {
+			throw new ObjectException("Object does not contain any constructors!");
+		}
+		
+		InvocableMember<?> nearestInvocable = HostedJavaMethod.getNearestObjectFunction(args, constructors);
+
+		if (nearestInvocable == null) {
+			throw new FunctionException("Unable to match nearest constructor");
+		}
+		
+		MemberConstructor nearestConstructorMember = (MemberConstructor)nearestInvocable;
+		
+		Constructor<?> constructor = nearestConstructorMember.getMember();
+		
+		Class<?> expectedTypes[] = constructor.getParameterTypes();
+		Object[] castedArgs = ClassFunction.castArgs(expectedTypes, args);
+		
+		try {
+			Object newInstance = constructor.newInstance(castedArgs);
+			newInstance = wrapObject(newInstance);
+			
+			if (newInstance instanceof Scriptable) {
+				result = (Scriptable)newInstance;
+			}
+			
+		} catch (Exception e) {
+			throw new UnknownException(e);
+		}
+		
+		
+		return result;
 	}
 	
 	@Override

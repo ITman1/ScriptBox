@@ -46,6 +46,13 @@ public abstract class Resource {
 			} catch (IOException e) {
 			}
 		}
+		
+		@Override
+		public String toString() {
+			URL address = getAddress();
+			String sourceUrl = (address != null)? address.toExternalForm() : "(no url)";
+			return "WaitForData Thread - " + sourceUrl;
+		}
 	};
 	
 	protected BrowsingContext context;

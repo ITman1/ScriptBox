@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.java.ClassField;
+import org.fit.cssbox.scriptbox.script.java.ClassFunction;
+import org.fit.cssbox.scriptbox.script.java.ClassMember;
+import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.ObjectField;
+import org.fit.cssbox.scriptbox.script.java.ObjectFunction;
+import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassField;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassFunction;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectField;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectFunction;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ObjectMembers;
 import org.mozilla.javascript.ScriptableObject;
 
 public class ObjectImplementor {

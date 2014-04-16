@@ -19,8 +19,8 @@
 
 package org.fit.cssbox.scriptbox.deprecied;
 
+import org.fit.cssbox.scriptbox.script.java.Shutter;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.WrapFactoryDecorator;
-import org.fit.cssbox.scriptbox.script.javascript.wrap.sandbox.Shutter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 

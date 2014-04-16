@@ -30,10 +30,12 @@ import javax.script.SimpleBindings;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.DefaultClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.DefaultClassMembersResolverFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.TopLevel;
 import org.mozilla.javascript.Wrapper;
@@ -72,14 +74,14 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 	
 	@Override
 	public Object eval(Reader reader, ScriptContext context) throws ScriptException {
-		Object ret;
+		Object ret = null;
 
 		Context cx = enterContext();
 		try {
 			Scriptable executionScope = getRuntimeScope(context);
 			ret = cx.evaluateReader(executionScope, reader, "<inline script>" , 1,  null);
 		} catch (Exception ex) {
-			throw new ScriptException(ex);
+			throwWrappedScriptException(ex);
 		} finally {
 			exitContext();
 		}
@@ -103,6 +105,27 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 	
 	public void exitContext() {
 		Context.exit();
+	}
+	
+	public static void throwWrappedScriptException(Exception ex) throws ScriptException {
+		if ( ex instanceof RhinoException) {
+			RhinoException rhinoException = (RhinoException)ex;
+			int line = rhinoException.lineNumber();
+			int column = rhinoException.columnNumber();
+			
+			String message;
+			if (ex instanceof JavaScriptException) {
+				message = String.valueOf(((JavaScriptException)ex).getValue());
+			} else {
+				message = ex.toString();
+			}
+			
+			ScriptException scriptException = new ScriptException(message, rhinoException.sourceName(), line, column);
+			scriptException.initCause(ex);
+			throw scriptException;
+		} else {
+			throw new ScriptException(ex);
+		} 
 	}
 	
 	protected TopLevel initializeTopLevel() {

@@ -24,10 +24,12 @@ import java.util.Date;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
-import org.fit.cssbox.scriptbox.url.UrlUtils;
-import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 
 public class SessionHistoryEntry {
+	private boolean _defaultEntry;
+	
 	private URL _url;
 	private String _title;
 	private Html5DocumentImpl _document;
@@ -41,17 +43,26 @@ public class SessionHistoryEntry {
 	private StateObject _stateObject;
 	
 	public SessionHistoryEntry(SessionHistory sessionHistory) {
+		this(sessionHistory, false);
+	}
+	
+	public SessionHistoryEntry(SessionHistory sessionHistory, boolean defaultEntry) {
 		_sessionHistory = sessionHistory;
+		_defaultEntry = defaultEntry;
 	}
 	
 	public boolean isContiguous(SessionHistoryEntry entry) {
-		boolean identicalUrls = UrlUtils.identicalComponents(_url, entry._url, 
+		boolean identicalUrls = URLUtilsHelper.identicalComponents(_url, entry._url, 
 				UrlComponent.PROTOCOL, UrlComponent.HOST, UrlComponent.PORT, 
 				UrlComponent.PATH, UrlComponent.QUERY);
 		
 		return _document == entry._document && identicalUrls;
 	} 
 		
+	public boolean isDefaultEntry() {
+		return _defaultEntry;
+	}
+	
 	public URL getURL() {
 		return _url;
 	}

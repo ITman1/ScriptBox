@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.html.dom.HTMLDocumentImpl;
@@ -38,19 +37,21 @@ import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentEvent.EventType;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
+import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.security.origins.OriginContainer;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
-import org.fit.cssbox.scriptbox.url.UrlUtils;
-import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -109,6 +110,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * with a unique History object which must all model the same underlying session history.
 	 */
 	protected History _history;
+	protected Location _location;
 	
 	private OriginContainer<DocumentOrigin> _originContainer;
 	private URL _address;
@@ -125,8 +127,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	private boolean _firedUnloadFlag;
 	private boolean _pageShowingFlag;
 	
-	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {
-		_history = new History(this);
+	private Set<Html5DocumentEventListener> listeners;
+	
+	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {	
+		listeners = new HashSet<Html5DocumentEventListener>();
 		
 		_salvageableFlag = true;
 		_firedUnloadFlag = false;
@@ -151,7 +155,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		if (_activeSandboxingFlagSet.contains(SandboxingFlag.ORIGIN_BROWSING_CONTEXT_FLAG)) {
 			documentOrigin = DocumentOrigin.createUnique(this);
 			effectiveScriptOrigin = DocumentOrigin.create(this, documentOrigin);
-		} else if (address != null && SERVER_BASED_SCHEMES.contains(address.getProtocol())) {
+		} else if (address != null && (SERVER_BASED_SCHEMES.contains(address.getProtocol()) || address.getProtocol().equals(JAVASCRIPT_SCHEME_NAME))) {
 			UrlOrigin addressOrigin = new UrlOrigin(address);
 			documentOrigin = DocumentOrigin.create(this, addressOrigin);
 			effectiveScriptOrigin = DocumentOrigin.create(this, documentOrigin);
@@ -167,9 +171,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 				documentOrigin = DocumentOrigin.createUnique(this);
 				effectiveScriptOrigin = DocumentOrigin.create(this, documentOrigin);
 			}
-		} else if (address != null && address.getProtocol().equals(JAVASCRIPT_SCHEME_NAME)) {
-			// TODO: If a Document was created as part of the processing for javascript: URLs
-		}
+		} 
 		/*
 		 * TODO:
 		 * else if a Document is an iframe srcdoc document
@@ -181,6 +183,9 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		if (createWindow) {
 			_window = new Window(this);
 		}
+		
+		_history = new History(this);
+		_location = new Location(this);
 	}
 	
 	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType) {
@@ -360,6 +365,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return fullyActive;
 	}
 	
+	public boolean isActiveDocument() {
+		return _browsingContext.getActiveDocument() == this;
+	}
+	
 	/*
 	 * The document family of a Document object consists of the union of all 
 	 * the document families of the browsing contexts that are nested through the Document object.
@@ -413,6 +422,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	
 	public void setAddress(URL address) {
 		_address = address;
+		
+		_location.onAddressChanged();
+		
+		fireJointSessionHistoryEvent(EventType.ADDRESS_CHANGED);
 	}
 	
 	public URL getAddress() {
@@ -430,7 +443,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	}
 	
 	public void setAddressFragment(String fragment) {
-		_address = UrlUtils.setComponent(_address, UrlComponent.REF, fragment);
+		_address = URLUtilsHelper.setComponent(_address, UrlComponent.REF, fragment);
 	}
 	
 	public OriginContainer<DocumentOrigin> getOriginContainer() {
@@ -685,6 +698,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		_ignoreDestructiveWritesCounter--;
 	}
 	
+	@ScriptFunction
 	@Override
 	public String toString() {
 		return super.toString();
@@ -692,6 +706,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	
 	public History getHistory() {
 		return _history;
+	}
+	
+	public Location getLocation() {
+		return _location;
 	}
 	
 	/*
@@ -706,5 +724,18 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 */
 	public void fullyExitFullscreen() {
 		
+	}
+	
+	protected void fireJointSessionHistoryEvent(EventType eventType) {
+		if (listeners.isEmpty()) {
+			return;
+		}
+		
+		Html5DocumentEvent event = new Html5DocumentEvent(this, eventType);
+		Set<Html5DocumentEventListener> listenersCopy = new HashSet<Html5DocumentEventListener>(listeners);
+		
+		for (Html5DocumentEventListener listener : listenersCopy) {
+			listener.onDocumentEvent(event);
+		}
 	}
 }

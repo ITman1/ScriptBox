@@ -33,9 +33,9 @@ import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowProxy;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
+import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
 
 public class ScriptObjectViewer extends JTree {
 
@@ -102,25 +102,32 @@ public class ScriptObjectViewer extends JTree {
 	
 	public void setBrowsingUnit(BrowsingUnit browsingUnit) {
 		this.browsingUnit = browsingUnit;
-		BrowsingContext context = browsingUnit.getWindowBrowsingContext();
-		Html5DocumentImpl document = context.getActiveDocument();
 		
-		rootHostedObject = null;
-		scriptEngine = null;
-		membersResolverFactory = null;
-		if (document != null) {
-			Window window = document.getWindow();
-			ScriptSettings<?> settings = window.getScriptSettings();
+		updateScriptEngine();
+	}
+	
+	protected void updateScriptEngine() {
+		if (browsingUnit != null) {
+			BrowsingContext context = browsingUnit.getWindowBrowsingContext();
+			Html5DocumentImpl document = context.getActiveDocument();
 			
-			scriptEngine = (GlobalObjectJavaScriptEngine)settings.getExecutionEnviroment(JavaScriptEngine.JAVASCRIPT_LANGUAGE);
-			rootHostedObject = context.getWindowProxy();
-			membersResolverFactory = scriptEngine.getClassMembersResolverFactory(); // FIXME?: We are supposing that this does not changes in other contexts
+			rootHostedObject = null;
+			scriptEngine = null;
+			membersResolverFactory = null;
+			if (document != null) {
+				Window window = document.getWindow();
+				ScriptSettings<?> settings = window.getScriptSettings();
+				
+				scriptEngine = (GlobalObjectJavaScriptEngine)settings.getExecutionEnviroment(JavaScriptEngine.JAVASCRIPT_LANGUAGE);
+				rootHostedObject = context.getWindowProxy();
+				membersResolverFactory = scriptEngine.getClassMembersResolverFactory(); // FIXME?: We are supposing that this does not changes in other contexts
+			}
 		}
-		
-
 	}
 	
 	protected void refresh(DefaultMutableTreeNode rootNode) {
+		updateScriptEngine();
+		
         treeModel = new DefaultTreeModel(rootNode);
         
         /*TreePath rootNodePath = null;

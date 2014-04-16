@@ -172,8 +172,8 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		
 		// 1) Create a new Window object, and associate it with the Document
 		Html5DocumentImpl recycleWindowDocument = null;
-		if (sessionHistory.getLength() == 1 && currentDocument != null && currentDocument.hasDefaultAddress()) {
-			recycleWindowDocument = currentDocument; 
+		if (sessionHistory.getLength() == 1 && currentDocument != null && currentDocument.hasDefaultAddress() && navigationAttempt.hasReplacementEnabled() && currentEntry.isDefaultEntry()) {
+			recycleWindowDocument = currentDocument; // FIXME: According to specification there should be also origin check, but we do know it yet, it is known after 2nd step
 		}
 		
 		// FIXME: 2) Set the document's referrer to the address of the resource from which Request-URIs 

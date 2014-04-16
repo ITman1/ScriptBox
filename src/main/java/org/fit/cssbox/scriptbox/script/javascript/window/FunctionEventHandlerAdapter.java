@@ -19,7 +19,11 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.window;
 
+import javax.script.ScriptException;
+
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
+import org.fit.cssbox.scriptbox.exceptions.WrappedException;
+import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.mozilla.javascript.Context;
@@ -44,6 +48,12 @@ public class FunctionEventHandlerAdapter implements EventHandler {
 				Object arg = ObjectScriptable.javaToJS(event, scope);
 				Object[] args = {arg};
 				function.call(cx, scope, scope, args);
+			} catch (Exception ex) {
+				try {
+					JavaScriptEngine.throwWrappedScriptException(ex);
+				} catch (ScriptException e) {
+					throw new WrappedException(e);
+				}
 			} finally {
 				Context.exit();
 			}

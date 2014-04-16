@@ -19,7 +19,7 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.js;
 
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMember;
+import org.fit.cssbox.scriptbox.script.java.ClassMember;
 import org.mozilla.javascript.Wrapper;
 
 public class ScriptableOriginWrapper implements Wrapper {

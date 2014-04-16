@@ -313,13 +313,13 @@ public class JavaScriptTester {
 		objectsWatchListPanel.add(newWatchedVariableField, BorderLayout.SOUTH);
 		newWatchedVariableField.setColumns(10);
 
-		JScrollPane scrollPane = new JScrollPane();
-		objectsWatchListPanel.add(scrollPane, BorderLayout.CENTER);
+		JScrollPane watchListScrollPane = new JScrollPane();
+		objectsWatchListPanel.add(watchListScrollPane, BorderLayout.CENTER);
 
 		objectsWatchList = new ScriptObjectsWatchList();
 		objectsWatchList.setPreferredSize(new Dimension(0, 0));
 		objectsWatchList.setMinimumSize(new Dimension(0, 0));
-		scrollPane.setViewportView(objectsWatchList);
+		watchListScrollPane.setViewportView(objectsWatchList);
 		
 		JPanel objectsWatchListHeaderPanel = new JPanel();
 		objectsWatchListPanel.add(objectsWatchListHeaderPanel, BorderLayout.NORTH);

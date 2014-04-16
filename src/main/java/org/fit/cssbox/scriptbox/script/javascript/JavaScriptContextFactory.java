@@ -22,17 +22,17 @@ package org.fit.cssbox.scriptbox.script.javascript;
 import org.fit.cssbox.scriptbox.dom.events.adapters.EventAdapter;
 import org.fit.cssbox.scriptbox.dom.events.adapters.MouseEventAdapter;
 import org.fit.cssbox.scriptbox.dom.events.adapters.UIEventAdapter;
-import org.fit.cssbox.scriptbox.script.javascript.java.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.AdapterWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.CollectionsWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.DefaultWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.WrapFactoryDecorator;
-import org.fit.cssbox.scriptbox.script.javascript.wrap.adapter.AdapterRegistry;
+import org.fit.cssbox.scriptbox.script.wrap.adapter.AdapterRegistry;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 
 public class JavaScriptContextFactory extends ContextFactory {
-		
+	
 	protected JavaScriptEngine scriptEngine;
 	protected ClassMembersResolverFactory membersResolverFactory;
 	protected AdapterRegistry adapterRegistry;

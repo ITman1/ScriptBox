@@ -64,4 +64,22 @@ public class UrlOrigin extends Origin<URL> {
 			isEquals();
 	}
 
+	@Override
+	public String toString() {
+		String urlStr = "";
+		
+		if (_protocol != null) {
+			urlStr += _protocol + "://";
+		}
+		
+		if (_host != null) {
+			urlStr += _host;
+		}
+		
+		if (_port != -1) {
+			urlStr += ":" + _port;
+		}
+		
+		return urlStr;
+	}
 }

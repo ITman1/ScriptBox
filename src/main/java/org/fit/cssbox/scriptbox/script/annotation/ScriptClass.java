@@ -31,6 +31,7 @@ import java.lang.annotation.Target;
 public @interface ScriptClass  {
 	public final String ALL_METHODS = "all_methods";
 	public final String ALL_FIELDS = "all_fields";
+	public final String ALL_CONSTRUCTORS = "all_constructors";
 	public final String ALL_SATIC_METHODS = "all_static_methods";
 	public final String ALL_STATIC_FIELDS = "all_static_fields";
 	

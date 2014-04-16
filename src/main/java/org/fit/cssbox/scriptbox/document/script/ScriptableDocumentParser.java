@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +41,36 @@ import org.xml.sax.SAXException;
  * Limitations: Dedicated only for parsing of one document.
  */
 public class ScriptableDocumentParser {
+	
+	private class ParserThread extends Thread {
+		private InputSource parserSource;
+		
+		public ParserThread(InputSource parserSource) {
+			this.parserSource = parserSource;
+		}
+		
+		@Override
+		public void run() {
+			Exception exception = null;
+			try {
+				_parser.parse(parserSource);
+			} catch (LifetimeEndedException e) { // we only aborted
+				exception = e;
+			} catch (Exception e) {
+				e.printStackTrace();
+				exception = e;
+			} finally {
+				afterParserFinished(exception);
+			}
+		}
+		
+		@Override
+		public String toString() {
+			URL address = _document.getAddress();
+			String sourceUrl = (address != null)? address.toExternalForm() : "(no url)";
+			return "Parser Thread - " + sourceUrl;
+		}
+	}
 	
 	private ScriptDOMParser _parser;
 	private Html5DocumentImpl _document;
@@ -240,23 +271,8 @@ public class ScriptableDocumentParser {
 	}
 	
 	protected void runParser(final InputSource parserSource) throws SAXException, IOException {
-		Thread asyncThread = new Thread() {
-			@Override
-			public void run() {
-				Exception exception = null;
-				try {
-					_parser.parse(parserSource);
-				} catch (LifetimeEndedException e) { // we only aborted
-					exception = e;
-				} catch (Exception e) {
-					e.printStackTrace();
-					exception = e;
-				} finally {
-					afterParserFinished(exception);
-				}
-			}
-		};
-		asyncThread.start();
+		ParserThread parserThread = new ParserThread(parserSource);
+		parserThread.start();
 		return;
 
 	}

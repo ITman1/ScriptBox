@@ -19,9 +19,13 @@
 
 package org.fit.cssbox.scriptbox.ui;
 
+import java.awt.Rectangle;
 import java.io.InputStream;
 import java.net.URL;
 
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 
@@ -31,6 +35,8 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
+import org.fit.cssbox.scriptbox.history.SessionHistory;
+import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.swingbox.BrowserPane;
 import org.fit.cssbox.swingbox.util.CSSBoxAnalyzer;
 
@@ -43,6 +49,9 @@ public class ScriptBrowser extends BrowserPane {
 	
 	protected ScriptBrowserUserAgent userAgent;
 	protected BrowsingUnit browsingUnit;
+	
+	protected SessionHistoryEntry visibleSessionHistoryEntry;
+	protected Rectangle delayedScrollRect;
 
 	public ScriptBrowser() {
 		this.userAgent = new ScriptBrowserUserAgent(this);
@@ -70,6 +79,10 @@ public class ScriptBrowser extends BrowserPane {
 		return browsingUnit;
 	}
 
+	public void setPositionsToScroll() {
+		
+	}
+	
 	public void refresh() {
 		browsingUnit.queueTask(new Task(TaskSource.DOM_MANIPULATION, browsingUnit.getWindowBrowsingContext()) {
 			
@@ -93,10 +106,10 @@ public class ScriptBrowser extends BrowserPane {
 				String contentType = activeDocument.getContentType();
 				
 				/* Set document properties */
-		        setContentType(contentType);
-		        document.putProperty(Document.StreamDescriptionProperty, documentAddress);
+				setContentType(contentType);
+				document.putProperty(Document.StreamDescriptionProperty, documentAddress);
 
-		        /* Render document */
+				/* Render document */
 				
 				try {
 					kit.read(in, document, 0);
@@ -107,6 +120,20 @@ public class ScriptBrowser extends BrowserPane {
 				/* Set the document to the component */
 				setDocument(document);
 
+				synchronized (ScriptBrowser.this) {
+					SessionHistory sessionHistory = context.getSesstionHistory();
+					visibleSessionHistoryEntry = sessionHistory.getCurrentEntry();
+					
+					if (delayedScrollRect != null) {
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								scrollRectToVisible(delayedScrollRect);
+							}
+						});
+					}
+				}
+				
 				/* TODO?:
 				 * SwingUtilities.invokeLater(new Runnable() {
 				 * 
@@ -117,9 +144,23 @@ public class ScriptBrowser extends BrowserPane {
 		});
 	}
 	
-	// TODO: Remove!!!!!
-    public boolean scrollToReferenceWithBoolean(String reference) {
-    	scrollToReference(reference);
-        return true;
-    }
+	@Override
+	public synchronized void scrollRectToVisible(Rectangle aRect) {
+		BrowsingContext context = browsingUnit.getWindowBrowsingContext();
+		SessionHistory sessionHistory = context.getSesstionHistory();
+		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
+		
+		aRect = new Rectangle(aRect);
+		aRect.setSize(1, 1);
+		
+		if (visibleSessionHistoryEntry != currentEntry) {
+			delayedScrollRect = aRect;
+		} else {
+			Rectangle bottom = new Rectangle(0, getHeight() - 1, 1, 1);
+			super.scrollRectToVisible(bottom);
+			super.scrollRectToVisible(aRect);
+			
+			delayedScrollRect = null;
+		}
+	}
 }

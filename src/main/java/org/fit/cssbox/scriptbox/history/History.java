@@ -32,8 +32,8 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
-import org.fit.cssbox.scriptbox.url.UrlUtils;
-import org.fit.cssbox.scriptbox.url.UrlUtils.UrlComponent;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
+import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 
 public class History {	
 	protected StateObject state;
@@ -146,7 +146,7 @@ public class History {
 			
 			URL address = document.getAddress();
 			
-			boolean identicalURLs = UrlUtils.identicalComponents(absoluteURL, address, 
+			boolean identicalURLs = URLUtilsHelper.identicalComponents(absoluteURL, address, 
 					UrlComponent.PROTOCOL, UrlComponent.HOST, UrlComponent.PORT);
 			
 			if (!identicalURLs) {
@@ -156,7 +156,7 @@ public class History {
 			Html5DocumentImpl responsibleDocument = settings.getResponsibleDocument();
 			UrlOrigin absoluteUrlOrigin = new UrlOrigin(absoluteURL);
 			Origin<?> responsibleDocumentOrigin = responsibleDocument.getOrigin();
-			boolean pathQueryDiffers = !UrlUtils.identicalComponents(absoluteURL, address, 
+			boolean pathQueryDiffers = !URLUtilsHelper.identicalComponents(absoluteURL, address, 
 					UrlComponent.PATH, UrlComponent.QUERY);
 			
 			if (!responsibleDocumentOrigin.equals(absoluteUrlOrigin) && pathQueryDiffers) {

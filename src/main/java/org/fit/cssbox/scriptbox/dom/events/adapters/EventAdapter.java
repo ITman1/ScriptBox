@@ -21,7 +21,7 @@ package org.fit.cssbox.scriptbox.dom.events.adapters;
 
 import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.dom.events.script.AdaptedEvent;
-import org.fit.cssbox.scriptbox.script.javascript.wrap.adapter.Adapter;
+import org.fit.cssbox.scriptbox.script.wrap.adapter.Adapter;
 
 public class EventAdapter implements Adapter {
 	@Override

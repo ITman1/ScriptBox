@@ -26,6 +26,9 @@ import org.fit.cssbox.scriptbox.script.javascript.JavaScriptInjector;
 
 public class XMLHttpRequestInjector extends JavaScriptInjector {
 
+	/*
+	 * TODO: Implement XMLHttpRequest
+	 */
 	public static class XMLHttpRequest {
 		
 	}

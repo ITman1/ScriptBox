@@ -49,7 +49,7 @@ import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.ui.BarProp;
 import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
@@ -241,6 +241,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return IFrameContainerBrowsingContext.EMPTY_IFRAMES;
 	}
 	
+	@ScriptFunction
 	@Override
 	public String toString() {
 		return "[object Window]";
@@ -321,7 +322,13 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 
 	@ScriptGetter
 	public Location getLocation() {
-		return context.getLocation();
+		return documentImpl.getLocation();
+	}
+	
+	@ScriptSetter
+	public void setLocation(String url) {
+		Location location = getLocation();
+		location.assign(url);
 	}
 
 	@ScriptGetter
