@@ -251,6 +251,10 @@ public class ScriptableDocumentParser {
 		}
 	}
 	
+	public synchronized boolean isParserTask() {
+		return Thread.currentThread() instanceof ParserThread;
+	}
+	
 	/*
 	 * Expected to be called from Event loop thread.
 	 */
@@ -274,6 +278,5 @@ public class ScriptableDocumentParser {
 		ParserThread parserThread = new ParserThread(parserSource);
 		parserThread.start();
 		return;
-
 	}
 }

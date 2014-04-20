@@ -150,8 +150,13 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		
 		_creatorDocument = (document instanceof Html5DocumentImpl)? (Html5DocumentImpl)document : null;
 		_creatorParser = (document instanceof Html5DocumentImpl)? ((Html5DocumentImpl)document).getParser() : null;
+		_parserInserted = _creatorParser.isParserTask(); //
 	}
 
+	public boolean isParserInserted() {
+		return _parserInserted;
+	}
+	
 	@Override
 	public boolean getAsync() {
 		return !getAttribute(ASYNC_ATTR_NAME).isEmpty();
@@ -193,12 +198,14 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 		
 		/* Step 3 */
-		if (_wasParserInserted && !getAsync()) {
+		boolean async = getAsync();
+		if (_wasParserInserted && !async) {
 			_forceAsync = true;
 		}
 		
 		/* Step 4 */
-		if (getSrc() == null) {
+		String src = getSrc();
+		if (src.isEmpty()) {
 			boolean isEmpty = !hasExecutableScript();
 
 			if (isEmpty) {
@@ -246,22 +253,22 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		// TODO: Script encoding feature	
 				
 		/* Step 14 and 15 */
-		boolean hasSrc = getSrc() != null && !getSrc().isEmpty();
-		boolean async = getAsync();
-		if (hasSrc && getDefer() && _parserInserted && !async) {
-			fetchResource(getSrc(), new ParserInsertedScriptFetchCompletedTask());
+		boolean hasSrc = !src.isEmpty();
+		boolean defer = getDefer();
+		if (hasSrc && defer && _parserInserted && !async) {
+			fetchResource(src, new ParserInsertedScriptFetchCompletedTask());
 			_creatorParser.addOnFinishScript(this);
 		} else if (hasSrc && _parserInserted && !async) {
-			fetchResource(getSrc(), new ParserInsertedScriptFetchCompletedTask());
+			fetchResource(src, new ParserInsertedScriptFetchCompletedTask());
 			_creatorParser.setPendingParsingBlockingScript(this);
 		} else if (!hasSrc && _parserInserted && _creatorParser.getScriptNestingLevel() < 2 && _creatorParser.hasStyleSheetBlockScripts()) {
 			_creatorParser.setPendingParsingBlockingScript(this);
 			makeReadyToBeParserExecuted();
 		} else if (hasSrc && !async && !_forceAsync) {
-			fetchResource(getSrc(), new InOrderASAPScriptFetchCompletedTask());
+			fetchResource(src, new InOrderASAPScriptFetchCompletedTask());
 			_creatorParser.addInOrderASAPScript(this);
 		} else if (hasSrc) {
-			fetchResource(getSrc(), new ASAPScriptFetchCompletedTask());
+			fetchResource(src, new ASAPScriptFetchCompletedTask());
 			_creatorParser.addASAPScript(this);
 		} else {
 			executeScript();
@@ -287,13 +294,11 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	}
 	
 	public String getMimeType() {
-		if ((getType() != null && getType().isEmpty())
-				|| (getType() == null && getLang() != null && getLang().isEmpty())
-				|| (getType() == null && getLang() == null)) {
+		if (getType().isEmpty() && getLang().isEmpty()) {
 			return DEFAULT_SCRIPT_MIME_TYPE;
-		} else if (getType() != null) {
+		} else if (!getType().isEmpty()) {
 			return getType().trim();
-		} else if (getLang() != null && !getLang().isEmpty()) {
+		} else if (!getLang().isEmpty()) {
 			return "text/" + getLang().trim();
 		}
 		return "";

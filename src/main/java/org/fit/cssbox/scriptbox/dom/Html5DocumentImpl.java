@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.xerces.dom.NodeImpl;
 import org.apache.xerces.dom.events.EventImpl;
+import org.apache.xerces.dom.events.MutationEventImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.Window;
@@ -57,6 +58,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.html.HTMLBaseElement;
@@ -129,6 +131,43 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	
 	private Set<Html5DocumentEventListener> listeners;
 	
+	private EventListener documentEventListener = new EventListener() {
+		
+		@Override
+		public void handleEvent(Event evt) {
+			String eventType = evt.getType();
+			org.w3c.dom.events.EventTarget target = evt.getTarget();
+			
+			if (!(evt instanceof MutationEventImpl)) {
+				return;
+			}
+			
+			Html5ScriptElementImpl script = null;
+			
+			MutationEventImpl mutationEvent = (MutationEventImpl)evt;
+			if (eventType.equals(MutationEventImpl.DOM_ATTR_MODIFIED)) {
+				String prevValue = mutationEvent.getPrevValue();
+				String attrName = mutationEvent.getAttrName();
+				
+				if (target instanceof Html5ScriptElementImpl && attrName.equalsIgnoreCase("src") && prevValue == null) {
+					script = (Html5ScriptElementImpl)target;
+				}
+			} else if (eventType.equals(MutationEventImpl.DOM_NODE_INSERTED)) {
+				Node relatedNode = mutationEvent.getRelatedNode();
+				
+				if (target instanceof Html5ScriptElementImpl) {
+					script = (Html5ScriptElementImpl)target;
+				} else if (relatedNode instanceof Html5ScriptElementImpl) {
+					script = (Html5ScriptElementImpl)relatedNode;
+				}		
+			}
+			
+			if (script != null && !script.isParserInserted()) {
+				script.prepareScript();
+			}
+		}
+	};
+	
 	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {	
 		listeners = new HashSet<Html5DocumentEventListener>();
 		
@@ -186,6 +225,9 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		
 		_history = new History(this);
 		_location = new Location(this);
+		
+		addEventListener(MutationEventImpl.DOM_NODE_INSERTED, documentEventListener);
+		addEventListener(MutationEventImpl.DOM_ATTR_MODIFIED, documentEventListener);
 	}
 	
 	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType) {
@@ -233,6 +275,19 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, sandboxingFlagSet, null, true, "text/html", null);
 		
 		return document;
+	}
+	
+	@ScriptFunction
+	@Override
+	public Text createTextNode(String data) {
+		return super.createTextNode(data);
+	}
+	
+	@ScriptFunction
+	@Override
+	public synchronized Element getElementById(String elementId) {
+		// TODO Auto-generated method stub
+		return super.getElementById(elementId);
 	}
 	
 	@ScriptFunction
