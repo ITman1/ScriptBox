@@ -45,7 +45,7 @@ public class ScriptAnalyzer extends DefaultAnalyzer {
     {
     	w3cdoc = context.getActiveDocument();
     	URL address = ((Html5DocumentImpl)w3cdoc).getAddress();
-
+    	
         // Create the CSS analyzer
         DOMAnalyzer da = new DOMAnalyzer(w3cdoc, address);
         da.attributesToStyles();

@@ -25,6 +25,7 @@ import java.net.URL;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.Window;
+import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
@@ -32,7 +33,10 @@ import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
+import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.url.ParserURL;
+import org.fit.cssbox.scriptbox.url.URLSearchParams;
 import org.fit.cssbox.scriptbox.url.URLUtils;
 import org.fit.cssbox.scriptbox.url.WrappedURL;
 
@@ -51,6 +55,8 @@ public class Location extends URLUtils {
 	
 	@ScriptFunction
 	public void assign(String url) {
+		securityTest();
+		
 		boolean replacementEnabled = false;
 		
 		SessionHistory sessionHistory = context.getSesstionHistory();
@@ -65,16 +71,29 @@ public class Location extends URLUtils {
 			replacementEnabled = true;
 		}
 		
+		/*
+		 * FIXME?: Every browser replaces history if page redirects during loading, but specification tells nothing about that.
+		 */
+		if (currentDocument.getDocumentReadiness() == DocumentReadiness.LOADING) {
+			replacementEnabled = true;
+		}
+		
 		navigate(url, replacementEnabled);
 	}
 	
 	@ScriptFunction
 	public void replace(String url) {
+		if (!isFamiliarResponsibleBrowsingContext()) {
+			securityTest();
+		}
+		
 		navigate(url, true);
 	}
 	
 	@ScriptFunction
 	public void reload() {
+		securityTest();
+		
 		// TODO: If the currently executing task is the dispatch of a resize event in response to the user resizing the browsing context
 		// TODO: If the browsing context's active document is an iframe srcdoc document
 		// TODO: If the browsing context's active document has its reload override flag set
@@ -88,8 +107,100 @@ public class Location extends URLUtils {
 		}
 	}
 	
+	@ScriptGetter
+	@Override
+	public String getHref() {
+		if (!isFamiliarResponsibleBrowsingContext()) {
+			securityTest();
+		}
+
+		return super.getHref();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getHash() {
+		securityTest();
+		return super.getHash();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getHost() {
+		securityTest();
+		return super.getHost();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getHostname() {
+		securityTest();
+		return super.getHostname();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getOrigin() {
+		securityTest();
+		return super.getOrigin();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getPassword() {
+		securityTest();
+		return super.getPassword();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getPathname() {
+		securityTest();
+		return super.getPathname();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getPort() {
+		securityTest();
+		return super.getPort();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getProtocol() {
+		securityTest();
+		return super.getProtocol();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getSearch() {
+		securityTest();
+		return super.getSearch();
+	}
+	
+	@ScriptGetter
+	@Override
+	public URLSearchParams getSearchParams() {
+		securityTest();
+		return super.getSearchParams();
+	}
+	
+	@ScriptGetter
+	@Override
+	public String getUsername() {
+		securityTest();
+		return super.getUsername();
+	}
+	
+	@ScriptFunction
 	@Override
 	public String toString() {
+		if (!isAssociatedDocumentEffectiveScriptOriginEqual()) {
+			securityTest();
+		}
+		
 		return "[object Location]";
 	}
 	
@@ -141,9 +252,10 @@ public class Location extends URLUtils {
 		if (activeDocument != null) {
 			Window window = activeDocument.getWindow();
 			ScriptSettings<?> settings = window.getScriptSettings();
-			return settings.getBaseUrl();
+			URL baseURL = settings.getBaseUrl();
+			return baseURL;
 		}
-
+		
 		return null;
 	}
 	
@@ -176,5 +288,59 @@ public class Location extends URLUtils {
 	
 	protected void navigate(BrowsingContext sourceBrowsingContext, URL netUrl, boolean replacementEnabled) {	
 		controller.navigate(sourceBrowsingContext, netUrl, true, false, replacementEnabled);
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#security-location
+	 */
+	protected void securityTest() {
+		if (!isRelatedDocumentEffectiveScriptOriginEqual()) {
+			throwSecurityErrorException();
+		}
+	}
+	
+	protected boolean isAssociatedDocumentEffectiveScriptOriginEqual() {
+		return isEffectiveScriptOriginEqual(document);
+	}
+	
+	protected boolean isRelatedDocumentEffectiveScriptOriginEqual() {
+		Html5DocumentImpl activeDocument = context.getActiveDocument();
+		return isEffectiveScriptOriginEqual(activeDocument);
+	}
+	
+	protected boolean isEffectiveScriptOriginEqual(Html5DocumentImpl document) {
+		BrowsingUnit browsingUnit = context.getBrowsingUnit();
+		ScriptSettingsStack stack = browsingUnit.getScriptSettingsStack();
+		
+		ScriptSettings<?> settings = stack.getEntryScriptSettings();
+
+		if (settings != null && document != null) {
+			Origin<?> settingsOrigin = settings.getEffectiveScriptOrigin();
+			Origin<?> scriptOrigin = document.getEffectiveScriptOrigin();
+			
+			return settingsOrigin.equals(scriptOrigin);
+		}
+		
+		return settings == null;
+	}
+	
+	protected boolean isFamiliarResponsibleBrowsingContext() {
+		BrowsingUnit browsingUnit = context.getBrowsingUnit();
+		ScriptSettingsStack stack = browsingUnit.getScriptSettingsStack();
+		
+		ScriptSettings<?> settings = stack.getEntryScriptSettings();
+		Html5DocumentImpl activeDocument = context.getActiveDocument();
+		
+		if (settings != null && activeDocument != null) {
+			BrowsingContext responsibleContext = settings.getResposibleBrowsingContext();
+
+			return responsibleContext.isFamiliarWith(context);
+		}
+		
+		return false;
+	}
+	
+	protected void throwSecurityErrorException() {
+		throw new DOMException(DOMException.SECURITY_ERR, "SecurityError");
 	}
 }

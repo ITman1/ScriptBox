@@ -144,17 +144,22 @@ public class JavaScriptTesterController {
 	private JointSessionHistoryListener jointSessionHistoryListener = new JointSessionHistoryListener() {
 		@Override
 		public void onHistoryEvent(final JointSessionHistoryEvent event) {
-			if (event.getEventType() != JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
+			SessionHistoryEntry _whereTraversed = null;
+			if (event.getEventType() == JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
+				_whereTraversed = jointSessionHistory.getCurrentEntry();
+			} else if (event.getEventType() == JointSessionHistoryEvent.EventType.TRAVERSED) {
+				_whereTraversed = event.getRelatedTarget();
+			} else {
 				return;
 			}
-			
-			final SessionHistoryEntry whereTraversed = jointSessionHistory.getCurrentEntry();
+						
+			final SessionHistoryEntry whereTraversed = _whereTraversed;
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					Html5DocumentImpl newDocument = whereTraversed.getDocument();
 					BrowsingContext browsingContext = newDocument.getBrowsingContext();
-
-					if (newDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE && browsingContext.isTopLevelBrowsingContext() && newDocument.isActiveDocument()) {
+					
+					if (newDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE && browsingContext.isTopLevelBrowsingContext() && newDocument.isActiveDocument() && currentEntry != whereTraversed) {
 						updateScriptBox();
 					}
 					
@@ -237,6 +242,14 @@ public class JavaScriptTesterController {
 		}
 	};
 	
+	private ActionListener onNavigationFieldActionListener = new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			onNavigateSourceCodeButton.actionPerformed(e);
+		}
+	};
+	
 	private ActionListener onCloseSourceCodeListener = new ActionListener() {
 		
 		@Override
@@ -272,6 +285,12 @@ public class JavaScriptTesterController {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String navigationUrl = navigationField.getText();
+			
+			boolean hasScheme = navigationUrl.matches("\\w+:.*");
+			
+			if (!hasScheme) {
+				navigationUrl = "http://" + navigationUrl;
+			}
 			
 			if (navigationAttempt != null) {
 				navigationController.cancelAllNavigationAttempts();
@@ -496,6 +515,7 @@ public class JavaScriptTesterController {
 		navigationController.addListener(navigationControllerListener);
 		
 		navigationField.getDocument().addDocumentListener(onNavigationFieldChangedListener);
+		navigationField.addActionListener(onNavigationFieldActionListener);
 	}
 	
 	private void navigateSoureCode(String sourceCode) {

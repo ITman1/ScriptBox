@@ -349,7 +349,9 @@ public class URLUtils {
 		url = null;
 		input = newInput;
 		
-		url = URLParser.getInstance().parse(input, getBase(), getQueryEncoding());
+		ParserURL base = getBase();
+		String queryEncoding = getQueryEncoding();
+		url = URLParser.getInstance().parse(input, base, queryEncoding);
 		
 		if (url != null && url.isRelativeFlag()) {
 			if (queryObject == null) {

@@ -32,7 +32,6 @@ import org.fit.cssbox.scriptbox.script.java.ClassFunction;
 import org.fit.cssbox.scriptbox.script.java.ClassMember;
 import org.fit.cssbox.scriptbox.script.java.InvocableMember;
 import org.fit.cssbox.scriptbox.script.java.MemberConstructor;
-import org.fit.cssbox.scriptbox.script.java.MemberFunction;
 import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
@@ -44,7 +43,6 @@ import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
 /*

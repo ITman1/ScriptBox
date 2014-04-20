@@ -112,6 +112,12 @@ public class WindowProxy extends Window {
 		proxiedWindow().setName(name);
 	}
 
+	@ScriptSetter
+	@Override
+	public void setLocation(String url) {
+		super.setLocation(url);
+	}
+	
 	@ScriptGetter
 	@Override
 	public Location getLocation() {

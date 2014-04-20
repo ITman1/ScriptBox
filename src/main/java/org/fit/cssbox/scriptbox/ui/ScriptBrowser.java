@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 
@@ -63,7 +61,7 @@ public class ScriptBrowser extends BrowserPane {
 		if (hyperlinkHandler != null) {
 			removeHyperlinkListener(hyperlinkHandler);
 		}
-		hyperlinkHandler = new ScriptBrowserHyperlinkHandler(browsingUnit);
+		hyperlinkHandler = new ScriptBrowserHyperlinkHandler();
 		
 		addHyperlinkListener(hyperlinkHandler);
 		setCSSBoxAnalyzer(this.analyzer);
@@ -103,6 +101,7 @@ public class ScriptBrowser extends BrowserPane {
 				BrowsingContext context = browsingUnit.getWindowBrowsingContext();
 				Html5DocumentImpl activeDocument = context.getActiveDocument();
 				URL documentAddress = activeDocument.getAddress();
+
 				String contentType = activeDocument.getContentType();
 				
 				/* Set document properties */

@@ -260,14 +260,17 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	}
 	
 	public HTMLBaseElement getBaseElement() {
-		HTMLElement head = getHead();
-		NodeList baseElements = head.getElementsByTagName("base");
-		
-		if (baseElements.getLength() > 0) {
-			Node baseElement = baseElements.item(0);
+		// FIXME: We should not wait for completeness, but try to get base address from actual loaded elements - proper synchronized section is needed.
+		if (_documentReadiness == DocumentReadiness.COMPLETE) {
+			HTMLElement head = getHead();
+			NodeList baseElements = head.getElementsByTagName("base");
 			
-			if (baseElement instanceof HTMLBaseElement) {
-				return (HTMLBaseElement)baseElement;
+			if (baseElements.getLength() > 0) {
+				Node baseElement = baseElements.item(0);
+				
+				if (baseElement instanceof HTMLBaseElement) {
+					return (HTMLBaseElement)baseElement;
+				}
 			}
 		}
 		

@@ -25,7 +25,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
 
 import org.fit.cssbox.layout.Box;
-import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.swingbox.util.Constants;
 import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
@@ -33,14 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 public class ScriptBrowserHyperlinkHandler extends DefaultHyperlinkHandler
-{
-    private BrowsingUnit browsingUnit;
-    
-    public ScriptBrowserHyperlinkHandler(BrowsingUnit browsingUnit)
-    {
-        this.browsingUnit = browsingUnit;
-    }
-
+{    
     @Override
     protected void loadPage(JEditorPane pane, HyperlinkEvent evt)
     {    	
