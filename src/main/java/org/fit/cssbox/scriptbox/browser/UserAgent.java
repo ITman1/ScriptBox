@@ -114,6 +114,18 @@ public class UserAgent {
 			destroyBrowsingUnit(browsingUnit);
 		}
 	}
+	
+	public void releaseStorageMutex() {
+		
+	}
+	
+	public boolean promptsEnabled(URL page) {
+		return true;
+	}
+	
+	public boolean alertsEnabled(URL page) {
+		return true;
+	}
 
 	public BarProp getLocationbar() {
 		return noBarAvailable;
@@ -137,5 +149,17 @@ public class UserAgent {
 
 	public BarProp getToolbar() {
 		return noBarAvailable;
+	}
+	
+	public void showAlertDialog(String message) {
+		
+	}
+	
+	public boolean showConfirmDialog(String message) {
+		return false;
+	}
+	
+	public String showPromptDialog(String message, String defaultChoice) {
+		return null;
 	}
 }

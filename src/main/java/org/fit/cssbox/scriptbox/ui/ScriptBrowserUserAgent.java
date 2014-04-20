@@ -22,6 +22,7 @@ package org.fit.cssbox.scriptbox.ui;
 import java.awt.Container;
 import java.awt.Rectangle;
 
+import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -151,5 +152,22 @@ public class ScriptBrowserUserAgent extends UserAgent {
 	@Override
 	public ScrollBarsProp getScrollbars() {
 		return uiScrollBarsProp;
+	}
+	
+	@Override
+	public void showAlertDialog(String message) {
+		JOptionPane.showMessageDialog(browser, message, "Alert dialog", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	@Override
+	public boolean showConfirmDialog(String message) {
+		int res = JOptionPane.showOptionDialog(browser, message, "Confirm dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+		return res == JOptionPane.YES_OPTION;
+	}
+	
+	@Override
+	public String showPromptDialog(String message, String defaultChoice) {
+		String res = JOptionPane.showInputDialog(browser, message, "Prompt dialog", JOptionPane.QUESTION_MESSAGE);
+		return (res == null)? defaultChoice : res;
 	}
 }

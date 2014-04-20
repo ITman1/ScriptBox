@@ -32,6 +32,8 @@ import java.net.URLStreamHandler;
 
 import org.apache.commons.io.input.ReaderInputStream;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.browser.WindowScript;
 import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
@@ -95,14 +97,21 @@ public class Handler extends URLStreamHandler {
 			}
 			
 			protected void processResults() {
-				if (exception != null) {
+				BrowsingUnit unit = destinationContext.getBrowsingUnit();
+				UserAgent agent = (unit != null)? unit.getUserAgent() : null;
+				boolean scriptingEnabled = (agent != null)? agent.scriptsSupported() : true;
+				
+				if (exception != null || result == null || !scriptingEnabled) {
 					result = Undefined.instance;
 				}
 				
+				String outputText = "";
 				if (result == Undefined.instance) {
 					responseCode = 204;
+					outputText = "204 No Content response";
 				} else {
 					responseCode = 200;
+					outputText = result.toString();
 				}
 				
 				StringBuilder resultStringBuilder = new StringBuilder();
@@ -110,14 +119,14 @@ public class Handler extends URLStreamHandler {
 				resultStringBuilder.append("<html>\n");
 				resultStringBuilder.append("\t<head></head>\n");
 				resultStringBuilder.append("\t<body>");
-				resultStringBuilder.append(result.toString());
+				resultStringBuilder.append(outputText);
 				resultStringBuilder.append("</body>\n");
 				resultStringBuilder.append("</html>\n");
 
 				String resultString = resultStringBuilder.toString();
 				Reader reader = new StringReader(resultString);
 				is = new ReaderInputStream(reader);
-			} 
+			}
 			
 		}
 		

@@ -246,7 +246,7 @@ public class JavaScriptTesterController {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			onNavigateSourceCodeButton.actionPerformed(e);
+			onNavigateListener.actionPerformed(e);
 		}
 	};
 	

@@ -43,7 +43,7 @@ public class WindowProxy extends Window {
 		this.proxyContext = context;
 	}
 	
-	public Window proxiedWindow() {
+	public Window getProxiedWindow() {
 		return proxyContext.getActiveDocument().getWindow();
 	}
 	
@@ -74,12 +74,12 @@ public class WindowProxy extends Window {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return proxiedWindow().equals(obj);
+		return getProxiedWindow().equals(obj);
 	}
 	
 	@Override
 	public int hashCode() {
-		return proxiedWindow().hashCode();
+		return getProxiedWindow().hashCode();
 	}
 	
 	@ScriptGetter
@@ -97,19 +97,19 @@ public class WindowProxy extends Window {
 	@ScriptGetter
 	@Override
 	public DocumentView getDocument() {
-		return proxiedWindow().getDocument();
+		return getProxiedWindow().getDocument();
 	}
 
 	@ScriptGetter
 	@Override
 	public String getName() {
-		return proxiedWindow().getName();
+		return getProxiedWindow().getName();
 	}
 	
 	@ScriptSetter
 	@Override
 	public void setName(String name) {
-		proxiedWindow().setName(name);
+		getProxiedWindow().setName(name);
 	}
 
 	@ScriptSetter
@@ -121,168 +121,210 @@ public class WindowProxy extends Window {
 	@ScriptGetter
 	@Override
 	public Location getLocation() {
-		return proxiedWindow().getLocation();
+		return getProxiedWindow().getLocation();
 	}
 
 	@ScriptGetter
 	@Override
 	public History getHistory() {
-		return proxiedWindow().getHistory();
+		return getProxiedWindow().getHistory();
 	}
 
 	@ScriptGetter
 	@Override
 	public BarProp getLocationbar() {
-		return proxiedWindow().getLocationbar();
+		return getProxiedWindow().getLocationbar();
 	}
 
 	@ScriptGetter
 	@Override
 	public BarProp getMenubar() {
-		return proxiedWindow().getMenubar();
+		return getProxiedWindow().getMenubar();
 	}
 
 	@ScriptGetter
 	@Override
 	public BarProp getPersonalbar() {
-		return proxiedWindow().getPersonalbar();
+		return getProxiedWindow().getPersonalbar();
 	}
 
 	@ScriptGetter
 	@Override
 	public ScrollBarsProp getScrollbars() {
-		return proxiedWindow().getScrollbars();
+		return getProxiedWindow().getScrollbars();
 	}
 
 	@ScriptGetter
 	@Override
 	public BarProp getStatusbar() {
-		return proxiedWindow().getStatusbar();
+		return getProxiedWindow().getStatusbar();
 	}
 
 	@ScriptGetter
 	@Override
 	public BarProp getToolbar() {
-		return proxiedWindow().getToolbar();
+		return getProxiedWindow().getToolbar();
 	}
 
 	@ScriptGetter
 	@Override
 	public String getStatus() {
-		return proxiedWindow().getStatus();
+		return getProxiedWindow().getStatus();
 	}
 
 	@ScriptGetter
 	@Override
 	public boolean getClosed() {
-		return proxiedWindow().getClosed();
+		return getProxiedWindow().getClosed();
 	}
 
 	@ScriptGetter
 	@Override
 	public WindowProxy getFrames() {
-		return proxiedWindow().getFrames();
+		return getProxiedWindow().getFrames();
 	}
 
 	@ScriptGetter
 	@Override
 	public long getLength() {
-		return proxiedWindow().getLength();
+		return getProxiedWindow().getLength();
 	}
 
 	@ScriptGetter
 	@Override
 	public WindowProxy getTop() {
-		return proxiedWindow().getTop();
+		return getProxiedWindow().getTop();
 	}
 
 	@ScriptGetter
 	@Override
 	public WindowProxy getOpener() {
-		return proxiedWindow().getOpener();
+		return getProxiedWindow().getOpener();
 	}
 
 	@ScriptGetter
 	@Override
 	public WindowProxy getParent() {
-		return proxiedWindow().getParent();
+		return getProxiedWindow().getParent();
 	}
 
 	@ScriptGetter
 	@Override
 	public Element getFrameElement() {
-		return proxiedWindow().getFrameElement();
+		return getProxiedWindow().getFrameElement();
+	}
+	
+	@ScriptFunction
+	@Override
+	public void alert(String message) {
+		getProxiedWindow().alert(message);
+	}
+	
+	@ScriptFunction
+	@Override
+	public void alert() {
+		getProxiedWindow().alert();
+	}
+	
+	@ScriptFunction
+	@Override
+	public boolean confirm(String message) {
+		return getProxiedWindow().confirm(message);
+	}
+	
+	@ScriptFunction
+	@Override
+	public boolean confirm() {
+		return getProxiedWindow().confirm();
+	}
+	
+	@ScriptFunction
+	@Override
+	public String prompt(String message, String defaultChoice) {
+		return getProxiedWindow().prompt(message, defaultChoice);
+	}
+	
+	@ScriptFunction
+	@Override
+	public String prompt(String message) {
+		return getProxiedWindow().prompt(message);
+	}
+	
+	@ScriptFunction
+	@Override
+	public String prompt() {
+		return getProxiedWindow().prompt();
 	}
 	
 	@ScriptFunction
 	@Override
 	public void close() {
-		proxiedWindow().close();
+		getProxiedWindow().close();
 	}
 	
 	@ScriptFunction
 	@Override
 	public void stop() {
-		proxiedWindow().stop();
+		getProxiedWindow().stop();
 	}
 	
 	@ScriptFunction
 	@Override
 	public void focus() {
-		proxiedWindow().focus();
+		getProxiedWindow().focus();
 	}
 	
 	@ScriptFunction
 	@Override
 	public void blur() {
-		proxiedWindow().blur();
+		getProxiedWindow().blur();
 	}
 	
 	@ScriptFunction
 	@Override
 	public WindowProxy open() {
-		return proxiedWindow().open();
+		return getProxiedWindow().open();
 	}
 	
 	@ScriptFunction
 	@Override
 	public WindowProxy open(String url) {
-		return proxiedWindow().open(url);
+		return getProxiedWindow().open(url);
 	}
 	
 	@ScriptFunction
 	@Override
 	public WindowProxy open(String url, String target) {
-		return proxiedWindow().open(url, target);
+		return getProxiedWindow().open(url, target);
 	}
 	
 	@ScriptFunction
 	@Override
 	public WindowProxy open(String url, String target, String features) {
-		return proxiedWindow().open(url, target, features);
+		return getProxiedWindow().open(url, target, features);
 	}
 	
 	@ScriptFunction
 	@Override
 	public WindowProxy open(String url, String target, String features, boolean replace) {
-		return proxiedWindow().open(url, target, features, replace);
+		return getProxiedWindow().open(url, target, features, replace);
 	}
 
 	@ScriptFunction
 	@Override
 	public void scroll(int xCoord, int yCoord) {
-		proxiedWindow().scroll(xCoord, yCoord);
+		getProxiedWindow().scroll(xCoord, yCoord);
 	}
 	
 	@Override
 	public Collection<Object> getKeys() {
-		return proxiedWindow().getKeys();
+		return getProxiedWindow().getKeys();
 	}
 	
 	@ScriptFunction
 	@Override
 	public Object get(Object arg) {
-		return proxiedWindow().get(arg);
+		return getProxiedWindow().get(arg);
 	}
 
 	@ScriptFunction
@@ -294,851 +336,851 @@ public class WindowProxy extends Window {
 	@ScriptFunction
 	@Override
 	public void removeEventListener(String type, EventListener listener) {
-		proxiedWindow().removeEventListener(type, listener, false);
+		getProxiedWindow().removeEventListener(type, listener, false);
 	}
 	
 	@ScriptFunction
 	@Override
 	public void addEventListener(String type, EventListener listener, boolean useCapture) {
-		proxiedWindow().addEventListener(type, listener, useCapture);
+		getProxiedWindow().addEventListener(type, listener, useCapture);
 	}
 
 	@ScriptFunction
 	@Override
 	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
-		proxiedWindow().removeEventListener(type, listener, useCapture);
+		getProxiedWindow().removeEventListener(type, listener, useCapture);
 	}
 
 	@ScriptFunction
 	@Override
 	public boolean dispatchEvent(Event event) {
-		return proxiedWindow().dispatchEvent(event);
+		return getProxiedWindow().dispatchEvent(event);
 	}
 	
 	@ScriptGetter
 	@Override
 	public EventHandler getOnafterprint() {
-		return proxiedWindow().getOnafterprint();
+		return getProxiedWindow().getOnafterprint();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnbeforeprint() {
-		return proxiedWindow().getOnbeforeprint();
+		return getProxiedWindow().getOnbeforeprint();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnhashchange() {
-		return proxiedWindow().getOnhashchange();
+		return getProxiedWindow().getOnhashchange();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmessage() {
-		return proxiedWindow().getOnmessage();
+		return getProxiedWindow().getOnmessage();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnoffline() {
-		return proxiedWindow().getOnoffline();
+		return getProxiedWindow().getOnoffline();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnonline() {
-		return proxiedWindow().getOnonline();
+		return getProxiedWindow().getOnonline();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnpagehide() {
-		return proxiedWindow().getOnpagehide();
+		return getProxiedWindow().getOnpagehide();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnpageshow() {
-		return proxiedWindow().getOnpageshow();
+		return getProxiedWindow().getOnpageshow();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnpopstate() {
-		return proxiedWindow().getOnpopstate();
+		return getProxiedWindow().getOnpopstate();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnstorage() {
-		return proxiedWindow().getOnstorage();
+		return getProxiedWindow().getOnstorage();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnunload() {
-		return proxiedWindow().getOnunload();
+		return getProxiedWindow().getOnunload();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnabort() {
-		return proxiedWindow().getOnabort();
+		return getProxiedWindow().getOnabort();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnblur() {
-		return proxiedWindow().getOnblur();
+		return getProxiedWindow().getOnblur();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOncancel() {
-		return proxiedWindow().getOncancel();
+		return getProxiedWindow().getOncancel();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOncanplay() {
-		return proxiedWindow().getOncanplay();
+		return getProxiedWindow().getOncanplay();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOncanplaythrough() {
-		return proxiedWindow().getOncanplaythrough();
+		return getProxiedWindow().getOncanplaythrough();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnchange() {
-		return proxiedWindow().getOnchange();
+		return getProxiedWindow().getOnchange();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnclick() {
-		return proxiedWindow().getOnclick();
+		return getProxiedWindow().getOnclick();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnclose() {
-		return proxiedWindow().getOnclose();
+		return getProxiedWindow().getOnclose();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOncuechange() {
-		return proxiedWindow().getOncuechange();
+		return getProxiedWindow().getOncuechange();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndblclick() {
-		return proxiedWindow().getOndblclick();
+		return getProxiedWindow().getOndblclick();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndrag() {
-		return proxiedWindow().getOndrag();
+		return getProxiedWindow().getOndrag();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndragend() {
-		return proxiedWindow().getOndragend();
+		return getProxiedWindow().getOndragend();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndragenter() {
-		return proxiedWindow().getOndragenter();
+		return getProxiedWindow().getOndragenter();
 	}
 	
 	@ScriptGetter
 	@Override
 	public EventHandler getOndragexit() {
-		return proxiedWindow().getOndragexit();
+		return getProxiedWindow().getOndragexit();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndragleave() {
-		return proxiedWindow().getOndragleave();
+		return getProxiedWindow().getOndragleave();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndragover() {
-		return proxiedWindow().getOndragover();
+		return getProxiedWindow().getOndragover();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndragstart() {
-		return proxiedWindow().getOndragstart();
+		return getProxiedWindow().getOndragstart();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndrop() {
-		return proxiedWindow().getOndrop();
+		return getProxiedWindow().getOndrop();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOndurationchange() {
-		return proxiedWindow().getOndurationchange();
+		return getProxiedWindow().getOndurationchange();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnemptied() {
-		return proxiedWindow().getOnemptied();
+		return getProxiedWindow().getOnemptied();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnended() {
-		return proxiedWindow().getOnemptied();
+		return getProxiedWindow().getOnemptied();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnfocus() {
-		return proxiedWindow().getOnfocus();
+		return getProxiedWindow().getOnfocus();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOninput() {
-		return proxiedWindow().getOninput();
+		return getProxiedWindow().getOninput();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOninvalid() {
-		return proxiedWindow().getOninvalid();
+		return getProxiedWindow().getOninvalid();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnkeydown() {
-		return proxiedWindow().getOnkeydown();
+		return getProxiedWindow().getOnkeydown();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnkeypress() {
-		return proxiedWindow().getOnkeypress();
+		return getProxiedWindow().getOnkeypress();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnkeyup() {
-		return proxiedWindow().getOnkeyup();
+		return getProxiedWindow().getOnkeyup();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnload() {
-		return proxiedWindow().getOnload();
+		return getProxiedWindow().getOnload();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnloadeddata() {
-		return proxiedWindow().getOnloadeddata();
+		return getProxiedWindow().getOnloadeddata();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnloadedmetadata() {
-		return proxiedWindow().getOnloadedmetadata();
+		return getProxiedWindow().getOnloadedmetadata();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnloadstart() {
-		return proxiedWindow().getOnloadstart();
+		return getProxiedWindow().getOnloadstart();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmousedown() {
-		return proxiedWindow().getOnmousedown();
+		return getProxiedWindow().getOnmousedown();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmouseenter() {
-		return proxiedWindow().getOnmouseenter();
+		return getProxiedWindow().getOnmouseenter();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmouseleave() {
-		return proxiedWindow().getOnmouseleave();
+		return getProxiedWindow().getOnmouseleave();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmousemove() {
-		return proxiedWindow().getOnmousemove();
+		return getProxiedWindow().getOnmousemove();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmouseout() {
-		return proxiedWindow().getOnmouseout();
+		return getProxiedWindow().getOnmouseout();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmouseover() {
-		return proxiedWindow().getOnmouseover();
+		return getProxiedWindow().getOnmouseover();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmouseup() {
-		return proxiedWindow().getOnmouseup();
+		return getProxiedWindow().getOnmouseup();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnmousewheel() {
-		return proxiedWindow().getOnmousewheel();
+		return getProxiedWindow().getOnmousewheel();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnpause() {
-		return proxiedWindow().getOnpause();
+		return getProxiedWindow().getOnpause();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnplay() {
-		return proxiedWindow().getOnplay();
+		return getProxiedWindow().getOnplay();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnplaying() {
-		return proxiedWindow().getOnplaying();
+		return getProxiedWindow().getOnplaying();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnprogress() {
-		return proxiedWindow().getOnprogress();
+		return getProxiedWindow().getOnprogress();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnratechange() {
-		return proxiedWindow().getOnratechange();
+		return getProxiedWindow().getOnratechange();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnreset() {
-		return proxiedWindow().getOnreset();
+		return getProxiedWindow().getOnreset();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnresize() {
-		return proxiedWindow().getOnresize();
+		return getProxiedWindow().getOnresize();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnscroll() {
-		return proxiedWindow().getOnscroll();
+		return getProxiedWindow().getOnscroll();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnseeked() {
-		return proxiedWindow().getOnseeked();
+		return getProxiedWindow().getOnseeked();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnseeking() {
-		return proxiedWindow().getOnseeking();
+		return getProxiedWindow().getOnseeking();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnselect() {
-		return proxiedWindow().getOnselect();
+		return getProxiedWindow().getOnselect();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnshow() {
-		return proxiedWindow().getOnshow();
+		return getProxiedWindow().getOnshow();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnstalled() {
-		return proxiedWindow().getOnstalled();
+		return getProxiedWindow().getOnstalled();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnsubmit() {
-		return proxiedWindow().getOnsubmit();
+		return getProxiedWindow().getOnsubmit();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnsuspend() {
-		return proxiedWindow().getOnsuspend();
+		return getProxiedWindow().getOnsuspend();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOntimeupdate() {
-		return proxiedWindow().getOntimeupdate();
+		return getProxiedWindow().getOntimeupdate();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOntoggle() {
-		return proxiedWindow().getOntoggle();
+		return getProxiedWindow().getOntoggle();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnvolumechange() {
-		return proxiedWindow().getOnvolumechange();
+		return getProxiedWindow().getOnvolumechange();
 	}
 
 	@ScriptGetter
 	@Override
 	public EventHandler getOnwaiting() {
-		return proxiedWindow().getOnwaiting();
+		return getProxiedWindow().getOnwaiting();
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnafterprint(EventHandler handler) {
-		proxiedWindow().setOnafterprint(handler);;
+		getProxiedWindow().setOnafterprint(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnbeforeprint(EventHandler handler) {
-		proxiedWindow().setOnbeforeprint(handler);;
+		getProxiedWindow().setOnbeforeprint(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnhashchange(EventHandler handler) {
-		proxiedWindow().setOnhashchange(handler);;
+		getProxiedWindow().setOnhashchange(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmessage(EventHandler handler) {
-		proxiedWindow().setOnmessage(handler);;
+		getProxiedWindow().setOnmessage(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnoffline(EventHandler handler) {
-		proxiedWindow().setOnoffline(handler);;
+		getProxiedWindow().setOnoffline(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnonline(EventHandler handler) {
-		proxiedWindow().setOnonline(handler);;
+		getProxiedWindow().setOnonline(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnpagehide(EventHandler handler) {
-		proxiedWindow().setOnpagehide(handler);;
+		getProxiedWindow().setOnpagehide(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnpageshow(EventHandler handler) {
-		proxiedWindow().setOnpageshow(handler);;
+		getProxiedWindow().setOnpageshow(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnpopstate(EventHandler handler) {
-		proxiedWindow().setOnpopstate(handler);;
+		getProxiedWindow().setOnpopstate(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnstorage(EventHandler handler) {
-		proxiedWindow().setOnstorage(handler);;
+		getProxiedWindow().setOnstorage(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnunload(EventHandler handler) {
-		proxiedWindow().setOnunload(handler);;
+		getProxiedWindow().setOnunload(handler);;
 	}
 	
 	@ScriptSetter
 	@Override
 	public void setOnabort(EventHandler handler) {
-		proxiedWindow().setOnabort(handler);;
+		getProxiedWindow().setOnabort(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnblur(EventHandler handler) {
-		proxiedWindow().setOnblur(handler);;
+		getProxiedWindow().setOnblur(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOncancel(EventHandler handler) {
-		proxiedWindow().setOncancel(handler);;
+		getProxiedWindow().setOncancel(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOncanplay(EventHandler handler) {
-		proxiedWindow().setOncanplay(handler);;
+		getProxiedWindow().setOncanplay(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOncanplaythrough(EventHandler handler) {
-		proxiedWindow().setOncanplaythrough(handler);;
+		getProxiedWindow().setOncanplaythrough(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnchange(EventHandler handler) {
-		proxiedWindow().setOnchange(handler);;
+		getProxiedWindow().setOnchange(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnclick(EventHandler handler) {
-		proxiedWindow().setOnclick(handler);;
+		getProxiedWindow().setOnclick(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnclose(EventHandler handler) {
-		proxiedWindow().setOnclose(handler);;
+		getProxiedWindow().setOnclose(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOncuechange(EventHandler handler) {
-		proxiedWindow().setOncuechange(handler);;
+		getProxiedWindow().setOncuechange(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndblclick(EventHandler handler) {
-		proxiedWindow().setOndblclick(handler);;
+		getProxiedWindow().setOndblclick(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndrag(EventHandler handler) {
-		proxiedWindow().setOndrag(handler);;
+		getProxiedWindow().setOndrag(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndragend(EventHandler handler) {
-		proxiedWindow().setOndragend(handler);;
+		getProxiedWindow().setOndragend(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndragenter(EventHandler handler) {
-		proxiedWindow().setOndragenter(handler);;
+		getProxiedWindow().setOndragenter(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndragexit(EventHandler handler) {
-		proxiedWindow().setOndragexit(handler);;
+		getProxiedWindow().setOndragexit(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndragleave(EventHandler handler) {
-		proxiedWindow().setOndragleave(handler);;
+		getProxiedWindow().setOndragleave(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndragover(EventHandler handler) {
-		proxiedWindow().setOndragover(handler);;
+		getProxiedWindow().setOndragover(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndragstart(EventHandler handler) {
-		proxiedWindow().setOndragstart(handler);;
+		getProxiedWindow().setOndragstart(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndrop(EventHandler handler) {
-		proxiedWindow().setOndrop(handler);;
+		getProxiedWindow().setOndrop(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOndurationchange(EventHandler handler) {
-		proxiedWindow().setOndurationchange(handler);;
+		getProxiedWindow().setOndurationchange(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnemptied(EventHandler handler) {
-		proxiedWindow().setOnemptied(handler);;
+		getProxiedWindow().setOnemptied(handler);;
 	}
 
 	@Override
 	public void setOnended(EventHandler handler) {
-		proxiedWindow().setOnended(handler);;
+		getProxiedWindow().setOnended(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnfocus(EventHandler handler) {
-		proxiedWindow().setOnfocus(handler);;
+		getProxiedWindow().setOnfocus(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOninput(EventHandler handler) {
-		proxiedWindow().setOninput(handler);;
+		getProxiedWindow().setOninput(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOninvalid(EventHandler handler) {
-		proxiedWindow().setOninvalid(handler);;
+		getProxiedWindow().setOninvalid(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnkeydown(EventHandler handler) {
-		proxiedWindow().setOnkeydown(handler);;
+		getProxiedWindow().setOnkeydown(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnkeypress(EventHandler handler) {
-		proxiedWindow().setOnkeypress(handler);;
+		getProxiedWindow().setOnkeypress(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnkeyup(EventHandler handler) {
-		proxiedWindow().setOnkeyup(handler);;
+		getProxiedWindow().setOnkeyup(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnload(EventHandler handler) {
-		proxiedWindow().setOnload(handler);;
+		getProxiedWindow().setOnload(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnloadeddata(EventHandler handler) {
-		proxiedWindow().setOnloadeddata(handler);;
+		getProxiedWindow().setOnloadeddata(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnloadedmetadata(EventHandler handler) {
-		proxiedWindow().setOnloadedmetadata(handler);;
+		getProxiedWindow().setOnloadedmetadata(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnloadstart(EventHandler handler) {
-		proxiedWindow().setOnloadstart(handler);;
+		getProxiedWindow().setOnloadstart(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmousedown(EventHandler handler) {
-		proxiedWindow().setOnmousedown(handler);;
+		getProxiedWindow().setOnmousedown(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmouseenter(EventHandler handler) {
-		proxiedWindow().setOnmouseenter(handler);;
+		getProxiedWindow().setOnmouseenter(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmouseleave(EventHandler handler) {
-		proxiedWindow().setOnmouseleave(handler);;
+		getProxiedWindow().setOnmouseleave(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmousemove(EventHandler handler) {
-		proxiedWindow().setOnmousemove(handler);;
+		getProxiedWindow().setOnmousemove(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmouseout(EventHandler handler) {
-		proxiedWindow().setOnmouseout(handler);;
+		getProxiedWindow().setOnmouseout(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmouseover(EventHandler handler) {
-		proxiedWindow().setOnmouseover(handler);;
+		getProxiedWindow().setOnmouseover(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmouseup(EventHandler handler) {
-		proxiedWindow().setOnmouseup(handler);;
+		getProxiedWindow().setOnmouseup(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnmousewheel(EventHandler handler) {
-		proxiedWindow().setOnmousewheel(handler);;
+		getProxiedWindow().setOnmousewheel(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnpause(EventHandler handler) {
-		proxiedWindow().setOnpause(handler);;
+		getProxiedWindow().setOnpause(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnplay(EventHandler handler) {
-		proxiedWindow().setOnplay(handler);;
+		getProxiedWindow().setOnplay(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnplaying(EventHandler handler) {
-		proxiedWindow().setOnplaying(handler);;
+		getProxiedWindow().setOnplaying(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnprogress(EventHandler handler) {
-		proxiedWindow().setOnprogress(handler);;
+		getProxiedWindow().setOnprogress(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnratechange(EventHandler handler) {
-		proxiedWindow().setOnratechange(handler);;
+		getProxiedWindow().setOnratechange(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnreset(EventHandler handler) {
-		proxiedWindow().setOnreset(handler);;
+		getProxiedWindow().setOnreset(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnresize(EventHandler handler) {
-		proxiedWindow().setOnresize(handler);;
+		getProxiedWindow().setOnresize(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnscroll(EventHandler handler) {
-		proxiedWindow().setOnscroll(handler);;
+		getProxiedWindow().setOnscroll(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnseeked(EventHandler handler) {
-		proxiedWindow().setOnseeked(handler);;
+		getProxiedWindow().setOnseeked(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnseeking(EventHandler handler) {
-		proxiedWindow().setOnseeking(handler);;
+		getProxiedWindow().setOnseeking(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnselect(EventHandler handler) {
-		proxiedWindow().setOnselect(handler);;
+		getProxiedWindow().setOnselect(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnshow(EventHandler handler) {
-		proxiedWindow().setOnshow(handler);;
+		getProxiedWindow().setOnshow(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnstalled(EventHandler handler) {
-		proxiedWindow().setOnstalled(handler);;
+		getProxiedWindow().setOnstalled(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnsubmit(EventHandler handler) {
-		proxiedWindow().setOnsubmit(handler);;
+		getProxiedWindow().setOnsubmit(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnsuspend(EventHandler handler) {
-		proxiedWindow().setOnsuspend(handler);;
+		getProxiedWindow().setOnsuspend(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOntimeupdate(EventHandler handler) {
-		proxiedWindow().setOntimeupdate(handler);;
+		getProxiedWindow().setOntimeupdate(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOntoggle(EventHandler handler) {
-		proxiedWindow().setOntoggle(handler);;
+		getProxiedWindow().setOntoggle(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnvolumechange(EventHandler handler) {
-		proxiedWindow().setOnvolumechange(handler);;
+		getProxiedWindow().setOnvolumechange(handler);;
 	}
 
 	@ScriptSetter
 	@Override
 	public void setOnwaiting(EventHandler handler) {
-		proxiedWindow().setOnwaiting(handler);;
+		getProxiedWindow().setOnwaiting(handler);;
 	}
 }

@@ -30,8 +30,6 @@ import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 
-import com.sun.org.apache.xml.internal.resolver.helpers.FileURL;
-
 @FetchPreamble (protocols = {"file"})
 public class FileFetch extends Fetch {
 	

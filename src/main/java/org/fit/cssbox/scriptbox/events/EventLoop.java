@@ -105,6 +105,7 @@ public class EventLoop {
 	protected BrowsingUnit _browsingUnit;
 	protected Task _runningTask;
 	protected boolean _aborted;
+	protected int terminationNestingLevel;
 	
 	protected EventLoopThread executionThread;
 		
@@ -122,6 +123,22 @@ public class EventLoop {
 			
 	public synchronized Thread getEventThread() {
 		return executionThread;
+	}
+	
+	public synchronized void decrementTerminationNestingLevel() {
+		terminationNestingLevel--;
+	}
+	
+	public synchronized void incrementTerminationNestingLevel() {
+		terminationNestingLevel++;
+	}
+	
+	public synchronized int getTerminationNestingLevel() {
+		return terminationNestingLevel;
+	}
+	
+	public synchronized void setTerminationNestingLevel(int value) {
+		terminationNestingLevel = value;
 	}
 	
 	/*

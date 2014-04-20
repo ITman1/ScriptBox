@@ -611,6 +611,74 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return ObjectGetter.UNDEFINED_VALUE;
 	}
 
+	protected boolean beforeShowModal() {
+		int nestingLevel = context.getEventLoop().getTerminationNestingLevel();
+		
+		if (nestingLevel > 0) {
+			return false;
+		}
+		
+		userAgent.releaseStorageMutex();
+		
+		return true;
+	}
+	
+	@ScriptFunction
+	public void alert(String message) {
+		boolean beforeShowModal = beforeShowModal();
+		boolean alertsEnabled = userAgent.alertsEnabled(documentImpl.getAddress());
+		
+		if (!alertsEnabled || !beforeShowModal) {
+			return;
+		}
+		
+		userAgent.showAlertDialog(message);
+	}
+	
+	@ScriptFunction
+	public void alert() {
+		alert("");
+	}
+	
+	@ScriptFunction
+	public boolean confirm(String message) {
+		boolean beforeShowModal = beforeShowModal();
+		boolean alertsEnabled = userAgent.promptsEnabled(documentImpl.getAddress());
+		
+		if (!alertsEnabled || !beforeShowModal) {
+			return false;
+		}
+		
+		return userAgent.showConfirmDialog(message);
+	}
+	
+	@ScriptFunction
+	public boolean confirm() {
+		return confirm("");
+	}
+	
+	@ScriptFunction
+	public String prompt(String message, String defaultChoice) {
+		boolean beforeShowModal = beforeShowModal();
+		boolean alertsEnabled = userAgent.promptsEnabled(documentImpl.getAddress());
+		
+		if (!alertsEnabled || !beforeShowModal) {
+			return null;
+		}
+		
+		return userAgent.showPromptDialog(message, defaultChoice);
+	}
+	
+	@ScriptFunction
+	public String prompt(String message) {
+		return prompt(message, "");
+	}
+	
+	@ScriptFunction
+	public String prompt() {
+		return prompt("", "");
+	}
+	
 	@ScriptFunction
 	@Override
 	public void addEventListener(String type, EventListener listener) {
