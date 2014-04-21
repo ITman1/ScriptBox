@@ -1,8 +1,8 @@
 package org.fit.cssbox.scriptbox.history;
 
-import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
+import org.fit.cssbox.scriptbox.window.Window;
 
 public class PersistedUserState {
 	private Html5DocumentImpl _document;

@@ -20,6 +20,7 @@
 package org.fit.cssbox.scriptbox.demo.browser;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -35,6 +36,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
@@ -52,6 +54,7 @@ import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
+import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserBrowsingUnit;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserUserAgent;
 
@@ -270,7 +273,10 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		historyForwardButton = new JButton("->");
 		navigationButtonsPanel.add(historyForwardButton);
 		
-		containerPanel.add(scriptBrowser, BorderLayout.CENTER);
+		JScrollPane scriptBrowserScrollPane = new JScrollPane();
+		containerPanel.add(scriptBrowserScrollPane, BorderLayout.CENTER);
+
+		scriptBrowserScrollPane.setViewportView(scriptBrowser);	
 	}
 	
 	public void showWindow() {

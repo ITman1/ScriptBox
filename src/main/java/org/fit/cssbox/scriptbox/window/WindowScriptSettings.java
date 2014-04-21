@@ -17,10 +17,11 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.browser;
+package org.fit.cssbox.scriptbox.window;
 
 import java.net.URL;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;

@@ -20,12 +20,12 @@
 package org.fit.cssbox.scriptbox.script.javascript;
 
 import org.apache.html.dom.HTMLElementImpl;
-import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptAnnotationClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.java.DefaultShutter;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
+import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.TopLevel;
 

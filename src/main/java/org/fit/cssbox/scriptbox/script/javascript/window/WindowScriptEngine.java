@@ -19,10 +19,10 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.window;
 
-import org.fit.cssbox.scriptbox.browser.Window;
-import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
+import org.fit.cssbox.scriptbox.window.Window;
+import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 
 
 public class WindowScriptEngine extends GlobalObjectJavaScriptEngine {

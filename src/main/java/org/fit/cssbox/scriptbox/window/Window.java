@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.browser;
+package org.fit.cssbox.scriptbox.window;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,6 +29,13 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.xerces.dom.events.EventImpl;
+import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
+import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
+import org.fit.cssbox.scriptbox.browser.UserAgent;
+import org.fit.cssbox.scriptbox.cache.ApplicationCache;
 import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.events.DispatcherTask;
@@ -45,12 +52,14 @@ import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
+import org.fit.cssbox.scriptbox.navigator.Navigator;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.search.External;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.ui.BarProp;
 import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;

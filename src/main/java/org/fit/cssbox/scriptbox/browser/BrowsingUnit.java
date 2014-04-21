@@ -30,6 +30,7 @@ import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.ui.BarProp;
 import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
+import org.fit.cssbox.scriptbox.window.WindowBrowsingContext;
 
 public class BrowsingUnit {
 	public static class NoBarProp extends BarProp {

@@ -22,7 +22,6 @@ package org.fit.cssbox.scriptbox.document.script;
 import java.util.Collection;
 import java.util.List;
 
-import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
@@ -31,6 +30,7 @@ import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
+import org.fit.cssbox.scriptbox.window.Window;
 
 /*
  * See: http://www.w3.org/html/wg/drafts/html/CR/syntax.html#the-end

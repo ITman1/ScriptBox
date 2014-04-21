@@ -17,11 +17,13 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.browser;
+package org.fit.cssbox.scriptbox.window;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 
 public class WindowBrowsingContext extends IFrameContainerBrowsingContext {		

@@ -1,5 +1,5 @@
 /**
- * External.java
+ * ApplicationCache.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,8 +17,9 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.browser;
+package org.fit.cssbox.scriptbox.cache;
 
-public class External {
+
+public class ApplicationCache {
 
 }

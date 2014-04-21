@@ -20,8 +20,8 @@
 package org.fit.cssbox.scriptbox.dom.events;
 
 import org.apache.xerces.dom.events.EventImpl;
-import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.window.Window;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 

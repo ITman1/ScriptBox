@@ -29,6 +29,11 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 	// Every nested browsing context has an iframe sandboxing flag set
 	protected Set<SandboxingFlag> iframeSandboxingFlagSet;
 	protected boolean seamlessBrowsingFlag;
+	
+	/*
+	 *  * TODO: A nested browsing context can be put into a delaying load events mode. This is used when 
+ * it is navigated, to delay the load event of the browsing context container before the new Document is created.
+	 */
 	protected boolean delayingLoadEventsMode;
 	
 	public IFrameBrowsingContext(BrowsingContext parentContext, Html5IFrameElementImpl iframeElement) {

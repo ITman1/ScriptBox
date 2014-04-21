@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.javascript.injectors.URLInjector;
 import org.fit.cssbox.scriptbox.script.javascript.injectors.XMLHttpRequestInjector;
+import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 
 public class GlobalObjectJavaScriptEngineFactory extends BrowserScriptEngineFactory {
 

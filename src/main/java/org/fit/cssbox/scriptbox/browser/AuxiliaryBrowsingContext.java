@@ -19,10 +19,33 @@
 
 package org.fit.cssbox.scriptbox.browser;
 
+/**
+ * Class representing auxiliary browsing contexts constructed e.g. by scripts
+ * without being nested through an element.
+ *
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#auxiliary-browsing-context">Auxiliary browsing contexts</a>
+ */
 public class AuxiliaryBrowsingContext extends BrowsingContext {
+	/**
+	 * Specifies whether this context has been created by a script or not.
+	 */
 	protected boolean createdByScript;
+	
+	/**
+	 * Browsing context from which the auxiliary browsing context was created.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#opener-browsing-context">Opener browsing context</a>
+	 */
 	protected BrowsingContext openerBrowsingContext;
 	
+	/**
+	 * Constructs new top-level auxiliary browsing context.
+	 * 
+	 * @param browsingUnit Browsing unit to which belongs this browsing context.
+	 * @param openerBrowsingContext Browsing context from which the auxiliary browsing context was created.
+	 * @param name Name of the browsing context.
+	 * @param createdByScript Specifies whether this context has been created by a script or not.
+	 */
 	public AuxiliaryBrowsingContext(BrowsingUnit browsingUnit, BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
 		super(browsingUnit, name);
 
@@ -38,9 +61,11 @@ public class AuxiliaryBrowsingContext extends BrowsingContext {
 		this(openerBrowsingContext.browsingUnit, openerBrowsingContext, name, true);
 	}
 	
-	/*
-	 * An auxiliary browsing context has an opener browsing context, which is the browsing 
-	 * context from which the auxiliary browsing context was created.
+	/**
+	 * Returns browsing context from which the auxiliary browsing context was created.
+	 * 
+	 * @return Browsing context from which the auxiliary browsing context was created.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#opener-browsing-context">Opener browsing context</a>
 	 */
 	public BrowsingContext getOpenerContext() {
 		return openerBrowsingContext;

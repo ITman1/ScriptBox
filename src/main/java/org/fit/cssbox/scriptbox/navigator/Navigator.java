@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.browser;
+package org.fit.cssbox.scriptbox.navigator;
 
 public class Navigator {
 

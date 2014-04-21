@@ -29,13 +29,13 @@ import javax.swing.tree.TreePath;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
-import org.fit.cssbox.scriptbox.browser.Window;
-import org.fit.cssbox.scriptbox.browser.WindowProxy;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
+import org.fit.cssbox.scriptbox.window.Window;
+import org.fit.cssbox.scriptbox.window.WindowProxy;
 
 public class ScriptObjectViewer extends JTree {
 

@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.browser;
+package org.fit.cssbox.scriptbox.window;
 
 import java.io.Reader;
 import java.net.URL;

@@ -2,8 +2,8 @@ package tests.script.window;
 
 import org.apache.xerces.dom.ElementImpl;
 import org.apache.xerces.dom.events.EventImpl;
-import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.window.Window;
 import org.junit.Test;
 
 import tests.script.TestUtils.UserAgentWindowTester;

@@ -24,7 +24,6 @@ import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
-import org.fit.cssbox.scriptbox.browser.Window;
 import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
@@ -39,6 +38,7 @@ import org.fit.cssbox.scriptbox.url.ParserURL;
 import org.fit.cssbox.scriptbox.url.URLSearchParams;
 import org.fit.cssbox.scriptbox.url.URLUtils;
 import org.fit.cssbox.scriptbox.url.WrappedURL;
+import org.fit.cssbox.scriptbox.window.Window;
 
 public class Location extends URLUtils {
 	private Html5DocumentImpl document;

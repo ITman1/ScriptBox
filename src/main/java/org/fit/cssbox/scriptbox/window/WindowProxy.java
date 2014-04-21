@@ -17,11 +17,12 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.browser;
+package org.fit.cssbox.scriptbox.window;
 
 import java.util.Collection;
 
 import org.apache.xerces.dom.events.EventImpl;
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
 import org.fit.cssbox.scriptbox.history.History;

@@ -34,9 +34,6 @@ import org.apache.commons.io.input.ReaderInputStream;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
-import org.fit.cssbox.scriptbox.browser.Window;
-import org.fit.cssbox.scriptbox.browser.WindowScript;
-import org.fit.cssbox.scriptbox.browser.WindowScriptSettings;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
@@ -44,6 +41,9 @@ import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
+import org.fit.cssbox.scriptbox.window.Window;
+import org.fit.cssbox.scriptbox.window.WindowScript;
+import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.mozilla.javascript.Undefined;
 
 public class Handler extends URLStreamHandler {
