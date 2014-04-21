@@ -24,6 +24,10 @@ package org.fit.cssbox.scriptbox.browser;
  * without being nested through an element.
  *
  * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#auxiliary-browsing-context">Auxiliary browsing contexts</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
  */
 public class AuxiliaryBrowsingContext extends BrowsingContext {
 	/**

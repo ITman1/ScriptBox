@@ -17,29 +17,54 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.window;
+package org.fit.cssbox.scriptbox.browser;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
-import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 
+/**
+ * Class representing top-level window browsing context.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class WindowBrowsingContext extends IFrameContainerBrowsingContext {		
-	// Every top-level browsing context has a popup sandboxing flag set, 
+	
+	/**
+	 * @see #getPopupSandboxingFlagSet()
+	 */
 	protected Set<SandboxingFlag> popupSandboxingFlagSet;
 	
+	/**
+	 * Constructs window browsing context.
+	 * 
+	 * @param browsingUnit Browsing unit to which belongs this browsing context.
+	 * @param name New name of this browsing context.
+	 */
 	public WindowBrowsingContext(BrowsingUnit browsingUnit, String name) {
 		super(null, browsingUnit, name, null);
 		
 		this.popupSandboxingFlagSet = new HashSet<SandboxingFlag>();
 	}
 	
+	/**
+	 * Constructs window browsing context with default browsing context name.
+	 * 
+	 * @param browsingUnit Browsing unit to which belongs this browsing context.
+	 */
 	public WindowBrowsingContext(BrowsingUnit browsingUnit) {
 		this(browsingUnit, DEFAULT_NAME);
 	}
 	
+	/**
+	 * Returns popup sandboxing flag set.
+	 * 
+	 * @return Popup sandboxing flag set
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#popup-sandboxing-flag-set">Popup sandboxing flag set</a>
+	 */
 	public Set<SandboxingFlag> getPopupSandboxingFlagSet() {
 		return popupSandboxingFlagSet;
 	}

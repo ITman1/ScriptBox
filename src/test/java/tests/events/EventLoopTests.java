@@ -10,6 +10,7 @@ import java.util.List;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
+import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.RoundRobinScheduler;
@@ -17,7 +18,6 @@ import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskQueuesScheduler;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
-import org.fit.cssbox.scriptbox.window.WindowBrowsingContext;
 import org.junit.Test;
 
 public class EventLoopTests {

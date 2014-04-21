@@ -25,14 +25,31 @@ import java.util.Set;
 import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 
+/*
+ * FIXME: This class should be fully implemented according to: 
+ *        http://www.w3.org/html/wg/drafts/html/master/embedded-content.html#the-iframe-element
+ */
+/**
+ * Class representing IFRAME browsing context nested via some element container.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
-	// Every nested browsing context has an iframe sandboxing flag set
+	
+	/**
+	 * @see #getIframeSandboxingFlagSet()
+	 */
 	protected Set<SandboxingFlag> iframeSandboxingFlagSet;
+	
+	/**
+	 * @see #getSeamlessFlag()
+	 */
 	protected boolean seamlessBrowsingFlag;
 	
-	/*
-	 *  * TODO: A nested browsing context can be put into a delaying load events mode. This is used when 
- * it is navigated, to delay the load event of the browsing context container before the new Document is created.
+	/**
+	 * @see #hasDelayingLoadEventsMode()
 	 */
 	protected boolean delayingLoadEventsMode;
 	
@@ -48,14 +65,49 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 		}
 	}
 	
+	/**
+	 * Returns IFRAME sandboxing flag set.
+	 * 
+	 * @return IFRAME sandboxing flag set
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#iframe-sandboxing-flag-set">IFRAME sandboxing flag set</a>
+	 */
 	public Set<SandboxingFlag> getIframeSandboxingFlagSet() {
 		return iframeSandboxingFlagSet;
 	}
 	
+	/**
+	 * Tests whether is this browsing context in seamless mode.
+	 * 
+	 * @return True if is this browsing context in seamless mode, otherwise false.
+	 */
 	public boolean getSeamlessFlag() {
 		return seamlessBrowsingFlag;
 	}
 	
+	/**
+	 * Tests whether is this browsing context in delaying load event mode.
+	 * 
+	 * @return True if is this browsing context in delaying load event mode, otherwise false.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
+	 */
+	public boolean hasDelayingLoadEventsMode() {
+		return delayingLoadEventsMode;
+	}
+	
+	/**
+	 * Removes delaying load event mode.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
+	 */
+	public void resetDelayingLoadEventsMode() {
+		delayingLoadEventsMode = false;
+	}
+	
+	/**
+	 * Enables delaying load event mode.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
+	 */
 	public void delayLoadEvents() {
 		delayingLoadEventsMode = true;
 	}

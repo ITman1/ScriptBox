@@ -142,7 +142,7 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		public void onHistoryEvent(final JointSessionHistoryEvent event) {
 			SessionHistoryEntry _whereTraversed = null;
 			if (event.getEventType() == JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
-				_whereTraversed = _jointSessionHistory.getCurrentEntry();
+				_whereTraversed = jointSessionHistory.getCurrentEntry();
 			} else if (event.getEventType() == JointSessionHistoryEvent.EventType.TRAVERSED) {
 				_whereTraversed = event.getRelatedTarget();
 			} else {
@@ -307,14 +307,14 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	private ActionListener onHistoryBackListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			_jointSessionHistory.traverse(-1);
+			jointSessionHistory.traverse(-1);
 		}
 	};
 	
 	private ActionListener onHistoryForwardListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			_jointSessionHistory.traverse(1);
+			jointSessionHistory.traverse(1);
 		}
 	};
 	
@@ -367,7 +367,7 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		ScriptBrowser browser = tester.getScriptBrowser();
 		setScriptBrowser(browser);
 		
-		navigationController = _windowBrowsingContext.getNavigationController();
+		navigationController = windowBrowsingContext.getNavigationController();
 		
 		openedFiles = new HashMap<Integer, File>();
 		
@@ -422,7 +422,7 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	}
 	
 	private void updateScriptBox() {
-		loadedDocument = _windowBrowsingContext.getActiveDocument();		
+		loadedDocument = windowBrowsingContext.getActiveDocument();		
 		
 		String sourceCode = loadedDocument.getParserSource();
 		sourceCodeEditorPane.setText(sourceCode);
@@ -454,8 +454,8 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 			}
 		}
 		
-		int historyPosition = _jointSessionHistory.getPosition();
-		int historyLength = _jointSessionHistory.getLength();
+		int historyPosition = jointSessionHistory.getPosition();
+		int historyLength = jointSessionHistory.getLength();
 		
 		historyBackButton.setEnabled(historyPosition != - 1 && historyPosition != 0);
 		historyForwardButton.setEnabled(historyPosition != historyLength - 1);
@@ -512,7 +512,7 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		newWatchedVariableField.addActionListener(onNewVariableEntered);
 		scriptObjectsWatchList.addKeyListener(scriptObjectsWatchListKeyListener);
 		
-		_jointSessionHistory.addListener(jointSessionHistoryListener);
+		jointSessionHistory.addListener(jointSessionHistoryListener);
 		navigationController.addListener(navigationControllerListener);
 		
 		navigationField.getDocument().addDocumentListener(onNavigationFieldChangedListener);

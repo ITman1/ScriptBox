@@ -29,16 +29,44 @@ import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Class representing browsing contexts which may include IFRAME browsing contexts.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class IFrameContainerBrowsingContext extends BrowsingContext {
+	/**
+	 * Empty list of IFRAME browsing contexts.
+	 */
 	public final static List<IFrameBrowsingContext> EMPTY_IFRAMES = Collections.unmodifiableList(new ArrayList<IFrameBrowsingContext>());
+	
+	/**
+	 * Map of the document to corresponding document IFRAME browsing contexts.
+	 */
 	protected Map<Document, List<IFrameBrowsingContext>> documentIframes;
 	
+	/**
+	 * Constructs new top-level or IFRAME container browsing context.
+	 * 
+	 * @param parentContext {@inheritDoc}
+	 * @param browsingUnit {@inheritDoc}
+	 * @param contextName {@inheritDoc}
+	 * @param container {@inheritDoc}
+	 */
 	protected IFrameContainerBrowsingContext(BrowsingContext parentContext, BrowsingUnit browsingUnit, String contextName, Element container) {
 		super(parentContext, browsingUnit, contextName, container);
 	
 		this.documentIframes = new HashMap<Document, List<IFrameBrowsingContext>>();
 	}
 	
+	/**
+	 * Creates new nested IFRAME browsing context.
+	 * 
+	 * @param iframeElement IFRAME element which represents the container of the new browsing context.
+	 * @return New nested IFRAME browsing context.
+	 */
 	public IFrameBrowsingContext createIFrameContext(Html5IFrameElementImpl iframeElement) {
 		Document document = iframeElement.getOwnerDocument();
 		IFrameBrowsingContext childContext = new IFrameBrowsingContext(this, iframeElement);
@@ -55,6 +83,12 @@ public class IFrameContainerBrowsingContext extends BrowsingContext {
 		return childContext;
 	}
 
+	/**
+	 * Returns list with all nested IFRAME browsing contexts for a given document.
+	 * 
+	 * @param document Document for which should be returned the IFRAME browsing contexts.
+	 * @return List with all nested IFRAME browsing contexts for a given document
+	 */
 	public List<IFrameBrowsingContext> getDocumentIframes(Document document) {
 		List<IFrameBrowsingContext> iframes = documentIframes.get(document);
 		iframes = (iframes == null)? EMPTY_IFRAMES : iframes;

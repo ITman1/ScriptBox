@@ -21,6 +21,13 @@ package org.fit.cssbox.scriptbox.browser;
 
 import java.util.EventListener;
 
+/**
+ * Represents interface for creating event listeners above browsing contexts.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface BrowsingContextListener extends EventListener {
 	public void onBrowsingContextEvent(BrowsingContextEvent event);
 }

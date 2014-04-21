@@ -74,7 +74,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	private WindowListener frameListener = new WindowAdapter() {
 		public void windowClosing(WindowEvent e) {
 			frame.dispose();
-			_userAgent.destroyBrowsingUnit(SimpleBrowsingUnit.this);
+			userAgent.destroyBrowsingUnit(SimpleBrowsingUnit.this);
 		};
 	};
 	
@@ -111,7 +111,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		public void onHistoryEvent(final JointSessionHistoryEvent event) {
 			SessionHistoryEntry _whereTraversed = null;
 			if (event.getEventType() == JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
-				_whereTraversed = _jointSessionHistory.getCurrentEntry();
+				_whereTraversed = jointSessionHistory.getCurrentEntry();
 			} else if (event.getEventType() == JointSessionHistoryEvent.EventType.TRAVERSED) {
 				_whereTraversed = event.getRelatedTarget();
 			} else {
@@ -202,14 +202,14 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	private ActionListener onHistoryBackListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			_jointSessionHistory.traverse(-1);
+			jointSessionHistory.traverse(-1);
 		}
 	};
 	
 	private ActionListener onHistoryForwardListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			_jointSessionHistory.traverse(1);
+			jointSessionHistory.traverse(1);
 		}
 	};
 	
@@ -218,7 +218,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		
 		initializeComponents();
 
-		navigationController = _windowBrowsingContext.getNavigationController();
+		navigationController = windowBrowsingContext.getNavigationController();
 		
 		registerEventListeners();
 		
@@ -307,8 +307,8 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 			navigateButton.setText("Navigate");
 		}
 		
-		int historyPosition = _jointSessionHistory.getPosition();
-		int historyLength = _jointSessionHistory.getLength();
+		int historyPosition = jointSessionHistory.getPosition();
+		int historyLength = jointSessionHistory.getLength();
 		
 		historyBackButton.setEnabled(historyPosition != - 1 && historyPosition != 0);
 		historyForwardButton.setEnabled(historyPosition != historyLength - 1);
@@ -325,7 +325,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		navigateButton.addActionListener(onNavigateListener);
 		frame.addWindowListener(frameListener);
 		
-		_jointSessionHistory.addListener(jointSessionHistoryListener);
+		jointSessionHistory.addListener(jointSessionHistoryListener);
 		navigationController.addListener(navigationControllerListener);
 		
 		navigationField.getDocument().addDocumentListener(onNavigationFieldChangedListener);

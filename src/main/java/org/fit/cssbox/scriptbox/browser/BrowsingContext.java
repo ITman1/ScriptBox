@@ -43,6 +43,10 @@ import org.w3c.dom.Node;
  * Represents class of the environment in which Document is presented to user.
  * 
  * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#browsing-context">Browsing context</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
  */
 public class BrowsingContext {
 	public static final String DEFAULT_NAME =  "";
@@ -107,7 +111,7 @@ public class BrowsingContext {
 	 * Constructs new top-level browsing context.
 	 * 
 	 * @param browsingUnit Browsing unit which collects all browsing contexts.
-	 * @param contextName Name of the new browsing context.
+	 * @param name Name of the new browsing context.
 	 * @see #BrowsingContext(BrowsingContext, BrowsingUnit, String, Element)
 	 */
 	public BrowsingContext(BrowsingUnit browsingUnit, String name) {

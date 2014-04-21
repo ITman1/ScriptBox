@@ -31,12 +31,12 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContextEvent;
 import org.fit.cssbox.scriptbox.browser.BrowsingContextListener;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.history.JointSessionHistoryEvent.EventType;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
-import org.fit.cssbox.scriptbox.window.WindowBrowsingContext;
 
 /*
  * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#joint-session-history

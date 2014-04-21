@@ -17,7 +17,7 @@ public class SimpleUserAgent extends ScriptBrowserUserAgent {
 	public void destroyBrowsingUnit(BrowsingUnit browsingUnit) {
 		super.destroyBrowsingUnit(browsingUnit);
 		
-		if (_browsingUnits.size() == 0) {
+		if (browsingUnits.size() == 0) {
 			stop();
 			System.exit(0);
 		}

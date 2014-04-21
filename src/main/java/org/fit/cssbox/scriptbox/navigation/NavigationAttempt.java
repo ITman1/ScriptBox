@@ -56,7 +56,7 @@ public abstract class NavigationAttempt {
 			try {
 				performFromHandleRedirects();
 			} catch (InterruptedException e) {
-				fireCancelled();
+				onCancelled();
 			} finally {
 				synchronized (NavigationAttempt.this) {
 					asyncPerformThread = null;
@@ -190,7 +190,7 @@ public abstract class NavigationAttempt {
 		}
 		
 		if (!isCancelled && !wasCompleted) {
-			listener.onCompleted(this);
+			onCompleted();
 		}
 	}
 	
@@ -208,7 +208,7 @@ public abstract class NavigationAttempt {
 		}
 
 		if (!isCancelled && !wasMatured) {
-			listener.onMatured(this);
+			onMatured();
 		}
 	}
 	
@@ -232,7 +232,7 @@ public abstract class NavigationAttempt {
 			if (asyncPerformThread != null) {
 				asyncPerformThread.interrupt();
 			} else {
-				fireCancelled();
+				onCancelled();
 			}
 			
 			for (Fetch fetch : fetches) {
@@ -283,12 +283,12 @@ public abstract class NavigationAttempt {
 		
 		// 3) Selects effective destination browsing context that will be actually used for the navigation
 		destinationBrowsingContext = selectEffectiveDestinationContext(destinationBrowsingContext);
-		listener.onEffectiveDestinationContextSelected(this, destinationBrowsingContext);
+		onEffectiveDestinationContextSelected(destinationBrowsingContext);
 
 			
 		// 4) If there is already navigation attempt running with the different origin then abort
 		if (navigationController.existsNavigationAttempt(nonEqualOriginPredicate)) {
-			fireCancelled();
+			onCancelled();
 			return;
 		}
 		
@@ -298,14 +298,14 @@ public abstract class NavigationAttempt {
 		synchronized (destinationActiveDocument) {
 			Task unloadTask = destinationActiveDocument.getUnloadTask();
 			if (unloadTask != null && unloadTask.getTaskSource() == TaskSource.HISTORY_TRAVERSAL) {
-				fireCancelled();
+				onCancelled();
 				return;
 			}
 		}
 		
 		// 6) If prompt to unload above active document is running then abort
 		if (destinationActiveDocument.isPromptToUnloadRunning()) {
-			fireCancelled();
+			onCancelled();
 			return;
 		}
 		
@@ -315,7 +315,7 @@ public abstract class NavigationAttempt {
 		try {
 			performFromFragmentIdentifiers();
 		} catch (InterruptedException e) {
-			fireCancelled();
+			onCancelled();
 		}
 	}
 	
@@ -599,7 +599,48 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
-	protected void fireCancelled() {
+	protected void onEffectiveDestinationContextSelected(BrowsingContext destinationBrowsingContext) {
+		fireEffectiveDestinationContextSelected(destinationBrowsingContext);
+	}
+	
+	protected void onCompleted() {
+		resetDelayingLoadEventsMode();
+		fireCompleted();
+	}
+	
+	protected void onMatured() {
+		resetDelayingLoadEventsMode();
+		fireMatured();
+	}
+	
+	protected void onCancelled() {
+		resetDelayingLoadEventsMode();
+		fireCancelled();
+	}
+	
+	private void resetDelayingLoadEventsMode() {
+		if (destinationBrowsingContext instanceof IFrameBrowsingContext) {
+			IFrameBrowsingContext context = (IFrameBrowsingContext)destinationBrowsingContext;
+
+			if (context.hasDelayingLoadEventsMode()) {
+				context.resetDelayingLoadEventsMode();
+			}
+		}
+	}
+	
+	private void fireEffectiveDestinationContextSelected(BrowsingContext destinationBrowsingContext) {
+		listener.onEffectiveDestinationContextSelected(this, destinationBrowsingContext);
+	}
+	
+	private void fireCompleted() {
+		listener.onCompleted(this);
+	}
+	
+	private void fireMatured() {
+		listener.onMatured(this);
+	}
+	
+	private void fireCancelled() {
 		EventLoop eventLoop = sourceBrowsingContext.getEventLoop();
 		Thread loopThread = eventLoop.getEventThread();
 		

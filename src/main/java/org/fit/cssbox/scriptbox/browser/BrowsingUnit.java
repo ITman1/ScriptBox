@@ -30,9 +30,24 @@ import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.ui.BarProp;
 import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
-import org.fit.cssbox.scriptbox.window.WindowBrowsingContext;
 
+/**
+ * Default class for creating custom browsing unit. 
+ * 
+ * Browsing unit collects all browsing contexts, has associated shared joint history,
+ * provides to them the event loop and some additional UI interfaces. 
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unit-of-related-browsing-contexts">Unit of related browsing contexts</a>
+ */
 public class BrowsingUnit {
+	/**
+	 * Default class for bar properties which are not presented by this browsing unit. 
+	 * 
+	 * @author Radim Loskot
+	 */
 	public static class NoBarProp extends BarProp {
 		@ScriptGetter
 		@Override
@@ -41,6 +56,11 @@ public class BrowsingUnit {
 		}
 	}
 	
+	/**
+	 * Default class for scrollbar properties which are not presented by this browsing unit. 
+	 * 
+	 * @author Radim Loskot
+	 */
 	public static class NoScrollBarsProp extends ScrollBarsProp {
 		@ScriptGetter
 		@Override
@@ -71,111 +91,216 @@ public class BrowsingUnit {
 	private static BarProp noBarAvailable = new NoBarProp();
 	private static NoScrollBarsProp noScrollBarsAvailable = new NoScrollBarsProp();
 	
-	protected UserAgent _userAgent;
-	protected EventLoop _eventLoop;
-	protected JointSessionHistory _jointSessionHistory;
-	protected WindowBrowsingContext _windowBrowsingContext;
-	protected ScriptSettingsStack _scriptSettingsStack;
+	protected UserAgent userAgent;
+	protected EventLoop eventLoop;
+	protected JointSessionHistory jointSessionHistory;
+	protected WindowBrowsingContext windowBrowsingContext;
+	protected ScriptSettingsStack scriptSettingsStack;
 	
 	protected boolean _discarded;
 	
+	/**
+	 * Constructs new browsing unit of the user agent.
+	 * 
+	 * @param userAgent User agent which owns this browsing unit.
+	 */
 	public BrowsingUnit(UserAgent userAgent) {
-		_userAgent = userAgent;
+		this.userAgent = userAgent;
 		
-		_scriptSettingsStack = new ScriptSettingsStack();
+		this.eventLoop = new EventLoop(this);
+		this.scriptSettingsStack = new ScriptSettingsStack();
+		this.windowBrowsingContext = new WindowBrowsingContext(this);
 		
-		_windowBrowsingContext = new WindowBrowsingContext(this);
-		
-		_jointSessionHistory = new JointSessionHistory(this);
-		_eventLoop = new EventLoop(this);
+		// Has to be after windowBrowsingContext - because it registers event listeners above it
+		this.jointSessionHistory = new JointSessionHistory(this);
 	}
 	
+	/**
+	 * Returns the user agent which owns and opened this browsing unit.
+	 * 
+	 * @return Opener user agent.
+	 */
 	public UserAgent getUserAgent() {
-		return _userAgent;
+		return userAgent;
 	}
 	
+	/**
+	 * Returns main top-level browsing context which is the root for all browsing contexts.
+	 * 
+	 * @return Top-level browsing context for this browsing unit.
+	 */
 	public WindowBrowsingContext getWindowBrowsingContext() {
-		return _windowBrowsingContext;
+		return windowBrowsingContext;
 	}
 	
+	/**
+	 * Queues task into queue.
+	 * 
+	 * @param task New task to be queued into event loop.
+	 */
 	public void queueTask(Task task) {
-		_eventLoop.queueTask(task);
+		eventLoop.queueTask(task);
 	}
 	
+	/**
+	 * Returns associated event loop.
+	 * 
+	 * @return Associated event loop.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#event-loop">The event loop</a>
+	 */
 	public EventLoop getEventLoop() {
-		return _eventLoop;
+		return eventLoop;
 	}
 	
+	/**
+	 * Returns associated script settings stack.
+	 * 
+	 * @return Associated script settings stack
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#stack-of-script-settings-objects">Stack of script settings objects</a>
+	 */
 	public ScriptSettingsStack getScriptSettingsStack() {
-		return _scriptSettingsStack;
+		return scriptSettingsStack;
 	}
 		
+	/**
+	 * Returns associated joint session history.
+	 * 
+	 * @return Associated hoint session history
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#joint-session-history">Joint session history</a>
+	 */
 	public JointSessionHistory getJointSessionHistory() {
-		return _jointSessionHistory;
+		return jointSessionHistory;
 	}
 	
+	/**
+	 * Navigates window browsing context to passed address.
+	 * 
+	 * @param address Address where to navigate window browsing context.
+	 * @throws MalformedURLException
+	 * @see {@link #navigate(URL)}
+	 */
 	public void navigate(String address) throws MalformedURLException {
 		URL url = new URL(address);
 		navigate(url);
 	}
 	
+	/**
+	 * Navigates window browsing context to passed address.
+	 * 
+	 * @param url Address where to navigate window browsing context.
+	 * @throws MalformedURLException
+	 */
 	public void navigate(URL url) {
-		NavigationController navigationController = _windowBrowsingContext.getNavigationController();
-		navigationController.navigate(_windowBrowsingContext, url, false, false, true);		
+		NavigationController navigationController = windowBrowsingContext.getNavigationController();
+		navigationController.navigate(windowBrowsingContext, url, false, false, true);		
 	}
 	
+	/**
+	 * Test whether is this browsing unit discarded.
+	 * 
+	 * @return True if is this browsing unit discarded, otherwise false.
+	 */
 	public boolean isDiscarded() {
 		return _discarded;
 	}
 	
+	/**
+	 * Discards this browsing unit.
+	 */
 	public void discard() {
 		if (!_discarded) {
-			_windowBrowsingContext.discard();
+			windowBrowsingContext.discard();
 			try {
-				_eventLoop.abort(false);
+				eventLoop.abort(false);
 			} catch (InterruptedException e) {
 			}
 			
-			_jointSessionHistory = null;
-			_windowBrowsingContext = null;
-			_scriptSettingsStack = null;
+			jointSessionHistory = null;
+			windowBrowsingContext = null;
+			scriptSettingsStack = null;
 			
 			_discarded = true;
 		}
 	}
 	
+	/**
+	 * Returns menu bar properties.
+	 * 
+	 * @return Menu bar properties
+	 */
 	public BarProp getMenubar() {
 		return noBarAvailable;
 	}
 
+	/**
+	 * Returns personal bar properties.
+	 * 
+	 * @return Personal bar properties
+	 */
 	public BarProp getPersonalbar() {
 		return noBarAvailable;
 	}
 
+	/**
+	 * Returns scroll bar properties.
+	 * 
+	 * @return Scroll bar properties
+	 */
 	public ScrollBarsProp getScrollbars() {
 		return noScrollBarsAvailable;
 	}
 
+	/**
+	 * Returns status bar properties.
+	 * 
+	 * @return Status bar properties
+	 */
 	public BarProp getStatusbar() {
 		return noBarAvailable;
 	}
 
+	/**
+	 * Returns tool bar properties.
+	 * 
+	 * @return Tool bar properties
+	 */
 	public BarProp getToolbar() {
 		return noBarAvailable;
 	}
 	
+	/**
+	 * Returns location bar properties.
+	 * 
+	 * @return Location bar properties
+	 */
 	public BarProp getLocationbar() {
 		return noBarAvailable;
 	}
 	
+	/**
+	 * Shows alert dialog with given message.
+	 * 
+	 * @param message Message to be displayed.
+	 */
 	public void showAlertDialog(String message) {
 		
 	}
 	
+	/**
+	 * Shows confirm dialog with given message.
+	 * 
+	 * @param message Message to be displayed.
+	 */
 	public boolean showConfirmDialog(String message) {
 		return false;
 	}
 	
+	/**
+	 * Shows prompt dialog with given message.
+	 * 
+	 * @param message Message to be displayed.
+	 * @param defaultChoice Choice to be returned if user canceled the prompt.
+	 */
 	public String showPromptDialog(String message, String defaultChoice) {
 		return null;
 	}

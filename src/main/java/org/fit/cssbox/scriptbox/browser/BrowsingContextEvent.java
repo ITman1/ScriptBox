@@ -21,19 +21,33 @@ package org.fit.cssbox.scriptbox.browser;
 
 import java.util.EventObject;
 
+/**
+ * Event class for events which are fired by browsing contexts.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class BrowsingContextEvent extends EventObject {
 
 	private static final long serialVersionUID = -879099242022721983L;
 
 	public enum EventType {
-		INSERTED,
-		REMOVED,
-		DESTROYED
+		INSERTED,  /** New browsing context is inserted. */
+		REMOVED,   /** Browsing context is removed */
+		DESTROYED  /** This browsing context has been destroyed */
 	};
 	
 	private EventType eventType;
 	private BrowsingContext target;
 	
+	/**
+	 * Constructs event for browsing context with the specified type and target.
+	 * 
+	 * @param source Browsing context which fires the event.
+	 * @param eventType Event type.
+	 * @param target Target browsing context which might be appended to this event.
+	 */
 	public BrowsingContextEvent(BrowsingContext source, EventType eventType, BrowsingContext target) {
 		super(source);
 		
@@ -46,10 +60,20 @@ public class BrowsingContextEvent extends EventObject {
 		}
 	}
 	
+	/**
+	 * Returns event type.
+	 * 
+	 * @return Event type.
+	 */
 	public EventType getEventType() {
 		return eventType;
 	}
 
+	/**
+	 * Returns target to which relates this event.
+	 * 
+	 * @return Target to which relates this event.
+	 */
 	public BrowsingContext getTarget() {
 		return target;
 	}
