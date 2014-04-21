@@ -20,12 +20,14 @@
 package org.fit.cssbox.scriptbox.browser;
 
 public class AuxiliaryBrowsingContext extends BrowsingContext {
+	protected boolean createdByScript;
 	protected BrowsingContext openerBrowsingContext;
 	
-	public AuxiliaryBrowsingContext(BrowsingUnit browsingUnit, BrowsingContext openerBrowsingContext, String name) {
+	public AuxiliaryBrowsingContext(BrowsingUnit browsingUnit, BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
 		super(browsingUnit, name);
 
 		this.openerBrowsingContext = openerBrowsingContext;
+		this.createdByScript = createdByScript;
 	}
 
 	public AuxiliaryBrowsingContext(BrowsingContext openerBrowsingContext) {
@@ -33,7 +35,7 @@ public class AuxiliaryBrowsingContext extends BrowsingContext {
 	}
 	
 	public AuxiliaryBrowsingContext(BrowsingContext openerBrowsingContext, String name) {
-		this(openerBrowsingContext.browsingUnit, openerBrowsingContext, name);
+		this(openerBrowsingContext.browsingUnit, openerBrowsingContext, name, true);
 	}
 	
 	/*
@@ -74,5 +76,17 @@ public class AuxiliaryBrowsingContext extends BrowsingContext {
 		}
 		
 		return isFamiliar;
+	}
+	
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#script-closable
+	 */
+	@Override
+	public boolean isScriptClosable() {
+		if (!createdByScript) {
+			return super.isScriptClosable();
+		}
+	
+		return true;
 	}
 }

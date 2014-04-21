@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.demo;
+package org.fit.cssbox.scriptbox.demo.tester;
 
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;

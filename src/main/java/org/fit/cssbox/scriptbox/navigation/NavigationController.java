@@ -234,7 +234,9 @@ public class NavigationController {
 	}
 	
 	public synchronized void cancelNavigationAttempts(Predicate<NavigationAttempt> attemptPredicate) {
-		for (NavigationAttempt attempt : navigationAttempts) {
+		ImmutableList<NavigationAttempt> attempts = ImmutableList.copyOf(navigationAttempts);
+		
+		for (NavigationAttempt attempt : attempts) {
 			if (attemptPredicate.apply(attempt)) {
 				attempt.cancel();
 			}

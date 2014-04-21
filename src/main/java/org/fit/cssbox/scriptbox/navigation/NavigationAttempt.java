@@ -40,7 +40,6 @@ import org.fit.cssbox.scriptbox.resource.content.ContentHandlerRegistry;
 import org.fit.cssbox.scriptbox.resource.content.ErrorHandler;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
-import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
@@ -112,6 +111,7 @@ public abstract class NavigationAttempt {
 	protected boolean explicitSelfNavigationOverride;
 	protected boolean replacementEnabled;
 	protected URL url;
+	protected boolean isUnloadRunning;
 	
 	protected boolean runningUnloadDocument;
 
@@ -162,6 +162,22 @@ public abstract class NavigationAttempt {
 	
 	public synchronized boolean isCompleted() {
 		return completed;
+	}
+	
+	public void unloadDocument(Html5DocumentImpl document) {
+		synchronized (this) {
+			isUnloadRunning = true;
+		}
+		
+		document.unload(false);
+		
+		synchronized (this) {
+			isUnloadRunning = true;
+		}
+	}
+	
+	public synchronized boolean isUnloadRunning() {
+		return isUnloadRunning;
 	}
 	
 	public void complete() {
@@ -258,7 +274,7 @@ public abstract class NavigationAttempt {
 		 * TODO?:  If these steps are aborted here, the user agent may instead offer to open the new resource 
 	 	 * in a new top-level browsing context or in the top-level browsing context of the source browsing context
 		 */
-		if (!isAllowedToNavigate(sourceBrowsingContext, destinationBrowsingContext)) {
+		if (!sourceBrowsingContext.isAllowedToNavigate(destinationBrowsingContext)) {
 			if (exceptionEnabled) {
 				throw new DOMException(DOMException.SECURITY_ERR, "SecurityError");
 			}
@@ -621,34 +637,6 @@ public abstract class NavigationAttempt {
 		}
 		
 		return navigatedContext;
-	}
-	
-	/*
-	 * FIXME: Rename local variable to something more clear than a, b, c
-	 */
-	public static boolean isAllowedToNavigate(BrowsingContext sourceBrowsingContext, BrowsingContext destinationBrowsingContext) {
-		BrowsingContext a = sourceBrowsingContext;
-		BrowsingContext b = destinationBrowsingContext;
-		
-		if (a != b && !a.isAncestorOf(b) && !b.isTopLevelBrowsingContext() && a.getActiveDocument().
-				getActiveSandboxingFlagSet().contains(SandboxingFlag.NAVIGATION_BROWSING_CONTEXT_FLAG)) {
-			return false;
-		}
-		
-		if (b.isTopLevelBrowsingContext() && b.isAncestorOf(a) && a.getActiveDocument().
-				getActiveSandboxingFlagSet().contains(SandboxingFlag.TOPLEVEL_NAVIGATION_BROWSING_CONTEXT_FLAG)) {
-			return false;
-		}
-		
-		/*
-		 * TODO: Otherwise, if B is a top-level browsing context, and is neither A 
-		 * nor one of the ancestor browsing contexts of A, and A's Document's active 
-		 * sandboxing flag set has its sandboxed navigation browsing context flag set, 
-		 * and A is not the one permitted sandboxed navigator of B, then abort these steps negatively.
-		 */
-		//if (b.isTopLevelBrowsingContext() && a != b && !b.isAncestorOf(a) && a.getActiveDocument().)
-		
-		return true;
 	}
 	
 	public static boolean hasSeamlessFlag(BrowsingContext context) {

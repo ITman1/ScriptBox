@@ -272,6 +272,26 @@ public class BrowsingContext {
 		return contextList;
 	}
 		
+	/*
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#script-closable
+	 */
+	public boolean isScriptClosable() {
+		List<SessionHistoryEntry> entries = sessionHistory.getSessionHistoryEntries();
+		
+		if (!entries.isEmpty()) {
+			Html5DocumentImpl document = null;
+			for (SessionHistoryEntry entry : entries) {
+				Html5DocumentImpl currDocument = entry.getDocument();
+				if (document != null && currDocument != null && document != currDocument) {
+					return false;
+				}
+				document = currDocument;
+			}
+		}
+		
+		return true;
+	}
+	
 	public URL getBaseURL() {
 		return baseURI;
 	}
@@ -378,6 +398,34 @@ public class BrowsingContext {
 		return family;
 	}
 
+	/*
+	 * FIXME: Rename local variable to something more clear than a, b, c
+	 */
+	public boolean isAllowedToNavigate(BrowsingContext destinationBrowsingContext) {
+		BrowsingContext a = this;
+		BrowsingContext b = destinationBrowsingContext;
+		
+		if (a != b && !a.isAncestorOf(b) && !b.isTopLevelBrowsingContext() && a.getActiveDocument().
+				getActiveSandboxingFlagSet().contains(SandboxingFlag.NAVIGATION_BROWSING_CONTEXT_FLAG)) {
+			return false;
+		}
+		
+		if (b.isTopLevelBrowsingContext() && b.isAncestorOf(a) && a.getActiveDocument().
+				getActiveSandboxingFlagSet().contains(SandboxingFlag.TOPLEVEL_NAVIGATION_BROWSING_CONTEXT_FLAG)) {
+			return false;
+		}
+		
+		/*
+		 * TODO: Otherwise, if B is a top-level browsing context, and is neither A 
+		 * nor one of the ancestor browsing contexts of A, and A's Document's active 
+		 * sandboxing flag set has its sandboxed navigation browsing context flag set, 
+		 * and A is not the one permitted sandboxed navigator of B, then abort these steps negatively.
+		 */
+		//if (b.isTopLevelBrowsingContext() && a != b && !b.isAncestorOf(a) && a.getActiveDocument().)
+		
+		return true;
+	}
+	
 	/*
 	 * FIXME: Rename local variable to something more clear than a, b, c
 	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#familiar-with
@@ -558,8 +606,7 @@ public class BrowsingContext {
 	
 	public boolean scrollToFragment(String fragment) {
 		BrowsingUnit browsingUnit = getBrowsingUnit();
-		UserAgent agent = browsingUnit.getUserAgent();
-		ScrollBarsProp scrollbars = agent.getScrollbars();
+		ScrollBarsProp scrollbars = browsingUnit.getScrollbars();
 		
 		return scrollbars.scrollToFragment(fragment);
 	}

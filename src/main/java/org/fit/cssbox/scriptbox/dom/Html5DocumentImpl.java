@@ -80,6 +80,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		try {
 			defaultURL = new URL(DEFAULT_URL_ADDRESS); // FIXME: about is not supported!
 		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
 		DEFAULT_URL = defaultURL;
 	}

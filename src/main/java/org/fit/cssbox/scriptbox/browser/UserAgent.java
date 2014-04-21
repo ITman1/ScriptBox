@@ -24,9 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
-import org.fit.cssbox.scriptbox.ui.BarProp;
-import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
 
 public class UserAgent {
@@ -34,45 +31,7 @@ public class UserAgent {
 		URLUtilsHelper.registerUrlHandlerPackage("org.fit.cssbox.scriptbox.url");
 	}
 	
-	public static class NoBarProp extends BarProp {
-		@ScriptGetter
-		@Override
-		public boolean getVisible() {
-			return false;
-		}
-	}
-	
-	public static class NoScrollBarsProp extends ScrollBarsProp {
-		@ScriptGetter
-		@Override
-		public boolean getVisible() {
-			return false;
-		}
-		
-		@Override
-		public void scroll(int xCoord, int yCoord) {
-		}
-
-		@Override
-		public boolean scrollToFragment(String fragment) {
-			return true;
-		}
-
-		@Override
-		public int getScrollPositionX() {
-			return -1;
-		}
-
-		@Override
-		public int getScrollPositionY() {
-			return -1;
-		}
-	}
-	
-	private static BarProp noBarAvailable = new NoBarProp();
-	private static NoScrollBarsProp noScrollBarsAvailable = new NoScrollBarsProp();
-	
-	private List<BrowsingUnit> _browsingUnits;
+	protected List<BrowsingUnit> _browsingUnits;
 	
 	public UserAgent() {
 		_browsingUnits = new ArrayList<BrowsingUnit>();
@@ -95,7 +54,7 @@ public class UserAgent {
 	}
 	
 	public BrowsingUnit openBrowsingUnit() {
-		BrowsingUnit browsingUnit = new BrowsingUnit(this);
+		BrowsingUnit browsingUnit = createBrowsingUnit();
 		
 		_browsingUnits.add(browsingUnit);
 		
@@ -126,40 +85,8 @@ public class UserAgent {
 	public boolean alertsEnabled(URL page) {
 		return true;
 	}
-
-	public BarProp getLocationbar() {
-		return noBarAvailable;
-	}
-
-	public BarProp getMenubar() {
-		return noBarAvailable;
-	}
-
-	public BarProp getPersonalbar() {
-		return noBarAvailable;
-	}
-
-	public ScrollBarsProp getScrollbars() {
-		return noScrollBarsAvailable;
-	}
-
-	public BarProp getStatusbar() {
-		return noBarAvailable;
-	}
-
-	public BarProp getToolbar() {
-		return noBarAvailable;
-	}
 	
-	public void showAlertDialog(String message) {
-		
-	}
-	
-	public boolean showConfirmDialog(String message) {
-		return false;
-	}
-	
-	public String showPromptDialog(String message, String defaultChoice) {
-		return null;
+	protected BrowsingUnit createBrowsingUnit() {
+		return new BrowsingUnit(this);
 	}
 }

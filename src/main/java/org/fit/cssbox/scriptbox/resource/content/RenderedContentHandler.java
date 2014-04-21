@@ -81,7 +81,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 			Html5DocumentImpl oldDocument = getDocument();
 			
 			// 1) Unload the document
-			oldDocument.unload(false);
+			navigationAttempt.unloadDocument(oldDocument);
 
 			// 2) If the navigation was initiated for entry update then update otherwise insert new one
 			if (navigationAttempt instanceof UpdateNavigationAttempt) {

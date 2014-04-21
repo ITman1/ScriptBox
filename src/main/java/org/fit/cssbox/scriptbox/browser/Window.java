@@ -43,6 +43,7 @@ import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.navigation.Location;
+import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
@@ -58,6 +59,8 @@ import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.views.AbstractView;
 import org.w3c.dom.views.DocumentView;
+
+import com.google.common.base.Predicate;
 
 public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, WindowEventHandlers, AbstractView {
 	final public static String DEFAULT_TARGET =  "_blank";
@@ -338,32 +341,32 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 
 	@ScriptGetter
 	public BarProp getLocationbar() {
-		return userAgent.getLocationbar();
+		return context.getBrowsingUnit().getLocationbar();
 	}
 
 	@ScriptGetter
 	public BarProp getMenubar() {
-		return userAgent.getMenubar();
+		return context.getBrowsingUnit().getMenubar();
 	}
 
 	@ScriptGetter
 	public BarProp getPersonalbar() {
-		return userAgent.getPersonalbar();
+		return context.getBrowsingUnit().getPersonalbar();
 	}
 
 	@ScriptGetter
 	public ScrollBarsProp getScrollbars() {
-		return userAgent.getScrollbars();
+		return context.getBrowsingUnit().getScrollbars();
 	}
 
 	@ScriptGetter
 	public BarProp getStatusbar() {
-		return userAgent.getStatusbar();
+		return context.getBrowsingUnit().getStatusbar();
 	}
 
 	@ScriptGetter
 	public BarProp getToolbar() {
-		return userAgent.getToolbar();
+		return context.getBrowsingUnit().getToolbar();
 	}
 
 	@ScriptGetter
@@ -467,15 +470,36 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	
 	@ScriptFunction
 	public void close() {
-		throw new UnsupportedOperationException("Method close() has not been implemented yet!");
+		if (!context.isScriptClosable()) {
+			return;
+		}
+		
+		BrowsingUnit browsingUnit = context.getBrowsingUnit();
+		ScriptSettingsStack stack = browsingUnit.getScriptSettingsStack();
+		ScriptSettings<?> settings = stack.getIncumbentScriptSettings();
+		BrowsingContext responsibleContext = settings.getResposibleBrowsingContext();
+		
+		if (!responsibleContext.isFamiliarWith(context)) {
+			return;
+		}
+		
+		if (!responsibleContext.isAllowedToNavigate(context)) {
+			return;
+		}
+		
+		context.close();
 	}
 	
 	@ScriptFunction
 	public void stop() {
-		if (!documentImpl.isUnloadRunning()) {
-			NavigationController controller = context.getNavigationController();
-			controller.cancelAllNavigationAttempts();
-		}
+		NavigationController controller = context.getNavigationController();
+		controller.cancelNavigationAttempts(new Predicate<NavigationAttempt>() {
+			@Override
+			public boolean apply(NavigationAttempt attempt) {
+				return !attempt.isUnloadRunning();
+			}
+		});
+
 		
 		Html5DocumentImpl activeDocument = context.getActiveDocument();
 		activeDocument.abort();
@@ -531,7 +555,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		}
 		
 		//It must be a valid browsing context name or keyword.
-		if (!context.isValidBrowsingContextName(target)) {
+		if (!context.isValidBrowsingContextNameOrKeyword(target)) {
 			return null;
 		}
 		
@@ -563,8 +587,12 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 			ScriptSettings<?> settings = stack.getIncumbentScriptSettings();
 			BrowsingContext sourceBrowsingContext = settings.getResposibleBrowsingContext();
 			navigationController.navigate(sourceBrowsingContext, targetUrl, true, false, replace);
-		} else {
-			
+		} else if (targetUrl.equals(Html5DocumentImpl.DEFAULT_URL) && isTargetBlank) {
+			TrustedEvent event = new TrustedEvent();
+			Html5DocumentImpl document = targetContext.getActiveDocument();
+			Window window = document.getWindow();
+			event.initEvent("load", false, false, true, document);
+			window.dispatchEvent(event);
 		}
 		
 		//The method must return the WindowProxy object of the browsing context that was navigated, or null
@@ -574,7 +602,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	// FIXME?: Everybody who gets proxy can scroll, is that correct? Should not be here check against origins or script setting stack?
 	@ScriptFunction
 	public void scroll(int xCoord, int yCoord) {
-		ScrollBarsProp scrollBars = userAgent.getScrollbars();
+		ScrollBarsProp scrollBars = context.getBrowsingUnit().getScrollbars();
 		
 		if (scrollBars != null) {
 			scrollBars.scroll(xCoord, yCoord);
@@ -632,7 +660,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 			return;
 		}
 		
-		userAgent.showAlertDialog(message);
+		context.getBrowsingUnit().showAlertDialog(message);
 	}
 	
 	@ScriptFunction
@@ -649,7 +677,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 			return false;
 		}
 		
-		return userAgent.showConfirmDialog(message);
+		return context.getBrowsingUnit().showConfirmDialog(message);
 	}
 	
 	@ScriptFunction
@@ -666,7 +694,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 			return null;
 		}
 		
-		return userAgent.showPromptDialog(message, defaultChoice);
+		return context.getBrowsingUnit().showPromptDialog(message, defaultChoice);
 	}
 	
 	@ScriptFunction

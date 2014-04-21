@@ -27,15 +27,56 @@ import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.JointSessionHistory;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
+import org.fit.cssbox.scriptbox.ui.BarProp;
+import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 
 public class BrowsingUnit {
-	private UserAgent _userAgent;
-	private EventLoop _eventLoop;
-	private JointSessionHistory _jointSessionHistory;
-	private WindowBrowsingContext _windowBrowsingContext;
-	private ScriptSettingsStack _scriptSettingsStack;
+	public static class NoBarProp extends BarProp {
+		@ScriptGetter
+		@Override
+		public boolean getVisible() {
+			return false;
+		}
+	}
 	
-	private boolean _discarded;
+	public static class NoScrollBarsProp extends ScrollBarsProp {
+		@ScriptGetter
+		@Override
+		public boolean getVisible() {
+			return false;
+		}
+		
+		@Override
+		public void scroll(int xCoord, int yCoord) {
+		}
+
+		@Override
+		public boolean scrollToFragment(String fragment) {
+			return true;
+		}
+
+		@Override
+		public int getScrollPositionX() {
+			return -1;
+		}
+
+		@Override
+		public int getScrollPositionY() {
+			return -1;
+		}
+	}
+	
+	private static BarProp noBarAvailable = new NoBarProp();
+	private static NoScrollBarsProp noScrollBarsAvailable = new NoScrollBarsProp();
+	
+	protected UserAgent _userAgent;
+	protected EventLoop _eventLoop;
+	protected JointSessionHistory _jointSessionHistory;
+	protected WindowBrowsingContext _windowBrowsingContext;
+	protected ScriptSettingsStack _scriptSettingsStack;
+	
+	protected boolean _discarded;
 	
 	public BrowsingUnit(UserAgent userAgent) {
 		_userAgent = userAgent;
@@ -100,5 +141,41 @@ public class BrowsingUnit {
 			
 			_discarded = true;
 		}
+	}
+	
+	public BarProp getMenubar() {
+		return noBarAvailable;
+	}
+
+	public BarProp getPersonalbar() {
+		return noBarAvailable;
+	}
+
+	public ScrollBarsProp getScrollbars() {
+		return noScrollBarsAvailable;
+	}
+
+	public BarProp getStatusbar() {
+		return noBarAvailable;
+	}
+
+	public BarProp getToolbar() {
+		return noBarAvailable;
+	}
+	
+	public BarProp getLocationbar() {
+		return noBarAvailable;
+	}
+	
+	public void showAlertDialog(String message) {
+		
+	}
+	
+	public boolean showConfirmDialog(String message) {
+		return false;
+	}
+	
+	public String showPromptDialog(String message, String defaultChoice) {
+		return null;
 	}
 }

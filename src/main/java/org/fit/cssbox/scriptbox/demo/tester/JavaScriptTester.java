@@ -17,21 +17,17 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.demo;
+package org.fit.cssbox.scriptbox.demo.tester;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -68,7 +64,6 @@ public class JavaScriptTester {
 	private JTextField newWatchedVariableField;
 	private JScrollPane scriptBrowserScrollPane;
 	private JTextPane consolePane;
-	private JComboBox<Demo> demoComboBox;
 	private JButton objectViewerRefreshButton;
 	private JButton objectsWatchListRefreshButton;
 	private JButton consoleClearButton;
@@ -198,34 +193,6 @@ public class JavaScriptTester {
 
 		Component sourceCodeToolOptionsTopGlue = Box.createVerticalGlue();
 		sourceCodeToolOptionsPanel.add(sourceCodeToolOptionsTopGlue);
-
-		JPanel demoPanel = new JPanel();
-		demoPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
-		demoPanel.setMaximumSize(new Dimension(32767, 23));
-		sourceCodeToolOptionsPanel.add(demoPanel);
-		GridBagLayout gbl_demoPanel = new GridBagLayout();
-		gbl_demoPanel.columnWidths = new int[] { 143, 47, 0 };
-		gbl_demoPanel.rowHeights = new int[] { 23, 0 };
-		gbl_demoPanel.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
-		gbl_demoPanel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
-		demoPanel.setLayout(gbl_demoPanel);
-
-		demoComboBox = new JComboBox<Demo>();
-		GridBagConstraints gbc_demoComboBox = new GridBagConstraints();
-		gbc_demoComboBox.fill = GridBagConstraints.BOTH;
-		gbc_demoComboBox.insets = new Insets(0, 0, 0, 5);
-		gbc_demoComboBox.gridx = 0;
-		gbc_demoComboBox.gridy = 0;
-		demoPanel.add(demoComboBox, gbc_demoComboBox);
-		demoComboBox.setMaximumSize(new Dimension(32767, 23));
-
-		JButton loadDemoButton = new JButton("Load");
-		GridBagConstraints gbc_loadDemoButton = new GridBagConstraints();
-		gbc_loadDemoButton.anchor = GridBagConstraints.NORTHWEST;
-		gbc_loadDemoButton.gridx = 1;
-		gbc_loadDemoButton.gridy = 0;
-		demoPanel.add(loadDemoButton, gbc_loadDemoButton);
-		loadDemoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		JPanel newOpenCloseButtonsPanel = new JPanel();
 		newOpenCloseButtonsPanel.setMaximumSize(new Dimension(32767, 32));
@@ -433,10 +400,6 @@ public class JavaScriptTester {
 
 	public JTextPane getConsolePane() {
 		return consolePane;
-	}
-
-	public JComboBox<Demo> getDemoComboBox() {
-		return demoComboBox;
 	}
 	
 	public JButton getObjectViewerRefreshButton() {

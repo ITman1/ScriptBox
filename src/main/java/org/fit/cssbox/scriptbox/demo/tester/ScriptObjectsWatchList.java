@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.demo;
+package org.fit.cssbox.scriptbox.demo.tester;
 
 import javax.script.ScriptException;
 import javax.swing.tree.DefaultMutableTreeNode;

@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
@@ -211,8 +212,10 @@ public class JointSessionHistory {
 		BrowsingContext windowContext = _browsingUnit.getWindowBrowsingContext();
 		SessionHistory windowSessionHistory = windowContext.getSesstionHistory();
 		
-		entries.add(windowSessionHistory);
-		
+		if (windowSessionHistory != null) {
+			entries.add(windowSessionHistory);
+		}
+				
 		Collection<BrowsingContext> nestedContexts = windowContext.getDescendantContexts();
 		for (BrowsingContext context : nestedContexts) {
 			SessionHistory sessionHistory = context.getSesstionHistory();
@@ -237,8 +240,12 @@ public class JointSessionHistory {
 		for (SessionHistory history : histories) {
 			SessionHistoryEntry currentHistoryEntry = history.getCurrentEntry();
 			
-			_historyEntries.addAll(history.getSessionHistoryEntries());
+			List<SessionHistoryEntry> historyEntries = history.getSessionHistoryEntries();
 			
+			if (historyEntries != null) {
+				_historyEntries.addAll(historyEntries);
+			}
+						
 			if (currentHistoryEntry != null) {
 				currentHistoryEntries.add(currentHistoryEntry);
 			}
@@ -254,6 +261,10 @@ public class JointSessionHistory {
 		
 		if (currentJointSessionHistoryEntry != null) {
 			_currentJointSessionHistoryEntryPosition = _historyEntries.indexOf(currentJointSessionHistoryEntry);
+		}
+		
+		if (_currentJointSessionHistoryEntryPosition == -1) {
+			currentJointSessionHistoryEntry = null;
 		}
 		
 		if (wasPosition != _currentJointSessionHistoryEntryPosition) {

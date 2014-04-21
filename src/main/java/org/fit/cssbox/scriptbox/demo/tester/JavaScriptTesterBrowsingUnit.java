@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.demo;
+package org.fit.cssbox.scriptbox.demo.tester;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -42,7 +42,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -55,10 +54,8 @@ import jsyntaxpane.DefaultSyntaxKit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
-import org.fit.cssbox.scriptbox.history.JointSessionHistory;
 import org.fit.cssbox.scriptbox.history.JointSessionHistoryEvent;
 import org.fit.cssbox.scriptbox.history.JointSessionHistoryListener;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
@@ -67,15 +64,14 @@ import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
+import org.fit.cssbox.scriptbox.ui.ScriptBrowserBrowsingUnit;
+import org.fit.cssbox.scriptbox.ui.ScriptBrowserUserAgent;
 
-public class JavaScriptTesterController {
+public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	private static ConsoleInjector consoleInjector;
 	private static int NEW_COUNTER = 0;
 	
 	private JavaScriptTester tester;
-	private BrowsingUnit browsingUnit;
-	private JointSessionHistory jointSessionHistory;
-	private BrowsingContext windowContext;
 	private NavigationController navigationController;
 	private Html5DocumentImpl loadedDocument;
 	private NavigationAttempt navigationAttempt;
@@ -146,7 +142,7 @@ public class JavaScriptTesterController {
 		public void onHistoryEvent(final JointSessionHistoryEvent event) {
 			SessionHistoryEntry _whereTraversed = null;
 			if (event.getEventType() == JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
-				_whereTraversed = jointSessionHistory.getCurrentEntry();
+				_whereTraversed = _jointSessionHistory.getCurrentEntry();
 			} else if (event.getEventType() == JointSessionHistoryEvent.EventType.TRAVERSED) {
 				_whereTraversed = event.getRelatedTarget();
 			} else {
@@ -296,7 +292,7 @@ public class JavaScriptTesterController {
 				navigationController.cancelAllNavigationAttempts();
 			} else {
 				try {
-					browsingUnit.navigate(navigationUrl);
+					navigate(navigationUrl);
 				} catch (MalformedURLException e1) {
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(tester.getWindow(),
@@ -311,14 +307,14 @@ public class JavaScriptTesterController {
 	private ActionListener onHistoryBackListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			jointSessionHistory.traverse(-1);
+			_jointSessionHistory.traverse(-1);
 		}
 	};
 	
 	private ActionListener onHistoryForwardListener = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			jointSessionHistory.traverse(1);
+			_jointSessionHistory.traverse(1);
 		}
 	};
 	
@@ -361,14 +357,17 @@ public class JavaScriptTesterController {
 		}
 	};
 	
-	public JavaScriptTesterController() {	
+	public JavaScriptTesterBrowsingUnit(ScriptBrowserUserAgent userAgent) {
+		super(userAgent, false);
+		
+		/* Create UI and components. */
 		tester = new JavaScriptTester();
 		
-		browsingUnit = tester.getScriptBrowser().getBrowsingUnit();
+		/* Get main browser and associate it with this browsing unit */
+		ScriptBrowser browser = tester.getScriptBrowser();
+		setScriptBrowser(browser);
 		
-		jointSessionHistory = browsingUnit.getJointSessionHistory();
-		windowContext = browsingUnit.getWindowBrowsingContext();
-		navigationController = windowContext.getNavigationController();
+		navigationController = _windowBrowsingContext.getNavigationController();
 		
 		openedFiles = new HashMap<Integer, File>();
 		
@@ -377,6 +376,8 @@ public class JavaScriptTesterController {
 		registerEventListeners();
 		
 		updateUi();
+		
+		showWindow();
 	}
 	
 	public void showWindow() {
@@ -421,7 +422,7 @@ public class JavaScriptTesterController {
 	}
 	
 	private void updateScriptBox() {
-		loadedDocument = windowContext.getActiveDocument();		
+		loadedDocument = _windowBrowsingContext.getActiveDocument();		
 		
 		String sourceCode = loadedDocument.getParserSource();
 		sourceCodeEditorPane.setText(sourceCode);
@@ -453,8 +454,8 @@ public class JavaScriptTesterController {
 			}
 		}
 		
-		int historyPosition = jointSessionHistory.getPosition();
-		int historyLength = jointSessionHistory.getLength();
+		int historyPosition = _jointSessionHistory.getPosition();
+		int historyLength = _jointSessionHistory.getLength();
 		
 		historyBackButton.setEnabled(historyPosition != - 1 && historyPosition != 0);
 		historyForwardButton.setEnabled(historyPosition != historyLength - 1);
@@ -488,8 +489,8 @@ public class JavaScriptTesterController {
 		objectsWatchListRefreshButton = tester.getObjectsWatchListRefreshButton();
 		consoleClearButton = tester.getConsoleClearButton();
 		
-		windowObjectViewer.setBrowsingUnit(browsingUnit);
-		scriptObjectsWatchList.setBrowsingUnit(browsingUnit);
+		windowObjectViewer.setBrowsingUnit(this);
+		scriptObjectsWatchList.setBrowsingUnit(this);
 	}
 	
 	private void registerEventListeners() {
@@ -511,7 +512,7 @@ public class JavaScriptTesterController {
 		newWatchedVariableField.addActionListener(onNewVariableEntered);
 		scriptObjectsWatchList.addKeyListener(scriptObjectsWatchListKeyListener);
 		
-		jointSessionHistory.addListener(jointSessionHistoryListener);
+		_jointSessionHistory.addListener(jointSessionHistoryListener);
 		navigationController.addListener(navigationControllerListener);
 		
 		navigationField.getDocument().addDocumentListener(onNavigationFieldChangedListener);
@@ -558,7 +559,7 @@ public class JavaScriptTesterController {
 	
 		if (fileURL != null) {
 			try {
-				browsingUnit.navigate(fileURL);
+				navigate(fileURL);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				JOptionPane.showMessageDialog(tester.getWindow(),
@@ -660,19 +661,5 @@ public class JavaScriptTesterController {
 		if (!consoleInjector.isRegistered()) {
 			consoleInjector.registerScriptContextInject();
 		}
-	}
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		String lookAndFeelName = UIManager.getSystemLookAndFeelClassName();
-		try {
-			UIManager.setLookAndFeel(lookAndFeelName);
-		} catch (Exception e) {
-		}
-		
-		JavaScriptTesterController controller = new JavaScriptTesterController();
-		controller.showWindow();
 	}
 }

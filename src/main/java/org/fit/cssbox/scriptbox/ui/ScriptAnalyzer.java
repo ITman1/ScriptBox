@@ -21,6 +21,7 @@ package org.fit.cssbox.scriptbox.ui;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.fit.cssbox.css.CSSNorm;
@@ -28,22 +29,24 @@ import org.fit.cssbox.css.DOMAnalyzer;
 import org.fit.cssbox.io.DocumentSource;
 import org.fit.cssbox.layout.BrowserCanvas;
 import org.fit.cssbox.layout.Viewport;
-import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.swingbox.util.DefaultAnalyzer;
 
 public class ScriptAnalyzer extends DefaultAnalyzer {
-	BrowsingContext context;
-	
-	public ScriptAnalyzer(BrowsingContext context) {
-		this.context = context;
-	}
-	
     @Override
     public Viewport analyze(DocumentSource d, Dimension dim)
             throws Exception
     {
-    	w3cdoc = context.getActiveDocument();
+    	@SuppressWarnings("resource")
+		InputStream is = (d != null)? d.getInputStream() : null;
+    	
+    	if (!(is instanceof DocumentInputStream)) {
+    		return super.analyze(d, dim);
+    	}
+    	
+    	DocumentInputStream dIs = (DocumentInputStream) is;
+    	
+    	w3cdoc = dIs.getDocument();
     	URL address = ((Html5DocumentImpl)w3cdoc).getAddress();
     	
         // Create the CSS analyzer

@@ -149,16 +149,15 @@ public class URLUtilsHelper {
 	
 
 	public static boolean registerUrlHandlerPackage(String handlerPackageName) {
-		try{
+		try {
 			String handlerPkgs = System.getProperty("java.protocol.handler.pkgs");
-		      if ((handlerPkgs != null) && !(handlerPkgs.isEmpty())){
-		    	  handlerPkgs = handlerPkgs + "|" + handlerPackageName;
-		      }
-		      System.setProperty("java.protocol.handler.pkgs",handlerPackageName);
+		    if ((handlerPkgs != null) && !(handlerPkgs.isEmpty())) {
+		    	handlerPkgs = handlerPkgs + "|" + handlerPackageName;
 		    }
-		    catch(Exception e){
-		      return false;
-		    }
+		    System.setProperty("java.protocol.handler.pkgs",handlerPackageName);
+		} catch(Exception e){
+			return false;
+		}
 		return true;
 	}
 }

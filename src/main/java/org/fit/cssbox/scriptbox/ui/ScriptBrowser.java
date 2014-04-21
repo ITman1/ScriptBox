@@ -29,6 +29,7 @@ import javax.swing.text.EditorKit;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
@@ -45,18 +46,32 @@ public class ScriptBrowser extends BrowserPane {
 	protected MouseEventsDispatcher mouseDispatcher = new MouseEventsDispatcher();
 	protected ScriptBrowserHyperlinkHandler hyperlinkHandler;
 	
-	protected ScriptBrowserUserAgent userAgent;
+	protected UserAgent userAgent;
 	protected BrowsingUnit browsingUnit;
 	
 	protected SessionHistoryEntry visibleSessionHistoryEntry;
 	protected Rectangle delayedScrollRect;
-
-	public ScriptBrowser() {
-		this.userAgent = new ScriptBrowserUserAgent(this);
-		browsingUnit = userAgent.openBrowsingUnit();
+	
+	public ScriptBrowser() {}
+	
+	public ScriptBrowser(UserAgent userAgent) {
+		BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
+		setBrowsingUnit(browsingUnit);
+	}
+	
+	public ScriptBrowser(BrowsingUnit browsingUnit) {
+		setBrowsingUnit(browsingUnit);
+	}
 		
-		this.analyzer = new ScriptAnalyzer(
-				browsingUnit.getWindowBrowsingContext());
+	public void setBrowsingUnit(BrowsingUnit browsingUnit) {
+		this.browsingUnit = browsingUnit;
+		this.userAgent = browsingUnit.getUserAgent();
+		
+		initialize();
+	}
+	
+	protected void initialize() {
+		this.analyzer = new ScriptAnalyzer();
 
 		if (hyperlinkHandler != null) {
 			removeHyperlinkListener(hyperlinkHandler);
@@ -69,7 +84,7 @@ public class ScriptBrowser extends BrowserPane {
 		addMouseMotionListener(mouseDispatcher);
 	}
 	
-	public ScriptBrowserUserAgent getUserAgent() {
+	public UserAgent getUserAgent() {
 		return userAgent;
 	}
 	
@@ -94,7 +109,6 @@ public class ScriptBrowser extends BrowserPane {
 				}
 
 				Document document = kit.createDefaultDocument();
-				InputStream in = null;
 				
 				/* Get information about content to render */
 				
@@ -109,7 +123,7 @@ public class ScriptBrowser extends BrowserPane {
 				document.putProperty(Document.StreamDescriptionProperty, documentAddress);
 
 				/* Render document */
-				
+				InputStream in = new DocumentInputStream(activeDocument);
 				try {
 					kit.read(in, document, 0);
 				} catch (Exception e) {

@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.demo;
+package org.fit.cssbox.scriptbox.demo.tester;
 
 import java.util.ArrayList;
 import java.util.Collection;

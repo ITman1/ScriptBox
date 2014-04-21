@@ -87,6 +87,9 @@ public class SessionHistory {
 	
 	public void discard() {
 		if (context != null) {
+			context = null;
+			currentEntryPosition = -1;
+			
 			while (!entries.isEmpty()) {
 				SessionHistoryEntry entry = entries.remove(0);
 				Html5DocumentImpl doc = entry.getDocument();
@@ -94,11 +97,9 @@ public class SessionHistory {
 					doc.discard();
 				}
 			}
-			
+						
 			fireHistoryDestroyed();
 		}
-		
-		context = null;
 	}
 	
 	public void remove(int index) {
