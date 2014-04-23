@@ -3,7 +3,7 @@ package org.fit.cssbox.scriptbox.script.java;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 
 public class ClassConstructor extends ClassMember<Constructor<?>> implements MemberConstructor {
 	public ClassConstructor(Class<?> clazz, Constructor<?> constructor) {

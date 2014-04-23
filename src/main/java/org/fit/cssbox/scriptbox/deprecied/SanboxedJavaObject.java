@@ -26,9 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.java.Shutter;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.js.SriptableWrapper;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;

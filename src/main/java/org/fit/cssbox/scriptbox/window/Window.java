@@ -564,7 +564,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		}
 		
 		//It must be a valid browsing context name or keyword.
-		if (!context.isValidBrowsingContextNameOrKeyword(target)) {
+		if (!BrowsingContext.isValidBrowsingContextNameOrKeyword(target)) {
 			return null;
 		}
 		

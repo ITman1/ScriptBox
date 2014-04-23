@@ -25,11 +25,8 @@ import java.lang.reflect.Method;
 import org.fit.cssbox.scriptbox.script.java.ObjectField;
 import org.fit.cssbox.scriptbox.script.java.ObjectFunction;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeJavaClass;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.Wrapper;
 
 public class ObjectScriptable extends ScriptableObject  {
 	private static final long serialVersionUID = 1531587729453175461L;
@@ -63,8 +60,8 @@ public class ObjectScriptable extends ScriptableObject  {
 		Method fieldGetterMethod = objectField.getFieldGetterMethod();
 		Method fieldSetterMethod = objectField.getFieldSetterMethod();
 		Field field = objectField.getMember();
-		Method wrappedFieldGetterMethod = (fieldGetterMethod == null && field == null)? null : ObjectField.GETTER_METHOD;
-		Method wrappedFieldSetterMethod = (fieldSetterMethod == null && field == null)? null : ObjectField.SETTER_METHOD;
+		Method wrappedFieldGetterMethod = (fieldGetterMethod == null && field == null)? null : ObjectJSField.GETTER_METHOD;
+		Method wrappedFieldSetterMethod = (fieldSetterMethod == null && field == null)? null : ObjectJSField.SETTER_METHOD;
 		
 		int attributes = ScriptableObject.DONTENUM;
 		attributes = (fieldSetterMethod == null && field == null)? attributes | ScriptableObject.READONLY : attributes;
@@ -90,29 +87,7 @@ public class ObjectScriptable extends ScriptableObject  {
 		}
 	}
 	
-	public static Object jsToJava(Object jsObj) {
-		if (jsObj instanceof Wrapper) {
-			Wrapper njb = (Wrapper) jsObj;
 
-			if (njb instanceof NativeJavaClass) {
-				return njb;
-			}
-
-			Object obj = njb.unwrap();
-			if (obj instanceof Number || obj instanceof String ||
-				obj instanceof Boolean || obj instanceof Character) {
-				return njb;
-			} else {
-				return obj;
-			}
-		} else {
-			return jsObj;
-		}
-	}
-	
-	public static Object javaToJS(Object object, Scriptable scope) {
-		return Context.javaToJS(object, scope);
-	}
 	
 	
 }

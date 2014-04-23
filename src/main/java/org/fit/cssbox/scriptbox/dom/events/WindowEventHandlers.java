@@ -19,6 +19,15 @@
 
 package org.fit.cssbox.scriptbox.dom.events;
 
+/**
+ * Interface for defining window event handler for objects which support this.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#windoweventhandlers">WindowEventHandlers</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface WindowEventHandlers {
     public final static String onafterprint = "afterprint";
     public final static String onbeforeprint = "beforeprint";

@@ -45,6 +45,13 @@ import jsyntaxpane.DefaultSyntaxKit;
 
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 
+/**
+ * Class with the view of JavaScript tester.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class JavaScriptTester {
 	private JFrame frame;
 	private JTextField navigationField;
@@ -72,7 +79,7 @@ public class JavaScriptTester {
 	private JButton historyForwardButton;
 	
 	/**
-	 * Create the application.
+	 * Create the view components of the JavaScript tester.
 	 */
 	public JavaScriptTester() {
 		initialize();

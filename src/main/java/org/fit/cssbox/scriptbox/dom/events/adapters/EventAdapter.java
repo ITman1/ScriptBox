@@ -21,8 +21,16 @@ package org.fit.cssbox.scriptbox.dom.events.adapters;
 
 import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.dom.events.script.AdaptedEvent;
-import org.fit.cssbox.scriptbox.script.wrap.adapter.Adapter;
+import org.fit.cssbox.scriptbox.script.adapter.Adapter;
 
+/**
+ * Adapter which adapts xerces implementation of the event ({@link EventImpl}) 
+ * into script adapted event ({@link AdaptedEvent}).
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class EventAdapter implements Adapter {
 	@Override
 	public Object getProvider(Object obj) {

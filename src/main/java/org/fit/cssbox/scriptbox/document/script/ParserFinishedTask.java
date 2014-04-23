@@ -23,13 +23,36 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 
+/**
+ * Task class from which should derive every task 
+ * called by a parser after it finishes parsing.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class ParserFinishedTask extends Task {
+	/**
+	 * This field might be automatically injected by a parser.
+	 * It is stored here an exception which occured while parsing the Document.
+	 */
 	protected Exception exception;
 
 	public ParserFinishedTask(TaskSource source, Html5DocumentImpl document) {
 		super(source, document);
 	}
+	
+	public ParserFinishedTask(TaskSource source, Html5DocumentImpl document, Exception exception) {
+		this(source, document);
+		
+		this.exception = exception;
+	}
 
+	/**
+	 * Returns parser exception.
+	 * 
+	 * @return Parsing exception if there is any.
+	 */
 	public Exception getException() {
 		return exception;
 	}

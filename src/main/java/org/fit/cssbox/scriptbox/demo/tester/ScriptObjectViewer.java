@@ -32,11 +32,18 @@ import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.fit.cssbox.scriptbox.window.WindowProxy;
 
+/**
+ * Class representing tree component which inspects passed given 
+ * hosted JavaScript object and displays all its members as children nodes.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ScriptObjectViewer extends JTree {
 
 	private static final long serialVersionUID = -7851448937001280871L;
@@ -67,9 +74,12 @@ public class ScriptObjectViewer extends JTree {
     protected WindowProxy rootHostedObject;
     protected DefaultTreeModel treeModel;
     protected BrowsingUnit browsingUnit;
-    protected GlobalObjectJavaScriptEngine scriptEngine;
+    protected WindowJavaScriptEngine scriptEngine;
     protected ClassMembersResolverFactory membersResolverFactory;
 
+    /**
+     * Constructs viewer tree for JavaScript object.
+     */
 	public ScriptObjectViewer() {
         addTreeExpansionListener(new MutableTreeExpansionListener());
 
@@ -85,11 +95,20 @@ public class ScriptObjectViewer extends JTree {
         refresh();
 	}
 	
+	/**
+	 * Constructs viewer for the global object of the window browsing context
+	 * of the given browsing unit.
+	 * 
+	 * @param browsingUnit Browsing unit which will be used for retrieving the global object.
+	 */
 	public ScriptObjectViewer(BrowsingUnit browsingUnit) {
 		this();
 		setBrowsingUnit(browsingUnit);
 	}
 	
+	/**
+	 * Constructs or updates new updated tree.
+	 */
 	public void refresh() {
 		if (rootHostedObject != null) {
 			rootNode = new ObjectFieldTreeNode(rootHostedObject, membersResolverFactory);
@@ -100,12 +119,20 @@ public class ScriptObjectViewer extends JTree {
 		refresh(rootNode);
 	}
 	
+	/**
+	 * Sets new browsing unit and refreshes this tree.
+	 * 
+	 * @param browsingUnit New browsing unit to which should be associated this tree.
+	 */
 	public void setBrowsingUnit(BrowsingUnit browsingUnit) {
 		this.browsingUnit = browsingUnit;
 		
 		updateScriptEngine();
 	}
 	
+	/**
+	 * Retrieves script engine from the associated browsing unit.
+	 */
 	protected void updateScriptEngine() {
 		if (browsingUnit != null) {
 			BrowsingContext context = browsingUnit.getWindowBrowsingContext();
@@ -118,13 +145,18 @@ public class ScriptObjectViewer extends JTree {
 				Window window = document.getWindow();
 				ScriptSettings<?> settings = window.getScriptSettings();
 				
-				scriptEngine = (GlobalObjectJavaScriptEngine)settings.getExecutionEnviroment(JavaScriptEngine.JAVASCRIPT_LANGUAGE);
+				scriptEngine = (WindowJavaScriptEngine)settings.getExecutionEnviroment(WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE);
 				rootHostedObject = context.getWindowProxy();
 				membersResolverFactory = scriptEngine.getClassMembersResolverFactory(); // FIXME?: We are supposing that this does not changes in other contexts
 			}
 		}
 	}
 	
+	/**
+	 * Refreshes passed tree node.
+	 * 
+	 * @param rootNode Tree node to be refreshed.
+	 */
 	protected void refresh(DefaultMutableTreeNode rootNode) {
 		updateScriptEngine();
 		

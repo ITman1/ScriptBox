@@ -176,8 +176,8 @@ public class BrowsingUnit {
 	 * Navigates window browsing context to passed address.
 	 * 
 	 * @param address Address where to navigate window browsing context.
-	 * @throws MalformedURLException
-	 * @see {@link #navigate(URL)}
+	 * @throws MalformedURLException MalformedURLException
+	 * @see #navigate(URL)
 	 */
 	public void navigate(String address) throws MalformedURLException {
 		URL url = new URL(address);
@@ -188,7 +188,6 @@ public class BrowsingUnit {
 	 * Navigates window browsing context to passed address.
 	 * 
 	 * @param url Address where to navigate window browsing context.
-	 * @throws MalformedURLException
 	 */
 	public void navigate(URL url) {
 		NavigationController navigationController = windowBrowsingContext.getNavigationController();
@@ -290,6 +289,7 @@ public class BrowsingUnit {
 	 * Shows confirm dialog with given message.
 	 * 
 	 * @param message Message to be displayed.
+	 * @return True if dialog was submitted with OK option, otherwise false.
 	 */
 	public boolean showConfirmDialog(String message) {
 		return false;
@@ -300,6 +300,7 @@ public class BrowsingUnit {
 	 * 
 	 * @param message Message to be displayed.
 	 * @param defaultChoice Choice to be returned if user canceled the prompt.
+	 * @return Value which was typed and submitted by user.
 	 */
 	public String showPromptDialog(String message, String defaultChoice) {
 		return null;

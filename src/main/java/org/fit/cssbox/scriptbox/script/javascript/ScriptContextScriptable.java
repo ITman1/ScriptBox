@@ -25,7 +25,6 @@ import java.util.Set;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -80,7 +79,7 @@ public class ScriptContextScriptable extends ScriptableObject {
 				if (destinationScope == -1) {
 					destinationScope = ScriptContext.ENGINE_SCOPE;
 				}
-				context.setAttribute(name, ObjectScriptable.jsToJava(value), destinationScope);
+				context.setAttribute(name, WindowJavaScriptEngine.jsToJava(value), destinationScope);
 			}
 		} else {
 			start.put(name, start, value);

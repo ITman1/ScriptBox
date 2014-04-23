@@ -17,14 +17,13 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.window;
+package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
 import javax.script.ScriptException;
 
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
 import org.fit.cssbox.scriptbox.exceptions.WrappedException;
-import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -45,12 +44,12 @@ public class FunctionEventHandlerAdapter implements EventHandler {
 		if (topLevel != null) {
 			Context cx = topLevel.getBrowserScriptEngine().enterContext();
 			try {
-				Object arg = ObjectScriptable.javaToJS(event, scope);
+				Object arg = WindowJavaScriptEngine.javaToJS(event, scope);
 				Object[] args = {arg};
 				function.call(cx, scope, scope, args);
 			} catch (Exception ex) {
 				try {
-					JavaScriptEngine.throwWrappedScriptException(ex);
+					WindowJavaScriptEngine.throwWrappedScriptException(ex);
 				} catch (ScriptException e) {
 					throw new WrappedException(e);
 				}

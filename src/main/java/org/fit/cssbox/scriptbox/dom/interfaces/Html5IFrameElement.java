@@ -20,14 +20,29 @@
 package org.fit.cssbox.scriptbox.dom.interfaces;
 
 /**
- * 
  * FIXME: Add missing methods according to the HTML5.
+ */
+/**
+ * Extends DOM4 HTMLElementImpl about features of the HTML5.
  * 
- * @see http://www.whatwg.org/specs/web-apps/current-work/#the-iframe-element
  * @author Radim Loskot
- *
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * 
+ * @see <a href="http://www.whatwg.org/specs/web-apps/current-work/#htmliframeelement">HTML IFrame Element</a>
  */
 public interface Html5IFrameElement extends Html5Element {
+	/**
+	 * Returns true if there is any seamless attribute.
+	 * 
+	 * @return True if there is any seamless attribute, otherwise false.
+	 */
 	public boolean getSeamless();
+	
+	/**
+	 * Sets or removes seamless attribute.
+	 * 
+	 * @param seamless If is passed true, then sets seamless attribute, otherwise removes this attribute.
+	 */
 	public void setSeamless(boolean seamless);
 }

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
+import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.mozilla.javascript.Scriptable;
 
 public class HostedJavaCollection extends HostedJavaObject {

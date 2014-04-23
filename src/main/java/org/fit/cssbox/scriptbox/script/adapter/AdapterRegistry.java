@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.wrap.adapter;
+package org.fit.cssbox.scriptbox.script.adapter;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.dom.events;
+package org.fit.cssbox.scriptbox.deprecied.events;
 
 import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;

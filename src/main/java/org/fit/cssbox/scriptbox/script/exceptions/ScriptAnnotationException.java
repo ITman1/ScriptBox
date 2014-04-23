@@ -1,5 +1,5 @@
 /**
- * InternalException.java
+ * ScriptAnnotationException.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,17 +17,13 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.exceptions;
+package org.fit.cssbox.scriptbox.script.exceptions;
 
-public class InternalException extends RuntimeException {
+public class ScriptAnnotationException extends RuntimeException {
 
-	private static final long serialVersionUID = -8104961261059957898L;
+	private static final long serialVersionUID = -4638263395797043872L;
 
-	public InternalException(Exception e) {
-		super(e);
-	}
-	
-	public InternalException(String details) {
+	public ScriptAnnotationException(String details) {
 		super(details);
 	}
 

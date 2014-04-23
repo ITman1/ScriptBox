@@ -1,5 +1,5 @@
 /**
- * FieldException.java
+ * ObjectException.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,13 +17,13 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.exceptions;
+package org.fit.cssbox.scriptbox.script.exceptions;
 
-public class FieldException extends MemberException {
+public class ObjectException extends RuntimeException {
 
-	private static final long serialVersionUID = 5196224598795024349L;
-	
-	public FieldException(String details) {
+	private static final long serialVersionUID = 5118827226466008098L;
+
+	public ObjectException(String details) {
 		super(details);
 	}
 }

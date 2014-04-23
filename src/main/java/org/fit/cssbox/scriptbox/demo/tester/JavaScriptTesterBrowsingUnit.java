@@ -67,6 +67,16 @@ import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserBrowsingUnit;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserUserAgent;
 
+/**
+ * Class with the main browsing unit for the JavaScript tester.
+ * This class creates the corresponding {@link JavaScriptTester} view
+ * and then registers event listeners above view components.
+ * It also integrates {@link ConsoleInjector}.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	private static ConsoleInjector consoleInjector;
 	private static int NEW_COUNTER = 0;

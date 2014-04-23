@@ -22,29 +22,7 @@ package org.fit.cssbox.scriptbox.script.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.mozilla.javascript.Scriptable;
-
-public class ObjectField extends ObjectMember<ClassField, Field> implements MemberField {
-	
-	public final static Method GETTER_METHOD;
-	public final static Method SETTER_METHOD;
-	
-	static {
-		Method classMethod = null;
-		try {
-			classMethod = ObjectField.class.getMethod("getJS", Scriptable.class);
-		} catch (Exception e) {
-		}
-		GETTER_METHOD = classMethod;
-		
-		classMethod = null;
-		try {
-			classMethod = ObjectField.class.getMethod("setJS", Scriptable.class, Object.class);
-		} catch (Exception e) {
-		}
-		SETTER_METHOD = classMethod;
-	}
-	
+public class ObjectField extends ObjectMember<ClassField, Field> implements MemberField {	
 	public ObjectField(Object object, ClassField classField) {
 		super(object, classField);
 	}
@@ -60,14 +38,6 @@ public class ObjectField extends ObjectMember<ClassField, Field> implements Memb
 	public void set(Object value) {
 		classMember.set(object, value);
 	}	
-	
-	public Object getJS(Scriptable obj) {
-		return get();
-	}
-	
-	public void setJS(Scriptable obj, Object value) {
-		set(value);
-	}
 
 	@Override
 	public Object getObject() {

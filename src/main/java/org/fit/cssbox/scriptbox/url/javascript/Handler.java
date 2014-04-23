@@ -38,8 +38,8 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
-import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.fit.cssbox.scriptbox.window.WindowScript;
@@ -88,7 +88,7 @@ public class Handler extends URLStreamHandler {
 				
 				URL address = destinationDocument.getAddress();
 				Reader source = new StringReader(scriptSource);
-				WindowScript script = new WindowScript(source, address, JavaScriptEngine.JAVASCRIPT_LANGUAGE, destinationScriptSettings, true);
+				WindowScript script = new WindowScript(source, address, WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE, destinationScriptSettings, true);
 				
 				result = script.getResult();
 				exception = script.getException();

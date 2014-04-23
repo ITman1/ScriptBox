@@ -17,21 +17,18 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.window;
+package org.fit.cssbox.scriptbox.script;
 
-import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
-import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 
-
-public class WindowScriptEngine extends GlobalObjectJavaScriptEngine {
+public abstract class WindowScriptEngine extends GlobalObjectScriptEngine {
 	private Window window;
 	
 	public WindowScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
 		super(factory, scriptSettings);
 		
-		window = scriptSettings.getGlobalObject();
+		window = (scriptSettings != null)? scriptSettings.getGlobalObject() : null;
 	}
 	
 	public Window getWindow() {

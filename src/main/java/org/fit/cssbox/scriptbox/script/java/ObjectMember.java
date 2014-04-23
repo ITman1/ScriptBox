@@ -21,7 +21,7 @@ package org.fit.cssbox.scriptbox.script.java;
 
 import java.lang.reflect.Member;
 
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.MemberException;
+import org.fit.cssbox.scriptbox.script.exceptions.MemberException;
 
 public class ObjectMember<ClassMemberType extends ClassMember<MemberType>, MemberType extends Member> extends ClassMember<MemberType> {
 

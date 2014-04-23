@@ -25,10 +25,24 @@ import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.w3c.dom.events.Event;
 
+/**
+ * Task which is used for dispatching DOM events asynchronously.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class DispatcherTask extends Task {
 	protected org.w3c.dom.events.EventTarget target;
 	protected Event event;
 	
+	/**
+	 * Constructs new dispatcher task.
+	 * 
+	 * @param document Document to which is associated this DOM event.
+	 * @param target Target object where event has occurred.
+	 * @param event Event which should be dispatched at the given target.
+	 */
 	public DispatcherTask(Html5DocumentImpl document, org.w3c.dom.events.EventTarget target, Event event) {
 		super(TaskSource.USER_INTERACTION, document);
 		

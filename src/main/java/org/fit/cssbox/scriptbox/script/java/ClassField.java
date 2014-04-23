@@ -25,10 +25,9 @@ import java.lang.reflect.Modifier;
 
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
 import org.fit.cssbox.scriptbox.history.StateObject;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
-import org.fit.cssbox.scriptbox.script.javascript.window.FunctionEventHandlerAdapter;
+import org.fit.cssbox.scriptbox.script.exceptions.FieldException;
+import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.javascript.wrap.FunctionEventHandlerAdapter;
 import org.mozilla.javascript.Function;
 
 public class ClassField extends ClassMember<Field> implements MemberField {
@@ -82,7 +81,6 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 	}
 	
 	public Object get(Object object) {
-		object = ObjectScriptable.jsToJava(object);
 
 		if (!clazz.isInstance(object)) {
 			throw new FieldException("Passed object is not instance of the class to which field belongs to.");
@@ -104,16 +102,10 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 			}
 		}
 		
-		return unwrap(value);
+		return value;
 	}
 	
-	public void set(Object object, Object value) {
-		object = ObjectScriptable.jsToJava(object);
-		value = ObjectScriptable.jsToJava(value);
-
-		Class<?> type = getFieldType();
-		value = wrap(type, value);
-		
+	public void set(Object object, Object value) {		
 		if (!clazz.isInstance(object)) {
 			throw new FieldException("Passed object is not instance of the class to which field belongs to.");
 		}

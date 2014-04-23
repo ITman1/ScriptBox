@@ -22,12 +22,9 @@ package org.fit.cssbox.scriptbox.script.java;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
-import org.mozilla.javascript.ConsString;
-import org.mozilla.javascript.Undefined;
+import org.fit.cssbox.scriptbox.script.exceptions.FunctionException;
+import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
+import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 
 public class ClassFunction extends ClassMember<Method> implements MemberFunction {	
 	
@@ -56,85 +53,6 @@ public class ClassFunction extends ClassMember<Method> implements MemberFunction
 	@Override
 	public Class<?>[] getParameterTypes() {
 		return member.getParameterTypes();
-	}
-	
-	// FIXME: It could be here some adapter/registry/factory cast mechanism here.
-	// FIXME: Here should not be referenced mozilla javascript packages, this should be generalized in future!
-	public static Object[] castArgs(Class<?>[] expectedTypes, Object... args) {
-
-			
-		if (expectedTypes != null && args != null) {
-
-			if (expectedTypes.length <= args.length + 1 && expectedTypes.length > 0) {
-				Class<?> lastType = expectedTypes[expectedTypes.length - 1];
-				if (lastType.isArray()) {
-					Class<?> arrayType = lastType.getComponentType();
-					
-					boolean maybeVarargs = true;
-					if (expectedTypes.length == args.length) {
-						Class<?> lastArg = args[args.length - 1].getClass();
-						maybeVarargs = !ClassUtils.isAssignable(lastArg, lastType);
-					}
-					
-					if (maybeVarargs) {
-						for (int i = expectedTypes.length - 1; i < args.length; i++) {
-							if (args[i] == null) {
-								continue;
-							}
-							Class<?> argType = args[i].getClass();
-							
-							if (!ClassUtils.isAssignable(argType, arrayType)) {
-								maybeVarargs = false;
-								break;
-							}
-						}
-						
-						if (maybeVarargs) {
-							Object[] oldArgs = args;
-							args = new Object[expectedTypes.length];
-							
-							for (int i = 0; i < expectedTypes.length - 1; i++) {
-								args[i] = oldArgs[i];
-							}
-							
-							Object[] varargs = new Object[oldArgs.length - expectedTypes.length + 1];
-							
-							for (int i = expectedTypes.length - 1; i < oldArgs.length; i++) {
-								varargs[i - expectedTypes.length + 1] = oldArgs[i];
-							}
-							
-							args[expectedTypes.length - 1] = varargs;
-						}
-					}
-				}
-			}
-			
-			if (expectedTypes.length == args.length) {
-				Object[] castedArgs = new Object[args.length];
-				for (int i = 0; i < args.length; i++) {
-					Object arg = args[i];
-					Class<?> expectedType = expectedTypes[i];
-					if (arg == null) {
-						castedArgs[i] = null;
-					} else if (arg == Undefined.instance) {
-						castedArgs[i] = null;
-					} else if (arg instanceof ConsString) {
-						castedArgs[i] = ((ConsString)arg).toString();
-					} else if (arg instanceof Double && (expectedType.equals(Integer.class) || expectedType.equals(int.class))) {
-						castedArgs[i] = ((Double)arg).intValue();
-					} else {
-						castedArgs[i] = ObjectScriptable.jsToJava(arg);
-						//castedArgs[i] = Context.jsToJava(castedArgs[i], expectedType);
-					}
-					
-					castedArgs[i] = ClassField.wrap(expectedTypes[i], castedArgs[i]);
-				}
-				
-				return castedArgs;
-			}
-		}
-		
-		return null;
 	}
 	
 	public static boolean isAssignableTypes(Object[] args, Class<?>... types) {

@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.js;
+package org.fit.cssbox.scriptbox.deprecied;
 
 import org.fit.cssbox.scriptbox.script.java.ClassMember;
 import org.mozilla.javascript.Wrapper;

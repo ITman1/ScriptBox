@@ -21,8 +21,16 @@ package org.fit.cssbox.scriptbox.dom.events.adapters;
 
 import org.apache.xerces.dom.events.MouseEventImpl;
 import org.fit.cssbox.scriptbox.dom.events.script.AdaptedMouseEvent;
-import org.fit.cssbox.scriptbox.script.wrap.adapter.Adapter;
+import org.fit.cssbox.scriptbox.script.adapter.Adapter;
 
+/**
+ * Adapter which adapts xerces implementation of the mouse event ({@link MouseEventImpl}) 
+ * into script adapted mouse event ({@link AdaptedMouseEvent}).
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class MouseEventAdapter implements Adapter {
 
 	@Override

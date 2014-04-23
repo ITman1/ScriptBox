@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.wrap.adapter;
+package org.fit.cssbox.scriptbox.script.adapter;
 
 /**
  * The Adapter interface for creating adapters that is necessary for passing

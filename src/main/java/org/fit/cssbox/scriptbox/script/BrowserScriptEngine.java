@@ -22,13 +22,19 @@ package org.fit.cssbox.scriptbox.script;
 import javax.script.AbstractScriptEngine;
 import javax.script.ScriptEngineFactory;
 
+import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.DefaultClassMembersResolverFactory;
+
 public abstract class BrowserScriptEngine extends AbstractScriptEngine {
 	protected ScriptSettings<?> scriptSettings;
 	protected BrowserScriptEngineFactory factory;
+	protected ClassMembersResolverFactory membersFactory;
 	
 	protected BrowserScriptEngine(BrowserScriptEngineFactory factory, ScriptSettings<?> scriptSettings) {
 		this.scriptSettings = scriptSettings;
 		this.factory = factory;
+		
+		this.membersFactory = initializeClassMembersResolverFactory();
 	}
 	
 	public ScriptSettings<?> getScriptSettings() {
@@ -42,5 +48,13 @@ public abstract class BrowserScriptEngine extends AbstractScriptEngine {
 
     public BrowserScriptEngineFactory getBrowserFactory() {
 		return factory;
+	}
+    
+	public ClassMembersResolverFactory getClassMembersResolverFactory() {
+		return membersFactory;
+	}
+    
+	protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
+		return new DefaultClassMembersResolverFactory();
 	}
 }

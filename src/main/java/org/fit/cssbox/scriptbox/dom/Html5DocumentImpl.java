@@ -66,16 +66,44 @@ import org.w3c.dom.html.HTMLElement;
 import org.w3c.dom.views.AbstractView;
 import org.w3c.dom.views.DocumentView;
 
+/**
+ * Extends DOM4 HTMLDocument about features of the HTML5 and associated browsing
+ * context features which are necessary for browsing and to be stored within document.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#document">HTML5 document</a>
+ * @see <a href="http://dom.spec.whatwg.org/#html-document">HTML document accoring to DOM</a>
+ */
 public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, DocumentView {
+	/**
+	 * Enumeration which signals whether is document complete, 
+	 * or is currently being loaded or manipulated.
+	 * 
+	 * @author Radim Loskot
+	 * @version 0.9
+	 * @since 0.9 - 21.4.2014
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#current-document-readiness">Document readiness</a>
+	 */
 	public enum DocumentReadiness {
 		LOADING,
 		INTERACTIVE,
 		COMPLETE
 	}
 	
+	/**
+	 * Default address which has every document set.
+	 */
 	final public static String DEFAULT_URL_ADDRESS = "about:blank";
+	
+	/**
+	 * Default URL address which has every document set by default.
+	 */
 	final public static URL DEFAULT_URL;
-	static {	   
+	
+	static {
 		URL defaultURL = null;
 		try {
 			defaultURL = new URL(DEFAULT_URL_ADDRESS); // FIXME: about is not supported!
@@ -132,6 +160,15 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	
 	private Set<Html5DocumentEventListener> listeners;
 	
+	/*
+	 * Document event listener which captures events and runs prepare script
+	 * algorithm if experiences one of the events listed bellow:
+	 * a) The script element gets inserted into a document
+	 * b) The script element is in a Document and a node or document fragment is inserted into the script element
+	 * c) The script element is in a Document and has a src attribute set where previously the element had no such attribute 
+	 * 
+	 * - See paragraph after: http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#the-script-block%27s-fallback-character-encoding
+	 */
 	private EventListener documentEventListener = new EventListener() {
 		
 		@Override
@@ -151,14 +188,17 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 				String attrName = mutationEvent.getAttrName();
 				
 				if (target instanceof Html5ScriptElementImpl && attrName.equalsIgnoreCase("src") && prevValue == null) {
+					// Fulfills c) point
 					script = (Html5ScriptElementImpl)target;
 				}
 			} else if (eventType.equals(MutationEventImpl.DOM_NODE_INSERTED)) {
 				Node relatedNode = mutationEvent.getRelatedNode();
 				
 				if (target instanceof Html5ScriptElementImpl) {
+					// Fulfills a) point
 					script = (Html5ScriptElementImpl)target;
 				} else if (relatedNode instanceof Html5ScriptElementImpl) {
+					// Fulfills b) point
 					script = (Html5ScriptElementImpl)relatedNode;
 				}		
 			}
@@ -168,8 +208,26 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 			}
 		}
 	};
-	
-	private Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {	
+
+	/**
+	 * Constructs new instance of the HTML Document according to Html5 specification.
+	 * 
+	 * @param browsingContext Associated browsing context to which belongs this instance of the Document.
+	 * @param address Address of the Document.
+	 * @param sandboxingFlagSet Sandboxing flag set associated with the document.
+	 * @param referrer Referrer address.
+	 * @param createWindow Window of which instance is re-used for this Document.
+	 * @param contentType Content-Type of which is this Document.
+	 * @param parser Associated parser, which will parse, or parsed, or is parsing this Document.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#document">HTML5 document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-address">The document's address</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-referrer">The document's referrer</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#sandboxing-flag-set">A sandboxing flag set </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#html-parser">HTML parser</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#concept-document-content-type">Content type</a>
+	 */
+	protected Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {	
 		listeners = new HashSet<Html5DocumentEventListener>();
 		
 		_salvageableFlag = true;
@@ -231,10 +289,33 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		addEventListener(MutationEventImpl.DOM_ATTR_MODIFIED, documentEventListener);
 	}
 	
+	/**
+	 * Constructs new instance of the HTML Document with no associated parser.
+	 * 
+	 * @param browsingContext Associated browsing context to which belongs this instance of the Document.
+	 * @param address Address of the Document.
+	 * @param recycleWindowDocument Window of which instance is re-used for this Document.
+	 * @param contentType Content-Type of which is this Document.
+	 * @return New Document object.
+	 * 
+	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, ScriptableDocumentParser)
+	 */
 	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType) {
 		return createDocument(browsingContext, address, recycleWindowDocument, contentType, null);
 	}
 	
+	/**
+	 * Constructs new instance of the HTML Document.
+	 * 
+	 * @param browsingContext Associated browsing context to which belongs this instance of the Document.
+	 * @param address Address of the Document.
+	 * @param recycleWindowDocument Window of which instance is re-used for this Document.
+	 * @param contentType Content-Type of which is this Document.
+	 * @param parser Associated parser, which will parse, or parsed, or is parsing this Document.
+	 * @return New Document object.
+	 * 
+	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, ScriptableDocumentParser)
+	 */
 	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType, ScriptableDocumentParser parser) {
 		Html5DocumentImpl document = null;
 
@@ -249,6 +330,14 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return document;
 	}
 	
+	/**
+	 * Constructs new instance of the blank HTML Document for specified browsing context
+	 * 
+	 * @param browsingContext Associated browsing context to which belongs this instance of the Document.
+	 * @return New blank Document object.
+	 * 
+	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, ScriptableDocumentParser)
+	 */
 	public static Html5DocumentImpl createBlankDocument(BrowsingContext browsingContext) {
 		String refferer = null;
 		
@@ -271,6 +360,14 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return document;
 	}
 	
+	/**
+	 * Constructs new instance of the sandboxed HTML Document for specified browsing context
+	 * 
+	 * @param browsingContext Associated browsing context to which belongs this instance of the Document.
+	 * @return New sandboxed Document object.
+	 * 
+	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, ScriptableDocumentParser)
+	 */
 	public static Html5DocumentImpl createSandboxedDocument(BrowsingContext browsingContext) {
 		Set<SandboxingFlag> sandboxingFlagSet = new HashSet<SandboxingFlag>();
 		Html5DocumentImpl document = new Html5DocumentImpl(browsingContext, DEFAULT_URL, sandboxingFlagSet, null, true, "text/html", null);
@@ -278,25 +375,39 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return document;
 	}
 	
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
 	@ScriptFunction
 	@Override
 	public Text createTextNode(String data) {
 		return super.createTextNode(data);
 	}
 	
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
 	@ScriptFunction
 	@Override
 	public synchronized Element getElementById(String elementId) {
-		// TODO Auto-generated method stub
 		return super.getElementById(elementId);
 	}
 	
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
 	@ScriptFunction
 	@Override
 	public Event createEvent(String type) throws DOMException {
 		return super.createEvent(type);
 	}
 	
+	/*
+	 * FIXME: Remove @ScriptFunction, use Document adapter instead for exposing into the script.
+	 */
 	@ScriptFunction
 	@Override
 	public Element createElement( String tagName) throws DOMException {
@@ -311,10 +422,20 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return super.createElement(tagName);
 	}
 	
+	/**
+	 * Returns associated browsing context.
+	 * 
+	 * @return Associated browsing context.
+	 */
 	public BrowsingContext getBrowsingContext() {
 		return _browsingContext;
 	}
 	
+	/**
+	 * Returns base element if there is any inside Document.
+	 * 
+	 * @return Base element if there is any inside Document.
+	 */
 	public HTMLBaseElement getBaseElement() {
 		// FIXME: We should not wait for completeness, but try to get base address from actual loaded elements - proper synchronized section is needed.
 		if (_documentReadiness == DocumentReadiness.COMPLETE) {
@@ -333,8 +454,11 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return null;
 	}
 	
-	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#fallback-base-url
+	/**
+	 * Returns fallback base address.
+	 * 
+	 * @return Fallback base address.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#fallback-base-url">Fallback base URL</a>
 	 */
 	public URL getFallbackBaseAddress() {
 		
@@ -371,9 +495,12 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		 */
 		return _address;
 	}
-	
-	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#document-base-url
+
+	/**
+	 * Returns Document base address.
+	 * 
+	 * @return Document base address.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#document-base-url">Document base URL</a>
 	 */
 	public URL getBaseAddress() {
 		HTMLBaseElement baseElement = getBaseElement();
@@ -404,13 +531,19 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 
 	}
 	
-	/*
-	 * A Document is said to be fully active when it is the active document of its 
-	 * browsing context, and either its browsing context is a top-level browsing 
-	 * context, or it has a parent browsing context and the Document through 
-	 * which it is nested is itself fully active.
+	/**
+	 * Tests whether this Document is fully active.
+	 * 
+	 * @return True if this Document is fully active, otherwise false.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#fully-active">Fully active</a>
 	 */
 	public boolean isFullyActive() {
+		/*
+		 * A Document is said to be fully active when it is the active document of its 
+		 * browsing context, and either its browsing context is a top-level browsing 
+		 * context, or it has a parent browsing context and the Document through 
+		 * which it is nested is itself fully active.
+		 */
 		boolean fullyActive = true;
 		BrowsingContext parentContext = _browsingContext.getParentContext();
 		
@@ -424,15 +557,27 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return fullyActive;
 	}
 	
+	/**
+	 * Tests whether this Document is the active document of the associated browsing context.
+	 * 
+	 * @return True if this Document is the active document of the associated browsing context, otherwise false.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-document">Active document</a>
+	 */
 	public boolean isActiveDocument() {
 		return _browsingContext.getActiveDocument() == this;
 	}
 	
-	/*
-	 * The document family of a Document object consists of the union of all 
-	 * the document families of the browsing contexts that are nested through the Document object.
+	/**
+	 * Returns document family of this document.
+	 * 
+	 * @return Document family of this document.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#document-family">The document family</a>
 	 */
 	public Collection<Html5DocumentImpl> getDocumentFamily() {
+		/*
+		 * The document family of a Document object consists of the union of all 
+		 * the document families of the browsing contexts that are nested through the Document object.
+		 */
 		Set<Html5DocumentImpl> family = new HashSet<Html5DocumentImpl>();
 		Collection<BrowsingContext> nestedContexts = _browsingContext.getNestedContexts();
 		
@@ -443,10 +588,22 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return family;
 	}
 
+	/**
+	 * Returns active sandboxing flag set.
+	 * 
+	 * @return active sandboxing flag set
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
+	 */
 	public Set<SandboxingFlag> getActiveSandboxingFlagSet() {
 		return Collections.unmodifiableSet(_activeSandboxingFlagSet);
 	}
 	
+	/**
+	 * Sets new active sandboxing flag set.
+	 * 
+	 * @param flags New active sandboxing flag set
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
+	 */
 	public void setActiveSandboxingFlags(Collection<SandboxingFlag> flags) {
 		if (flags == null) {
 			return;
@@ -457,6 +614,12 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		}
 	}
 	
+	/**
+	 * Adds new flag into active sandboxing flag set.
+	 * 
+	 * @param flag New flag to be added into active sandboxing flag set.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
+	 */
 	public void setActiveSandboxingFlag(SandboxingFlag flag) {
 		_activeSandboxingFlagSet.add(flag);
 		
@@ -471,52 +634,114 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		_originContainer = new OriginContainer<DocumentOrigin>(documentOrigin, effectiveScriptOrigin);
 	}
 	
+	/**
+	 * Sets latest session history entry.
+	 * 
+	 * @param entry New latest session history entry
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#latest-entry">Latest entry</a>
+	 */
 	public void setLatestEntry(SessionHistoryEntry entry) {
 		_latestEntry = entry;
 	}
 	
+	/**
+	 * Returns latest session history entry.
+	 * 
+	 * @return Latest session history entry
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#latest-entry">Latest entry</a>
+	 */
 	public SessionHistoryEntry getLatestEntry() {
 		return _latestEntry;
 	}
-	
+
+	/**
+	 * Sets Document's address.
+	 * 
+	 * @param address New address with which should be associated this Document
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-address">The document's address</a>
+	 */
 	public void setAddress(URL address) {
 		_address = address;
 		
 		_location.onAddressChanged();
 		
-		fireJointSessionHistoryEvent(EventType.ADDRESS_CHANGED);
+		fireHtmlDocumentEvent(EventType.ADDRESS_CHANGED);
 	}
 	
+	/**
+	 * Returns Document's address.
+	 * 
+	 * @return Address with which is associated this Document
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-address">The document's address</a>
+	 */
 	public URL getAddress() {
 		return _address;
 	}
 	
+	/**
+	 * Returns Document's address.
+	 * 
+	 * @return Address with which is associated this Document
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-address">The document's address</a>
+	 */
 	@Override
 	public String getURL() {
 		return _address.toExternalForm();
 	}
 	
+	/**
+	 * Returns Document's referrer.
+	 * 
+	 * @return Refferer address
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-referrer">The document's referrer</a>
+	 */
 	@Override
 	public String getReferrer() {
 		return _referrer;
 	}
 	
+	/**
+	 * Sets new fragment component inside address.
+	 * 
+	 * @param fragment New fragment component.
+	 */
 	public void setAddressFragment(String fragment) {
 		_address = URLUtilsHelper.setComponent(_address, UrlComponent.REF, fragment);
 	}
 	
+	/**
+	 * Returns origin container.
+	 * 
+	 * @return Origin container.
+	 */
 	public OriginContainer<DocumentOrigin> getOriginContainer() {
 		return _originContainer;
 	}
 	
+	/**
+	 * Returns origin of this document.
+	 * 
+	 * @return Origin of this document.
+	 */
 	public Origin<?> getOrigin() {
 		return _originContainer.getOrigin();
 	}
 	
+	/**
+	 * Returns effective script origin.
+	 * 
+	 * @return Effective script origin.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#effective-script-origin">Effective script origin</a>
+	 */
 	public Origin<?> getEffectiveScriptOrigin() {
 		return _originContainer.getEffectiveScriptOrigin();
 	}
 	
+	/**
+	 * Implements sandboxing for this Document.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#implement-the-sandboxing">Implement the sandboxing for a Document</a>
+	 */
 	public void implementSandboxing() {
 		if (_browsingContext instanceof WindowBrowsingContext) {
 			setActiveSandboxingFlags(((WindowBrowsingContext)_browsingContext).getPopupSandboxingFlagSet());
@@ -533,116 +758,238 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		//TODO: The flags set on the Document's resource's forced sandboxing flag set, if it has one.
 	} 
 	
+	/*
+	 * TODO: Implement
+	 */
+	/**
+	 * Prompts to unload this Document.
+	 * 
+	 * @return True if prompt was submitted, otherwise false. 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#prompt-to-unload-a-document">Prompt to unload a document</a>
+	 */
 	public boolean promptToUnload() {
 		return true;
 	}
 	
+	/*
+	 * TODO: Implement
+	 */
+	/**
+	 * Tests whether is prompt to unload a document currently running.
+	 * 
+	 * @return True if prompt to unload a document currently running, otherwise false.
+	 * @see #promptToUnload()
+	 */
 	public boolean isPromptToUnloadRunning() {
 		return false;
 	}
 	
+	/*
+	 * TODO: Implement
+	 */
+	/**
+	 * Tests whether is unload of this document currently running.
+	 * 
+	 * @return True if unload of this document is currently running, otherwise false.
+	 * @see #unload(boolean)
+	 */
 	public boolean isUnloadRunning() {
 		return false;
 	}
 	
 	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unload-a-document
+	 * TODO: Implement
 	 */
-	public synchronized void unload(boolean recycle) {
-		unloadTask = getEventLoop().getRunningTask();
+	/**
+	 * Unloads this Document.
+	 * 
+	 * @param recycle Specifies whether recycle this document.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unload-a-document">Unload a document</a>
+	 */
+	public void unload(boolean recycle) {
+		synchronized (this) {
+			unloadTask = getEventLoop().getRunningTask();
+		}
 		
 		/*
 		 * TODO: Implement
 		 */
 		
-		unloadTask = null;
+		synchronized (this) {
+			unloadTask = null;
+		}
 	}
 	
+	/**
+	 * Returns task which invoked unloading of this document.
+	 * 
+	 * @return Task which invoked unloading of this document.
+	 */
 	public synchronized Task getUnloadTask() {
 		return unloadTask;
 	}
 	
+	/**
+	 * Returns {@link Window} to which is associated this Document object.
+	 * 
+	 * @return {@link Window} object.
+	 */
 	public Window getWindow() {
 		return _window;
 	}
 	
+	/**
+	 * Tests whether is fullscreen enabled flag set.
+	 * 
+	 * @return True if is fullscreen enabled flag set, otherwise false.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#fullscreen-enabled-flag">Fullscreen enabled flag</a>
+	 */
 	public boolean isFullscreenEnabledFlag() {
 		return _fullscreenEnabledFlag;
 	} 
 	
+	/**
+	 * Sets fullscreen enabled flag to passed value.
+	 * 
+	 * @param value Boolean value to be fullscreen enabled flag set to.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#fullscreen-enabled-flag">Fullscreen enabled flag</a>
+	 */
 	public void setEnableFullscreenFlag(boolean value) {
 		_fullscreenEnabledFlag = value;
 	}
 		
+	/**
+	 * Returns content type of this document.
+	 * 
+	 * @return Content type of this document.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#concept-document-content-type">Content type</a>
+	 */
 	public String getContentType() {
 		return _contentType;
 	}
 	
+	/**
+	 * Returns document's readiness.
+	 * 
+	 * @return Document's readiness.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#current-document-readiness">Document readiness</a>
+	 */
 	public DocumentReadiness getDocumentReadiness() {
 		return _documentReadiness;
 	}
 	
+	/**
+	 * Sets document's readiness.
+	 * 
+	 * @param readiness New value of the Document's readiness.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#current-document-readiness">Document readiness</a>
+	 */
 	public void setDocumentReadiness(DocumentReadiness readiness) {
 		_documentReadiness = readiness;
 	}
 	
+	/**
+	 * Tests whether has this Document the default address.
+	 * 
+	 * @return True if this document has default address, otherwise false.
+	 * @see #DEFAULT_URL
+	 */
 	public boolean hasDefaultAddress() {
 		return _address == null || _address.equals(DEFAULT_URL);
 	}
 	
+	/**
+	 * Returns associated parser.
+	 * 
+	 * @return Associated parser.
+	 */
 	public ScriptableDocumentParser getParser() {
 		return _parser;
 	}
 	
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
 	@ScriptFunction
 	@Override
 	public void addEventListener(String type, EventListener listener) {
 		addEventListener(type, listener, false);
 	}
 	
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
 	@ScriptFunction
 	@Override
 	public void addEventListener(String type, EventListener listener, boolean useCapture) {
 		super.addEventListener(type, listener, useCapture);
 	}
 
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
 	@ScriptFunction
 	@Override
 	public void removeEventListener(String type, EventListener listener) {
 		removeEventListener(type, listener, false);
 	}
 	
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
 	@ScriptFunction
 	@Override
 	public void removeEventListener(String type, EventListener listener, boolean useCapture) {
 		super.removeEventListener(type, listener, useCapture);
 	}
 	
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
 	@ScriptFunction
 	public boolean dispatchEvent(Event event) {
 		return super.dispatchEvent(event);
 	}
 	
-	/* See:http://www.w3.org/html/wg/drafts/html/CR/browsers.html#discard-a-document
-	 * TODO: Implement
+	/* 
+	 * TODO: Implement discarding of the documents.
+	 */
+	/**
+	 * Discards this document.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#discard-a-document">Discard a document</a>
 	 */
 	public void discard() {
 		_browsingContext = null;
 	}
 	
+	/**
+	 * Returns associated event loop.
+	 * 
+	 * @return Associated event loop.
+	 */
 	public EventLoop getEventLoop() {
 		return _browsingContext.getEventLoop();
 	}
 	
+	/**
+	 * Returns serialized Document which was retrieved from some resource and parsed into this Document.
+	 * 
+	 * @return Serialized Document (HTML source code).
+	 */
 	public String getParserSource() {
 		return (_parser != null)? _parser.getParserSource() : null;
 	}
-	
-	@Override
-	protected void addEventListener(NodeImpl node, String type, EventListener listener, boolean useCapture) {
-		super.addEventListener(node, type, listener, useCapture);
-	}
 
+	/**
+	 * Dispatches event above Window object, which is then propagated into 
+	 * this document if Window was not the target.
+	 */
 	@Override
 	protected boolean dispatchEvent(NodeImpl node, Event event) {
 		if (!(event instanceof EventImpl)) {
@@ -674,22 +1021,32 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return evt.preventDefault;
 	}
 
+	/**
+	 * Returns default document view of this document - returns window proxy object.
+	 * 
+	 * @return default Document view of this document.
+	 */
 	@Override
 	public AbstractView getDefaultView() {
 		return (_browsingContext != null)? _browsingContext.getWindowProxy() : null;
 	}
 
 	/*
-	 * TODO:
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unloading-document-cleanup-steps
+	 * TODO: Implement.
+	 */
+	/**
+	 * Runs unloading document cleanup steps
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unloading-document-cleanup-steps">Unloading document cleanup steps</a>
 	 */
 	public void runUnloadingDocumentCleanupSteps() {
 		
 	}
-	
-	/*
-	 * TODO:
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#abort-a-document
+
+	/**
+	 * Aborts a document
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#abort-a-document">Abort a document</a>
 	 */
 	@Override
 	public void abort() {
@@ -725,34 +1082,80 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 
 	}
 
+	/**
+	 * Tests whether this Document has salvageable flag set.
+	 * 
+	 * @return True if this Document has salvageable flag set, otherwise false.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#concept-document-salvageable">Salvageable flag</a>
+	 */
 	public boolean isSalvageableFlag() {
 		return _salvageableFlag;
 	}
 
+	/**
+	 * Sets salvageable flag to a given value.
+	 * 
+	 * @param salvageableFlag New value of the flag.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#concept-document-salvageable">Salvageable flag</a>
+	 */
 	public void setSalvageableFlag(boolean salvageableFlag) {
 		this._salvageableFlag = salvageableFlag;
 	}
 
+	/**
+	 * Tests whether this Document has fired unload flag set.
+	 * 
+	 * @return True if this Document has fired unload flag set, otherwise false.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#fired-unload">Fired unload flag</a>
+	 */
 	public boolean isFiredUnloadFlag() {
 		return _firedUnloadFlag;
 	}
 
+	/**
+	 * Sets fired unload flag to a given value.
+	 * 
+	 * @param firedUnloadFlag New value of the flag.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#fired-unload">Fired unload flag</a>
+	 */
 	public void setFiredUnloadFlag(boolean firedUnloadFlag) {
 		this._firedUnloadFlag = firedUnloadFlag;
 	}
 
+	/**
+	 * Tests whether this Document has page showing flag set.
+	 * 
+	 * @return True if this Document has page showing flag set, otherwise false.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#page-showing">Page showing flag</a>
+	 */
 	public boolean isPageShowingFlag() {
 		return _pageShowingFlag;
 	}
 
+	/**
+	 * Sets page showing flag to a given value.
+	 * 
+	 * @param pageShowingFlag New value of the flag.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#page-showing">Page showing flag</a>
+	 */
 	public void setPageShowingFlag(boolean pageShowingFlag) {
 		this._pageShowingFlag = pageShowingFlag;
 	}
 	
+	/**
+	 * Increments ignore-destructive-writes counter.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#ignore-destructive-writes-counter">Ignore-destructive-writes counter</a>
+	 */
 	public synchronized void incrementIgnoreDestructiveWritesCounter() {
 		_ignoreDestructiveWritesCounter++;
 	}
-	
+
+	/**
+	 * Decrements ignore-destructive-writes counter.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#ignore-destructive-writes-counter">Ignore-destructive-writes counter</a>
+	 */
 	public synchronized void decrementIgnoreDestructiveWritesCounter() {
 		_ignoreDestructiveWritesCounter--;
 	}
@@ -763,29 +1166,54 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		return super.toString();
 	}
 	
+	/**
+	 * Returns associated history.
+	 * 
+	 * @return Associated history.
+	 */
 	public History getHistory() {
 		return _history;
 	}
 	
+	/**
+	 * Returns associated location.
+	 * 
+	 * @return Associated location.
+	 */
 	public Location getLocation() {
 		return _location;
 	}
 	
 	/*
-	 * https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html#dom-document-exitfullscreen
+	 * TODO: Implement.
+	 */
+	/**
+	 * .
+	 * 
+	 * @see <a href="https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html#dom-document-exitfullscreen">Exit fullscreen</a>
 	 */
 	public void exitFullscreen() {
 		
 	}
 	
 	/*
-	 * https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html#fully-exit-fullscreen
+	 * TODO: Implement.
+	 */
+	/**
+	 * Fully exits fullscreen.
+	 * 
+	 * @see <a href="https://dvcs.w3.org/hg/fullscreen/raw-file/tip/Overview.html#fully-exit-fullscreen">Fully exit fullscreen</a>
 	 */
 	public void fullyExitFullscreen() {
 		
 	}
 	
-	protected void fireJointSessionHistoryEvent(EventType eventType) {
+	/**
+	 * Fires HTML document event with the specified event type.
+	 * 
+	 * @param eventType Type of the event to be fired.
+	 */
+	protected void fireHtmlDocumentEvent(EventType eventType) {
 		if (listeners.isEmpty()) {
 			return;
 		}

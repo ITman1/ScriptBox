@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.exceptions;
+package org.fit.cssbox.scriptbox.script.exceptions;
 
 public class UnknownException extends RuntimeException {
 

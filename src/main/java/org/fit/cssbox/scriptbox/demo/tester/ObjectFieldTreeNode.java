@@ -36,6 +36,15 @@ import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Function;
 
+/**
+ * Class representing tree node which is constructed from the given object.
+ * Tree node has passed node name and has children nodes which are retrieved
+ * by resolving the members of the passed object using class member factory.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ObjectFieldTreeNode extends DefaultMutableTreeNode implements Comparable<ObjectFieldTreeNode> {
 
 	private static final long serialVersionUID = 1996230762591708828L;
@@ -52,14 +61,39 @@ public class ObjectFieldTreeNode extends DefaultMutableTreeNode implements Compa
 	private String fieldTypeStr;
 	private String fieldValueStr;
 	
+	/**
+	 * Constructs tree node with the default name "(root)" containing members 
+	 * of the passed object resolved with class members resolver factory.
+	 * 
+	 * @param rootObject Object of which members should be resolved and put into tree node.
+	 * @param membersResolverFactory Class member resolver factory used for resolvinf members of the passed object.
+	 */
 	public ObjectFieldTreeNode(Object rootObject, ClassMembersResolverFactory membersResolverFactory) {
 		this("(root)", rootObject, membersResolverFactory, null);
 	}
 	
+	/**
+	 * Constructs tree node containing members of the passed object resolved 
+	 * with class members resolver factory.
+	 * 
+	 * @param nodeName Name of this constructed node.
+	 * @param rootObject Object of which members should be resolved and put into tree node.
+	 * @param membersResolverFactory Class member resolver factory used for resolvinf members of the passed object.
+	 */
 	public ObjectFieldTreeNode(String nodeName, Object rootObject, ClassMembersResolverFactory membersResolverFactory) {
 		this(nodeName, rootObject, membersResolverFactory, null);
 	}
 	
+	/**
+	 * Constructs tree node from the passed object and exception which might have occurred 
+	 * while retrieving value of the passed object. It also creates children nodes which
+	 * represents the members of the passed object resolved with class members resolver factory.
+	 * 
+	 * @param nodeName Name of this constructed node.
+	 * @param rootObject Object of which members should be resolved and put into tree node.
+	 * @param membersResolverFactory Class member resolver factory used for resolvinf members of the passed object.
+	 * @param exception Exception which is passed if there was some exception while retrieving the objet value
+	 */
 	public ObjectFieldTreeNode(String nodeName, Object rootObject, ClassMembersResolverFactory membersResolverFactory, Exception exception) {
 		this(membersResolverFactory, nodeName, rootObject.getClass(), rootObject, exception, DEFAULT_RECURSION);
 		childrenLoaded = true;
@@ -85,6 +119,13 @@ public class ObjectFieldTreeNode extends DefaultMutableTreeNode implements Compa
 		return fieldValue;
 	}
 	
+	/**
+	 * Sets new value for this node.
+	 * 
+	 * @param fieldType Type of member which will represent this node.
+	 * @param fieldValue Value of the member which will represent this node.
+	 * @param exception Exception which might have occurred which retrieving passed object.
+	 */
 	public void setNewFieldValue(Class<?> fieldType, Object fieldValue, Exception exception) {
 		setNewFieldValue(fieldType, fieldValue, exception, DEFAULT_RECURSION);
 	}
@@ -112,6 +153,10 @@ public class ObjectFieldTreeNode extends DefaultMutableTreeNode implements Compa
 		constructObjectTree(this, fieldValue, recursion);
 	}
 	
+	/**
+	 * Visits this node. This method should be called when this node is walked inside tree.
+	 * It ensures generating of the nested child tree nodes.
+	 */
 	public void visit() {
 		if (getChildCount() > 0 && !childrenLoaded) {
 			childrenLoaded = true;

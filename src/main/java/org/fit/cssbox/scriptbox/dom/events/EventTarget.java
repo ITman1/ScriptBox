@@ -22,8 +22,17 @@ package org.fit.cssbox.scriptbox.dom.events;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 
-/* Does not throw EventException as in DOM 2 
- * it has also old EventTarget API, for using in DOM */
+/**
+ * Interface redefining an already existing W3C interface. It removes throws EventException
+ * statement from {@link org.w3c.dom.events.EventTarget#dispatchEvent(Event)} method and 
+ * defines duplicit methods to enable optional arguments.
+ * 
+ * @see <a href="http://www.w3.org/TR/DOM-Level-3-Events/#interface-EventTarget">Event target</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface EventTarget extends org.w3c.dom.events.EventTarget {
 	public void addEventListener(String type, EventListener listener, boolean useCapture);
 	public void removeEventListener(String type, EventListener listener, boolean useCapture);

@@ -41,13 +41,25 @@ import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/*
+ * FIXME: This class should be better re-implemented to follow the specification, or at least extended.
+ */
+/**
+ * Class representing inner implementation of the parser of documents.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#parsing">Parsing</a>
+ */
 public class ScriptDOMParser extends DOMParser {
 	private ScriptableDocumentParser _parser;
 
@@ -70,7 +82,6 @@ public class ScriptDOMParser extends DOMParser {
 	public void parse(InputSource inputSource) throws SAXException, IOException {
 		reset();
 		super.parse(inputSource);
-		parsingFinalization();
 	}
 
 	@Override
@@ -91,31 +102,13 @@ public class ScriptDOMParser extends DOMParser {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		/*
-		 * super.initParser();
-		 * 
-		 * try { setProperty("http://cyberneko.org/html/properties/names/elems",
-		 * "lower"); if (_charset != null) {
-		 * setProperty("http://cyberneko.org/html/properties/default-encoding",
-		 * _charset); }
-		 * setProperty("http://apache.org/xml/properties/dom/document-class-name"
-		 * , "org.fit.cssbox.scriptbox.dom.Html5DocumentImpl"); } catch
-		 * (SAXNotRecognizedException e) { e.printStackTrace(); } catch
-		 * (SAXNotSupportedException e) { e.printStackTrace(); }
-		 */
-	}
-
-	protected void parsingFinalization() {
-		/*
-		 * TODO: See:
-		 * http://www.w3.org/html/wg/drafts/html/master/syntax.html#the-end -
-		 * implement defer scripts and delayed scripts due remote resources
-		 */
 	}
 	
 	@Override
 	public void startDocument(XMLLocator locator, String encoding, NamespaceContext namespaceContext, Augmentations augs) throws XNIException {	
+		/*
+		 * Use passed document instance and do not create a new one by calling the super method.
+		 */
 		if (!fDeferNodeExpansion) {
 			_locator = locator;
 			CoreDocumentImpl documentImpl = null;
@@ -152,8 +145,7 @@ public class ScriptDOMParser extends DOMParser {
 		else {
 			throw new UnsupportedOperationException("Parser does not support deferred node expansion.");
 		}
-
-	} // endDocument()
+	}
 	
 	/*
 	 * Implements only some aspects of the HTML5 specification.
@@ -208,7 +200,12 @@ public class ScriptDOMParser extends DOMParser {
 	}
 
 	
-	/* Simplified, does not follow the spec */
+	/* FIXME: Simplified, does not follow the specification. */
+	/**
+	 * Processes end of the HTML iframe tag.
+	 * 
+	 * @param iframeElement Parsed IFRAME element.
+ 	 */
 	protected void endHtml5IframeElement (Html5IFrameElementImpl iframeElement) {
 		Document document = iframeElement.getOwnerDocument();
 		String src = iframeElement.getSrc();
@@ -235,6 +232,12 @@ public class ScriptDOMParser extends DOMParser {
 		}
 	}
 	
+	/**
+	 * Processes end of the HTML script tag.
+	 * 
+	 * @param scriptElement Parsed script element.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#scriptEndTag">SCRIPT end tag</a>
+ 	 */
 	protected void endHtml5ScriptElement(final Html5ScriptElementImpl scriptElement) {		
 		// TODO: 1) Perform a microtask checkpoint.
 		// TODO: 2) Provide a stable state.
@@ -270,6 +273,9 @@ public class ScriptDOMParser extends DOMParser {
 		executePendingParsingBlockingScript();
 	}
 	
+	/**
+	 * Executes pending-parsing blocking script if there is any ready to be parser executed.
+	 */
 	protected void executePendingParsingBlockingScript() {
 		// 11) If there is a pending parsing-blocking script, then:
 		Html5ScriptElementImpl script = null;

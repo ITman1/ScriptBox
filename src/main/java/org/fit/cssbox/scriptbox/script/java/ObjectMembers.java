@@ -22,7 +22,7 @@ package org.fit.cssbox.scriptbox.script.java;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
+import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 
 public final class ObjectMembers extends ClassMembers {
 

@@ -19,7 +19,18 @@
 
 package org.fit.cssbox.scriptbox.cache;
 
-
+/*
+ * TODO: This class should be implemented.
+ */
+/**
+ * Class representing application cache - a set of cached resources.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#application-cache">About application cache</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#applicationcache">Application cache</a>
+ */
 public class ApplicationCache {
 
 }

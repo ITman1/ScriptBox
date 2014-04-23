@@ -22,9 +22,27 @@ package org.fit.cssbox.scriptbox.dom;
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.html.dom.HTMLElementImpl;
 
+/*
+ * TODO: Implement.
+ */
+/**
+ * Extends DOM4 HTMLElementImpl about features of the HTML5.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * 
+ * @see <a href="http://www.whatwg.org/specs/web-apps/current-work/#htmlelement">HTML element</a>
+ */
 public class Html5ElementImpl extends HTMLElementImpl {
 	private static final long serialVersionUID = 3621278051202593807L;
 
+	/**
+	 * Constructs new element.
+	 * 
+	 * @param owner Document which owns this element.
+	 * @param name Name of the element.
+	 */
 	public Html5ElementImpl(HTMLDocumentImpl owner, String tagName) {
 		super(owner, tagName);
 	}

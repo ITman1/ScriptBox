@@ -38,13 +38,15 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 		explicitRegisteredFactories = new HashMap<String, Set<MimeContentFactory>>();
 	}
 	
-	public boolean registerMimeContentFactory(Class<? extends MimeContentFactory> factoryClass, Object ...args) {	
+	public MimeContentFactory registerMimeContentFactory(Class<? extends MimeContentFactory> factoryClass, Object ...args) {	
+		MimeContentFactory factory = null;
+		
 		synchronized (this) {
 
-			MimeContentFactory factory = instantizeMimeContentFactory(factoryClass, args);
+			factory = instantizeMimeContentFactory(factoryClass, args);
 			
 			if (factory == null) {
-				return false;
+				return null;
 			}
 			
 			List<String> mimeTypes = factory.getExplicitlySupportedMimeTypes();
@@ -61,7 +63,7 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 			}
 		}
 		
-		return true;
+		return factory;
 	}
 	
 	public void unregisterMimeContentFactory(Class<? extends MimeContentFactoryBase<?>> factoryClass) {

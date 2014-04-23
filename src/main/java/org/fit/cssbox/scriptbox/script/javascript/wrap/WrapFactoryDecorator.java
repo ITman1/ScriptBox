@@ -19,7 +19,7 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
+import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.WrapFactory;

@@ -1,5 +1,5 @@
 /**
- * JavaScriptEngine.java
+ * WindowJavaScriptEngine.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -27,20 +27,25 @@ import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.apache.html.dom.HTMLElementImpl;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.WindowScriptEngine;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptAnnotationClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.java.DefaultClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.java.DefaultShutter;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeJavaClass;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.TopLevel;
 import org.mozilla.javascript.Wrapper;
 
-public class JavaScriptEngine extends BrowserScriptEngine {
+public class WindowJavaScriptEngine extends WindowScriptEngine {
+
 	public static final String JAVASCRIPT_LANGUAGE = "text/javascript";
 	
 	static {
@@ -50,27 +55,29 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 
 	protected ContextFactory contextFactory;
 	protected TopLevel topLevel;
-	protected ClassMembersResolverFactory membersFactory;
 	protected Scriptable runtimeScope;
 	
-	public JavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
+	public WindowJavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
 		this(factory, scriptSettings, null);
 	}
 	
-	public JavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings, ContextFactory contextFactory) {
+	public WindowJavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings, ContextFactory contextFactory) {
 		super(factory, scriptSettings);
-		
-		// This must be set before... JavaScriptContextFactory needs to know members factory
-		this.membersFactory = initializeClassMembersResolverFactory();
 		
 		this.contextFactory = (contextFactory != null)? contextFactory : new JavaScriptContextFactory(this);
 
 		this.topLevel = initializeTopLevel();
 	}
 	
-	public ClassMembersResolverFactory getClassMembersResolverFactory() {
-		return membersFactory;
+	@Override
+	protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
+		DefaultShutter explicitGrantShutter = new DefaultShutter();
+		explicitGrantShutter.addVisibleClass(HTMLElementImpl.class, true, false, false);
+		ClassMembersResolverFactory factory = new ScriptAnnotationClassMembersResolverFactory(this, explicitGrantShutter);
+		return factory;
 	}
+	
+
 	
 	@Override
 	public Object eval(Reader reader, ScriptContext context) throws ScriptException {
@@ -128,21 +135,47 @@ public class JavaScriptEngine extends BrowserScriptEngine {
 		} 
 	}
 	
-	protected TopLevel initializeTopLevel() {
-		TopLevel topLevel = new TopLevel();
-		
-		Context cx = enterContext();
-		try {
-			cx.initStandardObjects(topLevel, true);
-		} finally {
-			exitContext();
+	public static Object jsToJava(Object jsObj) {
+		if (jsObj instanceof Wrapper) {
+			Wrapper njb = (Wrapper) jsObj;
+
+			if (njb instanceof NativeJavaClass) {
+				return njb;
+			}
+
+			Object obj = njb.unwrap();
+			if (obj instanceof Number || obj instanceof String ||
+				obj instanceof Boolean || obj instanceof Character) {
+				return njb;
+			} else {
+				return obj;
+			}
+		} else {
+			return jsObj;
 		}
-		
-		return topLevel;
 	}
 	
-	protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
-		return new DefaultClassMembersResolverFactory();
+	public static Object javaToJS(Object object, Scriptable scope) {
+		return Context.javaToJS(object, scope);
+	}
+	
+	protected TopLevel initializeTopLevel() {
+		Object object = (scriptSettings != null)? scriptSettings.getGlobalObject() : null;
+		
+		if (object == null) {
+			TopLevel topLevel = new TopLevel();
+			
+			Context cx = enterContext();
+			try {
+				cx.initStandardObjects(topLevel, true);
+			} finally {
+				exitContext();
+			}
+			
+			return topLevel;
+		}
+
+		return new ObjectTopLevel(object, this);
 	}
 	
 	protected Scriptable getRuntimeScope(ScriptContext context) throws ScriptException {		

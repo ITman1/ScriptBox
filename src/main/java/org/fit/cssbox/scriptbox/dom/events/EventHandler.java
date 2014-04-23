@@ -21,6 +21,16 @@ package org.fit.cssbox.scriptbox.dom.events;
 
 import org.w3c.dom.events.Event;
 
+/**
+ * Interface for all event handlers. It represents callback objects
+ * which are are called when some specific DOM event happen.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#eventhandler">Event handler</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface EventHandler {
 	public void handleEvent(Event event);
 }

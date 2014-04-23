@@ -20,7 +20,6 @@
 package org.fit.cssbox.scriptbox.demo.browser;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -42,8 +41,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import jsyntaxpane.DefaultSyntaxKit;
-
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
@@ -54,10 +51,17 @@ import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
-import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserBrowsingUnit;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserUserAgent;
 
+/**
+ * Browsing unit with simple user interface which contains navigation
+ * field and history traversal buttons.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	protected JFrame frame;
 	protected JTextField navigationField;
@@ -234,8 +238,6 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-		DefaultSyntaxKit.initKit();
 
 		JPanel containerPanel = new JPanel();
 		containerPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

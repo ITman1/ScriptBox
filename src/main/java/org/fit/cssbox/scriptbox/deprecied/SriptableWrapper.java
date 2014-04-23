@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.js;
+package org.fit.cssbox.scriptbox.deprecied;
 
 import java.io.Serializable;
 

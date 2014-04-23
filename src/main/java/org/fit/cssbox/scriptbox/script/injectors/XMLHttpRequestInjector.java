@@ -1,5 +1,5 @@
 /**
- * ScriptAnnotationException.java
+ * XMLHttpRequestInjector.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,14 +17,34 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.exceptions;
+package org.fit.cssbox.scriptbox.script.injectors;
 
-public class ScriptAnnotationException extends RuntimeException {
+import javax.script.Bindings;
+import javax.script.ScriptContext;
 
-	private static final long serialVersionUID = -4638263395797043872L;
+import org.fit.cssbox.scriptbox.script.ScriptContextInjector;
 
-	public ScriptAnnotationException(String details) {
-		super(details);
+public class XMLHttpRequestInjector extends ScriptContextInjector {
+
+	/*
+	 * TODO: Implement XMLHttpRequest
+	 */
+	public static class XMLHttpRequest {
+		
+	}
+	
+	public XMLHttpRequestInjector() {
+		super(ALL_SCRIPT_ENGINE_FACTORIES);
+	}
+	
+	@Override
+	public boolean inject(ScriptContext context) {
+		XMLHttpRequest xmlHttpRequest = new XMLHttpRequest();
+		
+		Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
+		bindings.put("XMLHttpRequest", xmlHttpRequest);
+		
+		return true;
 	}
 
 }

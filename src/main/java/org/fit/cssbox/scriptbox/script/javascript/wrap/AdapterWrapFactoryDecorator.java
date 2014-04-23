@@ -19,8 +19,8 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
-import org.fit.cssbox.scriptbox.script.wrap.adapter.Adapter;
-import org.fit.cssbox.scriptbox.script.wrap.adapter.AdapterRegistry;
+import org.fit.cssbox.scriptbox.script.adapter.Adapter;
+import org.fit.cssbox.scriptbox.script.adapter.AdapterRegistry;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 

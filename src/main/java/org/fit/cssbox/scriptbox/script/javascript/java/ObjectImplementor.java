@@ -25,15 +25,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.java.ClassField;
 import org.fit.cssbox.scriptbox.script.java.ClassFunction;
 import org.fit.cssbox.scriptbox.script.java.ClassMember;
 import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.java.ObjectField;
 import org.fit.cssbox.scriptbox.script.java.ObjectFunction;
 import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
-import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
 import org.mozilla.javascript.ScriptableObject;
 
 public class ObjectImplementor {
@@ -43,7 +41,7 @@ public class ObjectImplementor {
 	protected ObjectMembers objectMembers;
 	protected Set<String> definedProperties;
 	
-	public ObjectImplementor(ObjectMembers objectMembers, JavaScriptEngine scriptEngine) {
+	public ObjectImplementor(ObjectMembers objectMembers, BrowserScriptEngine scriptEngine) {
 		this.objectMembers = objectMembers;
 		this.implementedObject = objectMembers.getObject();
 		this.implementedObjectType = this.implementedObject.getClass();
@@ -51,7 +49,7 @@ public class ObjectImplementor {
 		this.definedProperties = new HashSet<String>();
 	}
 	
-	public ObjectImplementor(Object implementedObject, JavaScriptEngine scriptEngine) {
+	public ObjectImplementor(Object implementedObject, BrowserScriptEngine scriptEngine) {
 		this(getObjectMembers(implementedObject, scriptEngine), scriptEngine);
 	}
 	
@@ -112,12 +110,12 @@ public class ObjectImplementor {
 	}
 	
 	protected void defineObjectField(ScriptableObject destinationScope, String fieldName, ClassField classField) {
-		ObjectField objectField = new ObjectField(implementedObject, classField);
+		ObjectJSField objectField = new ObjectJSField(implementedObject, classField);
 		ObjectScriptable.defineObjectField(destinationScope, fieldName, objectField);
 		definedProperties.add(fieldName);
 	}
 		
-	protected static ObjectMembers getObjectMembers(Object object, JavaScriptEngine engine) {
+	protected static ObjectMembers getObjectMembers(Object object, BrowserScriptEngine engine) {
 		ClassMembersResolverFactory resolverFactory = engine.getClassMembersResolverFactory();
 		ObjectMembers objectMembers = ObjectMembers.getObjectMembers(object, resolverFactory);
 		return objectMembers;

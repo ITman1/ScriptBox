@@ -8,7 +8,7 @@ import java.util.Map;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.java.DefaultClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.javascript.GlobalObjectJavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.CollectionsWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.DefaultWrapFactoryDecorator;
@@ -42,7 +42,7 @@ public class CollectionsWrapFactoryTests {
 
 		@Override
 		public BrowserScriptEngine getScriptEngine(final Object object) {
-			return new GlobalObjectJavaScriptEngine(null, null, new CollectionsContextFactory()) {
+			return new WindowJavaScriptEngine(null, null, new CollectionsContextFactory()) {
 				@Override
 				protected TopLevel initializeTopLevel() {
 					return new ObjectTopLevel(object, this);

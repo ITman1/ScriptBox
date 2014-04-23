@@ -22,17 +22,18 @@ package org.fit.cssbox.scriptbox.script;
 import java.util.Set;
 
 public abstract class ScriptContextInjector extends ScriptContextInject {
+	protected final static String[] ALL_SCRIPT_ENGINE_FACTORIES = null;
 	protected final static BrowserScriptEngineManager manager = BrowserScriptEngineManager.getInstance();
 	
-	protected String scriptEngineName;
+	protected String[] scriptEngineNames;
 	protected boolean isRegistered;
 	
-	public ScriptContextInjector(String scriptEngineName) {
-		this.scriptEngineName = scriptEngineName;
+	public ScriptContextInjector(String[] scriptEngineNames) {
+		this.scriptEngineNames = scriptEngineNames;
 	}
 	
-	public String getScriptEngineName() {
-		return scriptEngineName;
+	public String[] getScriptEngineName() {
+		return scriptEngineNames;
 	}
 	
 	public boolean isRegistered() {
@@ -40,22 +41,42 @@ public abstract class ScriptContextInjector extends ScriptContextInject {
 	}
 	
 	public void registerScriptContextInject() {
-		Set<BrowserScriptEngineFactory> factories = manager.getMimeContentFactories(scriptEngineName); 
-		
-		for (BrowserScriptEngineFactory factory : factories) {
-			factory.registerScriptContextsInject(this);
+		if (scriptEngineNames != ALL_SCRIPT_ENGINE_FACTORIES) {
+			for (String scriptEngineName : scriptEngineNames) {
+				Set<BrowserScriptEngineFactory> factories = manager.getMimeContentFactories(scriptEngineName); 
+				registerForScriptEngineFactories(factories);
+			}
+		} else {
+			Set<BrowserScriptEngineFactory> factories = manager.getAllMimeContentFactories(); 
+			registerForScriptEngineFactories(factories);
 		}
 		
 		isRegistered = true;
 	}
 	
 	public void unregisterScriptContextInject() {
-		Set<BrowserScriptEngineFactory> factories = manager.getMimeContentFactories(scriptEngineName); 
-		
+		if (scriptEngineNames != ALL_SCRIPT_ENGINE_FACTORIES) {
+			for (String scriptEngineName : scriptEngineNames) {
+				Set<BrowserScriptEngineFactory> factories = manager.getMimeContentFactories(scriptEngineName); 
+				unregisterForScriptEngineFactories(factories);
+			}
+		} else {
+			Set<BrowserScriptEngineFactory> factories = manager.getAllMimeContentFactories(); 
+			unregisterForScriptEngineFactories(factories);
+		}
+
+		isRegistered = false;
+	}
+	
+	protected void registerForScriptEngineFactories(Set<BrowserScriptEngineFactory> factories) {
+		for (BrowserScriptEngineFactory factory : factories) {
+			factory.registerScriptContextsInject(this);
+		}
+	}
+	
+	protected void unregisterForScriptEngineFactories(Set<BrowserScriptEngineFactory> factories) {
 		for (BrowserScriptEngineFactory factory : factories) {
 			factory.unregisterScriptContextsInject(this);
 		}
-		
-		isRegistered = false;
 	}
 }

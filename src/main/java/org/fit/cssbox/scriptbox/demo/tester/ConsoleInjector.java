@@ -43,8 +43,22 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.javascript.JavaScriptInjector;
 import org.mozilla.javascript.Undefined;
 
+/**
+ * Custom JavaScript injector which adds console support into JavaScript.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ConsoleInjector extends JavaScriptInjector {
 
+	/**
+	 * Class representing console object which will be visible inside JavaScript.
+	 *
+	 * @author Radim Loskot
+	 * @version 0.9
+	 * @since 0.9 - 21.4.2014
+	 */
 	public static class Console {
 		
 		private StyledDocument doc;
@@ -182,7 +196,7 @@ public class ConsoleInjector extends JavaScriptInjector {
 		}
 	}
 	
-	protected JTextPane textPane;
+	private JTextPane textPane;
 	
 	public ConsoleInjector(JTextPane textPane) {
 		this.textPane = textPane;
@@ -202,7 +216,7 @@ public class ConsoleInjector extends JavaScriptInjector {
 		clearStyledDocument(doc);
 	}
 	
-	protected static void clearStyledDocument(final StyledDocument doc) {
+	private static void clearStyledDocument(final StyledDocument doc) {
 		if (SwingUtilities.isEventDispatchThread()) {
 			clearStyledDocumentImpl(doc);
         } else {
@@ -215,7 +229,7 @@ public class ConsoleInjector extends JavaScriptInjector {
         }
 	}
 	
-	protected static void clearStyledDocumentImpl(final StyledDocument doc) {
+	private static void clearStyledDocumentImpl(final StyledDocument doc) {
 		try {
 			doc.remove(0, doc.getLength());
 		} catch (BadLocationException e) {

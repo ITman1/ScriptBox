@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.deprecied.document.event;
+package org.fit.cssbox.scriptbox.deprecied.events;
 
 import java.io.IOException;
 

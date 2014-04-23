@@ -19,7 +19,15 @@
 
 package org.fit.cssbox.scriptbox.dom.events;
 
-
+/**
+ * Interface for defining global event handler for objects which support this.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#globaleventhandlers">GlobalEventHandlers </a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface GlobalEventHandlers {
 	public final static String onabort = "abort";
 	public final static String onblur = "blur";

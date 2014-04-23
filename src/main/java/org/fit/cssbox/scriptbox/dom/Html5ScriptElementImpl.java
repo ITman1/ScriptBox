@@ -41,7 +41,7 @@ import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineManager;
-import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.fit.cssbox.scriptbox.window.WindowScript;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
@@ -49,7 +49,20 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Implements script element according to HTML5.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * 
+ * @see <a href="http://www.whatwg.org/specs/web-apps/current-work/#the-script-element">HTML script element</a>
+ */
 public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Html5ScriptElement {
+	
+	/*
+	 * Task which marks scripts as ready to be parser executed.
+	 */
 	private class ParserInsertedScriptFetchCompletedTask extends Task {
 
 		public ParserInsertedScriptFetchCompletedTask() {
@@ -63,6 +76,9 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		
 	}	
 	
+	/*
+	 * Task which tries to execute scripts in order as they were added into the list.
+	 */
 	private class InOrderASAPScriptFetchCompletedTask extends Task {
 
 		public InOrderASAPScriptFetchCompletedTask() {
@@ -70,21 +86,17 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 
 		/*
-		 * http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#script-processing-src-sync(non-Javadoc)
-		 * @see org.fit.cssbox.scriptbox.events.Task#execute()
+		 * See: http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#script-processing-src-sync
 		 */
 		@Override
 		public void execute() throws TaskAbortedException, InterruptedException {
-			List<Html5ScriptElementImpl> scripts = _creatorParser.getInOrderASAPScripts();
+			_readyToBeASAPExecuted = true;
 			
-			if (!scripts.isEmpty()) {
-				Html5ScriptElementImpl firstScript = scripts.get(0);
-				
-				if (firstScript != Html5ScriptElementImpl.this) {
-					firstScript._readyToBeASAPExecuted = true;
-				} else {
-					execution(firstScript);
-				}
+			List<Html5ScriptElementImpl> scripts = _creatorParser.getInOrderASAPScripts();
+			Html5ScriptElementImpl firstScript = (!scripts.isEmpty())? scripts.get(0) : null;
+			
+			if (firstScript != null && firstScript._readyToBeASAPExecuted) {
+				execution(firstScript);
 			}
 		}
 		
@@ -103,25 +115,30 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 	}	
 
+	/*
+	 * Task which executes scripts as soon as they are fetched.
+	 */
 	private class ASAPScriptFetchCompletedTask extends Task {
 
 		public ASAPScriptFetchCompletedTask() {
 			super(TaskSource.NETWORKING, _creatorDocument);
 		}
 
+		/*
+		 * See: http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#script-processing-src
+		 */
 		@Override
 		public void execute() throws TaskAbortedException, InterruptedException {
 			Html5ScriptElementImpl.this.executeScript();
 			_creatorParser.removeASAPScript(Html5ScriptElementImpl.this);
 		}
-		
 	}	
 
 	
 	private static final long serialVersionUID = 4725269642619675257L;
 	private static final String ASYNC_ATTR_NAME = "async";
 	private static final String DEFER_ATTR_NAME = "defer";
-	private static final String DEFAULT_SCRIPT_MIME_TYPE = JavaScriptEngine.JAVASCRIPT_LANGUAGE;
+	private static final String DEFAULT_SCRIPT_MIME_TYPE = WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE;
 	
 	private boolean _alreadyStarted;
 	private boolean _parserInserted;
@@ -136,6 +153,12 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	private Fetch scriptFetch;
 	private FetchRegistry _fetchRegistry;
 	
+	/**
+	 * Constructs new script element.
+	 * 
+	 * @param owner Document which owns this element.
+	 * @param name Name of the element.
+	 */
 	public Html5ScriptElementImpl(HTMLDocumentImpl document, String name) {
 		super(document, name);
 		
@@ -153,6 +176,11 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		_parserInserted = _creatorParser.isParserTask(); //
 	}
 
+	/**
+	 * Tests whether is this script element parser inserted.
+	 * 
+	 * @return True if is this script element parser inserted, otherwise false.
+	 */
 	public boolean isParserInserted() {
 		return _parserInserted;
 	}
@@ -185,6 +213,12 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 	}
 	
+	/**
+	 * Runs prepare algorithm which might result in execution of the script.
+	 * 
+	 * @return True if prepare completed, false on some error.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#prepare-a-script">Prepare a script</a>
+	 */
 	public boolean prepareScript() {		
 		/* Step 1*/
 		if (_alreadyStarted) {
@@ -277,6 +311,11 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		return true;
 	}
 	
+	/**
+	 * Tests whether has this script element inline executable script.
+	 * 
+	 * @return True if there are some non empty, non-comment nodes inside this element, otherwise false.
+	 */
 	public boolean hasExecutableScript() {
 		boolean isEmpty = true;
 		NodeList childNodes = getChildNodes();
@@ -293,6 +332,10 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		return !isEmpty;
 	}
 	
+	/**
+	 * Returns mime type of this script element.
+	 * @return Mime type of this script element.
+	 */
 	public String getMimeType() {
 		if (getType().isEmpty() && getLang().isEmpty()) {
 			return DEFAULT_SCRIPT_MIME_TYPE;
@@ -304,8 +347,11 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		return "";
 	}
 	
-	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#execute-the-script-block
+	/**
+	 * Runs execution algorithm above current script element.
+	 * 
+	 * @return True if execution ran to completion, false on some error.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#execute-the-script-block">Execute the script block</a>
 	 */
 	public boolean executeScript() {
 		if (_parserInserted && (_creatorParser == null || _creatorParser.getDocument() != getOwnerDocument())) {
@@ -382,15 +428,24 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		return true;
 	}
 	
+	/**
+	 * Sets already started flag, so script will be not executed again and will act as cancelled.
+	 */
 	public void cancelExecution() {
 		_alreadyStarted = true;
 	}
 	
+	/**
+	 * Delays execution of this script element.
+	 */
 	public void suspendExecution() {
 		_parserInserted = true;
 		_forceAsync = false;
 	}
 	
+	/**
+	 * Sets ready to be parser executed flag to true.
+	 */
 	public void makeReadyToBeParserExecuted() {
 		_readyToBeParserExecuted = true;
 		
@@ -399,10 +454,20 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 	}
 	
+	/**
+	 * Tests ready to be parser executed flag.
+	 * 
+	 * @return True if ready to be parser executed flag is true, otherwise false.
+	 */
 	public boolean isReadyToBeParserExecuted() {
 		return _readyToBeParserExecuted;
 	}
 	
+	/**
+	 * Returns reader which points to the inline script source.
+	 * 
+	 * @return Reader which points to the inline script source.
+	 */
 	public Reader getScriptBlockSource() {
 		NodeList childNodes = getChildNodes();
 		StringBuilder executableScript = new StringBuilder();
@@ -419,6 +484,11 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		return new StringReader(executableScript.toString());
 	}
 	
+	/**
+	 * Returns reader which points to the resource script source.
+	 * 
+	 * @return Reader which points to the resource script source.
+	 */
 	protected Reader getScriptBlockSource(Resource resource) {
 		InputStream is = resource.getInputStream();
 		InputStreamReader reader = new InputStreamReader(is);
@@ -426,6 +496,12 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		return reader;
 	}
 	
+	/**
+	 * Fetches external resource.
+	 * 
+	 * @param src Source location from which fetch should be established.
+	 * @param finishTask Task to be invoked after fetch is completed.
+	 */
 	protected void fetchResource(String src, Task finishTask) {
 		Window window = _creatorDocument.getWindow();
 		
@@ -463,6 +539,11 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 	}
 	
+	/**
+	 * Tests whether is scripting disable for current document.
+	 * 
+	 * @return True if scripting is disable, otherwise false.
+	 */
 	protected boolean isScriptingDisabled() {
 		Document document = getOwnerDocument();
 		

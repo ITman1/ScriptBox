@@ -22,11 +22,16 @@ package org.fit.cssbox.scriptbox.dom.interfaces;
 import org.w3c.dom.html.HTMLElement;
 
 /**
- * FIXME: Now it extends from HTMLElement of HTML4, fix it to HTML5.
+ * FIXME: Implement this. Now it extends from HTMLElement of HTML4, fix it to HTML5.
+ */
+/**
+ * Extends DOM4 HTMLElementImpl about features of the HTML5.
  * 
- * @see http://www.whatwg.org/specs/web-apps/current-work/#htmlelement
  * @author Radim Loskot
- *
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * 
+ * @see <a href="http://www.whatwg.org/specs/web-apps/current-work/#htmlelement">HTML element</a>
  */
 public interface Html5Element extends HTMLElement {
 

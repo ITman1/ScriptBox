@@ -26,9 +26,9 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.exceptions.ScriptAnnotationException;
 import org.fit.cssbox.scriptbox.script.java.ClassField;
 import org.fit.cssbox.scriptbox.script.java.ClassFunction;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.ScriptAnnotationException;
 
 public class ScriptAnnotation {
 	public static boolean isScriptAnnotation(Annotation annotation) {		

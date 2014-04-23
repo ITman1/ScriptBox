@@ -26,6 +26,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.fit.cssbox.scriptbox.script.exceptions.FieldException;
+import org.fit.cssbox.scriptbox.script.exceptions.FunctionException;
+import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
+import org.fit.cssbox.scriptbox.script.exceptions.ObjectException;
+import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.java.ClassConstructor;
 import org.fit.cssbox.scriptbox.script.java.ClassField;
 import org.fit.cssbox.scriptbox.script.java.ClassFunction;
@@ -34,12 +39,7 @@ import org.fit.cssbox.scriptbox.script.java.InvocableMember;
 import org.fit.cssbox.scriptbox.script.java.MemberConstructor;
 import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.FieldException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.ObjectException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -110,7 +110,7 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		Constructor<?> constructor = nearestConstructorMember.getMember();
 		
 		Class<?> expectedTypes[] = constructor.getParameterTypes();
-		Object[] castedArgs = ClassFunction.castArgs(expectedTypes, args);
+		Object[] castedArgs = HostedJavaMethod.castArgs(expectedTypes, args);
 		
 		try {
 			Object newInstance = constructor.newInstance(castedArgs);
@@ -206,7 +206,7 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 	}
 
 	protected Object wrapObject(Object object) {		
-		return ObjectScriptable.javaToJS(object, this);
+		return WindowJavaScriptEngine.javaToJS(object, this);
 	}
 	
 	protected void hostDelete(String name) {
@@ -224,17 +224,13 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 
 			ClassMember<?> firstMember = members.iterator().next();
 			if (firstMember instanceof ClassField) {
-				hostFieldPut((ClassField)firstMember, value);
+				hostPut((ClassField)firstMember, javaObject, value);
 				return;
 			} else {
 				throw new FieldException("Unsupported operation");
 			}
 		}
 		throw new FieldException("Scope does not contain property with this name!");
-	}
-	
-	protected void hostFieldPut(ClassField objectField, Object value) {
-		objectField.set(this, value);
 	}
 	
 	protected Object hostGet(String name) {
@@ -257,7 +253,7 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		Object result = Scriptable.NOT_FOUND;
 		ClassMember<?> firstMember = members.iterator().next();
 		if (firstMember instanceof ClassField) {
-			result = hostFieldGet((ClassField)firstMember);
+			result = hostGet((ClassField)firstMember, javaObject);
 		} else if (firstMember instanceof ClassFunction) {
 			Set<ClassFunction> functions = new HashSet<ClassFunction>();
 			boolean failed = false;
@@ -276,10 +272,6 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		
 		return result;
 
-	}
-	
-	protected Object hostFieldGet(ClassField objectField) {
-		return objectField.get(javaObject);
 	}
 	
 	protected Object hostFunctionGet(Set<ClassFunction> functions) {
@@ -327,5 +319,19 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		}
 		
 		return returnIds;
+	}
+	
+	public static void hostPut(ClassField objectField, Object object, Object value) {
+		object = WindowJavaScriptEngine.jsToJava(object);
+		value = WindowJavaScriptEngine.jsToJava(value);
+		Class<?> type = objectField.getFieldType();
+		value = ClassField.wrap(type, value);
+		objectField.set(object, value);
+	}
+	
+	public static Object hostGet(ClassField objectField, Object object) {
+		object = WindowJavaScriptEngine.jsToJava(object);
+		Object value = objectField.get(object);
+		return ClassField.unwrap(value);
 	}
 }

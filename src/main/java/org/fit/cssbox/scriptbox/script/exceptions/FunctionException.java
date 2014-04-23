@@ -1,5 +1,5 @@
 /**
- * XMLHttpRequestInjector.java
+ * FunctionException.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,30 +17,14 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.injectors;
+package org.fit.cssbox.scriptbox.script.exceptions;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
+public class FunctionException extends MemberException {
 
-import org.fit.cssbox.scriptbox.script.javascript.JavaScriptInjector;
+	private static final long serialVersionUID = 8901518597384702029L;
 
-public class XMLHttpRequestInjector extends JavaScriptInjector {
-
-	/*
-	 * TODO: Implement XMLHttpRequest
-	 */
-	public static class XMLHttpRequest {
-		
-	}
-	
-	@Override
-	public boolean inject(ScriptContext context) {
-		XMLHttpRequest xmlHttpRequest = new XMLHttpRequest();
-		
-		Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
-		bindings.put("XMLHttpRequest", xmlHttpRequest);
-		
-		return true;
+	public FunctionException(String details) {
+		super(details);
 	}
 
 }

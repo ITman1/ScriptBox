@@ -20,18 +20,19 @@
 package org.fit.cssbox.scriptbox.script;
 
 import org.fit.cssbox.scriptbox.misc.MimeContentRegistryBase;
-import org.fit.cssbox.scriptbox.script.javascript.window.WindowScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.injectors.URLInjector;
+import org.fit.cssbox.scriptbox.script.injectors.XMLHttpRequestInjector;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngineFactory;
 
 public class BrowserScriptEngineManager extends MimeContentRegistryBase<BrowserScriptEngineFactory, BrowserScriptEngine> {
-	static private BrowserScriptEngineManager instance;
-	
-	private BrowserScriptEngineManager() {
-		registerMimeContentFactory(WindowScriptEngineFactory.class);
-	}
+	static private BrowserScriptEngineManager instance = null;
+	static private boolean initialized = false;
 	
 	public static synchronized BrowserScriptEngineManager getInstance() {
 		if (instance == null) {
 			instance = new BrowserScriptEngineManager();
+			
+			instance.registerScriptEngineFactories();
 		}
 		
 		return instance;
@@ -39,5 +40,31 @@ public class BrowserScriptEngineManager extends MimeContentRegistryBase<BrowserS
 	
 	public synchronized BrowserScriptEngine getBrowserScriptEngine(String mimeType, ScriptSettings<?> settings) {
 		return getContent(mimeType, settings);
+	}
+	
+	@Override
+	public synchronized BrowserScriptEngine getContent(String mimeType, Object... args) {
+		/*
+		 * We are accessing the first script engine, so this manager should be already fully instatized.
+		 * We can lazily register injectors now.
+		 */
+		if (!initialized) {
+			registerScriptContextInjectors();
+		}
+		
+		return super.getContent(mimeType, args);
+	}
+	
+	private void registerScriptEngineFactories() {
+		registerMimeContentFactory(WindowJavaScriptEngineFactory.class);
+	}
+	
+	private void registerScriptContextInjectors() {
+		registerScriptContextInjector(new URLInjector());
+		registerScriptContextInjector(new XMLHttpRequestInjector());
+	}
+	
+	private void registerScriptContextInjector(ScriptContextInjector injector) {
+		injector.registerScriptContextInject();
 	}
 }

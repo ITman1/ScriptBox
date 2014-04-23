@@ -23,11 +23,15 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.ClassUtils;
+import org.fit.cssbox.scriptbox.script.exceptions.FunctionException;
+import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.java.ClassField;
 import org.fit.cssbox.scriptbox.script.java.ClassFunction;
 import org.fit.cssbox.scriptbox.script.java.InvocableMember;
 import org.fit.cssbox.scriptbox.script.java.MemberFunction;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.FunctionException;
-import org.fit.cssbox.scriptbox.script.javascript.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
+import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.FunctionObject;
@@ -101,7 +105,7 @@ public class HostedJavaMethod extends FunctionObject {
 		Class<?> returnType = functionMethod.getReturnType();
 		
 		Class<?> expectedTypes[] = functionMethod.getParameterTypes();
-		Object[] castedArgs = ClassFunction.castArgs(expectedTypes, args);
+		Object[] castedArgs = castArgs(expectedTypes, args);
 		
 		try {
 			 Object returned = functionMethod.invoke(object, castedArgs);
@@ -121,7 +125,7 @@ public class HostedJavaMethod extends FunctionObject {
 		for (InvocableMember<?> invocableMember : invocableMembers) {
 			Class<?> methodTypes[] = invocableMember.getParameterTypes();
 			
-			Object[] castedArgs = ClassFunction.castArgs(methodTypes, args);
+			Object[] castedArgs = castArgs(methodTypes, args);
 			if (castedArgs == null) {
 				continue;
 			}
@@ -129,6 +133,83 @@ public class HostedJavaMethod extends FunctionObject {
 			boolean isAssignable = ClassFunction.isAssignableTypes(castedArgs, methodTypes);
 			if (isAssignable) {
 				return invocableMember;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static Object[] castArgs(Class<?>[] expectedTypes, Object... args) {
+
+		
+		if (expectedTypes != null && args != null) {
+
+			if (expectedTypes.length <= args.length + 1 && expectedTypes.length > 0) {
+				Class<?> lastType = expectedTypes[expectedTypes.length - 1];
+				if (lastType.isArray()) {
+					Class<?> arrayType = lastType.getComponentType();
+					
+					boolean maybeVarargs = true;
+					if (expectedTypes.length == args.length) {
+						Class<?> lastArg = args[args.length - 1].getClass();
+						maybeVarargs = !ClassUtils.isAssignable(lastArg, lastType);
+					}
+					
+					if (maybeVarargs) {
+						for (int i = expectedTypes.length - 1; i < args.length; i++) {
+							if (args[i] == null) {
+								continue;
+							}
+							Class<?> argType = args[i].getClass();
+							
+							if (!ClassUtils.isAssignable(argType, arrayType)) {
+								maybeVarargs = false;
+								break;
+							}
+						}
+						
+						if (maybeVarargs) {
+							Object[] oldArgs = args;
+							args = new Object[expectedTypes.length];
+							
+							for (int i = 0; i < expectedTypes.length - 1; i++) {
+								args[i] = oldArgs[i];
+							}
+							
+							Object[] varargs = new Object[oldArgs.length - expectedTypes.length + 1];
+							
+							for (int i = expectedTypes.length - 1; i < oldArgs.length; i++) {
+								varargs[i - expectedTypes.length + 1] = oldArgs[i];
+							}
+							
+							args[expectedTypes.length - 1] = varargs;
+						}
+					}
+				}
+			}
+			
+			if (expectedTypes.length == args.length) {
+				Object[] castedArgs = new Object[args.length];
+				for (int i = 0; i < args.length; i++) {
+					Object arg = args[i];
+					Class<?> expectedType = expectedTypes[i];
+					if (arg == null) {
+						castedArgs[i] = null;
+					} else if (arg == Undefined.instance) {
+						castedArgs[i] = null;
+					} else if (arg instanceof ConsString) {
+						castedArgs[i] = ((ConsString)arg).toString();
+					} else if (arg instanceof Double && (expectedType.equals(Integer.class) || expectedType.equals(int.class))) {
+						castedArgs[i] = ((Double)arg).intValue();
+					} else {
+						castedArgs[i] = WindowJavaScriptEngine.jsToJava(arg);
+						//castedArgs[i] = Context.jsToJava(castedArgs[i], expectedType);
+					}
+					
+					castedArgs[i] = ClassField.wrap(expectedTypes[i], castedArgs[i]);
+				}
+				
+				return castedArgs;
 			}
 		}
 		

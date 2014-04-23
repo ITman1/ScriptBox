@@ -32,10 +32,18 @@ import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.window.Window;
 
-/*
- * See: http://www.w3.org/html/wg/drafts/html/CR/syntax.html#the-end
+/**
+ * Class of the task which finalizes parsing of the document and fires load event.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#the-end">The end</a>
  */
 public class TheEndTask extends ParserFinishedTask {
+	/*
+	 * Injects exception information into already existing instance of ParserFinishedTask
+	 */
 	private class ParserFinishedTaskExceptionInjector extends ParserFinishedTask {
 		protected ParserFinishedTask wrapped;
 		
@@ -55,8 +63,8 @@ public class TheEndTask extends ParserFinishedTask {
 	
 	protected ScriptableDocumentParser parser;
 	
-	public TheEndTask(ScriptableDocumentParser parser) {
-		super(TaskSource.DOM_MANIPULATION, parser.getDocument());
+	public TheEndTask(ScriptableDocumentParser parser, Exception exception) {
+		super(TaskSource.DOM_MANIPULATION, parser.getDocument(), exception);
 		
 		this.parser = parser;
 	}

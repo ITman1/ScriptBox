@@ -19,6 +19,14 @@
 
 package org.fit.cssbox.scriptbox.dom;
 
+/**
+ * Extends DOM4 DOMException about new state codes.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://dom.spec.whatwg.org/#exception-domexception">Exception DOMException</a>
+ */
 public class DOMException extends org.w3c.dom.DOMException {
 
 	private static final long serialVersionUID = -7487087556447991435L;

@@ -21,7 +21,7 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import org.fit.cssbox.scriptbox.script.java.ClassFunction;
 import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
-import org.fit.cssbox.scriptbox.script.javascript.JavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -31,10 +31,10 @@ public class ObjectTopLevel extends TopLevel {
 	private static final long serialVersionUID = -824471943182669084L;
 
 	protected Object globalObject;
-	protected JavaScriptEngine scriptEngine;
+	protected WindowJavaScriptEngine scriptEngine;
 	protected ObjectImplementor implementor;
 	
-	public ObjectTopLevel(Object globalObject, JavaScriptEngine scriptEngine, ObjectImplementor implementor) {
+	public ObjectTopLevel(Object globalObject, WindowJavaScriptEngine scriptEngine, ObjectImplementor implementor) {
 		this.globalObject = globalObject;
 		this.scriptEngine = scriptEngine;
 		this.implementor = implementor;
@@ -53,7 +53,7 @@ public class ObjectTopLevel extends TopLevel {
 		}
 	}
 	
-	public ObjectTopLevel(Object globalObject, JavaScriptEngine browserScriptEngine) {
+	public ObjectTopLevel(Object globalObject, WindowJavaScriptEngine browserScriptEngine) {
 		this(globalObject, browserScriptEngine, null);
 	}
 	
@@ -61,7 +61,7 @@ public class ObjectTopLevel extends TopLevel {
 		return globalObject;
 	}
 	
-	public JavaScriptEngine getBrowserScriptEngine() {
+	public WindowJavaScriptEngine getBrowserScriptEngine() {
 		return scriptEngine;
 	}
 	
@@ -71,7 +71,7 @@ public class ObjectTopLevel extends TopLevel {
 		object = (object == Scriptable.NOT_FOUND)? objectGetterGet(index) : object;
 		
 		if (object != Scriptable.NOT_FOUND) {
-			object = ObjectScriptable.javaToJS(object, this);
+			object = WindowJavaScriptEngine.javaToJS(object, this);
 		}
 		
 		return object;
@@ -83,7 +83,7 @@ public class ObjectTopLevel extends TopLevel {
 		object = (object == Scriptable.NOT_FOUND)? objectGetterGet(name) : object;
 		
 		if (object != Scriptable.NOT_FOUND) {
-			object = ObjectScriptable.javaToJS(object, this);
+			object = WindowJavaScriptEngine.javaToJS(object, this);
 		}
 		
 		return object;

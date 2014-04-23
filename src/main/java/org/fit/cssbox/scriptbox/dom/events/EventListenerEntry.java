@@ -23,10 +23,24 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.w3c.dom.events.EventListener;
 
+/**
+ * Represents class of the entry which stores event listener inside object where
+ * it has been registered. It enables to store use capture attribute in pair with event listener.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class EventListenerEntry {
 	public EventListener listener;
 	public boolean useCapture;
 	
+	/**
+	 * Constructs new event entry.
+	 * 
+	 * @param listener Registered event listener.
+	 * @param useCapture Use capture option flag.
+	 */
 	public EventListenerEntry(EventListener listener, boolean useCapture) {
 		this.listener = listener;
 		this.useCapture = useCapture;
