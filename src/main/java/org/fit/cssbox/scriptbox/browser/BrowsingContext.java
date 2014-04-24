@@ -521,6 +521,26 @@ public class BrowsingContext {
 	}
 	
 	/**
+	 * Returns ancestor browsing contexts.
+	 * 
+	 * @return Collection of ancestor browsing contexts of this browsing context.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#ancestor-browsing-context">Ancestor browsing context</a>
+	 */
+	public Collection<BrowsingContext> getAncestorContexts() {
+		List<BrowsingContext> contextList = new ArrayList<BrowsingContext>();
+		
+		BrowsingContext ancestorContext = this;
+		
+		while (ancestorContext.getParentContext() != null) {
+			ancestorContext = ancestorContext.getParentContext();
+			
+			contextList.add(ancestorContext);
+		}
+		
+		return contextList;
+	}
+	
+	/**
 	 * Tests whether this browsing context is nested inside the passed browsing context.
 	 * 
 	 * @param context Browsing context against which is test performed.

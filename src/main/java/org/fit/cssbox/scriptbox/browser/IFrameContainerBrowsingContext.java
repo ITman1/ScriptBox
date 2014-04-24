@@ -95,6 +95,35 @@ public class IFrameContainerBrowsingContext extends BrowsingContext {
 		return Collections.unmodifiableList(iframes);
 	}
 	
+	/**
+	 * Tests whether is this or nested browsing context in delaying load event mode.
+	 * 
+	 * @return True if is this or nested browsing context in delaying load event mode, otherwise false.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
+	 */
+	public synchronized boolean hasDelayingLoadEventsMode() {		
+		Document document = getActiveDocument();
+		
+		if (document == null) {
+			return false;
+		}
+		
+		List<IFrameBrowsingContext> iframes = documentIframes.get(document);
+		
+		boolean result = false;
+		
+		if (iframes != null && !iframes.isEmpty()) {
+			for (IFrameBrowsingContext iframe : iframes) {
+				if (iframe.hasDelayingLoadEventsMode()) {
+					result = true;
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 	@Override
 	protected void removeChildContext(BrowsingContext child) {
 		if (child instanceof IFrameBrowsingContext) {
@@ -105,6 +134,10 @@ public class IFrameContainerBrowsingContext extends BrowsingContext {
 			
 			if (iframes != null) {
 				iframes.remove(child);
+			}
+			
+			if (iframes.isEmpty()) {
+				documentIframes.remove(document);
 			}
 		}
 	}

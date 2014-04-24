@@ -352,7 +352,7 @@ public class SessionHistory {
 			HashChangeEvent hashChangeEvent = new HashChangeEvent();
 			String oldURL = currentURI.toExternalForm();
 			String newURL = specifiedURI.toExternalForm();
-			hashChangeEvent.initEvent(WindowEventHandlers.onhashchange, true, false, true, null, oldURL, newURL);
+			hashChangeEvent.initEvent(WindowEventHandlers.onhashchange, true, false, oldURL, newURL);
 		
 			if (asynchronousEvents) {
 				windowTarget.dispatchEvent(hashChangeEvent, windowTarget);
@@ -363,7 +363,7 @@ public class SessionHistory {
 		
 		if (stateChanged) {
 			PopStateEvent popStateEvent = new PopStateEvent();
-			popStateEvent.initEvent(WindowEventHandlers.onpopstate, true, false, true, null, state);
+			popStateEvent.initEvent(WindowEventHandlers.onpopstate, true, false, state);
 			
 			if (asynchronousEvents) {
 				windowTarget.dispatchEvent(popStateEvent, windowTarget);

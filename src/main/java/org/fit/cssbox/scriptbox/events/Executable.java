@@ -21,6 +21,13 @@ package org.fit.cssbox.scriptbox.events;
 
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 
+/**
+ * Interface for task jobs or tasks itself.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface Executable {
 	public void execute() throws TaskAbortedException, InterruptedException;
 }

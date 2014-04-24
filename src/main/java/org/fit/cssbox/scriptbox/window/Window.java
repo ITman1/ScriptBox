@@ -45,7 +45,6 @@ import org.fit.cssbox.scriptbox.dom.events.EventListenerEntry;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
-import org.fit.cssbox.scriptbox.dom.events.script.TrustedEvent;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
@@ -597,10 +596,10 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 			BrowsingContext sourceBrowsingContext = settings.getResposibleBrowsingContext();
 			navigationController.navigate(sourceBrowsingContext, targetUrl, true, false, replace);
 		} else if (targetUrl.equals(Html5DocumentImpl.DEFAULT_URL) && isTargetBlank) {
-			TrustedEvent event = new TrustedEvent();
 			Html5DocumentImpl document = targetContext.getActiveDocument();
+			org.fit.cssbox.scriptbox.dom.events.script.Event event = new org.fit.cssbox.scriptbox.dom.events.script.Event(true, document);
 			Window window = document.getWindow();
-			event.initEvent("load", false, false, true, document);
+			event.initEvent("load", false, false);
 			window.dispatchEvent(event);
 		}
 		
@@ -769,16 +768,24 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		if (!evt.initialized || evt.type == null || evt.type.length() == 0) {
 			throw new DOMException(DOMException.INVALID_STATE_ERR, "InvalidStateError");
 		}
+		
+		if (event instanceof org.fit.cssbox.scriptbox.dom.events.script.Event) {
+			org.fit.cssbox.scriptbox.dom.events.script.Event scriptEvent = (org.fit.cssbox.scriptbox.dom.events.script.Event)event ;
+			if (scriptEvent.dispatch) {
+				throw new DOMException(DOMException.INVALID_STATE_ERR, "InvalidStateError");
+			}
+		} 
 
 		String evtType = evt.getType();
 		if (!listeners.containsKey(evtType)) {
 			return evt.preventDefault;
 		}
 
-		if (event instanceof TrustedEvent) {
-			TrustedEvent trusted = (TrustedEvent)event ;
-			EventTarget targetOverride = trusted.getTargetOverride();
+		if (event instanceof org.fit.cssbox.scriptbox.dom.events.script.Event) {
+			org.fit.cssbox.scriptbox.dom.events.script.Event scriptEvent = (org.fit.cssbox.scriptbox.dom.events.script.Event)event ;
+			EventTarget targetOverride = scriptEvent.getTargetOverride();
 			evt.target = (targetOverride != null)? targetOverride : this;
+			scriptEvent.dispatch = true;
 		} else {
 			evt.target = this;
 		}

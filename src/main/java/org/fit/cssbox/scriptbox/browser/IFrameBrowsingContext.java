@@ -19,6 +19,7 @@
 
 package org.fit.cssbox.scriptbox.browser;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -84,14 +85,9 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 		return seamlessBrowsingFlag;
 	}
 	
-	/**
-	 * Tests whether is this browsing context in delaying load event mode.
-	 * 
-	 * @return True if is this browsing context in delaying load event mode, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
-	 */
-	public boolean hasDelayingLoadEventsMode() {
-		return delayingLoadEventsMode;
+	@Override
+	public synchronized boolean hasDelayingLoadEventsMode() {
+		return super.hasDelayingLoadEventsMode() || delayingLoadEventsMode;
 	}
 	
 	/**
@@ -99,8 +95,18 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 	 * 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
 	 */
-	public void resetDelayingLoadEventsMode() {
+	public synchronized void resetDelayingLoadEventsMode() {
 		delayingLoadEventsMode = false;
+		
+		Collection<BrowsingContext> contexts = getAncestorContexts();
+		
+		for (BrowsingContext context : contexts) {
+			synchronized (context) {
+				context.notifyAll();
+			}
+		}
+		
+		notifyAll();
 	}
 	
 	/**
@@ -108,7 +114,7 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 	 * 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
 	 */
-	public void delayLoadEvents() {
+	public synchronized void delayLoadEvents() {
 		delayingLoadEventsMode = true;
 	}
 }

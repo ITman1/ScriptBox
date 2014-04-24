@@ -28,8 +28,15 @@ import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 
 import com.google.common.base.Predicate;
 
+/**
+ * Abstract class for scheduling tasks.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class TaskQueuesScheduler {	
-	protected class TaskQueuesSchedulerThread extends Thread {
+	private class TaskQueuesSchedulerThread extends Thread {
 		@Override
 		public void run() {
 			try {
@@ -70,6 +77,12 @@ public abstract class TaskQueuesScheduler {
 		executionThread.start();
 	}
 	
+	/**
+	 * Aborts synchronously this scheduler
+	 * 
+	 * @param join If is set, then current thread waits until scheduler finishes.
+	 * @throws InterruptedException if we are aborting current thread or if it occurs on join
+	 */
 	public synchronized void abort(boolean join) throws InterruptedException {		
 		testForAbort();
 		
@@ -85,6 +98,14 @@ public abstract class TaskQueuesScheduler {
 		}		
 	}
 	
+	/**
+	 * Pulls task - e.g. removes task from the scheduled tasks or 
+	 * blocks if there is not any task to be pulled.
+	 * 
+	 * @return New task to be executed.
+	 * 
+	 * @throws InterruptedException It is thrown if current thread is interrupted.
+	 */
 	public Task pullTask() throws InterruptedException {
 		testForAbort();
 		
@@ -97,6 +118,11 @@ public abstract class TaskQueuesScheduler {
 		}
 	}
 	
+	/**
+	 * Queues new task.
+	 * 
+	 * @param task New task to be queued.
+	 */
 	public void queueTask(Task task) {
 		testForAbort();
 		
@@ -110,10 +136,20 @@ public abstract class TaskQueuesScheduler {
 		
 	}
 	
+	/**
+	 * Tests whether has been this scheduler aborted.
+	 * 
+	 * @return True if is this scheduler aborted, otherwise false.
+	 */
 	public synchronized boolean isAborted() {
 		return aborted;
 	}
 	
+	/**
+	 * Callback method to notify that task has just started in event loop.
+	 * 
+	 * @param task Task which has started while processing event loop.
+	 */
 	public void onTaskStarted(Task task) {
 		testForAbort();
 		
@@ -123,6 +159,11 @@ public abstract class TaskQueuesScheduler {
 		}
 	}
 	
+	/**
+	 * Callback method to notify that task has just finished in event loop.
+	 * 
+	 * @param task Task which has finished while processing event loop.
+	 */
 	public void onTaskFinished(Task task) {
 		long currentTaskTime = getCpuTime();
 		
@@ -139,6 +180,11 @@ public abstract class TaskQueuesScheduler {
 		onTaskCompletedExecution(task, taskDuration);
 	}
 	
+	/**
+	 * Removes first task which equals to the passed task.
+	 * 
+	 * @param task Task to be removed from the executing.
+	 */
 	public synchronized void removeFirstTask(Task task) {
 		testForAbort();
 		boolean isRemovedFromBuffer = scheduledTasks.remove(task);
@@ -147,23 +193,72 @@ public abstract class TaskQueuesScheduler {
 		}
 	}
 	
+	/**
+	 * Removes all tasks which equal to the passed task.
+	 * 
+	 * @param task Task to be removed from the executing.
+	 */
 	public synchronized void removeAllTasks(Task task) {
 		testForAbort();
 		while (scheduledTasks.remove(task));
 		taskQueues.removeAllTasks(task);
 	}
 	
+	/**
+	 * Filters given task source queue by a predicate.
+	 * 
+	 * @param source Task source that should be filtered.
+	 * @param predicate Predicate which ensures filtering. On success
+	 *        the task is left untouched, otherwise will be removed.
+	 */
 	public synchronized void filter(TaskSource source, Predicate<Task> predicate) {
 		testForAbort();
 		taskQueues.filter(source, predicate);
 	}
 	
+	/**
+	 * Filters all task sources by a predicate.
+	 * 
+	 * @param predicate Predicate which ensures filtering. On success
+	 *        the task is left untouched, otherwise will be removed.
+	 */
 	public synchronized void filter(Predicate<Task> predicate) {
 		testForAbort();
 		taskQueues.filter(predicate);
 	}
+			
+	/**
+	 * Returns current CPU time.
+	 * 
+	 * @return Current CPU time.
+	 */
+	protected long getCpuTime() {
+		ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
+		return bean.isCurrentThreadCpuTimeSupported()? bean.getCurrentThreadCpuTime() : 0L;
+	}
 	
-	protected void testForAbort() {
+	/**
+	 * Callback method called before scheduler stops.
+	 */
+	protected void cleanupJobs() {
+	}
+	
+	/**
+	 * Callback method which is called when specific task completed execution.
+	 * 
+	 * @param task Task which completed.
+	 * @param taskDuration Time how long was task running.
+	 */
+	protected void onTaskCompletedExecution(Task task, long taskDuration) {
+	}
+	
+	/**
+	 * Method which should schedule next task if there is any.
+	 * @return New scheduled task if there is any, or null.
+	 */
+	protected abstract Task scheduleTask();
+
+	private void testForAbort() {
 		if (aborted) {
 			throw ABORTED_EXCEPTION;
 		}
@@ -174,7 +269,7 @@ public abstract class TaskQueuesScheduler {
 		}
 	}
 	
-	protected void schedulerLoop() throws InterruptedException {
+	private void schedulerLoop() throws InterruptedException {
 		while (true) {
 			waitUntilQueueAnyTask();
 
@@ -185,16 +280,7 @@ public abstract class TaskQueuesScheduler {
 		}
 	}
 	
-	protected void insertScheduledTask(Task scheduledTask) {
-		if (scheduledTask != null) {
-			synchronized (this) {
-				scheduledTasks.add(scheduledTask);
-				notifyAll();
-			}
-		}
-	}
-	
-	protected void waitUntilQueueAnyTask() throws InterruptedException {
+	private void waitUntilQueueAnyTask() throws InterruptedException {
 		synchronized (pauseMonitor) {
 			boolean queuesEmpty;
 			do {
@@ -209,17 +295,12 @@ public abstract class TaskQueuesScheduler {
 		}
 	}
 	
-	protected long getCpuTime() {
-		ThreadMXBean bean = ManagementFactory.getThreadMXBean( );
-		return bean.isCurrentThreadCpuTimeSupported()? bean.getCurrentThreadCpuTime() : 0L;
+	private void insertScheduledTask(Task scheduledTask) {
+		if (scheduledTask != null) {
+			synchronized (this) {
+				scheduledTasks.add(scheduledTask);
+				notifyAll();
+			}
+		}
 	}
-	
-	protected void cleanupJobs() {
-	}
-	
-	protected void onTaskCompletedExecution(Task task, long taskDuration) {
-	}
-	
-	protected abstract Task scheduleTask();
-
 }

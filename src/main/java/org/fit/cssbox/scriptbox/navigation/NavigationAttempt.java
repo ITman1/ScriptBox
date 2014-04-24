@@ -621,10 +621,7 @@ public abstract class NavigationAttempt {
 	private void resetDelayingLoadEventsMode() {
 		if (destinationBrowsingContext instanceof IFrameBrowsingContext) {
 			IFrameBrowsingContext context = (IFrameBrowsingContext)destinationBrowsingContext;
-
-			if (context.hasDelayingLoadEventsMode()) {
-				context.resetDelayingLoadEventsMode();
-			}
+			context.resetDelayingLoadEventsMode();
 		}
 	}
 	

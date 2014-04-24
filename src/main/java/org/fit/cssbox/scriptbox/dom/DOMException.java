@@ -20,12 +20,12 @@
 package org.fit.cssbox.scriptbox.dom;
 
 /**
- * Extends DOM4 DOMException about new state codes.
+ * Extends DOM3 DOMException about new state codes.
  * 
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://dom.spec.whatwg.org/#exception-domexception">Exception DOMException</a>
+ * @see <a href="http://www.w3.org/TR/dom/#exception-domexception">Exception DOMException</a>
  */
 public class DOMException extends org.w3c.dom.DOMException {
 

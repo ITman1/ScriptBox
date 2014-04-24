@@ -23,10 +23,19 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.w3c.dom.views.AbstractView;
 
+/**
+ * Represents pure script visible keyboard event class.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-KeyboardEvent">Keyboard event</a>
+ */
 public class KeyboardEvent extends UIEvent {
 	public static final String DOM_MODIFIER_CONTROL  = "Control";
 	public static final String DOM_MODIFIER_SHIFT    = "Shift";
@@ -46,31 +55,55 @@ public class KeyboardEvent extends UIEvent {
 	protected boolean altKey;
 	protected boolean metaKey;
 	
+	public KeyboardEvent() {}
+	
+	public KeyboardEvent(boolean isTrusted, EventTarget targetOverride) {
+		super(isTrusted, targetOverride);
+	}
+	
+	/**
+	 * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-KeyboardEvent-keyIdentifier">keyIdentifier</a>
+	 */
 	@ScriptGetter
 	public String getKeyIdentifier() {
 		return keyIdentifier;
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-KeyboardEvent-keylocation">keyLocation</a>
+	 */
 	@ScriptGetter
 	public long getKeyLocation() {
 		return keyLocation;
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-KeyboardEvent-ctrlKey">ctrlKey</a>
+	 */
 	@ScriptGetter
 	public boolean getCtrlKey() {
 		return ctrlKey;
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-KeyboardEvent-shiftKey">shiftKey</a>
+	 */
 	@ScriptGetter
 	public boolean getShiftKey() {
 		return shiftKey;
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-KeyboardEvent-altKey">altKey</a>
+	 */
 	@ScriptGetter
 	public boolean getAltKey() {
 		return altKey;
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-KeyboardEvent-metaKey">metaKey</a>
+	 */
 	@ScriptGetter
 	public boolean getMetaKey() {
 		return metaKey;

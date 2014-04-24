@@ -26,8 +26,20 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Default implementation of the task scheduler.
+ * This class represent simple scheduling using round robin algorithm featured 
+ * about dynamic removing task sources. So number of the queues is variable and not fixed.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class RoundRobinScheduler extends TaskQueuesScheduler {	
-	protected class InactivityChecker extends Timer {
+	/*
+	 * Ensures removing of the task sources if this task source is inactive for a specific time amount.
+	 */
+	private class InactivityChecker extends Timer {
 		class TaskSourceInactivityCheckTask extends TimerTask {
 		    public void run() {
 		    	performCheck();
@@ -53,7 +65,7 @@ public class RoundRobinScheduler extends TaskQueuesScheduler {
 
 	    		for (TaskSource source : taskSourcesCopy) {
 	    			if (isInactiveTaskSource(source)) {
-	    				System.out.println(System.identityHashCode(RoundRobinScheduler.this) + " - removed: " + source.toString());
+	    				//System.out.println(System.identityHashCode(RoundRobinScheduler.this) + " - removed: " + source.toString());
 	    				queuedTaskSources.remove(source);
 	    				taskSourcesExecutionTimes.get(source);
 	    				if (sourcesListPosition + 1 == queuedTaskSources.size()) {
@@ -92,7 +104,7 @@ public class RoundRobinScheduler extends TaskQueuesScheduler {
 	protected List<TaskSource> queuedTaskSources;
 	protected InactivityChecker inactivityChecker;
 	
-	RoundRobinScheduler() {
+	public RoundRobinScheduler() {
 		this.sourcesListPosition = -1;
 		this.queuedTaskSources = new ArrayList<TaskSource>();
 		this.inactivityChecker = new InactivityChecker();
@@ -104,7 +116,7 @@ public class RoundRobinScheduler extends TaskQueuesScheduler {
 		TaskSource source = task.getTaskSource();
 		synchronized (this) {
 			if (!queuedTaskSources.contains(source)) {
-				System.out.println(System.identityHashCode(RoundRobinScheduler.this) + " - added: " + source.toString());
+				//System.out.println(System.identityHashCode(RoundRobinScheduler.this) + " - added: " + source.toString());
 				queuedTaskSources.add(source);
 			} 			
 		}

@@ -19,6 +19,14 @@
 
 package org.fit.cssbox.scriptbox.events;
 
+/**
+ * Enumeration representing valid task sources.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#task-source">Task source</a>
+ */
 public enum TaskSource {
 	DOM_MANIPULATION(15),
 	USER_INTERACTION(55),

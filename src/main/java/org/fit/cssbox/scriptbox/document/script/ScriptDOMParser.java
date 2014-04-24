@@ -308,8 +308,10 @@ public class ScriptDOMParser extends DOMParser {
 					boolean isReadyToBeParserExecuted = script.isReadyToBeParserExecuted();
 					shouldWait = (hasStyleSheetBlockScripts || !isReadyToBeParserExecuted);
 					
-					// TODO: Spin the event loop until the parser's Document has no style sheet that is
-					//	   blocking scripts and the script's "ready to be parser-executed" flag is set
+					// Spin the event loop until the parser's Document has no style sheet that is
+					// blocking scripts and the script's "ready to be parser-executed" flag is set
+					// Note: We are not spinning because we are running in different thread, 
+					// so monitor is used here to solve this.
 					if (shouldWait) {
 						try {
 							_parser.wait();

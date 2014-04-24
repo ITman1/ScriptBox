@@ -26,6 +26,15 @@ import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.events.MouseEvent;
 import org.w3c.dom.views.AbstractView;
 
+/**
+ * Represents adapter class which adapts xerces mouse event implementation into
+ * implementation which is visible in scripts.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-MouseEvent">Mouse Event interface</a>
+ */
 public class AdaptedMouseEvent<MouseEventTypeImpl extends MouseEventImpl> extends AdaptedUIEvent<MouseEventTypeImpl> implements MouseEvent {
 
 	public AdaptedMouseEvent(MouseEventTypeImpl eventImpl) {

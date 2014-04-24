@@ -22,14 +22,17 @@ package org.fit.cssbox.scriptbox.document.script;
 import java.util.Collection;
 import java.util.List;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
-import org.fit.cssbox.scriptbox.dom.events.script.TrustedEvent;
+import org.fit.cssbox.scriptbox.dom.events.script.Event;
 import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
+import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.window.Window;
 
 /**
@@ -150,8 +153,43 @@ public class TheEndTask extends ParserFinishedTask {
 			
 			@Override
 			public void execute() throws TaskAbortedException, InterruptedException {
-				// TODO?: 6) Spin the event loop until there is nothing that delays the load event in the Document.
-				documentComplete();
+				// 6) Spin the event loop until there is nothing that delays the load event in the Document.
+				getEventLoop().spinForCondition(new Runnable() {
+					
+					@Override
+					public void run() {
+						Html5DocumentImpl document = getDocument();
+						BrowsingContext context = document.getBrowsingContext();
+						
+						if (context instanceof IFrameContainerBrowsingContext) {
+							IFrameContainerBrowsingContext container = (IFrameContainerBrowsingContext)context;
+
+							synchronized (container) {
+								boolean shouldWait = false;
+								do {
+									shouldWait = container.hasDelayingLoadEventsMode();
+									
+									if (shouldWait) {
+										try {
+											container.wait();
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+											throw new UnknownException(e);
+										}
+									}
+
+								} while (shouldWait);
+								
+							}
+						}
+					}
+				}, new Executable() {
+					@Override
+					public void execute() throws TaskAbortedException, InterruptedException {
+						documentComplete();
+					}
+				});
+				
 			}
 		});
 	}
@@ -168,8 +206,8 @@ public class TheEndTask extends ParserFinishedTask {
 				// 7.1) Set the current document readiness to "complete".
 				document.setDocumentReadiness(DocumentReadiness.COMPLETE);
 				
-				TrustedEvent event = new TrustedEvent();
-				event.initEvent("load", false, false, true, document);
+				Event event = new Event(true, document);
+				event.initEvent("load", false, false);
 				window.dispatchEvent(event);
 			}
 			
