@@ -20,6 +20,7 @@
 package org.fit.cssbox.scriptbox.events;
 
 import java.net.URL;
+import java.util.Collection;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
@@ -409,6 +410,20 @@ public class EventLoop {
 	public synchronized TaskQueuesScheduler getTaskScheduler() {
 		testForAbort();
 		return _taskScheduler;
+	}
+	
+	/**
+	 * Removes all tasks with associated document that belongs to top-level document family.
+	 */
+	public void removeAllTopLevelDocumentFamilyTasks() {
+		filter(TaskSource.HISTORY_TRAVERSAL, new Predicate<Task>() {
+			@Override
+			public boolean apply(Task task) {
+				BrowsingContext topLevel = _browsingUnit.getWindowBrowsingContext();
+				Collection<Html5DocumentImpl> documentFamily = topLevel.getDocumentFamily();
+				return !documentFamily.contains(task.getDocument());
+			}
+		});
 	}
 	
 	/**

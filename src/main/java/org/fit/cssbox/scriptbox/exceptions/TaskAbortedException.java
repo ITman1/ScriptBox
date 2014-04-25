@@ -19,6 +19,14 @@
 
 package org.fit.cssbox.scriptbox.exceptions;
 
+/**
+ * Exception that is thrown when some execution thread has been cancelled
+ * and we demanded it.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class TaskAbortedException extends Exception {
 
 	private static final long serialVersionUID = -9164037566180025543L;

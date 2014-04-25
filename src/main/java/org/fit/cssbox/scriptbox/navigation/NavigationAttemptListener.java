@@ -21,9 +21,40 @@ package org.fit.cssbox.scriptbox.navigation;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 
+/**
+ * Represents interface for creating callback listener above navigation attempt.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface NavigationAttemptListener {
+	/**
+	 * Called when navigation attempt cancels.
+	 * 
+	 * @param attempt Attempt that cancelled.
+	 */
 	public void onCancelled(NavigationAttempt attempt);
+	
+	/**
+	 * Called when navigation attempt matures.
+	 * 
+	 * @param attempt Attempt that matured.
+	 */
 	public void onMatured(NavigationAttempt attempt);
+	
+	/**
+	 * Called when navigation attempt completes.
+	 * 
+	 * @param attempt Attempt that completed.
+	 */
 	public void onCompleted(NavigationAttempt attempt);
+	
+	/**
+	 * Called when navigation attempt selected new effective destination browsing context.
+	 * 
+	 * @param attempt Attempt to which is related this callback.
+	 * @param context New selected effective browsing context.
+	 */
 	public void onEffectiveDestinationContextSelected(NavigationAttempt attempt, BrowsingContext context);
 }

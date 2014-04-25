@@ -29,5 +29,10 @@ import java.util.EventListener;
  * @since 0.9 - 21.4.2014
  */
 public interface BrowsingContextListener extends EventListener {
+	/**
+	 * Callback method called when any event above browsing context occurs.
+	 * 
+	 * @param event Dispatched event above browsing context.
+	 */
 	public void onBrowsingContextEvent(BrowsingContextEvent event);
 }

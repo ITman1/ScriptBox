@@ -32,6 +32,13 @@ public class BrowsingContextEvent extends EventObject {
 
 	private static final long serialVersionUID = -879099242022721983L;
 
+	/**
+	 * Browsing context events.
+	 * 
+	 * @author Radim Loskot
+	 * @version 0.9
+	 * @since 0.9 - 21.4.2014
+	 */
 	public enum EventType {
 		INSERTED,  /** New browsing context is inserted. */
 		REMOVED,   /** Browsing context is removed */

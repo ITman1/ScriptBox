@@ -43,7 +43,17 @@ import org.w3c.dom.html.HTMLBaseElement;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Class that controls navigation of the browsing contexts.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class NavigationController {
+	/*
+	 * Listener for the navigation attempt, which drives dispatching of the navigation controller events.
+	 */
 	private NavigationAttemptListener navigationAttemptListener = new NavigationAttemptListener() {
 		
 		@Override
@@ -85,7 +95,11 @@ public class NavigationController {
 	private List<NavigationAttempt> navigationAttempts;
 	private Set<NavigationControllerListener> listeners;
 
-	
+	/**
+	 * Constructs navigation controller for a given context.
+	 * 
+	 * @param context Browsing context for which should be constructed the constroller.
+	 */
 	public NavigationController(BrowsingContext context) {
 		this.context = context;
 		this.listeners = new HashSet<NavigationControllerListener>();
@@ -93,10 +107,21 @@ public class NavigationController {
 		this.navigationAttempts = new ArrayList<NavigationAttempt>();
 	}
 	
+	/**
+	 * Returns all navigation attempts running in this controller.
+	 * 
+	 * @return All navigation attempts that run in this controller.
+	 */
 	public synchronized List<NavigationAttempt> getAllNavigationAttempts() {
 		return Collections.unmodifiableList(navigationAttempts);
 	}
 	
+	/**
+	 * Navigation for reason of the updating of the passed session history entry.
+	 * 
+	 * @param entry Session history entry to be reloaded.
+	 * @return New constructed navigation attempt.
+	 */
 	public synchronized NavigationAttempt update(SessionHistoryEntry entry) {
 		UpdateNavigationAttempt attempt = new UpdateNavigationAttempt(this, entry);
 			
@@ -105,6 +130,18 @@ public class NavigationController {
 		return attempt;
 	}
 	
+	/**
+	 * Creates new navigation attempt.
+	 * 
+	 * @param sourceBrowsingContext Browsing context that initiated this navigation.
+	 * @param url URL to be navigated.
+	 * @param exceptionEnabled If exceptions should be thrown for this navigation.
+	 * @param explicitSelfNavigationOverride If should not be resolved effective destination 
+	 *        context and use browsing context of this controller.
+	 * @param replacementEnabled If current session entry should be replaced.
+	 * @return New navigation attempt.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 */
 	public synchronized NavigationAttempt navigate(BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride, boolean replacementEnabled) {
 		NewNavigationAttempt attempt = new NewNavigationAttempt(this, sourceBrowsingContext, url, exceptionEnabled, explicitSelfNavigationOverride, replacementEnabled);
 		
@@ -113,44 +150,20 @@ public class NavigationController {
 		return attempt;
 	}
 	
+	/**
+	 * Navigates to given hyperlink.
+	 * 
+	 * @param subject Element with the hyperlink.
+	 */
 	public static void followHyperlink(Element subject) {
        	followHyperlink(subject, null);
 	}
 	
-	public static boolean isLinkableElement(Element element) {
-   		if (element instanceof HTMLAnchorElement) {
-   			return true;
-   		} else if (element instanceof HTMLAreaElement) {
-   			return true;
-   		}
-   		
-   		return false;
-	}
-	
-	public static String getTargetFromElement(Element element) {
-   		String targetAttr = null;
-   		if (element instanceof HTMLAnchorElement) {
-   			targetAttr = ((HTMLAnchorElement)element).getTarget();
-   		} else if (element instanceof HTMLAreaElement) {
-   			targetAttr = ((HTMLAreaElement)element).getTarget();
-   		}
-   		
-   		return targetAttr;
-	}
-	
-	public static String getHrefFromElement(Element element) {
-   		String targetAttr = null;
-   		if (element instanceof HTMLAnchorElement) {
-   			targetAttr = ((HTMLAnchorElement)element).getHref();
-   		} else if (element instanceof HTMLAreaElement) {
-   			targetAttr = ((HTMLAreaElement)element).getHref();
-   		}
-   		
-   		return targetAttr;
-	}
-	
-	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/links.html#following-hyperlinks
+	/**
+	 * Navigates to given hyperlink with specified source browsing context.
+	 * 
+	 * @param subject Element with the hyperlink.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/links.html#following-hyperlinks">Following hyperlinks</a>
 	 */
 	public static void followHyperlink(Element subject, BrowsingContext specificSource) {
        	boolean _replace = false;
@@ -162,6 +175,7 @@ public class NavigationController {
        	
        	Html5DocumentImpl subjectDocument = (Html5DocumentImpl)_subjectDocument;
        	final BrowsingContext source = subjectDocument.getBrowsingContext();
+       	boolean _explicitSelfOverride = false;
        	BrowsingContext _target = null;
        	
        	String targetAttr = null;
@@ -172,14 +186,17 @@ public class NavigationController {
        	} else if (isLinkableElement(subject) && (targetAttr = getTargetFromElement(subject)) != null) {
        		_target = source.chooseBrowsingContextByName(targetAttr);
        		_replace = source.isBlankBrowsingContext(targetAttr);
+       		_explicitSelfOverride = source.isExplicitSelfNavigationOverride(targetAttr);
        	} else if (isLinkableElement(subject) && targetAttr == null && baseElement != null && (targetAttr = baseElement.getTarget()) != null) {
        		_target = source.chooseBrowsingContextByName(targetAttr);
        		_replace = source.isBlankBrowsingContext(targetAttr);
+       		_explicitSelfOverride = source.isExplicitSelfNavigationOverride(targetAttr);
        	} else {
        		_target = source;
        	}
        	final BrowsingContext target = _target;
        	final boolean replace = _replace;
+       	final boolean explicitSelfOverride = _explicitSelfOverride;
        	
        	String hrefString = getHrefFromElement(subject);
        	
@@ -192,7 +209,7 @@ public class NavigationController {
 				@Override
 				public void execute() throws TaskAbortedException, InterruptedException {
 					NavigationController controller = target.getNavigationController();
-					controller.navigate(source, resultUrl, false, false, replace);
+					controller.navigate(source, resultUrl, false, explicitSelfOverride, replace);
 				}
 			});
 		} catch (Exception e) {
@@ -201,6 +218,12 @@ public class NavigationController {
        	
 	}
 		
+	/**
+	 * Cancels all non matured yet navigation attempts for specific browsing context.
+	 * 
+	 * @param specifiedDesinationContext Browsing context for which to cancel the navigation attempts.
+	 * @param excludeAttempt Navigation attempt that should be excluded from the canceling.
+	 */
 	public synchronized void cancelAllNonMaturedNavigationAttempts(final BrowsingContext specifiedDesinationContext, final NavigationAttempt excludeAttempt) {
 		cancelNavigationAttempts(new Predicate<NavigationAttempt>() {
 			
@@ -221,10 +244,19 @@ public class NavigationController {
 		});
 	}
 	
+	/**
+	 * Cancels all non matured yet navigation attempts for specific browsing context.
+	 * 
+	 * @param specifiedDesinationContext Browsing context for which to cancel the navigation attempts.
+	 * @see #cancelAllNonMaturedNavigationAttempts(BrowsingContext, NavigationAttempt)
+	 */
 	public synchronized void cancelAllNonMaturedNavigationAttempts(final BrowsingContext specifiedDesinationContext) {
 		cancelAllNonMaturedNavigationAttempts(specifiedDesinationContext, null);
 	}
 	
+	/**
+	 * Cancels all navigation attempts.
+	 */
 	public synchronized void cancelAllNavigationAttempts() {
 		ImmutableList<NavigationAttempt> attempts = ImmutableList.copyOf(navigationAttempts);
 		
@@ -233,6 +265,11 @@ public class NavigationController {
 		}
 	}
 	
+	/**
+	 * Cancels all attempts that satisfies passed predicate.
+	 * 
+	 * @param attemptPredicate Predicate according to which to determine whether yes, or not to cancel navigation attempt.
+	 */
 	public synchronized void cancelNavigationAttempts(Predicate<NavigationAttempt> attemptPredicate) {
 		ImmutableList<NavigationAttempt> attempts = ImmutableList.copyOf(navigationAttempts);
 		
@@ -243,6 +280,12 @@ public class NavigationController {
 		}
 	}
 	
+	/**
+	 * Tests whether there exist any navigation attempt that satisfies given predicate.
+	 * 
+	 * @param attemptPredicate Predicate agains which to test each navigation attempts.
+	 * @return True if there exists navigation attempt that satisfies given predicate, otherwise false.
+	 */
 	public synchronized boolean existsNavigationAttempt(Predicate<NavigationAttempt> attemptPredicate) {
 
 		for (NavigationAttempt attempt : navigationAttempts) {
@@ -254,14 +297,29 @@ public class NavigationController {
 		return false;
 	}
 	
+	/**
+	 * Returns associated browsing context.
+	 * 
+	 * @return Associated browsing context.
+	 */
 	public BrowsingContext getBrowsingContext() {
 		return context;
 	}
 	
+	/**
+	 * Registers event listener to this navigation controller.
+	 * 
+	 * @param listener New event listener to be registered.
+	 */
 	public void addListener(NavigationControllerListener listener) {
 		listeners.add(listener);
 	}
 	
+	/**
+	 * Removes event listener to this navigation controller.
+	 * 
+	 * @param listener Event listener to be removed.
+	 */
 	public void removeListener(NavigationControllerListener listener) {
 		listeners.remove(listener);
 	}
@@ -281,5 +339,55 @@ public class NavigationController {
 
 	private synchronized void removeNavigationAttempt(NavigationAttempt attempt) {
 		navigationAttempts.remove(attempt);
+	}
+	
+	/**
+	 * Tests if is passed Element an element which may be followed.
+	 * 
+	 * @param element Element to be tested.
+	 * @return True, if we can follow passed element.
+	 */
+	private static boolean isLinkableElement(Element element) {
+   		if (element instanceof HTMLAnchorElement) {
+   			return true;
+   		} else if (element instanceof HTMLAreaElement) {
+   			return true;
+   		}
+   		
+   		return false;
+	}
+	
+	/**
+	 * Returns target attribute from the linkable element.
+	 * 
+	 * @param element Linkable element.
+	 * @return Target attribute.
+	 */
+	private static String getTargetFromElement(Element element) {
+   		String targetAttr = null;
+   		if (element instanceof HTMLAnchorElement) {
+   			targetAttr = ((HTMLAnchorElement)element).getTarget();
+   		} else if (element instanceof HTMLAreaElement) {
+   			targetAttr = ((HTMLAreaElement)element).getTarget();
+   		}
+   		
+   		return targetAttr;
+	}
+	
+	/**
+	 * Returns href attribute from the linkable element.
+	 * 
+	 * @param element Linkable element.
+	 * @return Href attribute.
+	 */
+	private static String getHrefFromElement(Element element) {
+   		String targetAttr = null;
+   		if (element instanceof HTMLAnchorElement) {
+   			targetAttr = ((HTMLAnchorElement)element).getHref();
+   		} else if (element instanceof HTMLAreaElement) {
+   			targetAttr = ((HTMLAreaElement)element).getHref();
+   		}
+   		
+   		return targetAttr;
 	}
 }

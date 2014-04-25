@@ -693,6 +693,29 @@ public class BrowsingContext {
 	}
 	
 	/**
+	 * Tests whether should be used for navigation the explicit self-navigation override flag.
+	 * 
+	 * @param name Browsing context name which is tested.
+	 * @return True if should be used explicit self-navigation override flag form the navigation.
+	 */
+	public boolean isExplicitSelfNavigationOverride(String name) {
+		boolean result = false;
+		if (name == null) {
+			result = true;
+		} else if (name.isEmpty()) {
+			result = true;
+		} else if (name.equalsIgnoreCase(SELF_KEYWORD)) {
+			result = true;
+		} else if (name.equalsIgnoreCase(PARENT_KEYWORD)) {
+		} else if (name.equalsIgnoreCase(TOP_KEYWORD)) {
+		} else if (!name.equalsIgnoreCase(BLANK_KEYWORD) && (getFirstFamiliar(name) != null)) {
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * Tests whether the passed browsing context name or keyword marks the blank browsing context.
 	 * 
 	 * @param name Browsing context name or keyword which is tested.

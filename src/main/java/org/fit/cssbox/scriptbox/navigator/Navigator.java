@@ -19,6 +19,19 @@
 
 package org.fit.cssbox.scriptbox.navigator;
 
+/*
+ * TODO: This class should be implemented.
+ */
+/**
+ * Class representing the identity and state of the user agent, and allows 
+ * Web pages to register themselves as potential protocol and content handlers.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#navigator">Navigator</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class Navigator {
 
 }

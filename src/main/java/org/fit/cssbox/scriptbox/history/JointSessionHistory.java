@@ -38,10 +38,19 @@ import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.history.JointSessionHistoryEvent.EventType;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 
-/*
- * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#joint-session-history
+/**
+ * Class grouping history entries from all active document session history objects.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#joint-session-history">Joint session history</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
  */
 public class JointSessionHistory {
+	/*
+	 * Compares session history entries by its visited time.
+	 */
 	private class VisitedComparator implements Comparator<SessionHistoryEntry> {
 	    public int compare(SessionHistoryEntry e1, SessionHistoryEntry e2) {
 	        if (e1.getVisited().before(e2.getVisited())) {
@@ -54,6 +63,9 @@ public class JointSessionHistory {
 	    }
 	}
 	
+	/*
+	 * History traversal task which ensures asynchronous traversing of the history.
+	 */
 	private class HistoryTraversalTask extends Task {
 		private SessionHistoryEntry _specifiedEntry;
 		private BrowsingContext _specifiedBrowsingContext;
@@ -94,6 +106,9 @@ public class JointSessionHistory {
 		}
 	}
 	
+	/*
+	 * Listener which ensures updating of the joint session history.
+	 */
 	private SessionHistoryListener _historyListener = new SessionHistoryListener() {
 		@Override
 		public void onHistoryEvent(SessionHistoryEvent event) {			
@@ -115,6 +130,9 @@ public class JointSessionHistory {
 		}
 	};
 	
+	/*
+	 * Listener which ensures updating of the joint session history.
+	 */
 	private BrowsingContextListener _contextListener = new BrowsingContextListener() {
 		
 		@Override
@@ -146,6 +164,11 @@ public class JointSessionHistory {
 	private ArrayList<SessionHistoryEntry> _historyEntries;
 	private Set<JointSessionHistoryListener> listeners;
 	
+	/**
+	 * Constructs joint session history for a given browsing unit.
+	 * 
+	 * @param browsingUnit Browsing unit that owns this joint session history.
+	 */
 	public JointSessionHistory(BrowsingUnit browsingUnit) {
 		_browsingUnit = browsingUnit;
 		
@@ -161,28 +184,57 @@ public class JointSessionHistory {
 		refresh();
 	}
 	
+	/**
+	 * Registers event listener to this joint session history.
+	 * 
+	 * @param listener New event listener to be registered.
+	 */
 	public void addListener(JointSessionHistoryListener listener) {
 		listeners.add(listener);
 	}
 	
+	/**
+	 * Removes event listener to this joint session history.
+	 * 
+	 * @param listener Event listener to be removed.
+	 */
 	public void removeListener(JointSessionHistoryListener listener) {
 		listeners.remove(listener);
 	}
 	
+	/**
+	 * Returns current entry of this session history entry.
+	 * 
+	 * @return Current entry of this session history entry.
+	 */
 	public SessionHistoryEntry getCurrentEntry() {
 		return currentJointSessionHistoryEntry;
 	}
 	
+	/**
+	 * Returns the position inside this joint session history.
+	 * 
+	 * @return Position inside this joint session history.
+	 */
 	public int getPosition() {
 		return _currentJointSessionHistoryEntryPosition;
 	}
 	
+	/**
+	 * Returns the number of entries in the joint session history.
+	 * 
+	 * @return Number of entries in the joint session history.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-length">History length</a>
+	 */
 	public int getLength() {
 		return _historyEntries.size();
 	}
 	
-	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history-by-a-delta
+	/**
+	 * Goes back or forward the specified number of steps in this joint session history.
+	 * 
+	 * @param delta Number of traversal steps.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history-by-a-delta">Traverse the history by a delta</a>
 	 */
 	public void traverse(int delta) {
 		int destinationIndex = _currentJointSessionHistoryEntryPosition + delta;
@@ -206,27 +258,10 @@ public class JointSessionHistory {
 		_browsingUnit.queueTask(new HistoryTraversalTask(specifiedEntry, specifiedBrowsingContext));
 	}
 	
-	private Set<SessionHistory> getAllSessionHistories() {
-		Set<SessionHistory> entries = new HashSet<SessionHistory>();
-		
-		BrowsingContext windowContext = _browsingUnit.getWindowBrowsingContext();
-		SessionHistory windowSessionHistory = windowContext.getSesstionHistory();
-		
-		if (windowSessionHistory != null) {
-			entries.add(windowSessionHistory);
-		}
-				
-		Collection<BrowsingContext> nestedContexts = windowContext.getDescendantContexts();
-		for (BrowsingContext context : nestedContexts) {
-			SessionHistory sessionHistory = context.getSesstionHistory();
-			if (sessionHistory != null) {
-				entries.add(sessionHistory);
-			}
-		}
-		
-		return entries;
-	}
-	
+	/**
+	 * Refreshes this joint session history. This should be called if we change any 
+	 * browsing context, or history session without firing corresponding events.
+	 */
 	public void refresh() {
 		int wasPosition = _currentJointSessionHistoryEntryPosition;
 		int wasLength = _historyEntries.size();
@@ -276,7 +311,28 @@ public class JointSessionHistory {
 		}
 	}
 	
-	protected void fireHistoryTravered(SessionHistoryEntry fromEntry, SessionHistoryEntry toEntry) {
+	private Set<SessionHistory> getAllSessionHistories() {
+		Set<SessionHistory> entries = new HashSet<SessionHistory>();
+		
+		BrowsingContext windowContext = _browsingUnit.getWindowBrowsingContext();
+		SessionHistory windowSessionHistory = windowContext.getSesstionHistory();
+		
+		if (windowSessionHistory != null) {
+			entries.add(windowSessionHistory);
+		}
+				
+		Collection<BrowsingContext> nestedContexts = windowContext.getDescendantContexts();
+		for (BrowsingContext context : nestedContexts) {
+			SessionHistory sessionHistory = context.getSesstionHistory();
+			if (sessionHistory != null) {
+				entries.add(sessionHistory);
+			}
+		}
+		
+		return entries;
+	}
+	
+	private void fireHistoryTravered(SessionHistoryEntry fromEntry, SessionHistoryEntry toEntry) {
 		JointSessionHistoryEvent event = new JointSessionHistoryEvent(this, JointSessionHistoryEvent.EventType.TRAVERSED, toEntry, fromEntry);
 		Set<JointSessionHistoryListener> listenersCopy = new HashSet<JointSessionHistoryListener>(listeners);
 		
@@ -285,7 +341,7 @@ public class JointSessionHistory {
 		}
 	}
 	
-	protected void fireJointSessionHistoryEvent(EventType eventType) {
+	private void fireJointSessionHistoryEvent(EventType eventType) {
 		JointSessionHistoryEvent event = new JointSessionHistoryEvent(this, eventType, null, null);
 		Set<JointSessionHistoryListener> listenersCopy = new HashSet<JointSessionHistoryListener>(listeners);
 		

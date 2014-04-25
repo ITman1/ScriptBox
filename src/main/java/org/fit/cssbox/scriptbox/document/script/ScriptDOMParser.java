@@ -200,7 +200,9 @@ public class ScriptDOMParser extends DOMParser {
 	}
 
 	
-	/* FIXME: Simplified, does not follow the specification. */
+	/* FIXME: Simplified, does not follow the specification.
+	 * See for completing of this: http://www.w3.org/html/wg/drafts/html/master/embedded-content.html#the-iframe-element
+	 */
 	/**
 	 * Processes end of the HTML iframe tag.
 	 * 
@@ -221,7 +223,12 @@ public class ScriptDOMParser extends DOMParser {
 				URL newUrl;
 				try {
 					newUrl = new URL(documentImpl.getBaseAddress(), src);
-					controller.navigate(context, newUrl, false, false, true);
+					/*
+					 * Any navigation required of the user agent in the process the iframe attributes 
+					 * algorithm must be completed as an explicit self-navigation override and with 
+					 * the iframe element's document's browsing context as the source browsing context
+					 */
+					controller.navigate(context, newUrl, false, true, true);
 				} catch (MalformedURLException e) {
 					// TODO: Throw exception?
 					e.printStackTrace();

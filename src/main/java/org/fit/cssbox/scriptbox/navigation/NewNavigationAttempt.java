@@ -23,8 +23,27 @@ import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 
+/**
+ * Class representing navigation attempt for navigating new resource.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class NewNavigationAttempt extends NavigationAttempt {
 
+	/**
+	 * Creates new navigation attempt.
+	 * 
+	 * @param navigationController Navigation controller which owns this attempt.
+	 * @param sourceBrowsingContext Browsing context that initiated this navigation.
+	 * @param url URL to be navigated.
+	 * @param exceptionEnabled If exceptions should be thrown for this navigation.
+	 * @param explicitSelfNavigationOverride If should not be resolved effective destination 
+	 *        context and use browsing context of this controller.
+	 * @param replacementEnabled If current session entry should be replaced.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 */
 	public NewNavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride, boolean replacementEnabled) {
 		super(navigationController, sourceBrowsingContext, url, exceptionEnabled, explicitSelfNavigationOverride, replacementEnabled);
 	}

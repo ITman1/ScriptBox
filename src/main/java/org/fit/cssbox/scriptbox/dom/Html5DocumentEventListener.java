@@ -11,5 +11,10 @@ import java.util.EventListener;
  * @see Html5DocumentImpl
  */
 public interface Html5DocumentEventListener extends EventListener {
+	/**
+	 * Callback method called when any event above document occurs.
+	 * 
+	 * @param event Dispatched event above document.
+	 */
 	public void onDocumentEvent(Html5DocumentEvent event);
 }

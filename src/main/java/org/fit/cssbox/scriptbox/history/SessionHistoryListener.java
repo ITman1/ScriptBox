@@ -21,6 +21,18 @@ package org.fit.cssbox.scriptbox.history;
 
 import java.util.EventListener;
 
+/**
+ * Represents interface for creating event listeners above session histories.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface SessionHistoryListener extends EventListener {
+	/**
+	 * Callback method called when any event above session history.
+	 * 
+	 * @param event Dispatched event session history.
+	 */
 	public void onHistoryEvent(SessionHistoryEvent event);
 }

@@ -30,14 +30,27 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
-
+/**
+ * Base class for all registry/managers which collects all {@link MimeContentFactoryBase}.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFactoryBase<? extends MimeContent>, MimeContent> {
-	protected Map<String, Set<MimeContentFactory>> explicitRegisteredFactories;
+	protected Map<String, Set<MimeContentFactory>> registeredFactories;
 	
 	protected MimeContentRegistryBase() {
-		explicitRegisteredFactories = new HashMap<String, Set<MimeContentFactory>>();
+		registeredFactories = new HashMap<String, Set<MimeContentFactory>>();
 	}
 	
+	/**
+	 * Registers new MIME content factory.
+	 * 
+	 * @param factoryClass Class of the MIME content factory
+	 * @param args Arguments for the construction the given MIME content factory.
+	 * @return Constructed and registered MIME content factory on success, otherwise null.
+	 */
 	public MimeContentFactory registerMimeContentFactory(Class<? extends MimeContentFactory> factoryClass, Object ...args) {	
 		MimeContentFactory factory = null;
 		
@@ -52,23 +65,28 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 			List<String> mimeTypes = factory.getExplicitlySupportedMimeTypes();
 			
 			for (String mimeType : mimeTypes) {
-				Set<MimeContentFactory> factories = explicitRegisteredFactories.get(mimeType);
+				Set<MimeContentFactory> factories = registeredFactories.get(mimeType);
 				
 				if (factories == null) {
 					factories = new HashSet<MimeContentFactory>();
 				}
 				
 				factories.add(factory);
-				explicitRegisteredFactories.put(mimeType, factories);		
+				registeredFactories.put(mimeType, factories);		
 			}
 		}
 		
 		return factory;
 	}
 	
+	/**
+	 * Unregisters given factory from this registry.
+	 * 
+	 * @param factoryClass Class of the MIME content factory which should be unregistered.
+	 */
 	public void unregisterMimeContentFactory(Class<? extends MimeContentFactoryBase<?>> factoryClass) {
 		synchronized (this) {
-			Set<Entry<String, Set<MimeContentFactory>>> factoriesEntrySet = explicitRegisteredFactories.entrySet();
+			Set<Entry<String, Set<MimeContentFactory>>> factoriesEntrySet = registeredFactories.entrySet();
 			
 			List<String> mimeTypesToRemove = new ArrayList<String>();
 			for (Entry<String, Set<MimeContentFactory>> entry : factoriesEntrySet) {
@@ -90,10 +108,15 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 		}
 	}
 	
+	/**
+	 * Returns all registered MIME content factories.
+	 * 
+	 * @return All registered MIME content factories.
+	 */
 	public Set<MimeContentFactory> getAllMimeContentFactories() {
 		Set<MimeContentFactory> factories = new HashSet<MimeContentFactory>();
 		
-		for (Map.Entry<String, Set<MimeContentFactory>> registeredEntry : explicitRegisteredFactories.entrySet()) {
+		for (Map.Entry<String, Set<MimeContentFactory>> registeredEntry : registeredFactories.entrySet()) {
 			Set<MimeContentFactory> entryFactories = registeredEntry.getValue();
 			factories.addAll(entryFactories);
 		}
@@ -101,18 +124,37 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 		return factories;
 	}
 	
+	/**
+	 * Returns content for given MIME type and arguments.
+	 * 
+	 * @param mimeType MIME type of which content should be constructed.
+	 * @param args Arguments for construction content of the given MIME type.
+	 * @return New constructed content, or null on failure.
+	 */
 	public MimeContent getContent(String mimeType, Object ...args) {
 		MimeContentFactory factory = getFirstMimeContentFactory(mimeType);
 
 		return (factory == null)? null : factory.getContent(args);
 	}
 	
+	/**
+	 * Returns first registered MIME content factory for a given MIME type.
+	 * 
+	 * @param mimeType MIME content type of which should returned the MIME content factory.
+	 * @return First MIME content factory for a given MIME type.
+	 */
 	public MimeContentFactory getFirstMimeContentFactory(String mimeType) {
 		Set<MimeContentFactory> factories = getMimeContentFactories(mimeType);
 		
 		return (factories.isEmpty())? null : factories.iterator().next();
 	}
 	
+	/**
+	 * Returns all registered MIME content factories for a given MIME type.
+	 * 
+	 * @param mimeType MIME content type of which should returned the MIME content factories.
+	 * @return All registered MIME content factories for a given MIME type.
+	 */
 	public Set<MimeContentFactory> getMimeContentFactories(String mimeType) {
 		Set<MimeContentFactory> matchedFactories = new HashSet<MimeContentFactory>();
 		Set<MimeContentFactory> explicitFactories = getExplicitMimeContentFactories(mimeType);
@@ -124,16 +166,28 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 		return matchedFactories;
 	}
 	
+	/**
+	 * Returns all registered MIME content factories that supports explicitly given MIME type.
+	 * 
+	 * @param mimeType MIME content type of which should returned the MIME content factories.
+	 * @return All registered MIME content factories that supports explicitly given MIME type.
+	 */
 	public Set<MimeContentFactory> getExplicitMimeContentFactories(String mimeType) {
-		Set<MimeContentFactory> factories = explicitRegisteredFactories.get(mimeType);
+		Set<MimeContentFactory> factories = registeredFactories.get(mimeType);
 		
 		return (factories == null)? new HashSet<MimeContentFactory>() : Collections.unmodifiableSet(factories);
 	}
 	
+	/**
+	 * Returns all registered MIME content factories that supports implicitly given MIME type.
+	 * 
+	 * @param mimeType MIME content type of which should returned the MIME content factories.
+	 * @return All registered MIME content factories that supports implicitly given MIME type.
+	 */
 	public Set<MimeContentFactory> getImplicitMimeContentFactories(String mimeType) {
 		Set<MimeContentFactory> matchedFactories = new HashSet<MimeContentFactory>();
 		synchronized (this) {
-			Set<Entry<String, Set<MimeContentFactory>>> factoriesEntrySet = explicitRegisteredFactories.entrySet();
+			Set<Entry<String, Set<MimeContentFactory>>> factoriesEntrySet = registeredFactories.entrySet();
 			
 			for (Entry<String, Set<MimeContentFactory>> entry : factoriesEntrySet) {
 				Set<MimeContentFactory> factories = entry.getValue();
@@ -149,17 +203,35 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 		}
 	}
 	
+	/**
+	 * Tests whether is given MIME type supported.
+	 * 
+	 * @param mimeType MIME type to be tested.
+	 * @return True if is given MIME type supported, otherwise false.
+	 */
 	public boolean isSupported(String mimeType) {
 		return isExplicitlySupported(mimeType) || isImplicitlySupported(mimeType);
 	}
 	
+	/**
+	 * Tests whether is given MIME type explicitly supported.
+	 * 
+	 * @param mimeType MIME type to be tested.
+	 * @return True if is given MIME type explicitly supported, otherwise false.
+	 */
 	public boolean isExplicitlySupported(String mimeType) {
-		return explicitRegisteredFactories.containsKey(mimeType);
+		return registeredFactories.containsKey(mimeType);
 	}
 	
+	/**
+	 * Tests whether is given MIME type implicitly supported.
+	 * 
+	 * @param mimeType MIME type to be tested.
+	 * @return True if is given MIME type implicitly supported, otherwise false.
+	 */
 	public boolean isImplicitlySupported(String mimeType) {
 		synchronized (this) {
-			Set<Entry<String, Set<MimeContentFactory>>> factoriesEntrySet = explicitRegisteredFactories.entrySet();
+			Set<Entry<String, Set<MimeContentFactory>>> factoriesEntrySet = registeredFactories.entrySet();
 			
 			for (Entry<String, Set<MimeContentFactory>> entry : factoriesEntrySet) {
 				Set<MimeContentFactory> factories = entry.getValue();
@@ -175,6 +247,13 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 		}
 	}
 	
+	/**
+	 * Constructs MIME content factory from a given class and constructor arguments.
+	 * 
+	 * @param factoryClass MIME content factory class of which should be constructed the instance.
+	 * @param args Constructor arguments for factory.
+	 * @return Constructed MIME content factory on success, otherwise null.
+	 */
 	protected MimeContentFactory instantizeMimeContentFactory(Class<? extends MimeContentFactory> factoryClass, Object ...args) {
 		MimeContentFactory mimeContentFactory = null;
 		

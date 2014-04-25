@@ -46,8 +46,21 @@ import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 
 import com.google.common.base.Predicate;
 
+/**
+ * Abstract class for all navigations that follows navigation algorithm
+ * and fulfills standard navigation attempts. 
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class NavigationAttempt {
-	protected class AsyncPerformThread extends Thread {
+	/*
+	 * Asynchronous execution of the navigation which is performed from the step 16)
+	 */
+	private class AsyncPerformThread extends Thread {
 		@Override
 		public void run() {
 			// 17) Let gone async be true.
@@ -71,7 +84,10 @@ public abstract class NavigationAttempt {
 		}
 	};
 	
-	protected final static NavigationAttemptListener EMPTY_NAVIGATION_ATTEMPT_LISTENER = new NavigationAttemptListener() {
+	/*
+	 * Empty navigation attempt listener.
+	 */
+	private final static NavigationAttemptListener EMPTY_NAVIGATION_ATTEMPT_LISTENER = new NavigationAttemptListener() {
 		
 		@Override
 		public void onMatured(NavigationAttempt attempt) {}
@@ -86,7 +102,10 @@ public abstract class NavigationAttempt {
 		public void onCompleted(NavigationAttempt attempt) {}
 	};
 	
-	protected final Predicate<NavigationAttempt> nonEqualOriginPredicate = new Predicate<NavigationAttempt>() {
+	/*
+	 * Predicate which sucees for all attempts with the same URL origin. 
+	 */
+	private final Predicate<NavigationAttempt> nonEqualOriginPredicate = new Predicate<NavigationAttempt>() {
 		
 		@Override
 		public boolean apply(NavigationAttempt attempt) {
@@ -101,28 +120,41 @@ public abstract class NavigationAttempt {
 		}
 	};
 	
-	protected boolean completed;
-	protected boolean matured;
-	protected boolean cancelled;
-	protected AsyncPerformThread asyncPerformThread;
 	protected NavigationController navigationController;
-	protected BrowsingContext sourceBrowsingContext;
+	protected URL url;
 	protected boolean exceptionEnabled;
 	protected boolean explicitSelfNavigationOverride;
 	protected boolean replacementEnabled;
-	protected URL url;
-	protected boolean isUnloadRunning;
-	
-	protected boolean runningUnloadDocument;
 
+	protected BrowsingContext sourceBrowsingContext;
 	protected BrowsingContext destinationBrowsingContext;
-	protected boolean goneAsync;
-	protected List<Fetch> fetches;
-	protected FetchRegistry fetchRegistry;
-	protected ContentHandlerRegistry resourceHandlerRegistry;
-	protected Resource resource;
-	protected NavigationAttemptListener listener;
 	
+	protected boolean completed;
+	protected boolean matured;
+	protected boolean cancelled;
+		
+	private AsyncPerformThread asyncPerformThread;
+	private boolean isUnloadRunning;
+	private boolean runningUnloadDocument;
+	private boolean goneAsync;
+	private List<Fetch> fetches;
+	private FetchRegistry fetchRegistry;
+	private ContentHandlerRegistry resourceHandlerRegistry;
+	private Resource resource;
+	private NavigationAttemptListener listener;
+	
+	/**
+	 * Creates new navigation attempt.
+	 * 
+	 * @param navigationController Navigation controller which owns this attempt.
+	 * @param sourceBrowsingContext Browsing context that initiated this navigation.
+	 * @param url URL to be navigated.
+	 * @param exceptionEnabled If exceptions should be thrown for this navigation.
+	 * @param explicitSelfNavigationOverride If should not be resolved effective destination 
+	 *        context and use browsing context of this controller.
+	 * @param replacementEnabled If current session entry should be replaced.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 */
 	public NavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride, boolean replacementEnabled) {
 		this.navigationController = navigationController;
 		this.sourceBrowsingContext = sourceBrowsingContext;
@@ -136,34 +168,74 @@ public abstract class NavigationAttempt {
 		this.listener = EMPTY_NAVIGATION_ATTEMPT_LISTENER;
 	}
 	
+	/**
+	 * Returns associated navigation controller.
+	 * 
+	 * @return Associated navigation controller.
+	 */
 	public NavigationController getNavigationController() {
 		return navigationController;
 	}
 	
+	/**
+	 * Returns destination browsing context.
+	 * 
+	 * @return Destination browsing context of this navigation attempt.
+	 */
 	public BrowsingContext getDestinationBrowsingContext() {
 		return destinationBrowsingContext;
 	}
 	
+	/**
+	 * Returns associated source browsing context.
+	 * 
+	 * @return Associated source browsing context.
+	 */
 	public BrowsingContext getSourceBrowsingContext() {
 		return sourceBrowsingContext;
 	}
 	
+	/**
+	 * Tests whether has exception enabled.
+	 * 
+	 * @return True if has this navigation attempt enabled exceptions.
+	 */
 	public boolean hasExceptionEnabled() {
 		return exceptionEnabled;
 	}
 	
+	/**
+	 * Tests whether has this navigation attempt set explicit self-navigation override.
+	 * 
+	 * @return True if has this navigation attempt set explicit self-navigation override.
+	 */
 	public boolean hasExplicitSelfNavigationOverride() {
 		return explicitSelfNavigationOverride;
 	}
 	
+	/**
+	 * Tests whether has this navigation attempt enabled replacement.
+	 * 
+	 * @return True if has this navigation attempt enabled replacement.
+	 */
 	public boolean hasReplacementEnabled() {
 		return replacementEnabled;
 	}
 	
+	/**
+	 * Tests whether is this navigation attempt completed.
+	 * 
+	 * @return True if is this navigation attempt completed, otherwise false.
+	 */
 	public synchronized boolean isCompleted() {
 		return completed;
 	}
 	
+	/**
+	 * Unloads document.
+	 * 
+	 * @param document Document to be unloaded.
+	 */
 	public void unloadDocument(Html5DocumentImpl document) {
 		synchronized (this) {
 			isUnloadRunning = true;
@@ -176,10 +248,18 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
+	/**
+	 * Tests if unloading is running.
+	 * 
+	 * @return True if navigation attempt runs unloading
+	 */
 	public synchronized boolean isUnloadRunning() {
 		return isUnloadRunning;
 	}
 	
+	/**
+	 * Completes this navigation attempt.
+	 */
 	public void complete() {
 		boolean wasCompleted = false;
 		boolean isCancelled = false;
@@ -194,10 +274,18 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
+	/**
+	 * Tests whether is this navigation attempt matured.
+	 * 
+	 * @return True if is this navigation attempt matured, otherwise false.
+	 */
 	public synchronized boolean isMatured() {
 		return matured;
 	}
 	
+	/*
+	 * Matures this navigation attempt.
+	 */
 	public void mature() {
 		boolean wasMatured = false;
 		boolean isCancelled = false;
@@ -212,18 +300,36 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
+	/**
+	 * Returns navigated resource.
+	 * 
+	 * @return navigated resource.
+	 */
 	public synchronized Resource getResource() {
 		return resource;
 	}
 	
+	/**
+	 * Returns URL being navigated.
+	 * 
+	 * @return URL being navigated.
+	 */
 	public synchronized URL getURL() {
 		return url;
 	}
 	
+	/**
+	 * Tests whether is this navigation attempt cancelled.
+	 * 
+	 * @return True if is this navigation attempt cancelled, otherwise false.
+	 */
 	public synchronized boolean isCancelled() {
 		return cancelled;
 	}
 	
+	/**
+	 * Cancels this navigation attempt.
+	 */
 	public synchronized void cancel() {
 		if (!cancelled && !completed) {
 			cancelled = true;
@@ -245,18 +351,29 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
+	/**
+	 * Returns content type of the navigation attempt.
+	 * 
+	 * @return Content type of the navigation attempt.
+	 */
 	public synchronized String getContentType() {
 		return (resource != null)? resource.getContentType() : null;
 	}
 	
 	// Long duration process - no synchronized
-	
+	/**
+	 * Runs navigation attempt.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 */
 	public void perform() {
 		perform(EMPTY_NAVIGATION_ATTEMPT_LISTENER);
 	}
 	
-	/*
-	 * See: http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate
+	/**
+	 * Runs navigation attempt.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
 	 */
 	public void perform(NavigationAttemptListener listener) {
 		if (cancelled) {
@@ -282,7 +399,9 @@ public abstract class NavigationAttempt {
 		}
 		
 		// 3) Selects effective destination browsing context that will be actually used for the navigation
-		destinationBrowsingContext = selectEffectiveDestinationContext(destinationBrowsingContext);
+		if (!explicitSelfNavigationOverride) {
+			destinationBrowsingContext = selectEffectiveDestinationContext(destinationBrowsingContext);
+		}
 		onEffectiveDestinationContextSelected(destinationBrowsingContext);
 
 			
@@ -319,7 +438,7 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
-	protected void performFromFragmentIdentifiers() throws InterruptedException {
+	private void performFromFragmentIdentifiers() throws InterruptedException {
 		testForInterruption();
 		
 		// 8) Apply the URL parser for new and old resource and if only fragment is different then navigate to fragment only
@@ -412,7 +531,7 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
-	protected void performFromHandleRedirects() throws InterruptedException {
+	private void performFromHandleRedirects() throws InterruptedException {
 		testForInterruption();
 		
 		// 18) Handle redirects and abort on different origins
@@ -455,7 +574,7 @@ public abstract class NavigationAttempt {
 		performFromResourceHandling();
 	}
 	
-	protected void performFromResourceHandling() throws InterruptedException {
+	private void performFromResourceHandling() throws InterruptedException {
 		testForInterruption();
 		
 		// 22) Handle resources that are not valid (e.g. do not contain metadata and the content) and attachments
@@ -476,7 +595,7 @@ public abstract class NavigationAttempt {
 		
 		synchronized (this) {
 			if (resource.isAttachment()) {
-				downloadResource();
+				downloadResource(resource);
 			}
 		}
 		
@@ -501,12 +620,14 @@ public abstract class NavigationAttempt {
 			return;
 		} else {
 			// 26) If unknown type then download the resource
-			downloadResource();
+			downloadResource(resource);
 		}
 	}
 	
-	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#scroll-to-fragid
+	/**
+	 * Navigates to fragment identifier.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#scroll-to-fragid">Gragment identifier</a>
 	 */
 	protected void navigateToFragmentIdentifier(String fragment) {
 		SessionHistory sessionHistory = destinationBrowsingContext.getSesstionHistory();
@@ -518,7 +639,7 @@ public abstract class NavigationAttempt {
 		
 		// 2) Remove any tasks queued by Document family object
 		
-		sessionHistory.removeAllTopLevelDocumentFamilyTasks();
+		destinationBrowsingContext.getEventLoop().removeAllTopLevelDocumentFamilyTasks();
 		
 		// 3) Append a new entry at the end of the History object 
 		
@@ -536,13 +657,20 @@ public abstract class NavigationAttempt {
 		sessionHistory.traverseHistory(newEntry, false, true);
 	}
 	
-	/*
-	 * TODO: See http://www.w3.org/html/wg/drafts/html/CR/links.html#as-a-download
+	/**
+	 * Downloads resource.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/links.html#as-a-download">Download</a>
 	 */
-	protected void downloadResource() {
+	protected void downloadResource(Resource resource) {
 		
 	}
 	
+	/**
+	 * Obtains resource from given URL.
+	 * 
+	 * @return Obtained resource.
+	 */
 	protected Resource obtainResource() {
 		Fetch fetch = fetchRegistry.getFetch(sourceBrowsingContext, destinationBrowsingContext, url, true, true, true, null);
 		
@@ -576,6 +704,11 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
+	/**
+	 * Determines whether should be navigation treated as fragment navigation.
+	 * 
+	 * @return True whether should not be resource loaded and be only fragment navigated. 
+	 */
 	protected boolean shouldBeFragmentNavigated() {
 		Html5DocumentImpl currentDocument = destinationBrowsingContext.getActiveDocument();
 		URL currentURL = currentDocument.getAddress();
@@ -589,6 +722,11 @@ public abstract class NavigationAttempt {
 		return false;
 	}
 	
+	/**
+	 * Enables to cancel asynchronous thread from the thread itself.
+	 * 
+	 * @throws InterruptedException Thrown if we are interrupting asynchronous thread itself. 
+	 */
 	protected synchronized void asyncCancel() throws InterruptedException {
 		if (!cancelled && !completed) {
 			if (asyncPerformThread == Thread.currentThread()) {
@@ -599,23 +737,68 @@ public abstract class NavigationAttempt {
 		}
 	}
 	
+	/**
+	 * Called when new effective destination context was selected. 
+	 * 
+	 * @param destinationBrowsingContext New selected destination browsing context.
+	 */
 	protected void onEffectiveDestinationContextSelected(BrowsingContext destinationBrowsingContext) {
 		fireEffectiveDestinationContextSelected(destinationBrowsingContext);
 	}
 	
+	/**
+	 * Called when navigation completed.
+	 */
 	protected void onCompleted() {
 		resetDelayingLoadEventsMode();
 		fireCompleted();
 	}
 	
+	/**
+	 * Called when navigation matured.
+	 */
 	protected void onMatured() {
 		resetDelayingLoadEventsMode();
 		fireMatured();
 	}
 	
+	/**
+	 * Called when navigation cancelled.
+	 */
 	protected void onCancelled() {
 		resetDelayingLoadEventsMode();
 		fireCancelled();
+	}
+	
+	/**
+	 * Tests for interruption.
+	 * 
+	 * @throws InterruptedException Exception which is thrown, it asynchronous thread was interrupted.
+	 */
+	protected synchronized void testForInterruption() throws InterruptedException {
+		if (asyncPerformThread != null && asyncPerformThread.isInterrupted()) {
+			throw new InterruptedException();
+		}
+	}
+	
+	/**
+	 * Selects effective destination context.
+	 * 
+	 * @param navigatedContext Currently set navigation context.
+	 * @return New effective navigation context.
+	 */
+	protected BrowsingContext selectEffectiveDestinationContext(BrowsingContext navigatedContext) {
+		if (sourceBrowsingContext == navigatedContext && hasSeamlessFlag(navigatedContext)) {
+			while (navigatedContext.getCreatorContext() != null) {
+				navigatedContext = navigatedContext.getCreatorContext();
+				
+				if (hasSeamlessFlag(navigatedContext)) {
+					break;
+				}
+			}
+		}
+		
+		return navigatedContext;
 	}
 	
 	private void resetDelayingLoadEventsMode() {
@@ -627,6 +810,19 @@ public abstract class NavigationAttempt {
 	
 	private void fireEffectiveDestinationContextSelected(BrowsingContext destinationBrowsingContext) {
 		listener.onEffectiveDestinationContextSelected(this, destinationBrowsingContext);
+	}
+	
+	private boolean affectsBrowsingContext() {	
+		return resourceHandlerRegistry.existsErrorHandler(url);
+	}
+	
+	private boolean hasSeamlessFlag(BrowsingContext context) {
+		if (context instanceof IFrameBrowsingContext) {
+			if (((IFrameBrowsingContext)context).getSeamlessFlag()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private void fireCompleted() {
@@ -651,38 +847,5 @@ public abstract class NavigationAttempt {
 				}
 			});
 		}
-	}
-	
-	protected boolean affectsBrowsingContext() {	
-		return resourceHandlerRegistry.existsErrorHandler(url);
-	}
-	
-	protected synchronized void testForInterruption() throws InterruptedException {
-		if (asyncPerformThread != null && asyncPerformThread.isInterrupted()) {
-			throw new InterruptedException();
-		}
-	}
-	
-	protected BrowsingContext selectEffectiveDestinationContext(BrowsingContext navigatedContext) {
-		if (sourceBrowsingContext == navigatedContext && hasSeamlessFlag(navigatedContext) && !explicitSelfNavigationOverride) {
-			while (navigatedContext.getCreatorContext() != null) {
-				navigatedContext = navigatedContext.getCreatorContext();
-				
-				if (hasSeamlessFlag(navigatedContext)) {
-					break;
-				}
-			}
-		}
-		
-		return navigatedContext;
-	}
-	
-	public static boolean hasSeamlessFlag(BrowsingContext context) {
-		if (context instanceof IFrameBrowsingContext) {
-			if (((IFrameBrowsingContext)context).getSeamlessFlag()) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

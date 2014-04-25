@@ -21,7 +21,6 @@ package org.fit.cssbox.scriptbox.history;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -29,27 +28,36 @@ import java.util.Set;
 
 import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
 import org.fit.cssbox.scriptbox.dom.events.script.HashChangeEvent;
 import org.fit.cssbox.scriptbox.dom.events.script.PopStateEvent;
-import org.fit.cssbox.scriptbox.events.Task;
-import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 import org.fit.cssbox.scriptbox.window.Window;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-
+/**
+ * Class representing history for a browsing context.
+ * The sequence of Documents and additional informations in a browsing context is its session history.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#session-history">Session history</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class SessionHistory {
 	protected BrowsingContext context;
 	protected List<SessionHistoryEntry> entries;
 	protected int currentEntryPosition;
 	protected Set<SessionHistoryListener> listeners;
 	
+	/**
+	 * Constructs session history for a given browsing context.
+	 *  
+	 * @param context Browsing context that owns this session history.
+	 */
 	public SessionHistory(BrowsingContext context) {
 		this.context = context;
 		this.entries = new ArrayList<SessionHistoryEntry>();
@@ -58,6 +66,12 @@ public class SessionHistory {
 		initSessionHistory();
 	}
 	
+	/**
+	 * Returns current entry of this session history.
+	 * 
+	 * @return Current entry of this session history
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#current-entry">Current entry</a>
+	 */
 	public SessionHistoryEntry getCurrentEntry() {
 		if (currentEntryPosition != -1) {
 			return entries.get(currentEntryPosition);
@@ -66,10 +80,20 @@ public class SessionHistory {
 		}
 	}
 	
+	/**
+	 * Returns all session history entries.
+	 * 
+	 * @return All session history entries.
+	 */
 	public List<SessionHistoryEntry> getSessionHistoryEntries() {
 		return entries;
 	}
 	
+	/**
+	 * Sets current session history entry.
+	 * 
+	 * @param entry Entry to be set as current session history entry.
+	 */
 	public void setCurrentEntry(SessionHistoryEntry entry) {
 		if (entry.getSessionHistory() == this) {
 			int newPosition = entries.indexOf(entry);
@@ -81,10 +105,18 @@ public class SessionHistory {
 		}
 	}
 	
+	/**
+	 * Returns length of this session history.
+	 * 
+	 * @return Length of this session history
+	 */
 	public int getLength() {
 		return entries.size();
 	}
 	
+	/**
+	 * Discards this session history.
+	 */
 	public void discard() {
 		if (context != null) {
 			context = null;
@@ -102,6 +134,11 @@ public class SessionHistory {
 		}
 	}
 	
+	/**
+	 * Removes session history entry from a given index.
+	 * 
+	 * @param index Index from which to remove session history entry.
+	 */
 	public void remove(int index) {
 		if (index < 0) {
 			return;
@@ -130,22 +167,40 @@ public class SessionHistory {
 		}
 	}
 	
+	/**
+	 * Removes given session history entry.
+	 * 
+	 * @param entry Entry to be removed from this session history.
+	 */
 	public void remove(SessionHistoryEntry entry) {
 		int index = entries.indexOf(entry);
 		remove(index);
 	}
 	
+	/**
+	 * Removes session history entry before the passed one.
+	 * 
+	 * @param entry Entry before which should be removed previous entry.
+	 */
 	public void removeBefore(SessionHistoryEntry entry) {
 		int index = entries.indexOf(entry);
 		remove(index - 1);
 	}
 	
+	/**
+	 * Removes all entries after the current entry.
+	 */
 	public void removeAllAfterCurrentEntry() {
 		SessionHistoryEntry currentEntry = getCurrentEntry();
 		
 		removeAllAfter(currentEntry);
 	}
 	
+	/**
+	 * Removes all entries after the passed one.
+	 * 
+	 * @param entry Entry after which should be removed all followed session history entries.
+	 */
 	public void removeAllAfter(SessionHistoryEntry entry) {
 		int index = entries.indexOf(entry) + 1;
 		
@@ -153,11 +208,12 @@ public class SessionHistory {
 			remove(index);
 		}
 	}
-	
-	public void filter(Predicate<SessionHistoryEntry> predicate) {
-		Iterables.addAll(entries, Iterables.filter(entries, predicate));
-	}
-	
+
+	/**
+	 * Adds new session history entry into this session history.
+	 * 
+	 * @param entry New session history entry to be added into this session history
+	 */
 	public void add(SessionHistoryEntry entry) {
 		if (entry.getSessionHistory() == this) {
 			entries.add(entry);
@@ -167,64 +223,102 @@ public class SessionHistory {
 		}
 	}
 	
-	private void initSessionHistory() {
-		SessionHistoryEntry blankPageEntry = new SessionHistoryEntry(this, true);
-		Html5DocumentImpl blankDocument = Html5DocumentImpl.createBlankDocument(context);
-		blankDocument.implementSandboxing();
-		
-		blankPageEntry.setDocument(blankDocument);
-		blankPageEntry.setVisited(new Date());
-		blankPageEntry.setURL(blankDocument.getAddress());
-		
-		entries.add(blankPageEntry);
-		currentEntryPosition = 0;
-	}
-	
+	/**
+	 * Returns associated browsing context.
+	 * 
+	 * @return Associated browsing context.
+	 */
 	public BrowsingContext getBrowsingContext() {
 		return context;
 	}
 	
-	public void traverseHistory(SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents) {
-		traverseHistory(context, specifiedEntry, replacementEnabled, asynchronousEvents);
-	}
-	
-	public void traverseHistory(SessionHistoryEntry specifiedEntry, boolean replacementEnabled) {
-		traverseHistory(context, specifiedEntry, replacementEnabled);
-	}
-	
-	public void traverseHistory(SessionHistoryEntry specifiedEntry) {
-		traverseHistory(context, specifiedEntry);
-	}
-	
+	/**
+	 * Registers event listener to this session history.
+	 * 
+	 * @param listener New event listener to be registered.
+	 */
 	public void addListener(SessionHistoryListener listener) {
 		listeners.add(listener);
 	}
 	
+	/**
+	 * Removes event listener to this session history.
+	 * 
+	 * @param listener Event listener to be removed.
+	 */
 	public void removeListener(SessionHistoryListener listener) {
 		listeners.remove(listener);
 	}
-	
-	public void removeAllTopLevelDocumentFamilyTasks() {
-		final BrowsingUnit browsingUnit = context.getBrowsingUnit();
-		browsingUnit.getEventLoop().filter(TaskSource.HISTORY_TRAVERSAL, new Predicate<Task>() {
-			
-			@Override
-			public boolean apply(Task task) {
-				BrowsingContext topLevel = browsingUnit.getWindowBrowsingContext();
-				Collection<Html5DocumentImpl> documentFamily = topLevel.getDocumentFamily();
-				return !documentFamily.contains(task.getDocument());
-			}
-		});
+
+	/**
+	 * Traverses session history from current entry to the specified entry.
+	 * 
+	 * @param specifiedEntry Session history entry where to traverse this session history.
+	 * @param replacementEnabled Flag signaling whether to replace current session history entry or not.
+	 * @param asynchronousEvents Flag signaling whether to dispatch generated events, or simple fire in the current task.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history">Traverse the history</a>
+	 */
+	public void traverseHistory(SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents) {
+		traverseHistory(context, specifiedEntry, replacementEnabled, asynchronousEvents);
 	}
 	
+	/**
+	 * Traverses session history from current entry to the specified entry 
+	 * with asynchronousEvents set to false.
+	 * 
+	 * @param specifiedEntry Session history entry where to traverse this session history.
+	 * @param replacementEnabled Flag signaling whether to replace current session history entry or not.
+	 * @see #traverseHistory(SessionHistoryEntry, boolean, boolean)
+	 */
+	public void traverseHistory(SessionHistoryEntry specifiedEntry, boolean replacementEnabled) {
+		traverseHistory(context, specifiedEntry, replacementEnabled);
+	}
+	
+	/**
+	 * Traverses session history from current entry to the specified entry 
+	 * with asynchronousEvents and replacementEnabled set to false.
+	 * 
+	 * @param specifiedEntry Session history entry where to traverse this session history.
+	 * @see #traverseHistory(SessionHistoryEntry, boolean, boolean)
+	 */
+	public void traverseHistory(SessionHistoryEntry specifiedEntry) {
+		traverseHistory(context, specifiedEntry);
+	}
+	
+	/**
+	 * Traverses session history from current entry to the specified entry 
+	 * with asynchronousEvents and replacementEnabled set to false.
+	 * 
+	 * @param specifiedBrowsingContext Browsing context of which is traversed the session history.
+	 * @param specifiedEntry Session history entry where to traverse this session history.
+	 * @see #traverseHistory(BrowsingContext, SessionHistoryEntry, boolean, boolean)
+	 */
 	public static void traverseHistory(BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry) {
 		traverseHistory(specifiedBrowsingContext, specifiedEntry, false, false);
 	}
 	
+	/**
+	 * Traverses session history from current entry to the specified entry 
+	 * with asynchronousEvents set to false.
+	 * 
+	 * @param specifiedBrowsingContext Browsing context of which is traversed the session history.
+	 * @param specifiedEntry Session history entry where to traverse this session history.
+	 * @param replacementEnabled Flag signaling whether to replace current session history entry or not.
+	 * @see #traverseHistory(BrowsingContext, SessionHistoryEntry, boolean, boolean)
+	 */
 	public static void traverseHistory(BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry, boolean replacementEnabled) {
 		traverseHistory(specifiedBrowsingContext, specifiedEntry, replacementEnabled, false);
 	}
-
+	
+	/**
+	 * Traverses session history from current entry to the specified entry.
+	 * 
+	 * @param specifiedBrowsingContext Browsing context of which is traversed the session history.
+	 * @param specifiedEntry Session history entry where to traverse this session history.
+	 * @param replacementEnabled Flag signaling whether to replace current session history entry or not.
+	 * @param asynchronousEvents Flag signaling whether to dispatch generated events, or simple fire in the current task.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history">Traverse the history</a>
+	 */
 	public static void traverseHistory(final BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents ) {
 		// 1) If there is no longer a Document object for the entry in question, 
 		// navigate the browsing context to the resource and abort.
@@ -253,8 +347,7 @@ public class SessionHistory {
 		if (specifiedEntry.getDocument() != currentEntry.getDocument()) {
 			// 4.1) Remove any tasks queued by the history traversal task source that are associated with 
 			// any Document objects in the top-level browsing context's document family.
-			SessionHistory specifiedSessionHistory = specifiedBrowsingContext.getSesstionHistory();
-			specifiedSessionHistory.removeAllTopLevelDocumentFamilyTasks();
+			specifiedBrowsingContext.getEventLoop().removeAllTopLevelDocumentFamilyTasks();
 			
 			// 4.2) If the origin of the Document of the specified entry is not the same as the origin 
 			// of the Document of the current entry, then run the following sub-sub-steps
@@ -378,7 +471,20 @@ public class SessionHistory {
 		sessionHistory.fireHistoryTravered(currentEntry, specifiedEntry);
 	}
 	
-	protected void fireHistoryTravered(SessionHistoryEntry fromEntry, SessionHistoryEntry toEntry) {
+	private void initSessionHistory() {
+		SessionHistoryEntry blankPageEntry = new SessionHistoryEntry(this, true);
+		Html5DocumentImpl blankDocument = Html5DocumentImpl.createBlankDocument(context);
+		blankDocument.implementSandboxing();
+		
+		blankPageEntry.setDocument(blankDocument);
+		blankPageEntry.setVisited(new Date());
+		blankPageEntry.setURL(blankDocument.getAddress());
+		
+		entries.add(blankPageEntry);
+		currentEntryPosition = 0;
+	}
+	
+	private void fireHistoryTravered(SessionHistoryEntry fromEntry, SessionHistoryEntry toEntry) {
 		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.TRAVERSED, toEntry, fromEntry);
 		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
 		
@@ -387,7 +493,7 @@ public class SessionHistory {
 		}
 	}
 	
-	protected void fireEntryInserted(SessionHistoryEntry entry) {
+	private void fireEntryInserted(SessionHistoryEntry entry) {
 		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.INSERTED, entry, null);
 		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
 		
@@ -396,7 +502,7 @@ public class SessionHistory {
 		}
 	}
 	
-	protected void fireEntryRemoved(SessionHistoryEntry entry) {
+	private void fireEntryRemoved(SessionHistoryEntry entry) {
 		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.REMOVED, entry, null);
 		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
 		
@@ -405,7 +511,7 @@ public class SessionHistory {
 		}
 	}
 	
-	protected void fireCurrentEntryChanged(SessionHistoryEntry entry) {
+	private void fireCurrentEntryChanged(SessionHistoryEntry entry) {
 		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.CURRENT_CHANGED, entry, null);
 		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
 		
@@ -414,7 +520,7 @@ public class SessionHistory {
 		}
 	}
 	
-	protected void fireHistoryDestroyed() {
+	private void fireHistoryDestroyed() {
 		SessionHistoryEvent event = new SessionHistoryEvent(this, SessionHistoryEvent.EventType.DESTROYED, null, null);
 		Set<SessionHistoryListener> listenersCopy = new HashSet<SessionHistoryListener>(listeners);
 		

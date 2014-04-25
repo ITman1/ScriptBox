@@ -40,11 +40,26 @@ import org.fit.cssbox.scriptbox.url.URLUtils;
 import org.fit.cssbox.scriptbox.url.WrappedURL;
 import org.fit.cssbox.scriptbox.window.Window;
 
+/**
+ * Class implementing Location interface which allows navigating of the new
+ * documents/resources inside browsing contexts.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#location">Location interface</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class Location extends URLUtils {
 	private Html5DocumentImpl document;
 	private NavigationController controller;
 	private BrowsingContext context;
 	
+	/**
+	 * Constructs location for given document.
+	 * 
+	 * @param document Document that owns this location object.
+	 */
 	public Location(Html5DocumentImpl document) {
 		this.document = document;
 		this.context = document.getBrowsingContext();
@@ -53,6 +68,12 @@ public class Location extends URLUtils {
 		onAddressChanged();
 	}
 	
+	/**
+	 * Navigates to the given page without replacement enabled if there is not reason.
+	 * 
+	 * @param url New URL where to navigate current browsing context.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location-assign">Location assign()</a>
+	 */
 	@ScriptFunction
 	public void assign(String url) {
 		securityTest();
@@ -81,6 +102,12 @@ public class Location extends URLUtils {
 		navigate(url, replacementEnabled);
 	}
 	
+	/**
+	 * Removes the current page from the session history and navigates to the given page.
+	 * 
+	 * @param url New URL where to navigate current browsing context.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location-replace">Location replace()</a>
+	 */
 	@ScriptFunction
 	public void replace(String url) {
 		if (!isFamiliarResponsibleBrowsingContext()) {
@@ -90,6 +117,11 @@ public class Location extends URLUtils {
 		navigate(url, true);
 	}
 	
+	/**
+	 * Reloads the current page.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location-reload">Location reload()</a>
+	 */
 	@ScriptFunction
 	public void reload() {
 		securityTest();
@@ -246,7 +278,7 @@ public class Location extends URLUtils {
 		return (baseUrl != null)? new WrappedURL(baseUrl) : null;
 	}
 	
-	protected URL getApiBaseUrl() {
+	private URL getApiBaseUrl() {
 		Html5DocumentImpl activeDocument = context.getActiveDocument();
 		
 		if (activeDocument != null) {
@@ -259,7 +291,7 @@ public class Location extends URLUtils {
 		return null;
 	}
 	
-	protected void navigate(String url, boolean replacementEnabled) {	
+	private void navigate(String url, boolean replacementEnabled) {	
 		BrowsingUnit browsingUnit = context.getBrowsingUnit();
 		ScriptSettingsStack stack = browsingUnit.getScriptSettingsStack();
 		
@@ -269,7 +301,7 @@ public class Location extends URLUtils {
 		navigate(sourceBrowsingContext, url, replacementEnabled);
 	}
 	
-	protected void navigate(BrowsingContext sourceBrowsingContext, String url, boolean replacementEnabled) {
+	private void navigate(BrowsingContext sourceBrowsingContext, String url, boolean replacementEnabled) {
 		URL baseUrl = getApiBaseUrl();
 		
 		URL netUrl = null;
@@ -286,29 +318,29 @@ public class Location extends URLUtils {
 		navigate(sourceBrowsingContext, netUrl, replacementEnabled);
 	}
 	
-	protected void navigate(BrowsingContext sourceBrowsingContext, URL netUrl, boolean replacementEnabled) {	
+	private void navigate(BrowsingContext sourceBrowsingContext, URL netUrl, boolean replacementEnabled) {	
 		controller.navigate(sourceBrowsingContext, netUrl, true, false, replacementEnabled);
 	}
 	
 	/*
 	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#security-location
 	 */
-	protected void securityTest() {
+	private void securityTest() {
 		if (!isRelatedDocumentEffectiveScriptOriginEqual()) {
 			throwSecurityErrorException();
 		}
 	}
 	
-	protected boolean isAssociatedDocumentEffectiveScriptOriginEqual() {
+	private boolean isAssociatedDocumentEffectiveScriptOriginEqual() {
 		return isEffectiveScriptOriginEqual(document);
 	}
 	
-	protected boolean isRelatedDocumentEffectiveScriptOriginEqual() {
+	private boolean isRelatedDocumentEffectiveScriptOriginEqual() {
 		Html5DocumentImpl activeDocument = context.getActiveDocument();
 		return isEffectiveScriptOriginEqual(activeDocument);
 	}
 	
-	protected boolean isEffectiveScriptOriginEqual(Html5DocumentImpl document) {
+	private boolean isEffectiveScriptOriginEqual(Html5DocumentImpl document) {
 		BrowsingUnit browsingUnit = context.getBrowsingUnit();
 		ScriptSettingsStack stack = browsingUnit.getScriptSettingsStack();
 		
@@ -324,7 +356,7 @@ public class Location extends URLUtils {
 		return settings == null;
 	}
 	
-	protected boolean isFamiliarResponsibleBrowsingContext() {
+	private boolean isFamiliarResponsibleBrowsingContext() {
 		BrowsingUnit browsingUnit = context.getBrowsingUnit();
 		ScriptSettingsStack stack = browsingUnit.getScriptSettingsStack();
 		
@@ -340,7 +372,7 @@ public class Location extends URLUtils {
 		return false;
 	}
 	
-	protected void throwSecurityErrorException() {
+	private void throwSecurityErrorException() {
 		throw new DOMException(DOMException.SECURITY_ERR, "SecurityError");
 	}
 }

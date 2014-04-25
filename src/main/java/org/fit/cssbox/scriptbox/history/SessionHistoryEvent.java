@@ -21,22 +21,44 @@ package org.fit.cssbox.scriptbox.history;
 
 import java.util.EventObject;
 
+/**
+ * Event class for events which are fired by session history.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class SessionHistoryEvent extends EventObject {
 
 	private static final long serialVersionUID = -879099242022721983L;
 
+	/**
+	 * Session history events.
+	 * 
+	 * @author Radim Loskot
+	 * @version 0.9
+	 * @since 0.9 - 21.4.2014
+	 */
 	public enum EventType {
-		TRAVERSED,
-		INSERTED,
-		CURRENT_CHANGED,
-		REMOVED,
-		DESTROYED
+		TRAVERSED,			/** Session history traversed to new entry */
+		INSERTED,			/** Inserted new entry into session history */
+		CURRENT_CHANGED,	/** Current entry changed inside session history */
+		REMOVED,			/** Entry removed from session history */
+		DESTROYED			/** Session history destroyed */
 	};
 	
 	private EventType eventType;
 	private SessionHistoryEntry target;
 	private SessionHistoryEntry relatedTarget;
 	
+	/**
+	 * Constructs event for session history with the specified type and target.
+	 * 
+	 * @param sessionHistory Session history context which fires the event.
+	 * @param eventType Event type.
+	 * @param target Target browsing context which might be appended to this event.
+	 * @param relatedTarget Additional target which is set when event relates to two targets.
+	 */
 	public SessionHistoryEvent(SessionHistory sessionHistory, EventType eventType, SessionHistoryEntry target, SessionHistoryEntry relatedTarget) {
 		super(sessionHistory);
 		
@@ -52,14 +74,29 @@ public class SessionHistoryEvent extends EventObject {
 		}
 	}
 	
+	/**
+	 * Returns event type.
+	 * 
+	 * @return Event type.
+	 */
 	public EventType getEventType() {
 		return eventType;
 	}
 
+	/**
+	 * Returns target to which relates this event.
+	 * 
+	 * @return Target to which relates this event.
+	 */
 	public SessionHistoryEntry getTarget() {
 		return target;
 	}
 
+	/**
+	 * Returns additional target which is set when event relates to two targets.
+	 * 
+	 * @return Additional target which is set when event relates to two targets.
+	 */
 	public SessionHistoryEntry getRelatedTarget() {
 		return relatedTarget;
 	}

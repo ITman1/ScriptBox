@@ -19,6 +19,17 @@
 
 package org.fit.cssbox.scriptbox.history;
 
+/**
+ * Represents class for all state objects of the session history.
+ * Implements clone() method which ensures cloning of the object when 
+ * they are pushed and popped into session history.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#state-object">State object</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class StateObject implements Cloneable {
 	protected Object object;
 	
@@ -29,8 +40,6 @@ public class StateObject implements Cloneable {
 	/*
 	 * TODO:
 	 * http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#structured-clone
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
 	 */
 	@Override
 	public StateObject clone() {

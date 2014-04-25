@@ -22,9 +22,22 @@ package org.fit.cssbox.scriptbox.misc;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Base class for all factories which creates contents for the specific MIME types.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class MimeContentFactoryBase<E> {
     private static final List<String> EMPTY_STRING_LIST = new ArrayList<String>();;
 
+    /**
+     * Tests if is given MIME type supported by this factory.
+     * 
+     * @param mimeType MEME type that should be tested.
+     * @return True if is given MIME type supported, otherwise false.
+     */
 	public boolean isSupported(String mimeType) {
 		List<String> supportedMimeTypes = getExplicitlySupportedMimeTypes();
 		
@@ -39,21 +52,33 @@ public class MimeContentFactoryBase<E> {
 		return isImplicitlySupported(mimeType);
 	}
 	
-	/*
-	 * Explicitly supported MIME types
+	/**
+	 * Returns list of explicitly supported MIME types - types that can be statically determined.
+	 * 
+	 * @return List of explicitly supported MIME types.
 	 */
 	public List<String> getExplicitlySupportedMimeTypes() {
 		return EMPTY_STRING_LIST;
 	}
 	
-	/*
-	 * Supported according to the form of the MIME type
-	 * It does not have to include the explicitly supported types.
+	/**
+	 * Tests whether is the given MIME type an implicitly supported or not.
+	 * This method does not have include the explicitly supported types.
+	 * 
+	 * @param mimeType MIME type of support depends on the form of this MIME type.
+	 * 
+	 * @return True if is given MIME type implicitly supported, otherwise false.
 	 */
 	public boolean isImplicitlySupported(String mimeType) {
 		return false;
 	}
 	
+	/**
+	 * Constructs content for a given arguments.
+	 * 
+	 * @param args Arguments for constructing of the content.
+	 * @return New constructed content, if arguments are valid, otherwise null.
+	 */
 	public E getContent(Object ...args) {
 		return null;
 	}

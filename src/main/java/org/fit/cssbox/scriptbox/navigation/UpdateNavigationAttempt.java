@@ -21,15 +21,33 @@ package org.fit.cssbox.scriptbox.navigation;
 
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 
+/**
+ * Class representing navigation attempt for reloading of the already visited resource.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class UpdateNavigationAttempt extends NavigationAttempt {
 	protected SessionHistoryEntry entry;
 	
+	/**
+	 * Constructs new update navigation attempt for updating of the session history entry.
+	 * 
+	 * @param navigationController Navigation controller which owns this attempt.
+	 * @param entry Session history entry to be updated.
+	 */
 	public UpdateNavigationAttempt(NavigationController navigationController, SessionHistoryEntry entry) {
 		super(navigationController, navigationController.getBrowsingContext(), entry.getURL(), false, false, false);
 
 		this.entry = entry;
 	}
 	
+	/**
+	 * Returns related session history entry which should be updated.
+	 * 
+	 * @return Related session history entry which should be updated.
+	 */
 	public SessionHistoryEntry getSessionHistoryEntry() {
 		return entry;
 	}

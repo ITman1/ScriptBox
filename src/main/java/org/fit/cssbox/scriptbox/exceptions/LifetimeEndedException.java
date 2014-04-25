@@ -19,6 +19,15 @@
 
 package org.fit.cssbox.scriptbox.exceptions;
 
+/**
+ * Exception that is thrown when task should be synchronously terminated.  
+ * If this exception is not catched anywhere, then it is propagated into  
+ * event loop where is handled.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class LifetimeEndedException extends RuntimeException {
 	
 	private static final long serialVersionUID = -3834334259354157493L;

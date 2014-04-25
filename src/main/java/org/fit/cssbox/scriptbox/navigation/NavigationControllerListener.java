@@ -21,6 +21,18 @@ package org.fit.cssbox.scriptbox.navigation;
 
 import java.util.EventListener;
 
+/**
+ * Represents interface for creating event listeners above navigation controller.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface NavigationControllerListener extends EventListener {
+	/**
+	 * Callback method called when any event above navigation controller occurs.
+	 * 
+	 * @param event Dispatched event above navigation controller.
+	 */
 	public void onNavigationEvent(NavigationControllerEvent event);
 }

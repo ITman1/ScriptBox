@@ -35,6 +35,16 @@ import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 import org.fit.cssbox.scriptbox.window.Window;
 
+/**
+ * Class implementing History interface which allows traversing
+ * history from the scripts.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#history-1">History interface</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class History {	
 	protected StateObject state;
 	protected Html5DocumentImpl document;
@@ -43,6 +53,12 @@ public class History {
 		this.document = document;
 	}
 
+	/**
+	 * Returns the number of entries in the joint session history.
+	 * 
+	 * @return Number of entries in the joint session history.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-length">History length</a>
+	 */
 	@ScriptGetter
 	public int getLength() {
 		testIsActive();
@@ -51,6 +67,12 @@ public class History {
 		return jointHistory.getLength();
 	}
 	
+	/**
+	 * Returns the current state object.
+	 * 
+	 * @return Current state object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#state-object">State object</a>
+	 */
 	@ScriptGetter
 	public StateObject getState() {
 		testIsActive();
@@ -58,6 +80,12 @@ public class History {
 		return state;
 	}
 	
+	/**
+	 * Goes back or forward the specified number of steps in the joint session history.
+	 * 
+	 * @param delta Number of traversal steps.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-go">History go()</a>
+	 */
 	@ScriptFunction
 	public void go(long delta) {
 		testIsActive();
@@ -66,36 +94,83 @@ public class History {
 		jointHistory.traverse((int)delta);
 	}
 	
+	/**
+	 * Goes back one step in the joint session history.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-back">History back()</a>
+	 */
 	@ScriptFunction
 	public void back() {
 		go(-1);
 	}
 	
+	/**
+	 * Goes forward one step in the joint session history.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-forward">History forward()</a>
+	 */
 	@ScriptFunction
 	public void forward() {
 		go(1);
 	}
 		
+	/**
+	 * Pushes the given data into the session history, with the given title,
+	 * and, if provided and not null, the given URL
+	 * 
+	 * @param data Data to be pushed into history.
+	 * @param title Title of the page to be stored inside history.
+	 * @param url New URL of the new state history entry.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-pushstate">History pushState()</a>
+	 */
 	@ScriptFunction
 	public void pushState(StateObject data, String title, String url) {
 		setState(data, title, url, false);
 	}
 
+	/**
+	 * Pushes the given data into the session history, with the given title.
+	 * 
+	 * @param data Data to be pushed into history.
+	 * @param title Title of the page to be stored inside history.
+	 * @see #pushState(StateObject, String, String)
+	 */
 	@ScriptFunction
 	public void pushState(StateObject data, String title) {
 		pushState(data, title, null);
 	}
 	
+	/**
+	 * Updates the current entry in the session history to have the given 
+	 * data, title, and, if provided and not null, URL
+	 * 
+	 * @param data Data to be replaced inside history.
+	 * @param title Title of the page to be replaced inside history.
+	 * @param url New URL of the current state history entry.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-replacestate">History replaceState()</a>
+	 */
 	@ScriptFunction
 	public void replaceState(StateObject data, String title, String url) {
 		setState(data, title, url, true);
 	}
 	
+	/**
+	 * Updates the current entry in the session history to have the given data and title.
+	 * 
+	 * @param data Data to be replaced inside history.
+	 * @param title Title of the page to be replaced inside history.
+	 * @see #replaceState(StateObject, String, String)
+	 */
 	@ScriptFunction
 	public void replaceState(StateObject data, String title) {
 		replaceState(data, title, null);
 	}
 	
+	/**
+	 * Sets new state object of this history object.
+	 * 
+	 * @param state New state object of this history object.
+	 */
 	public void setState(StateObject state) {
 		this.state = state;
 	}
@@ -105,14 +180,14 @@ public class History {
 		return "[object History]";
 	}
 		
-	protected JointSessionHistory getJointSessionHistory() {
+	private JointSessionHistory getJointSessionHistory() {
 		BrowsingContext context = document.getBrowsingContext();
 		BrowsingUnit unit = context.getBrowsingUnit();
 		
 		return unit.getJointSessionHistory();
 	}
 	
-	protected void testIsActive() {
+	private void testIsActive() {
 		if (!document.isFullyActive()) {
 			throwSecurityError();
 		}
@@ -121,7 +196,7 @@ public class History {
 	/*
 	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-pushstate
 	 */
-	protected void setState(StateObject data, String title, String url, boolean replace){
+	private void setState(StateObject data, String title, String url, boolean replace){
 		testIsActive();
 		
 		Window window = document.getWindow();
@@ -178,7 +253,7 @@ public class History {
 			
 			// Remove any tasks queued by the history traversal task source with Document family
 			
-			sessionHistory.removeAllTopLevelDocumentFamilyTasks();
+			context.getEventLoop().removeAllTopLevelDocumentFamilyTasks();
 			
 			// appropriate, update the current entry 
 			
@@ -218,9 +293,7 @@ public class History {
 		document.setLatestEntry(currentEntry);
 	}
 	
-	protected void throwSecurityError() {
-		
-		
+	private void throwSecurityError() {
 		throw new DOMException(DOMException.SECURITY_ERR, "SecurityError");
 	}
 }
