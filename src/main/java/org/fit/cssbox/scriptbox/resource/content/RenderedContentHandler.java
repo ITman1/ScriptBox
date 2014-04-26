@@ -41,29 +41,17 @@ import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.w3c.dom.Element;
 
+/**
+ * Abstract class for all content handlers - that parses documents.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class RenderedContentHandler extends ContentHandler {
-
-	protected class ScrollToFragmentRunnable implements Executable {
-		@Override
-		public void execute() throws TaskAbortedException, InterruptedException {
-			String fragment = navigationAttempt.getURL().getRef();
-			
-			if (fragment == null) {
-				return;
-			}
-			
-			if (context.scrollToFragment(fragment)) {
-				return;
-			}
-			
-			DocumentReadiness readiness = context.getActiveDocument().getDocumentReadiness();
-			if (readiness.equals(DocumentReadiness.LOADING)) {
-				context.getEventLoop().spinForAmountTime(300, this);
-			}
-		}
-	}
 	
 	/*
+	 * Proceeds 1), 2) and 3) steps of the update session history with the new page:
 	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page
 	 */
 	protected class UpdateSessionHistoryTask extends Task {
@@ -114,10 +102,37 @@ public abstract class RenderedContentHandler extends ContentHandler {
 			ScrollToFragmentRunnable performScrolling = new ScrollToFragmentRunnable();
 			performScrolling.execute();
 		}
-		
 	}
 	
-	protected NavigationControllerListener abortDocumentListener = new NavigationControllerListener() {
+	/*
+	 * Proceeds 4), 5) and 6) steps of the update session history with the new page:
+	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page
+	 */
+	private class ScrollToFragmentRunnable implements Executable {
+		@Override
+		public void execute() throws TaskAbortedException, InterruptedException {
+			String fragment = navigationAttempt.getURL().getRef();
+			
+			if (fragment == null) {
+				return;
+			}
+			
+			if (context.scrollToFragment(fragment)) {
+				return;
+			}
+			
+			DocumentReadiness readiness = context.getActiveDocument().getDocumentReadiness();
+			if (readiness.equals(DocumentReadiness.LOADING)) {
+				context.getEventLoop().spinForAmountTime(300, this);
+			}
+		}
+	}
+	
+	/*
+	 * Listener that listens whether was navigation cancelled.
+	 * If yes, then aborts created document.
+	 */
+	private NavigationControllerListener abortDocumentListener = new NavigationControllerListener() {
 		
 		@Override
 		public void onNavigationEvent(NavigationControllerEvent event) {
@@ -144,6 +159,11 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	protected Html5DocumentImpl renderableDocument;
 	NavigationController navigationController;
 
+	/**
+	 * Constructs rendered content handler for a given navigation attempt.
+	 * 
+	 * @param navigationAttempt Navigation attempt which invoked this content handler.
+	 */
 	public RenderedContentHandler(NavigationAttempt navigationAttempt) {
 		super(navigationAttempt);
 		
@@ -151,8 +171,11 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		navigationController.addListener(abortDocumentListener);
 	}
 	
-	/*
-	 * See: http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page
+	/**
+	 * Updates session history with a new document.
+	 * 
+	 * @param newDocument New document that should be inserted into history.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page">Update the session history with the new page</a>
 	 */
 	protected void updateSessionHistory(Html5DocumentImpl newDocument) {
 		SessionHistory sessionHistory = context.getSesstionHistory();
@@ -161,6 +184,15 @@ public abstract class RenderedContentHandler extends ContentHandler {
 		context.getEventLoop().queueTask(new UpdateSessionHistoryTask(taskDocument, newDocument));
 	}
 		
+	/**
+	 * Returns or constructs document for this content handler.
+	 * 
+	 * @param context Browsing context where to put document.
+	 * @param url Address of the document.
+	 * @param mimeType MIME type of the document.
+	 * @param parser Parser which ensures parsing of the document.
+	 * @return New or already constructed document for this rendered content handler.
+	 */
 	protected Html5DocumentImpl getRenderableDocument(BrowsingContext context, URL url, String mimeType, ScriptableDocumentParser parser) {
 		if (renderableDocument != null) {
 			return renderableDocument;

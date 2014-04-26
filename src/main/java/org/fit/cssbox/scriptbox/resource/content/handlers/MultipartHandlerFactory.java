@@ -26,6 +26,18 @@ import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 
+/*
+ * TODO: Implement.
+ */
+/**
+ * Content handler factory for handlers following the processing model for multipart/x-mixed-replace resources.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-multipart-x-mixed-replace">Read multipart/x-mixed-replace</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class MultipartHandlerFactory extends ContentHandlerFactory {
 	@Override
 	public ContentHandler getContentHandler(NavigationAttempt navigationAttempt) {

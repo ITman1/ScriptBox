@@ -1,5 +1,5 @@
 /**
- * MemberClass.java
+ * ObjectGetter.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,8 +17,24 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
-public interface MemberClass<MemberType> {
-	public MemberType getMember();
+import java.util.Collection;
+
+/**
+ * Interface for object getters. This is used for objects that acts 
+ * as associative arrays and enables returning the objects for given key
+ * - e.g. Document has getter for getting the nested proxied windows.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public interface ObjectGetter {
+	public static final Object UNDEFINED_VALUE = new String("undefined");
+	public static final String METHOD_NAME = "get";
+	public static final Class<?>[] METHOD_ARG_TYPES = {Object.class};
+	
+	public Object get(Object arg);
+	public Collection<Object> getKeys();
 }

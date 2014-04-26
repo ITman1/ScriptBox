@@ -29,6 +29,18 @@ import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
 
+/*
+ * TODO: Implement.
+ */
+/**
+ * Content handler factory for handlers following the processing model for XML files.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-xml">Read XML</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class XmlDocumentHandlerFactory extends ContentHandlerFactory {
 	private class XmlDocumentHandler extends RenderedContentHandler {
 

@@ -23,7 +23,9 @@ package org.fit.cssbox.scriptbox.script.adapter;
  * The Adapter interface for creating adapters that is necessary for passing
  * adapters into {@link AdapterRegistry}.
  * 
- * @version 1.0
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
  * @see AdapterRegistry
  */
 public interface Adapter {
@@ -59,5 +61,3 @@ public interface Adapter {
      */
     public Class<?> getResultClass();
 }
-
-// End of the file

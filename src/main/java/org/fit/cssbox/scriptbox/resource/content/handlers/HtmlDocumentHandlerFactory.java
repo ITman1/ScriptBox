@@ -38,6 +38,15 @@ import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
 
+/**
+ * Content handler factory for handlers following the processing model for HTML files.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-html">Read HTML</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 	private class HtmlDocumentHandler extends RenderedContentHandler {
 

@@ -32,7 +32,13 @@ import org.fit.cssbox.scriptbox.resource.content.handlers.PlainTextFileHandlerFa
 import org.fit.cssbox.scriptbox.resource.content.handlers.PluginHandlerFactory;
 import org.fit.cssbox.scriptbox.resource.content.handlers.XmlDocumentHandlerFactory;
 
-
+/**
+ * Content handler registry which collects all content handler factories that extend {@link ContentHandlerFactory}.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ContentHandlerRegistry extends MimeContentRegistryBase<ContentHandlerFactory, ContentHandler> {
 	private class DefaultErrorHandler extends ErrorHandler {
 
@@ -57,6 +63,11 @@ public class ContentHandlerRegistry extends MimeContentRegistryBase<ContentHandl
 		registerMimeContentFactory(PluginHandlerFactory.class);
 	}
 	
+	/**
+	 * Returns instance of this registry.
+	 * 
+	 * @return Instanceof of this registry.
+	 */
 	public static synchronized ContentHandlerRegistry getInstance() {
 		if (instance == null) {
 			instance = new ContentHandlerRegistry();
@@ -65,6 +76,12 @@ public class ContentHandlerRegistry extends MimeContentRegistryBase<ContentHandl
 		return instance;
 	}
 
+	/**
+	 * Returns content handler for a given navigation attempt.
+	 * 
+	 * @param navigationAttempt Navigation attempt with which will be associated the content handler.
+	 * @return Content handler if there existed corresponding factory and if construction was successful, otherwise null.
+	 */
 	public ContentHandler getHandlerForNavigationAttempt(NavigationAttempt navigationAttempt) {
 		String mimeType = navigationAttempt.getContentType();
 		ContentHandlerFactory factory = (mimeType != null)? getFirstMimeContentFactory(mimeType) : null;
@@ -74,12 +91,24 @@ public class ContentHandlerRegistry extends MimeContentRegistryBase<ContentHandl
 	/*
 	 * TODO: Implement.
 	 */
+	/**
+	 * Tests whether there exists error handler for a given url.
+	 * 
+	 * @param url URL which is unable to fetch and we want to report an error.
+	 * @return True if there exists any error handler for passed url, otherwise false.
+	 */
 	public boolean existsErrorHandler(URL url) {
 		return true;
 	}
 	
 	/*
 	 * TODO: Implement.
+	 */
+	/**
+	 * Returns error handler for a given navigation attempt.
+	 * 
+	 * @param navigationAttempt Navigation attempt with which will be associated the error handler.
+	 * @return Error handler if there existed any appropriate error handler, otherwise null.
 	 */
 	public ErrorHandler getErrorHandler(NavigationAttempt attempt) {
 		return new DefaultErrorHandler(attempt);

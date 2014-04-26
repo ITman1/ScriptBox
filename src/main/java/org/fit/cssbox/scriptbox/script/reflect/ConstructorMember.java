@@ -1,5 +1,5 @@
 /**
- * Shutter.java
+ * ConstructorMember.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,15 +17,18 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
-public interface Shutter {
-	   public boolean isClassVisible(Class<?> type);
-	   public boolean isFieldVisible(Class<?> type, Field fieldName);
-	   public boolean isConstructorVisible(Class<?> type, Constructor<?> constructor);
-	   public boolean isMethodVisible(Class<?> type, Method method);
+/**
+ * Interface for all members that represents the constructor
+ * - construct some new specific object from a given arguments. 
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public interface ConstructorMember extends InvocableMember<Constructor<?>>{
+
 }

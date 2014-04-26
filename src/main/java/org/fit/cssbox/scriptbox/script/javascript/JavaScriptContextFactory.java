@@ -23,11 +23,11 @@ import org.fit.cssbox.scriptbox.dom.events.adapters.EventAdapter;
 import org.fit.cssbox.scriptbox.dom.events.adapters.MouseEventAdapter;
 import org.fit.cssbox.scriptbox.dom.events.adapters.UIEventAdapter;
 import org.fit.cssbox.scriptbox.script.adapter.AdapterRegistry;
-import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.AdapterWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.CollectionsWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.DefaultWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.WrapFactoryDecorator;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 

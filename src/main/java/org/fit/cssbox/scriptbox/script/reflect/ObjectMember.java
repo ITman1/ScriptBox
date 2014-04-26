@@ -17,19 +17,33 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import java.lang.reflect.Member;
 
 import org.fit.cssbox.scriptbox.script.exceptions.MemberException;
 
+/**
+ * Base class for representing the object member 
+ * - class member which have an associated object.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ObjectMember<ClassMemberType extends ClassMember<MemberType>, MemberType extends Member> extends ClassMember<MemberType> {
 
 	protected Object object;
 	protected ClassMemberType classMember;
 	
+	/**
+	 * Constructs object member for given object using class member.
+	 * 
+	 * @param object Object that contains the passed member.
+	 * @param classMember Class member that is wrapped by this class and associated with the object.
+	 */
 	public ObjectMember(Object object, ClassMemberType classMember) {
-		super(classMember.clazz, classMember.member);
+		super(classMember.clazz, classMember.member, classMember.options);
 		this.object = object;
 		this.classMember = classMember;
 		
@@ -41,10 +55,20 @@ public class ObjectMember<ClassMemberType extends ClassMember<MemberType>, Membe
 		}
 	}
 	
+	/**
+	 * Returns associated object.
+	 * 
+	 * @return Associated object.
+	 */
 	public Object getObject() {
 		return object;
 	}
 	
+	/**
+	 * Returns object class.
+	 * 
+	 * @return Object class.
+	 */
 	public Class<?> getObjectType() {
 		return clazz;
 	}

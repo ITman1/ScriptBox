@@ -6,6 +6,13 @@ import javax.script.ScriptContext;
 import org.fit.cssbox.scriptbox.script.ScriptContextInjector;
 import org.fit.cssbox.scriptbox.url.URL;
 
+/**
+ * Implementation of the injector which adds the URL object into the script context.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class URLInjector extends ScriptContextInjector {
 	public URLInjector() {
 		super(ALL_SCRIPT_ENGINE_FACTORIES);

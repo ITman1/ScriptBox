@@ -17,14 +17,19 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
-
-import java.lang.reflect.Member;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class ClassMember<MemberType extends Member> implements MemberClass<MemberType> {
+/**
+ * Represents the base class for all class members.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public class ClassMember<MemberType extends java.lang.reflect.Member> implements Member<MemberType> {
 	public final static String ENUMERABLE = "enumerable";
 	public final static String PERNAMENT = "pernament";
 	public final static String DEFAULT_OPTIONS[] = {ENUMERABLE, PERNAMENT};
@@ -34,10 +39,23 @@ public class ClassMember<MemberType extends Member> implements MemberClass<Membe
 	
 	protected String[] options;
 	
+	/**
+	 * Constructs class member wrapper.
+	 * 
+	 * @param clazz Class to which belongs the wrapped member.
+	 * @param member Member to be wrapped.
+	 */
 	public ClassMember(Class<?> clazz, MemberType member) {
 		this(clazz, member, null);
 	}
 	
+	/**
+	 * Constructs class member wrapper.
+	 * 
+	 * @param clazz Class to which belongs the wrapped member.
+	 * @param member Member to be wrapped.
+	 * @param options Options associated with this class member.
+	 */
 	public ClassMember(Class<?> clazz, MemberType member, String[] options) {
 		this.clazz = clazz;
 		this.member = member;
@@ -49,10 +67,12 @@ public class ClassMember<MemberType extends Member> implements MemberClass<Membe
 		return member;
 	}
 	
+	@Override
 	public Class<?> getClazz() {
 		return clazz;
 	}
 		
+	@Override
 	public boolean hasOption(String option) {
 		for (String currOption : options) {
 			if (currOption.equals(option)) {
@@ -85,5 +105,10 @@ public class ClassMember<MemberType extends Member> implements MemberClass<Membe
 			append(clazz, rhs.clazz).
 			append(member, rhs.member).
 			isEquals();
+	}
+
+	@Override
+	public String getName() {
+		return member.getName();
 	}
 }

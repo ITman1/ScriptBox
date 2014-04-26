@@ -28,11 +28,11 @@ import java.util.Map.Entry;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.fit.cssbox.scriptbox.script.java.ClassField;
-import org.fit.cssbox.scriptbox.script.java.ClassMember;
-import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
-import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
+import org.fit.cssbox.scriptbox.script.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Function;
 
@@ -177,7 +177,7 @@ public class ObjectFieldTreeNode extends DefaultMutableTreeNode implements Compa
 			recursion--;
 		}
 		
-		ObjectMembers objectMembers = ObjectMembers.getObjectMembers(object, membersResolverFactory);
+		DefaultObjectMembers objectMembers = DefaultObjectMembers.getObjectMembers(object, membersResolverFactory);
 		Set<Entry<String, Set<ClassMember<?>>>> members = objectMembers.getNamedMemberEtrySet();
 		List<ObjectFieldTreeNode> childrenList = new ArrayList<ObjectFieldTreeNode>();
 		

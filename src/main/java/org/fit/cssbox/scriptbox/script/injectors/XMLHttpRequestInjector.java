@@ -24,6 +24,13 @@ import javax.script.ScriptContext;
 
 import org.fit.cssbox.scriptbox.script.ScriptContextInjector;
 
+/**
+ * Implementation of the injector which adds the XMLHttpRequest object into the script context.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class XMLHttpRequestInjector extends ScriptContextInjector {
 
 	/*

@@ -19,6 +19,16 @@
 
 package org.fit.cssbox.scriptbox.script.exceptions;
 
+/*
+ * TODO: Extend this exception about some better appropriate additional information.
+ */
+/**
+ * Exception that is thrown for a instances of class - objects when some exception occurs on them.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ObjectException extends RuntimeException {
 
 	private static final long serialVersionUID = 5118827226466008098L;

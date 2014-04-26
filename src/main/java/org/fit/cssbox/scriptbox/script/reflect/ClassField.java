@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -30,28 +30,77 @@ import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.FunctionEventHandlerAdapter;
 import org.mozilla.javascript.Function;
 
-public class ClassField extends ClassMember<Field> implements MemberField {
+/**
+ * Represents the field of the class which might be accessible via field, getter, or setter.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public class ClassField extends ClassMember<Field> implements FieldMember {
 	protected Method fieldGetterMethod;
 	protected Method fieldSetterMethod;
 	protected boolean getOverride;
 	protected boolean setOverride;
 	
+	/**
+	 * Constructs class field wrapper.
+	 * 
+	 * @param clazz Class to which belongs the wrapped field.
+	 * @param field Wrapped field.
+	 */
 	public ClassField(Class<?> clazz, Field field) {
 		this(clazz, null, null, field, false, false, null);
 	}
 	
+	/**
+	 * Constructs class field wrapper.
+	 * 
+	 * @param clazz Class to which belongs the wrapped field.
+	 * @param fieldGetterMethod Field getter that mediates the field.
+	 * @param fieldSetterMethod Field setter that modifies the field.
+	 */
 	public ClassField(Class<?> clazz, Method fieldGetterMethod, Method fieldSetterMethod) {
 		this(clazz, fieldGetterMethod, fieldSetterMethod, null, false, false, null);
 	}
 	
+	/**
+	 * Constructs class field wrapper.
+	 * 
+	 * @param clazz Class to which belongs the wrapped field.
+	 * @param fieldGetterMethod Field getter that mediates the field.
+	 * @param fieldSetterMethod Field setter that modifies the field.
+	 * @param field Wrapped field.
+	 */
 	public ClassField(Class<?> clazz, Method fieldGetterMethod, Method fieldSetterMethod, Field field) {
 		this(clazz, fieldGetterMethod, fieldSetterMethod, field, false, false, null);
 	}
 	
+	/**
+	 * Constructs class field wrapper.
+	 * 
+	 * @param clazz Class to which belongs the wrapped field.
+	 * @param fieldGetterMethod Field getter that mediates the field.
+	 * @param fieldSetterMethod Field setter that modifies the field.
+	 * @param field Wrapped field.
+	 * @param getOverride If set, then use field getter instead the direct access to field.
+	 * @param setOverride If set, then use field setter instead the direct access to field.
+	 */
 	public ClassField(Class<?> clazz, Method fieldGetterMethod, Method fieldSetterMethod, Field field, boolean getOverride, boolean setOverride) {
 		this(clazz, fieldGetterMethod, fieldSetterMethod, field, getOverride, setOverride, null);
 	}
 	
+	/**
+	 * Constructs class field wrapper.
+	 * 
+	 * @param clazz Class to which belongs the wrapped field.
+	 * @param fieldGetterMethod Field getter that mediates the field.
+	 * @param fieldSetterMethod Field setter that modifies the field.
+	 * @param field Wrapped field.
+	 * @param getOverride If set, then use field getter instead the direct access to field.
+	 * @param setOverride If set, then use field setter instead the direct access to field.
+	 * @param options Options associated with this class field.
+	 */
 	public ClassField(Class<?> clazz, Method fieldGetterMethod, Method fieldSetterMethod, Field field, boolean getOverride, boolean setOverride, String[] options) {
 		super(clazz, field, options);
 		this.fieldGetterMethod = fieldGetterMethod;
@@ -80,6 +129,39 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		return setOverride;
 	}
 	
+	@Override
+	public String getName() {
+		String fieldName = null;
+		
+		if (member != null) {
+			fieldName = extractFieldName(member);
+		}
+		
+		if (fieldName != null) {
+			return fieldName;
+		} else if (fieldGetterMethod != null) {
+			fieldName = extractFieldNameFromGetter(fieldGetterMethod);
+		}
+		
+		if (fieldName != null) {
+			return fieldName;
+		} else if (fieldSetterMethod != null) {
+			fieldName = extractFieldNameFromSetter(fieldSetterMethod);
+		}
+		
+		if (fieldName != null) {
+			return fieldName;
+		} else {
+			return "";
+		}
+	}
+	
+	/**
+	 * Returns value of the field of the passed object.
+	 * 
+	 * @param object Object which contains the field.
+	 * @return Field value.
+	 */
 	public Object get(Object object) {
 
 		if (!clazz.isInstance(object)) {
@@ -105,6 +187,12 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		return value;
 	}
 	
+	/**
+	 * Sets new value of the field of the passed object.
+	 * 
+	 * @param object Object which contains the field.
+	 * @param value New field value.
+	 */
 	public void set(Object object, Object value) {		
 		if (!clazz.isInstance(object)) {
 			throw new FieldException("Passed object is not instance of the class to which field belongs to.");
@@ -154,6 +242,7 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		return value;
 	}
 	
+	
 	public Class<?> getFieldType() {
 		Class<?>[] params = (fieldSetterMethod != null)? fieldSetterMethod.getParameterTypes() : null;
 		Class<?> setterType = (params != null && params.length > 0)? params[0] : null;
@@ -169,6 +258,12 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		}
 	}
 	
+	/**
+	 * Tests whether the passed method is the getter method for some field.
+	 * 
+	 * @param method Method to be tested.
+	 * @return True if is passed method the getter method, otherwise false.
+	 */
 	public static boolean isGetter(Method method) {
 		String getterName =  method.getName();
 		Class<?>[] parameterTypes = method.getParameterTypes();
@@ -182,6 +277,12 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		return false;
 	}
 	
+	/**
+	 * Tests whether the passed method is the setter method for some field.
+	 * 
+	 * @param method Method to be tested.
+	 * @return True if is passed method the setter method, otherwise false.
+	 */
 	public static boolean isSetter(Method method) {
 		String setterName =  method.getName();
 		Class<?>[] parameterTypes = method.getParameterTypes();
@@ -195,10 +296,22 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		return false;
 	}
 	
+	/**
+	 * Tests whether the passed field is the field.
+	 * 
+	 * @param field Field to be tested.
+	 * @return True if passed field is the field, otherwise false.
+	 */
 	public static boolean isField(Field field) {
 		return !Modifier.isStatic(field.getModifiers());
 	}
 	
+	/**
+	 * Extracts the name for field given by a getter method.
+	 * 
+	 * @param method Field getter method from which to extract the name.
+	 * @return Name of the field.
+	 */
 	public static String extractFieldNameFromGetter(Method method) {		
 		if (isGetter(method)) {
 			String getterName =  method.getName();
@@ -209,6 +322,12 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		throw new FieldException("Invalid getter name! Getter method should start with 'get' and next character should be upper case!");
 	}
 	
+	/**
+	 * Extracts the name for field given by a setter method.
+	 * 
+	 * @param method Field setter method from which to extract the name.
+	 * @return Name of the field.
+	 */
 	public static String extractFieldNameFromSetter(Method method) {
 		if (isSetter(method)) {
 			String getterName =  method.getName();
@@ -219,6 +338,12 @@ public class ClassField extends ClassMember<Field> implements MemberField {
 		throw new FieldException("Invalid setter name! Getter method should start with 'set' and next character should be upper case!");
 	}
 	
+	/**
+	 * Extracts the name for passed field.
+	 * 
+	 * @param field Field.
+	 * @return Name of the field.
+	 */
 	public static String extractFieldName(Field field) {
 		return field.getName();
 	}

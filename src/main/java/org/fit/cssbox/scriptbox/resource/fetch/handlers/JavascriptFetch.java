@@ -32,9 +32,16 @@ import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.url.javascript.Handler.JavaScriptURLConnection;
 
+/**
+ * Class representing fetch that handles javascript: protocols
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 @FetchPreamble (protocols = {"javascript"})
 public class JavascriptFetch extends HttpFetch {
-	public class JavaScriptResource extends HttpResource {
+	private class JavaScriptResource extends HttpResource {
 		
 		public JavaScriptResource(BrowsingContext context, HttpURLConnection connection) {
 			super(context, connection, false);

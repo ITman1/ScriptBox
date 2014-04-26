@@ -57,7 +57,7 @@ import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
-import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
 import org.fit.cssbox.scriptbox.search.External;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.ui.BarProp;

@@ -23,13 +23,30 @@ import java.net.URL;
 
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 
+/**
+ * Abstract class for all error handlers that reports error for a given navigation attempt.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ErrorHandler {
 	protected NavigationAttempt navigationAttempt;
 	
+	/**
+	 * Constructs error handler for a given navigation attempt.
+	 * 
+	 * @param navigationAttempt Navigation attempt which invoked this content handler.
+	 */
 	public ErrorHandler(NavigationAttempt navigationAttempt) {
 		this.navigationAttempt = navigationAttempt;
 	}
 	
+	/**
+	 * Handles an error.
+	 * 
+	 * @param url Location of the resource which was unable to fetch.
+	 */
 	public void handle(URL url) {
 		
 	}

@@ -19,6 +19,14 @@
 
 package org.fit.cssbox.scriptbox.script.exceptions;
 
+/**
+ * Exception that is thrown for some unknown exception that
+ * prevents the current code from continuing.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class UnknownException extends RuntimeException {
 
 	private static final long serialVersionUID = -5362779197435793455L;

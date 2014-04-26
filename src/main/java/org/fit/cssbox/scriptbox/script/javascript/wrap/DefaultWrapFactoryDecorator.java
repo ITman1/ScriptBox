@@ -19,10 +19,10 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
-import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.java.DefaultClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.reflect.DefaultClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.WrapFactory;
@@ -98,7 +98,7 @@ public class DefaultWrapFactoryDecorator extends WrapFactoryDecorator {
 	
 	@Override
 	public Scriptable wrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, Class<?> staticType) {
-		ObjectMembers objectMembers = ObjectMembers.getObjectMembers(javaObject, membersResolverFactory);
+		DefaultObjectMembers objectMembers = DefaultObjectMembers.getObjectMembers(javaObject, membersResolverFactory);
 		return new HostedJavaObject(scope, objectMembers);
 	}
 	

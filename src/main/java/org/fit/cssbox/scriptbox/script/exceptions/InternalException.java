@@ -19,6 +19,14 @@
 
 package org.fit.cssbox.scriptbox.script.exceptions;
 
+/**
+ * Exception that is thrown due to any bad state/lack of something, 
+ * everything what prevents the current code to continue.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class InternalException extends RuntimeException {
 
 	private static final long serialVersionUID = -8104961261059957898L;

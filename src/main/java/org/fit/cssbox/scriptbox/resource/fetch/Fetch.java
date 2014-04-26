@@ -27,8 +27,15 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.Resource;
 
+/**
+ * Abstract class from should derive each specific fetch.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class Fetch implements Closeable {
-	protected class AsyncFetchThread extends Thread {
+	private class AsyncFetchThread extends Thread {
 		@Override
 		public void run() {
 			try {
@@ -36,7 +43,7 @@ public abstract class Fetch implements Closeable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
-				onFetchCompleted();
+				onFetchCompletedPrivate();
 			}
 		}
 		
@@ -59,6 +66,17 @@ public abstract class Fetch implements Closeable {
 	protected boolean finished;
 	protected Resource resourceImpl;
 	
+	/**
+	 * Constructs fetch for a given parameters.
+	 * 
+	 * @param sourceContext Source browsing context which mediates the fetch.
+	 * @param destinationContext Destination browsing context where is new resource being fetched.
+	 * @param url URL which is being fetched.
+	 * @param synchronous If true, then fetching is blocking operation.
+	 * @param manualRedirect If is set, then no redirecting will be processed.
+	 * @param isSafe Should be set to true, if was invoked by user agent and is secure.
+	 * @param onFinishTask Task that should be called after fetch is complete.
+	 */
 	public Fetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		this.fetchRegistry = FetchRegistry.getInstance();
 		
@@ -71,22 +89,47 @@ public abstract class Fetch implements Closeable {
 		this.onFinishTask = onFinishTask;
 	}
 	
+	/**
+	 * Constructs fetch for a given parameters.
+	 * 
+	 * @param sourceContext Source browsing context which mediates the fetch.
+	 * @param destinationContext Destination browsing context where is new resource being fetched.
+	 * @param url URL which is being fetched.
+	 */
 	public Fetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		this(sourceContext, destinationContext, url, true, true, false, null);
 	}
 	
+	/**
+	 * Tests whether is this fetch valid.
+	 * 
+	 * @return True if is this fetch valid, otherwise false.
+	 */
 	public boolean isValid() {
 		return true;
 	}
 	
+	/**
+	 * Tests whether is this fetch retrieved synchronously.
+	 * 
+	 * @return True if is this fetch retrieved synchronously, otherwise false.
+	 */
 	public boolean isSynchronous() {
 		return synchronous;
 	}
 	
+	/**
+	 * Tests whether was this fetch constructed by secure/safe operation.
+	 * 
+	 * @return True if is this fetch retrieved synchronously, otherwise false.
+	 */
 	public boolean isSafe() {
 		return isSafe;
 	}
 	
+	/**
+	 * Closes this fetch.
+	 */
 	@Override
 	public synchronized void close() throws IOException {
 		if (!closed && resourceImpl != null) {
@@ -96,6 +139,11 @@ public abstract class Fetch implements Closeable {
 		closed = true;
 	}
 	
+	/**
+	 * Performs fetch.
+	 * 
+	 * @throws IOException Exception might be thrown by reading input stream.
+	 */
 	public synchronized void fetch() throws IOException {
 		if (finished) {
 			return;
@@ -107,11 +155,16 @@ public abstract class Fetch implements Closeable {
 			return;
 		} else {		
 			fetchImpl();
-			onFetchCompleted();
+			onFetchCompletedPrivate();
 		}
 
 	}
 	
+	/**
+	 * Returns constructed resource from this fetch.
+	 * 
+	 * @return Constructed resource from this fetch.
+	 */
 	public synchronized Resource getResource() {
 		if (finished && !closed) {
 			if (resourceImpl == null) {
@@ -124,7 +177,27 @@ public abstract class Fetch implements Closeable {
 		}
 	}
 	
-	protected synchronized void onFetchCompleted() {
+	/**
+	 * Called when fetch was successfully completed.
+	 */
+	protected void onFetchCompleted() {
+	}
+	
+	/**
+	 * Called for performing the fetch.
+	 * 
+	 * @throws IOException Thrown when IO exception occur.
+	 */
+	protected abstract void fetchImpl() throws IOException;
+	
+	/**
+	 * Called for retrieving resource after fetch completes.
+	 * 
+	 * @return New resource for this fetch.
+	 */
+	protected abstract Resource getResourceImpl();
+	
+	private synchronized void onFetchCompletedPrivate() {
 		finished = true;
 		
 		if (!manualRedirect) {
@@ -150,8 +223,7 @@ public abstract class Fetch implements Closeable {
 		if (onFinishTask != null) {
 			destinationContext.getEventLoop().queueTask(onFinishTask);
 		}
+		
+		onFetchCompleted();
 	}
-	
-	protected abstract void fetchImpl() throws IOException;
-	protected abstract Resource getResourceImpl();
 }

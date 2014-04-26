@@ -35,6 +35,13 @@ import org.fit.cssbox.scriptbox.resource.fetch.handlers.HttpFetch;
 import org.fit.cssbox.scriptbox.resource.fetch.handlers.HttpsFetch;
 import org.fit.cssbox.scriptbox.resource.fetch.handlers.JavascriptFetch;
 
+/**
+ * Fetch registry which collects all kinds of the fetches.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class FetchRegistry {	
 	
 	static private FetchRegistry instance;
@@ -50,6 +57,11 @@ public class FetchRegistry {
 		registerFetchHandler(JavascriptFetch.class);
 	}
 	
+	/**
+	 * Returns instance of the fetch registry.
+	 * 
+	 * @return Instance of the fetch registry.
+	 */
 	public static synchronized FetchRegistry getInstance() {
 		if (instance == null) {
 			instance = new FetchRegistry();
@@ -58,49 +70,50 @@ public class FetchRegistry {
 		return instance;
 	}
 	
+	/**
+	 * Tests whether is passed URL fetchable.
+	 * 
+	 * @param url URL to be tested.
+	 * @return True if is passed URL fetchable, otherwise false.
+	 */
 	public boolean isFetchable(URL url) {
 		String scheme = url.getProtocol();
 		return registeredFetchHandlers.containsKey(scheme);
 	}
 	
+	/**
+	 * Returns fetch for a given parameters.
+	 * 
+	 * @param sourceContext Source browsing context which mediates the fetch.
+	 * @param destinationContext Destination browsing context where is new resource being fetched.
+	 * @param url URL which is being fetched.
+	 * @return Constructed fetch if there exists appropriate fetch, otherwise null.
+	 */
 	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
-		return getFetchProtected(sourceContext, destinationContext, url, null, null, null, null);
+		return getFetchPrivate(sourceContext, destinationContext, url, null, null, null, null);
 	}
 	
+	/**
+	 * Returns fetch for a given parameters.
+	 * 
+	 * @param sourceContext Source browsing context which mediates the fetch.
+	 * @param destinationContext Destination browsing context where is new resource being fetched.
+	 * @param url URL which is being fetched.
+	 * @param synchronous If true, then fetching is blocking operation.
+	 * @param manualRedirect If is set, then no redirecting will be processed.
+	 * @param isSafe Should be set to true, if was invoked by user agent and is secure.
+	 * @param onFinishTask Task that should be called after fetch is complete.
+	 * @return Constructed fetch if there exists appropriate fetch, otherwise null.
+	 */
 	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
-		return getFetchProtected(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
+		return getFetchPrivate(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
-	protected Fetch getFetchProtected(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, Boolean synchronous, Boolean manualRedirect, Boolean isSafe, Task onFinishTask) {
-		Set<Class<? extends Fetch>> fetchHandlers = registeredFetchHandlers.get(url.getProtocol());
-		
-		if (fetchHandlers != null) {
-			for (Class<? extends Fetch> fetchClass : fetchHandlers) {
-				Fetch fetch = null;
-				
-				if (synchronous != null) {
-					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
-				} else {
-					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url);
-				}
-				
-				if (fetch == null) {
-					continue;
-				}
-				
-				if (fetch.isValid()) {
-					return fetch;
-				} else {
-					try {
-						fetch.close();
-					} catch (IOException e) {}
-				}
-			}
-		}
-		
-		return null;
-	}
-	
+	/**
+	 * Registers new fetch class.
+	 * 
+	 * @param fetchClass New fetch class.
+	 */
 	public void registerFetchHandler(Class<? extends Fetch> fetchClass) {
 		String[] protocols = null;
 		Annotation[] annotations = fetchClass.getAnnotations();
@@ -113,7 +126,7 @@ public class FetchRegistry {
 		}
 		
 		if (protocols == null) {
-			// TODO: Throw exception about missing annotation.
+			// TODO?: Throw exception about missing annotation.
 			return;
 		}
 		
@@ -159,5 +172,35 @@ public class FetchRegistry {
 		}
 		
 		return fetch;
+	}
+	
+	private Fetch getFetchPrivate(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, Boolean synchronous, Boolean manualRedirect, Boolean isSafe, Task onFinishTask) {
+		Set<Class<? extends Fetch>> fetchHandlers = registeredFetchHandlers.get(url.getProtocol());
+		
+		if (fetchHandlers != null) {
+			for (Class<? extends Fetch> fetchClass : fetchHandlers) {
+				Fetch fetch = null;
+				
+				if (synchronous != null) {
+					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
+				} else {
+					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url);
+				}
+				
+				if (fetch == null) {
+					continue;
+				}
+				
+				if (fetch.isValid()) {
+					return fetch;
+				} else {
+					try {
+						fetch.close();
+					} catch (IOException e) {}
+				}
+			}
+		}
+		
+		return null;
 	}
 }

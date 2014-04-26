@@ -38,6 +38,13 @@ public class BrowserScriptEngineManager extends MimeContentRegistryBase<BrowserS
 		return instance;
 	}
 	
+	/**
+	 * Constructs new script engine for given MIME type with given script settings.
+	 * 
+	 * @param mimeType MIME type of which script engine should be returned.
+	 * @param settings Settings that should be passed into constructed script engine.
+	 * @return New script engine factory if there is any for given MIME type, otherwse null.
+	 */
 	public synchronized BrowserScriptEngine getBrowserScriptEngine(String mimeType, ScriptSettings<?> settings) {
 		return getContent(mimeType, settings);
 	}

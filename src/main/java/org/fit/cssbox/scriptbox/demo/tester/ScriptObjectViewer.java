@@ -31,8 +31,8 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
-import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.fit.cssbox.scriptbox.window.WindowProxy;
 

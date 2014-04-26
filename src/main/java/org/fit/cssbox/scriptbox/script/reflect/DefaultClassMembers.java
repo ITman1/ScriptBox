@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -28,6 +28,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+/**
+ * Default implementation of the class members.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class DefaultClassMembers extends ClassMembers {
 	protected Map<String, Set<ClassMember<?>>> members;
 	protected Set<ClassConstructor> classConstructors;
@@ -37,6 +44,11 @@ public class DefaultClassMembers extends ClassMembers {
 	
 	protected ClassFunction objectGetter;
 	
+	/**
+	 * Constructs class members which are resolved using the passed members resolver.
+	 * 
+	 * @param membersResolver Members resolver used to resolve the class members.
+	 */
 	public DefaultClassMembers(ClassMembersResolver membersResolver) {
 		super(membersResolver);
 		
@@ -48,6 +60,12 @@ public class DefaultClassMembers extends ClassMembers {
 		inspectClassConstructors();
 	}
 	
+	/**
+	 * Constructs class members which are resolved using the default members resolver - 
+	 * created by {@link DefaultClassMembersResolverFactory}.
+	 * 
+	 * @param clazz Class of which members should be resolved.
+	 */
 	public DefaultClassMembers(Class<?> clazz) {
 		this(ClassMembers.createDefaultClassMembersResolver(clazz));
 	}
@@ -102,6 +120,9 @@ public class DefaultClassMembers extends ClassMembers {
 		return cachedEnumerableMemberNames;
 	}
 	
+	/**
+	 * Walks through all class fields and and adds them as a new class field members.
+	 */
 	protected void inspectClassFields() {
 		Map<String, Method> getters = new HashMap<String, Method>();
 		Map<String, Method> setters = new HashMap<String, Method>();
@@ -168,6 +189,9 @@ public class DefaultClassMembers extends ClassMembers {
 		}
 	}
 	
+	/**
+	 * Walks through all class constructors and and adds them as a new class constructor members.
+	 */
 	protected void inspectClassConstructors() {
  		Constructor<?>[] constructors = clazz.getConstructors();
  		
@@ -186,6 +210,9 @@ public class DefaultClassMembers extends ClassMembers {
 		}
 	}
 	
+	/**
+	 * Walks through all class methods and and adds them as a new class function members.
+	 */
 	protected void inspectClassFunctions() {
  		Method[] methods = clazz.getMethods();
  		
@@ -209,10 +236,20 @@ public class DefaultClassMembers extends ClassMembers {
 		}
 	}
 	
+	/**
+	 * Adds new constructor into the set of constructors.
+	 * 
+	 * @param classConstructor New constructor to be added into the list of constructors.
+	 */
 	protected void defineClassConstructor(ClassConstructor classConstructor) {
 		classConstructors.add(classConstructor);
 	}
 	
+	/**
+	 * Adds new class member into map of class members.
+	 * @param name Name of the class member.
+	 * @param member Member to be added into the members map.
+	 */
 	protected void defineClassMember(String name, ClassMember<?> member) {
 		if (!members.containsKey(name)) {
 			members.put(name, new HashSet<ClassMember<?>>());
@@ -222,6 +259,11 @@ public class DefaultClassMembers extends ClassMembers {
 		memberSet.add(member);
 	}
 	
+	/**
+	 * Stores the function as a object getter.
+	 * 
+	 * @param member New object getter to stored.
+	 */
 	protected void defineObjectGetter(ClassFunction member) {
 		objectGetter = member;
 	}

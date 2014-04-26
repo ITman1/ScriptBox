@@ -1,5 +1,5 @@
 /**
- * FieldException.java
+ * Member.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,24 +17,42 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.exceptions;
+package org.fit.cssbox.scriptbox.script.reflect;
 
-/*
- * TODO: Extend this exception about some better appropriate additional information
- *       e.g. field location - its class, signature etc.
- */
 /**
- * Exception that is thrown for a field members when some exception occurs on them.
+ * Interface for members of the classes/objects.
  * 
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class FieldException extends MemberException {
-
-	private static final long serialVersionUID = 5196224598795024349L;
+public interface Member<MemberType> {
+	/**
+	 * Returns class that owns this member.
+	 * 
+	 * @return Class that owns this member.
+	 */
+	public Class<?> getClazz();
 	
-	public FieldException(String details) {
-		super(details);
-	}
+	/**
+	 * Returns associated Java member.
+	 * 
+	 * @return Associated Java member.
+	 */
+	public MemberType getMember();
+	
+	/**
+	 * Returns name of this member.
+	 * 
+	 * @return Name of this member.
+	 */
+	public String getName();
+	
+	/**
+	 * Tests whether has this member given option.
+	 * 
+	 * @param option Option that should be tested.
+	 * @return True if has this member the given option, otherwise false.
+	 */
+	boolean hasOption(String option);
 }

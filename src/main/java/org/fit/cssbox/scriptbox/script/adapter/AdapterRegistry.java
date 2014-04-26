@@ -22,9 +22,23 @@ package org.fit.cssbox.scriptbox.script.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The registry that collects registered adapters and enables to search them.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see Adapter
+ */
 final public class AdapterRegistry {
 	private Map<Class<?>, Class<?> > adapterMap = new HashMap<Class<?>, Class<?> >();
 
+	/**
+	 * Registers new adapter.
+	 * 
+	 * @param adapter Adapter to be registered inside this registry.
+	 * @return True if adapter is successfully registered.
+	 */
 	public boolean registerAdapter(Class<?> adapter) {
 		try {
 			Object objAdapter = adapter.newInstance();
@@ -47,6 +61,12 @@ final public class AdapterRegistry {
 		return false;
 	}
 
+	/**
+	 * Returns adapter for a given adaptee class or its ancestor base classes.
+	 * 
+	 * @param adapteeClass Start class that should be adapted.
+	 * @return If searching was successful then returns corresponding adapter, otherwise null.
+	 */
 	public Adapter getAdapter(Class<?> adapteeClass) {
 		Adapter adapter = null;
 		
@@ -60,6 +80,12 @@ final public class AdapterRegistry {
 		return adapter;
 	}
 	
+	/**
+	 * Returns adapter for a given adaptee class only and without nesting to its ancestor base classes.
+	 * 
+	 * @param adapteeClass Class that should be adapted.
+	 * @return If searching was successful then returns corresponding adapter, otherwise null.
+	 */
 	public Adapter getSpecificAdapter(Class<?> adapteeClass) {
 		try {
 			Class<?> adapterClass = adapterMap.get(adapteeClass);
@@ -70,5 +96,3 @@ final public class AdapterRegistry {
 		return null;
 	}
 }
-
-// End of the file

@@ -22,14 +22,28 @@ package org.fit.cssbox.scriptbox.script;
 import javax.script.AbstractScriptEngine;
 import javax.script.ScriptEngineFactory;
 
-import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.java.DefaultClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.reflect.DefaultClassMembersResolverFactory;
 
+/**
+ * Abstract class representing JSR 223 compliant base class  
+ * for all script engines that supports the browser.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class BrowserScriptEngine extends AbstractScriptEngine {
 	protected ScriptSettings<?> scriptSettings;
 	protected BrowserScriptEngineFactory factory;
 	protected ClassMembersResolverFactory membersFactory;
 	
+	/**
+	 * Constructs script engine for the given settings and that was constructed using passed factory.
+	 * 
+	 * @param factory Script engine factory that created this browser engine.
+	 * @param scriptSettings Script settings that might be used for initialization of this script engine.
+	 */
 	protected BrowserScriptEngine(BrowserScriptEngineFactory factory, ScriptSettings<?> scriptSettings) {
 		this.scriptSettings = scriptSettings;
 		this.factory = factory;
@@ -37,6 +51,11 @@ public abstract class BrowserScriptEngine extends AbstractScriptEngine {
 		this.membersFactory = initializeClassMembersResolverFactory();
 	}
 	
+	/**
+	 * Returns script settings.
+	 * 
+	 * @return Associated script settings.
+	 */
 	public ScriptSettings<?> getScriptSettings() {
 		return scriptSettings;
 	}
@@ -46,14 +65,30 @@ public abstract class BrowserScriptEngine extends AbstractScriptEngine {
 		return factory;
 	}
 
+	/**
+	 * Returns script engine factory that created this browser script engine.
+	 * 
+	 * @return Script engine factory that created this browser script engine
+	 */
     public BrowserScriptEngineFactory getBrowserFactory() {
 		return factory;
 	}
     
+    /**
+     * Returns associated class members resolver factory.
+     * 
+     * @return Associated class members resolver factory.
+     */
 	public ClassMembersResolverFactory getClassMembersResolverFactory() {
 		return membersFactory;
 	}
     
+	/**
+	 * Initializes class members resolver factory, which will be used for
+     * transforming Java object into script adapted objects
+     * 
+	 * @return New class members resolver factory.
+	 */
 	protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
 		return new DefaultClassMembersResolverFactory();
 	}

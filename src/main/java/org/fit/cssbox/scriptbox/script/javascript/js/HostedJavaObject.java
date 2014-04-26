@@ -31,15 +31,15 @@ import org.fit.cssbox.scriptbox.script.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.exceptions.ObjectException;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
-import org.fit.cssbox.scriptbox.script.java.ClassConstructor;
-import org.fit.cssbox.scriptbox.script.java.ClassField;
-import org.fit.cssbox.scriptbox.script.java.ClassFunction;
-import org.fit.cssbox.scriptbox.script.java.ClassMember;
-import org.fit.cssbox.scriptbox.script.java.InvocableMember;
-import org.fit.cssbox.scriptbox.script.java.MemberConstructor;
-import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
-import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.reflect.ClassConstructor;
+import org.fit.cssbox.scriptbox.script.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
+import org.fit.cssbox.scriptbox.script.reflect.ConstructorMember;
+import org.fit.cssbox.scriptbox.script.reflect.InvocableMember;
+import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
+import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -57,13 +57,13 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 	
 	protected boolean hasNonObjectGetterGet;
 		
-	protected ObjectMembers objectMembers;
+	protected DefaultObjectMembers objectMembers;
 	
 	public HostedJavaObject(Scriptable scope, Object javaObject) {
-		this(scope, ObjectMembers.getObjectMembers(javaObject));
+		this(scope, DefaultObjectMembers.getObjectMembers(javaObject));
 	}
 	
-	public HostedJavaObject(Scriptable scope, ObjectMembers objectMembers) {
+	public HostedJavaObject(Scriptable scope, DefaultObjectMembers objectMembers) {
 		super(scope, null);
 		
 		this.objectMembers = objectMembers;
@@ -105,7 +105,7 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 			throw new FunctionException("Unable to match nearest constructor");
 		}
 		
-		MemberConstructor nearestConstructorMember = (MemberConstructor)nearestInvocable;
+		ConstructorMember nearestConstructorMember = (ConstructorMember)nearestInvocable;
 		
 		Constructor<?> constructor = nearestConstructorMember.getMember();
 		
@@ -303,7 +303,7 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		return result;
 	}
 	
-	public static Object[] getIds(ObjectMembers objectMembers, Object[] superIds) {
+	public static Object[] getIds(DefaultObjectMembers objectMembers, Object[] superIds) {
 		Set<String> membersNames = objectMembers.getEnumerableMemberNames();
 		
 		Object[] returnIds = new Object[membersNames.size() + superIds.length];

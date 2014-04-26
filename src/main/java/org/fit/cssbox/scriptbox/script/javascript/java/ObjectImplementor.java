@@ -26,22 +26,22 @@ import java.util.Set;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.exceptions.FieldException;
-import org.fit.cssbox.scriptbox.script.java.ClassField;
-import org.fit.cssbox.scriptbox.script.java.ClassFunction;
-import org.fit.cssbox.scriptbox.script.java.ClassMember;
-import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.java.ObjectFunction;
-import org.fit.cssbox.scriptbox.script.java.ObjectMembers;
+import org.fit.cssbox.scriptbox.script.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.reflect.ObjectFunction;
+import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
 import org.mozilla.javascript.ScriptableObject;
 
 public class ObjectImplementor {
 	protected Object implementedObject;
 	protected Class<?> implementedObjectType;
 	protected BrowserScriptEngine scriptEngine;
-	protected ObjectMembers objectMembers;
+	protected DefaultObjectMembers objectMembers;
 	protected Set<String> definedProperties;
 	
-	public ObjectImplementor(ObjectMembers objectMembers, BrowserScriptEngine scriptEngine) {
+	public ObjectImplementor(DefaultObjectMembers objectMembers, BrowserScriptEngine scriptEngine) {
 		this.objectMembers = objectMembers;
 		this.implementedObject = objectMembers.getObject();
 		this.implementedObjectType = this.implementedObject.getClass();
@@ -57,7 +57,7 @@ public class ObjectImplementor {
 		return implementedObject;
 	}
 	
-	public ObjectMembers getObjectMembers() {
+	public DefaultObjectMembers getObjectMembers() {
 		return objectMembers;
 	}
 	
@@ -115,9 +115,9 @@ public class ObjectImplementor {
 		definedProperties.add(fieldName);
 	}
 		
-	protected static ObjectMembers getObjectMembers(Object object, BrowserScriptEngine engine) {
+	protected static DefaultObjectMembers getObjectMembers(Object object, BrowserScriptEngine engine) {
 		ClassMembersResolverFactory resolverFactory = engine.getClassMembersResolverFactory();
-		ObjectMembers objectMembers = ObjectMembers.getObjectMembers(object, resolverFactory);
+		DefaultObjectMembers objectMembers = DefaultObjectMembers.getObjectMembers(object, resolverFactory);
 		return objectMembers;
 	}
 }

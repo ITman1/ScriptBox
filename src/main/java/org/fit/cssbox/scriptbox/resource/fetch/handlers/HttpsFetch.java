@@ -28,6 +28,13 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 
+/**
+ * Class representing fetch that handles https: protocols
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 @FetchPreamble (protocols = {"https"})
 public class HttpsFetch extends HttpFetch {
 	protected class HttpsResource extends HttpResource {

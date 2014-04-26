@@ -1,5 +1,5 @@
 /**
- * DefaultObjectMembers.java
+ * ClassMembersResolverFactory.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,8 +17,15 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
-public class DefaultObjectMembers {
-
+/**
+ * Interface for factories which creates the class members resolvers.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public interface ClassMembersResolverFactory {
+	public ClassMembersResolver create(Class<?> clazz);
 }

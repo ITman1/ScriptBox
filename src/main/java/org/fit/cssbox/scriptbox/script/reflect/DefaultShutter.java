@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -29,8 +29,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Represents the default implementation of the Shutter.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class DefaultShutter implements Shutter {
-	class ClassModifiers {
+	private class ClassModifiers {
 		public ClassModifiers(boolean allMethods, boolean allFields, boolean allCostructors) {
 			this.allMethods = allMethods;
 			this.allFields = allFields;
@@ -41,12 +48,14 @@ public class DefaultShutter implements Shutter {
 		boolean allCostructors;
 	}
 	
-	class FieldRecord {
+	private class FieldRecord {
 		public FieldRecord(Class<?> type, Field field) {
 			this.type = type;
 			this.field = field;
 		}
+		@SuppressWarnings("unused")
 		Class<?> type;
+		@SuppressWarnings("unused")
 		Field field;
 		
 		@Override
@@ -62,19 +71,19 @@ public class DefaultShutter implements Shutter {
 		}
 	}
 	
-	class ConstructorRecord extends CallableRecord {
+	private class ConstructorRecord extends CallableRecord {
 		public ConstructorRecord(Class<?> type, Constructor<?> constructor) {
 			super(type, constructor, constructor.getName(), constructor.getParameterTypes());
 		}
 	}
 	
-	class FunctionRecord extends CallableRecord {
+	private class FunctionRecord extends CallableRecord {
 		public FunctionRecord(Class<?> type, Method method) {
 			super(type, method, method.getName(), method.getParameterTypes());
 		}
 	}
 	
-	class CallableRecord {
+	private class CallableRecord {
 		public CallableRecord(Class<?> type, Member member, String memberName, Class<?>[] memberParams) {
 			this.type = type;
 			this.member = member;
@@ -82,6 +91,7 @@ public class DefaultShutter implements Shutter {
 			this.memberParams = memberParams;
 		}
 		Class<?> type;
+		@SuppressWarnings("unused")
 		Member member;
 		String memberName;
 		Class<?>[] memberParams;
@@ -151,49 +161,103 @@ public class DefaultShutter implements Shutter {
 		return visibleConstructors.contains(classConstructor) || hasAllConstructorsModifier(type, constructor);
 	}
 	
+	/**
+	 * Adds visible class.
+	 * 
+	 * @param type Class that should be visible from now.
+	 */
 	public void addVisibleClass(Class<?> type) {
 		addVisibleClass(type, false, false, false);
 	}
 	
+	/**
+	 * Adds visible class.
+	 * 
+	 * @param type Class that should be visible from now.
+	 * @param allMethods Include all methods
+	 * @param allFields Include all fields
+	 * @param allCostructors Include all constructors
+	 */
 	public void addVisibleClass(Class<?> type, boolean allMethods, boolean allFields, boolean allCostructors) {
 		visibleClasses.put(type, new ClassModifiers(allMethods, allFields, allCostructors));
 	}
 
+	/**
+	 * Adds visible field.
+	 * 
+	 * @param type Class that contains given field.
+	 * @param field Field that should be visible from now.
+	 */
 	public void addVisibleField(Class<?> type, Field field) {
 		FieldRecord classField = new FieldRecord(type, field);
 		visibleFields.add(classField);
 	}
 
+	/**
+	 * Adds visible method.
+	 * 
+	 * @param type Class that contains given method.
+	 * @param method Method that should be visible from now.
+	 */
 	public void addVisibleMethod(Class<?> type, Method method) {
 		FunctionRecord classFunction = new FunctionRecord(type, method);
 		visibleFunctions.add(classFunction);
 	}
 	
+	/**
+	 * Adds visible constructor.
+	 * 
+	 * @param type Class that contains given constructor.
+	 * @param constructor Constructor that should be visible from now.
+	 */
 	public void addVisibleMethod(Class<?> type, Constructor<?> constructor) {
 		ConstructorRecord classFunction = new ConstructorRecord(type, constructor);
 		visibleConstructors.add(classFunction);
 	}
 	
+	/**
+	 * Removes visible class.
+	 * 
+	 * @param type Class that should not be visible from now.
+	 */
 	public void removeVisibleClass(Class<?> type) {
 		visibleClasses.remove(type);
 	}
 
+	/**
+	 * Removes visible field.
+	 * 
+	 * @param type Class that contains given field.
+	 * @param field Field that should not be visible from now.
+	 */
 	public void removeVisibleField(Class<?> type, Field field) {
 		FieldRecord classField = new FieldRecord(type, field);
 		visibleFields.remove(classField);
 	}
 
+	/**
+	 * Removes visible method.
+	 * 
+	 * @param type Class that contains given method.
+	 * @param method Method that should not be visible from now.
+	 */
 	public void removeVisibleMethod(Class<?> type, Method method) {
 		FunctionRecord classFunction = new FunctionRecord(type, method);
 		visibleFunctions.remove(classFunction);
 	}
 	
+	/**
+	 * Removes visible constructor.
+	 * 
+	 * @param type Class that contains given constructor.
+	 * @param constructor Constructor that should not be visible from now.
+	 */
 	public void removeVisibleConstructor(Class<?> type, Constructor<?> constructor) {
 		ConstructorRecord classFunction = new ConstructorRecord(type, constructor);
 		visibleConstructors.remove(classFunction);
 	}
 	
-	public boolean hasAllMethodsModifier(Class<?> type, Method method) {
+	private boolean hasAllMethodsModifier(Class<?> type, Method method) {
 		ClassModifiers modifiers = null;
 		while (type != null && ((modifiers = visibleClasses.get(type)) == null)) {
 			type = type.getSuperclass();
@@ -209,7 +273,7 @@ public class DefaultShutter implements Shutter {
 		}
 	}
 	
-	public boolean hasAllConstructorsModifier(Class<?> type, Constructor<?> constructor) {
+	private boolean hasAllConstructorsModifier(Class<?> type, Constructor<?> constructor) {
 		ClassModifiers modifiers = null;
 		while (type != null && ((modifiers = visibleClasses.get(type)) == null)) {
 			type = type.getSuperclass();
@@ -225,7 +289,7 @@ public class DefaultShutter implements Shutter {
 		}
 	}
 	
-	public boolean hasAllFieldsModifier(Class<?> type) {
+	private boolean hasAllFieldsModifier(Class<?> type) {
 		// FIXME: fix for superclass fields
 		ClassModifiers modifiers = visibleClasses.get(type);
 		return (modifiers != null)? modifiers.allFields : false;

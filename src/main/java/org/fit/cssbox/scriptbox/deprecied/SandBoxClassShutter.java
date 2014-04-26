@@ -22,7 +22,7 @@ package org.fit.cssbox.scriptbox.deprecied;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.fit.cssbox.scriptbox.script.java.Shutter;
+import org.fit.cssbox.scriptbox.script.reflect.Shutter;
 import org.mozilla.javascript.ClassShutter;
 
 /** 

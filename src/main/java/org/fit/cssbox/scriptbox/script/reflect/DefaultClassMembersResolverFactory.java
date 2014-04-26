@@ -17,12 +17,21 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * Default implementation of the class members resolver factory.
+ * Class members resolver created by this factory includes 
+ * all members of the wrapped class.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class DefaultClassMembersResolverFactory implements ClassMembersResolverFactory {
 	class DefaultClassMembersResolver extends ClassMembersResolver {
 		
@@ -99,7 +108,5 @@ public class DefaultClassMembersResolverFactory implements ClassMembersResolverF
 	@Override
 	public ClassMembersResolver create(Class<?> clazz) {
 		return new DefaultClassMembersResolver(clazz);
-	}
-	
-	
+	}	
 }

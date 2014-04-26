@@ -27,21 +27,46 @@ import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.exceptions.ScriptAnnotationException;
-import org.fit.cssbox.scriptbox.script.java.ClassField;
-import org.fit.cssbox.scriptbox.script.java.ClassFunction;
+import org.fit.cssbox.scriptbox.script.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
 
 public class ScriptAnnotation {
+	
+	/**
+	 * Tests whether is passed annotation the script annotation.
+	 * 
+	 * @param annotation Annotation to be tested.
+	 * @return True if is given annotation the script annotation.
+	 */
 	public static boolean isScriptAnnotation(Annotation annotation) {		
 		return 	annotation instanceof ScriptGetter || 
 				annotation instanceof ScriptSetter || 
-				annotation instanceof ScriptFunction;
+				annotation instanceof ScriptFunction || 
+				annotation instanceof ScriptClass || 
+				annotation instanceof ScriptConstructor || 
+				annotation instanceof InvisibleField || 
+				annotation instanceof InvisibleFunction;
 	}
 	
+	/**
+	 * Tests whether given member contains script annotation with the given option.
+	 * 
+	 * @param member Member to be tested for the option.
+	 * @param option Option to be located in the member annotation.
+	 * @return True if given member contains given option.
+	 */
 	public static boolean containsMemberOption(Member member, String option) {
 		Annotation annotation = getMemberScriptAnnotation(member);
 		return containsOption(annotation, option);
 	}
 	
+	/**
+	 * Tests whether given class annotation contains the given option.
+	 * 
+	 * @param classAnnotation Class annotation to be tested for the option.
+	 * @param option Option to be located in the class annotation.
+	 * @return True if given class annotation contains given option.
+	 */
 	public static boolean containsOption(Annotation classAnnotation, String option) {
 		String options[] = null;
 		
@@ -64,6 +89,13 @@ public class ScriptAnnotation {
 		return containsOption(option, options);
 	}
 	
+	/**
+	 * Tests whether is given option inside arrays of options.
+	 * 
+	 * @param option Option to be located in the option array.
+	 * @param options Array with the options.
+	 * @return True if is given option inside array of given options.
+	 */
 	public static boolean containsOption(String option, String[] options) {
 		for (String currOption : options) {
 			if (currOption.equals(option)) {
@@ -74,6 +106,14 @@ public class ScriptAnnotation {
 		return false;
 	}
 	
+	/**
+	 * Tests whether is passed script engine supported by a member of some class.
+	 * 
+	 * @param clazz Class containing the script member.
+	 * @param member Class member.
+	 * @param scriptEngine Script engine to be tested whether is supported by a member.
+	 * @return True if is passed script engine supported by a member of some class.
+	 */
 	public static boolean isEngineSupported(Class<?> clazz, Member member, BrowserScriptEngine scriptEngine) {
 		Annotation methodAnnotation = getMemberScriptAnnotation(member);
 		Annotation clazzAnnotation = getClassScriptAnnotation(clazz);
@@ -101,9 +141,17 @@ public class ScriptAnnotation {
 		return engineSupported;
 	}
 	
+	/**
+	 * Tests whether is passed script engine supported by a member script annotation.
+	 * 
+	 * @param annotation Script annotation.
+	 * @param scriptEngine Script engine to be tested whether is supported by a member script annotation.
+	 * @return True if is passed script engine supported by a member script annotation.
+	 */
 	public static boolean isEngineSupported(Annotation annotation, BrowserScriptEngine scriptEngine) {
 		String engineName = scriptEngine.getBrowserFactory().getEngineShortName();
-		String engines[] = null;		
+		String engines[] = null;
+		
 		if (annotation instanceof ScriptGetter) {
 			ScriptGetter scriptGetter = (ScriptGetter)annotation;
 			engines = scriptGetter.engines();
@@ -137,6 +185,13 @@ public class ScriptAnnotation {
 		return isEngineSuported(engines, engineName);
 	}
 	
+	/**
+	 * Tests whether is given engine name inside arrays of engine names.
+	 * 
+	 * @param engines Array with the engine names.
+	 * @param engineName Option to be located in the engine names array.
+	 * @return True if is given option inside array of given engine names.
+	 */
 	public static boolean isEngineSuported(String engines[], String engineName) {
 		for (String engine : engines) {
 			if (engine.equals(engineName)) {
@@ -147,16 +202,34 @@ public class ScriptAnnotation {
 		return false;
 	}
 	
+	/**
+	 * Returns class script annotation if there is any.
+	 * 
+	 * @param member Member that may contain the class script annotation.
+	 * @return Class script annotation if there is any, otherwise null.
+	 */
 	public static Annotation getClassScriptAnnotation(Member member) {
 		Class<?> clazz = member.getClass();
 		return getClassScriptAnnotation(clazz);
 	}
 	
+	/**
+	 * Returns class script annotation if there is any.
+	 * 
+	 * @param clazz Class that may contain the class script annotation.
+	 * @return Class script annotation if there is any, otherwise null.
+	 */
 	public static Annotation getClassScriptAnnotation(Class<?> clazz) {
 		Annotation clazzAnnotation = clazz.getAnnotation(ScriptClass.class);
 		return clazzAnnotation;
 	}
 	
+	/**
+	 * Returns member script annotation if there is any.
+	 * 
+	 * @param member Member that may contain the member script annotation.
+	 * @return Member script annotation if there is any, otherwise null.
+	 */
 	public static Annotation getMemberScriptAnnotation(Member member) {
 		Annotation scriptAnnotation = null;
 		Annotation returnAnnotation = null;
@@ -209,6 +282,14 @@ public class ScriptAnnotation {
 		return returnAnnotation;
 	}
 	
+	/**
+	 * Tests whether is given method of passed class the supported script getter of passed script engine.
+	 * 
+	 * @param clazz Class of the method.
+	 * @param method Method to be tested.
+	 * @param scriptEngine Script engine to be tested whether is supported by a method.
+	 * @return True if passed method is supported script getter.
+	 */
 	public static boolean testForScriptGetter(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		Class<?> returnType = method.getReturnType();
@@ -224,6 +305,14 @@ public class ScriptAnnotation {
 		return isSupportedAndValid && isSignatureValid;
 	}
 	
+	/**
+	 * Tests whether is given method of passed class the supported script setter of passed script engine.
+	 * 
+	 * @param clazz Class of the method.
+	 * @param method Method to be tested.
+	 * @param scriptEngine Script engine to be tested whether is supported by a method.
+	 * @return True if passed method is supported script setter.
+	 */
 	public static boolean testForScriptSetter(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		
@@ -238,21 +327,53 @@ public class ScriptAnnotation {
 		return isSupportedAndValid && isSignatureValid;
 	}
 	
+	/**
+	 * Tests whether is given constructor of passed class the supported script constructor of passed script engine.
+	 * 
+	 * @param clazz Class of the method.
+	 * @param constructor Constructor to be tested.
+	 * @param scriptEngine Script engine to be tested whether is supported by a constructor.
+	 * @return True if passed method is supported script constructor.
+	 */
 	public static boolean testForScriptConstructor(Class<?> clazz, Constructor<?> constructor, BrowserScriptEngine scriptEngine) {
 		boolean isSupportedAndValid = isSupportedAndValid(ScriptConstructor.class, ScriptClass.ALL_CONSTRUCTORS, clazz, constructor, scriptEngine);
 		return isSupportedAndValid;
 	}
 	
+	/**
+	 * Tests whether is given method of passed class the supported script function of passed script engine.
+	 * 
+	 * @param clazz Class of the method.
+	 * @param method Method to be tested.
+	 * @param scriptEngine Script engine to be tested whether is supported by a method.
+	 * @return True if passed method is supported script function.
+	 */
 	public static boolean testForScriptFunction(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
 		boolean isSupportedAndValid = isSupportedAndValid(ScriptFunction.class, ScriptClass.ALL_METHODS, clazz, method, scriptEngine);
 		return isSupportedAndValid;
 	}
 	
+	/**
+	 * Tests whether is given field of passed class the supported script field of passed script engine.
+	 * 
+	 * @param clazz Class of the method.
+	 * @param field Field to be tested.
+	 * @param scriptEngine Script engine to be tested whether is supported by a field.
+	 * @return True if passed method is supported script field.
+	 */
 	public static boolean testForScriptField(Class<?> clazz, Field field, BrowserScriptEngine scriptEngine) {
 		boolean isSupportedAndValid = isSupportedAndValid(ScriptField.class, ScriptClass.ALL_FIELDS, clazz, field, scriptEngine);
 		return isSupportedAndValid;
 	}
 	
+	/**
+	 * Tests whether is given method of passed class the supported object getter of passed script engine.
+	 * 
+	 * @param clazz Class of the method.
+	 * @param method Method to be tested.
+	 * @param scriptEngine Script engine to be tested whether is supported by a object getter.
+	 * @return True if passed method is supported object getter.
+	 */
 	public static boolean testForObjectGetter(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
 		if (ClassFunction.isObjectGetterMethod(clazz, method)) {	
 			return isSupportedAndValid(ScriptFunction.class, ScriptClass.ALL_METHODS, clazz, method, scriptEngine);
@@ -261,6 +382,12 @@ public class ScriptAnnotation {
 		return false;
 	}
 
+	/**
+	 * Extracts the name of the field from the field getter.
+	 * 
+	 * @param method Script getter method.
+	 * @return Name of the script field.
+	 */
 	public static String extractFieldNameFromGetter(Method method) {
 		String fieldName = null;
 		Annotation annotation = getMemberScriptAnnotation(method);
@@ -276,6 +403,12 @@ public class ScriptAnnotation {
 		return ClassField.extractFieldNameFromGetter(method);
 	}
 
+	/**
+	 * Extracts the name of the field from the field setter.
+	 * 
+	 * @param method Script setter method.
+	 * @return Name of the script field.
+	 */
 	public static String extractFieldNameFromSetter(Method method) {
 		String fieldName = null;
 		Annotation annotation = getMemberScriptAnnotation(method);
@@ -291,14 +424,34 @@ public class ScriptAnnotation {
 		return ClassField.extractFieldNameFromSetter(method);
 	}
 
+	/**
+	 * Extracts the name of the field from the field.
+	 * 
+	 * @param field Field.
+	 * @return Name of the script field.
+	 */
 	public static String extractFieldName(Field field) {
 		return ClassField.extractFieldName(field);
 	}
 
+	/**
+	 * Extracts the name of the function from the method.
+	 * 
+	 * @param method Method.
+	 * @return Name of the script function.
+	 */
 	public static String extractFunctionName(Method method) {
 		return ClassFunction.extractFunctionName(method);
 	}
 	
+	/**
+	 * Tests whether is given field enumerable.
+	 * 
+	 * @param objectFieldGetter Field getter of the script field to be tested.
+	 * @param objectFieldSetter Field setter of the script field to be tested.
+	 * @param field Field representing script field to be tested.
+	 * @return True if is given field enumerable.
+	 */
 	public static boolean isFieldEnumerable(Method objectFieldGetter, Method objectFieldSetter, Field field) {
 		boolean isEnumerable = (field == null)? 
 				containsOption(ScriptField.ENUMERABLE, ScriptField.DEFAULT_OPTIONS) : 
@@ -309,12 +462,26 @@ public class ScriptAnnotation {
 		return isEnumerable;
 	}
 	
+	/**
+	 * Tests whether is given function enumerable.
+	 * 
+	 * @param function Method representing script function to be tested.
+	 * @return True if is given method enumerable.
+	 */
 	public static boolean isFunctionEnumerable(Method function) {
 		return containsMemberOption(function, ScriptFunction.ENUMERABLE)
 			|| containsMemberOption(function, ScriptGetter.CALLABLE_ENUMERABLE_GETTER)
 			|| containsMemberOption(function, ScriptSetter.CALLABLE_ENUMERABLE_SETTER);
 	}
 	
+	/**
+	 * Tests whether is given method of passed class callable by a script engine.
+	 * 
+	 * @param clazz Class containing the method.
+	 * @param method Method to be tested.
+	 * @param scriptEngine Script engine to be tested whether can call passed a method.
+	 * @return True if is given method callable from the passed script engine, otherwise false.
+	 */
 	public static boolean isCallable(Class<?> clazz, Method method, BrowserScriptEngine scriptEngine) {
 		boolean isPureFunction = 
 				ScriptAnnotation.testForScriptFunction(clazz, method, scriptEngine);
@@ -332,7 +499,7 @@ public class ScriptAnnotation {
 		return (isPureFunction || isGetterFunction || isSetterFunction) && !objectGetterFunction;
 	}
 	
-	protected static boolean isSupportedAndValid(Class<? extends Annotation> annotationType, String classOption, Class<?> clazz, Member member, BrowserScriptEngine scriptEngine) {
+	private static boolean isSupportedAndValid(Class<? extends Annotation> annotationType, String classOption, Class<?> clazz, Member member, BrowserScriptEngine scriptEngine) {
 		boolean engineSupported = ScriptAnnotation.isEngineSupported(clazz, member, scriptEngine);
 		boolean hasValidAnnotation = false;
 		

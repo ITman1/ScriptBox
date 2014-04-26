@@ -21,6 +21,20 @@ package org.fit.cssbox.scriptbox.resource.content;
 
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 
+/*
+ * TODO: Implement some base methods.
+ */
+/**
+ * Abstract class for all inline content - e.g. a native rendering of the content, 
+ * an error message because the specified type is not supported, or an inline 
+ * prompt to allow the user to select a registered handler.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-ua-inline">Read inline content</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class InlineContentHandler extends ContentHandler {
 
 	public InlineContentHandler(NavigationAttempt navigationAttempt) {

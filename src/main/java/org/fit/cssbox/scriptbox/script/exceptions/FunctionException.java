@@ -19,6 +19,17 @@
 
 package org.fit.cssbox.scriptbox.script.exceptions;
 
+/*
+ * TODO: Extend this exception about some better appropriate additional information
+ *       e.g. method location - its class, signature etc.
+ */
+/**
+ * Exception that is thrown for a method members when some exception occurs on them.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class FunctionException extends MemberException {
 
 	private static final long serialVersionUID = 8901518597384702029L;

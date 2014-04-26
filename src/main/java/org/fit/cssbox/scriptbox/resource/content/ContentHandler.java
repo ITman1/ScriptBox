@@ -24,16 +24,35 @@ import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.resource.Resource;
 
+/**
+ * Abstract class for all content handlers that handles resources 
+ * of the specific MIME types and performs corresponding handling actions
+ * e.g. parsing of the documents, rendering etc.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class ContentHandler {
 	protected NavigationAttempt navigationAttempt;
 	protected NavigationController navigationController;
 	protected BrowsingContext context;
 	
+	/**
+	 * Constructs content handler for a given navigation attempt.
+	 * 
+	 * @param navigationAttempt Navigation attempt which invoked this content handler.
+	 */
 	public ContentHandler(NavigationAttempt navigationAttempt) {
 		this.navigationAttempt = navigationAttempt;
 		this.navigationController = navigationAttempt.getNavigationController();
 		this.context = navigationController.getBrowsingContext();
 	}
 		
+	/**
+	 * Processes given resource.
+	 * 
+	 * @param resource Resource to be processed.
+	 */
 	public abstract void process(Resource resource);
 }

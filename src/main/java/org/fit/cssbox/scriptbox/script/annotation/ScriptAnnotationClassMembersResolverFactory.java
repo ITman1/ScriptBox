@@ -24,17 +24,25 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
-import org.fit.cssbox.scriptbox.script.java.ClassConstructor;
-import org.fit.cssbox.scriptbox.script.java.ClassField;
-import org.fit.cssbox.scriptbox.script.java.ClassFunction;
-import org.fit.cssbox.scriptbox.script.java.ClassMember;
-import org.fit.cssbox.scriptbox.script.java.ClassMembersResolver;
-import org.fit.cssbox.scriptbox.script.java.ClassMembersResolverFactory;
-import org.fit.cssbox.scriptbox.script.java.DefaultShutter;
-import org.fit.cssbox.scriptbox.script.java.Shutter;
+import org.fit.cssbox.scriptbox.script.reflect.ClassConstructor;
+import org.fit.cssbox.scriptbox.script.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolver;
+import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.reflect.DefaultShutter;
+import org.fit.cssbox.scriptbox.script.reflect.Shutter;
 
+/**
+ * Class of the class member resolver factory, which constructs class members resolvers
+ * that makes members visible according to annotation notations above them.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ScriptAnnotationClassMembersResolverFactory implements ClassMembersResolverFactory {
-	class ScriptAnnotationClassMembersResolver extends ClassMembersResolver {
+	private class ScriptAnnotationClassMembersResolver extends ClassMembersResolver {
 		final String pernament_options[] = {ClassMember.PERNAMENT};
 		final String pernament_enumerable_options[] = {ClassMember.PERNAMENT, ClassMember.ENUMERABLE};
 		
@@ -140,10 +148,21 @@ public class ScriptAnnotationClassMembersResolverFactory implements ClassMembers
 	protected BrowserScriptEngine browserScriptEngine;
 	protected Shutter explicitGrantShutter;
 	
+	/**
+	 * Constructs new class member resolver factory.
+	 * 
+	 * @param browserScriptEngine Browser script engine that owns this class member resolver factory.
+	 */
 	public ScriptAnnotationClassMembersResolverFactory(BrowserScriptEngine browserScriptEngine) {
 		this(browserScriptEngine, new DefaultShutter());
 	}
 	
+	/**
+	 * Constructs new class member resolver factory.
+	 * 
+	 * @param browserScriptEngine Browser script engine that owns this class member resolver factory.
+	 * @param explicitGrantShutter Shutter that makes members explicitly visible instead of script annotation defined above them.
+	 */
 	public ScriptAnnotationClassMembersResolverFactory(BrowserScriptEngine browserScriptEngine, Shutter explicitGrantShutter) {
 		this.browserScriptEngine = browserScriptEngine;
 		this.explicitGrantShutter = explicitGrantShutter;

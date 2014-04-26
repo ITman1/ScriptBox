@@ -17,24 +17,54 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class ObjectField extends ObjectMember<ClassField, Field> implements MemberField {	
+/**
+ * Represents the field of the object.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public class ObjectField extends ObjectMember<ClassField, Field> implements FieldMember {	
+	
+	/**
+	 * Constructs object field for given object using class field.
+	 * 
+	 * @param object Object containing the object field.
+	 * @param classFunction Class field that is wrapped by this class and associated with the object.
+	 */
 	public ObjectField(Object object, ClassField classField) {
 		super(object, classField);
 	}
 	
-	public ObjectField(Object object, Field member) {
-		this(object, new ClassField(object.getClass(), member));
+	/**
+	 * Constructs object field for given object from the passed field.
+	 * 
+	 * @param object Object containing the object field.
+	 * @param field Field that will be wrapped into class field.
+	 */
+	public ObjectField(Object object, Field field) {
+		this(object, new ClassField(object.getClass(), field));
 	}
 
+	/**
+	 * Returns value of the field.
+	 * 
+	 * @return Field value.
+	 */
 	public Object get() {
 		return classMember.get(object);
 	}
 	
+	/**
+	 * Sets new value of the field.
+	 * 
+	 * @param value New field value.
+	 */
 	public void set(Object value) {
 		classMember.set(object, value);
 	}	
@@ -62,5 +92,10 @@ public class ObjectField extends ObjectMember<ClassField, Field> implements Memb
 	@Override
 	public boolean hasSetOverride() {
 		return classMember.hasSetOverride();
+	}
+
+	@Override
+	public Class<?> getFieldType() {
+		return classMember.getFieldType();
 	}	
 }

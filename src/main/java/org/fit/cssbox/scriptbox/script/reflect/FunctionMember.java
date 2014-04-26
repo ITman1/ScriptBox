@@ -1,5 +1,5 @@
 /**
- * MemberField.java
+ * FunctionMember.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,14 +17,22 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public interface MemberField extends MemberClass<Field> {
-	public Method getFieldGetterMethod();
-	public Method getFieldSetterMethod();
-	public boolean hasGetOverride();
-	public boolean hasSetOverride();
+/**
+ * Interface for function members.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public interface FunctionMember extends InvocableMember<Method> {
+	/**
+	 * Returns return type of this function member.
+	 * 
+	 * @return Return type of this function member.
+	 */
+	public Class<?> getReturnType();
 }

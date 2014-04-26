@@ -21,6 +21,15 @@ package org.fit.cssbox.scriptbox.script;
 
 import java.util.Set;
 
+/**
+ * Abstract class that acts as a script context inject, but instead of that 
+ * allows also automatic registration of this inject in the proper 
+ * script engine factory via {@link BrowserScriptEngineManager}.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class ScriptContextInjector extends ScriptContextInject {
 	protected final static String[] ALL_SCRIPT_ENGINE_FACTORIES = null;
 	protected final static BrowserScriptEngineManager manager = BrowserScriptEngineManager.getInstance();
@@ -28,18 +37,38 @@ public abstract class ScriptContextInjector extends ScriptContextInject {
 	protected String[] scriptEngineNames;
 	protected boolean isRegistered;
 	
+	/**
+	 * Constructs injector for the supported script engines.
+	 * 
+	 * @param scriptEngineNames Names of the script engines of which factories
+	 *        should have registered the script context inject implemented by this injector. 
+	 */
 	public ScriptContextInjector(String[] scriptEngineNames) {
 		this.scriptEngineNames = scriptEngineNames;
 	}
 	
+	/**
+	 * Returns associated names of the script engines.
+	 * 
+	 * @return Associated names of the script engines
+	 */
 	public String[] getScriptEngineName() {
 		return scriptEngineNames;
 	}
 	
+	/**
+	 * Tests whether has been this inject already registered inside corresponding script engine factories.
+	 * 
+	 * @return True if script context inject is registered.
+	 */
 	public boolean isRegistered() {
 		return isRegistered;
 	}
 	
+	/**
+	 * Registers this script context inject inside script engine factories
+	 * that constructs script engines with the names that have associated this injector.
+	 */
 	public void registerScriptContextInject() {
 		if (scriptEngineNames != ALL_SCRIPT_ENGINE_FACTORIES) {
 			for (String scriptEngineName : scriptEngineNames) {
@@ -54,6 +83,10 @@ public abstract class ScriptContextInjector extends ScriptContextInject {
 		isRegistered = true;
 	}
 	
+	/**
+	 * Unregisters this script context inject inside script engine factories
+	 * that constructs script engines with the names that have associated this injector.
+	 */
 	public void unregisterScriptContextInject() {
 		if (scriptEngineNames != ALL_SCRIPT_ENGINE_FACTORIES) {
 			for (String scriptEngineName : scriptEngineNames) {
@@ -68,13 +101,13 @@ public abstract class ScriptContextInjector extends ScriptContextInject {
 		isRegistered = false;
 	}
 	
-	protected void registerForScriptEngineFactories(Set<BrowserScriptEngineFactory> factories) {
+	private void registerForScriptEngineFactories(Set<BrowserScriptEngineFactory> factories) {
 		for (BrowserScriptEngineFactory factory : factories) {
 			factory.registerScriptContextsInject(this);
 		}
 	}
 	
-	protected void unregisterForScriptEngineFactories(Set<BrowserScriptEngineFactory> factories) {
+	private void unregisterForScriptEngineFactories(Set<BrowserScriptEngineFactory> factories) {
 		for (BrowserScriptEngineFactory factory : factories) {
 			factory.unregisterScriptContextsInject(this);
 		}

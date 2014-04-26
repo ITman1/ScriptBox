@@ -19,6 +19,14 @@
 
 package org.fit.cssbox.scriptbox.script.exceptions;
 
+/**
+ * Exception that is thrown for signaling that script annotation of
+ * the class or its member is invalid.
+ *  
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ScriptAnnotationException extends RuntimeException {
 
 	private static final long serialVersionUID = -4638263395797043872L;

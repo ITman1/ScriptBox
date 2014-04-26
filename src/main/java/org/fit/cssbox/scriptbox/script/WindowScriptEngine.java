@@ -22,6 +22,14 @@ package org.fit.cssbox.scriptbox.script;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 
+/**
+ * Abstract class representing JSR 223 compliant base class  
+ * for all script engines that have set global object and it is Window.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class WindowScriptEngine extends GlobalObjectScriptEngine {
 	private Window window;
 	
@@ -31,6 +39,11 @@ public abstract class WindowScriptEngine extends GlobalObjectScriptEngine {
 		window = (scriptSettings != null)? scriptSettings.getGlobalObject() : null;
 	}
 	
+	/**
+	 * Returns global Window object.
+	 * 
+	 * @return Global Window object.
+	 */
 	public Window getWindow() {
 		return window;
 	}

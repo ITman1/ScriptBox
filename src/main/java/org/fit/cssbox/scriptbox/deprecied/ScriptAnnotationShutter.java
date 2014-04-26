@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
-import org.fit.cssbox.scriptbox.script.java.Shutter;
+import org.fit.cssbox.scriptbox.script.reflect.Shutter;
 
 /** 
  * @deprecated

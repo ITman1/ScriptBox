@@ -27,16 +27,30 @@ import java.net.URLConnection;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 
+/**
+ * Abstract class for describing resources that are fetched using {@link URLConnection}
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class UrlConnectionResource extends Resource {
 	protected URLConnection conn;
 	protected BufferedInputStream is;
 
+	/**
+	 * Constructs new resource for a browsing context with with a given URL connection.
+	 * 
+	 * @param context Browsing context to which belongs this resource.
+	 * @param conn Connection to be used for fetching the resource.
+	 */
 	public UrlConnectionResource(BrowsingContext context, URLConnection conn) {
 		super(context);
 		
 		this.conn = conn;
 	}
 	
+	@Override
 	public BufferedInputStream getInputStream() {
 		if (is == null) {
 			InputStream connIs;
@@ -50,6 +64,11 @@ public abstract class UrlConnectionResource extends Resource {
 		return is;
 	}
 	
+	/**
+	 * Returns associated URL connection.
+	 * 
+	 * @return Associated URL connection.
+	 */
 	public URLConnection getUrlConnection() {
 		return conn;
 	}
@@ -93,6 +112,10 @@ public abstract class UrlConnectionResource extends Resource {
 		return contentEncoding;
 	}
 	
+	/**
+	 * Resolves charset from the content type header field. 
+	 * @return Resolved charset.
+	 */
 	protected String getCharsetFromContentType() {		
 		String contentType = conn.getContentType();	
 		String[] contentValues = contentType.split(";");

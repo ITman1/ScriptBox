@@ -19,7 +19,14 @@
 
 package org.fit.cssbox.scriptbox.script;
 
-/* Templatized wrapper */
+/**
+ * Interface of the wrapper that might be used for wrapping of some objects
+ * e.g. for Adapters which implements script annotations instead of wrapped objects.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public interface Wrapper<ObjectType> {
 	public ObjectType unwrap();
 }

@@ -22,6 +22,14 @@ package org.fit.cssbox.scriptbox.resource.content;
 import org.fit.cssbox.scriptbox.misc.MimeContentFactoryBase;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 
+/**
+ * Abstract class for all content handler factories - factories that constructs
+ * content handlers for a supported MIME content type of this factory.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class ContentHandlerFactory extends MimeContentFactoryBase<ContentHandler> {
 	public abstract ContentHandler getContentHandler(NavigationAttempt navigationAttempt);
 	

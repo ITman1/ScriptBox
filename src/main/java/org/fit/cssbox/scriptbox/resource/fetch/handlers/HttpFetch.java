@@ -38,6 +38,13 @@ import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 
+/**
+ * Class representing fetch that handles http: protocols
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 @FetchPreamble (protocols = {"http"})
 public class HttpFetch extends Fetch {
 	protected enum HttpMethod {

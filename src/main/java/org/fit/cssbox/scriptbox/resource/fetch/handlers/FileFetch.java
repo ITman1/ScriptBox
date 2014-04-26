@@ -30,6 +30,13 @@ import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
 
+/**
+ * Class representing fetch that handles file: protocols
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 @FetchPreamble (protocols = {"file"})
 public class FileFetch extends Fetch {
 	

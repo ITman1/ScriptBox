@@ -17,16 +17,35 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.java;
+package org.fit.cssbox.scriptbox.script.reflect;
 
 import java.lang.reflect.Method;
 
-public class ObjectFunction extends ObjectMember<ClassFunction, Method> implements MemberFunction {
+/**
+ * Represents the function of the object.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public class ObjectFunction extends ObjectMember<ClassFunction, Method> implements FunctionMember {
 
+	/**
+	 * Constructs object function for given object using class function.
+	 * 
+	 * @param object Object containing the object function.
+	 * @param classFunction Class function that is wrapped by this class and associated with the object.
+	 */
 	public ObjectFunction(Object object, ClassFunction classFunction) {
 		super(object, classFunction);
 	}
 	
+	/**
+	 * Constructs object function for given object from passed method.
+	 * 
+	 * @param object Object containing the object function.
+	 * @param method Method that will be wrapped into class function.
+	 */
 	public ObjectFunction(Object object, Method method) {
 		this(object, new ClassFunction(object.getClass(), method));
 	}
@@ -36,8 +55,18 @@ public class ObjectFunction extends ObjectMember<ClassFunction, Method> implemen
 		return member.getParameterTypes();
 	}
 	
+	@Override
+	public Class<?> getReturnType() {
+		return classMember.getReturnType();
+	}
+	
+	/**
+	 * Invokes the wrapped method with the given arguments.
+	 * 
+	 * @param args Arguments used for calling the method.
+	 * @return Return of the wrapped method.
+	 */
 	public Object invoke(Object ...args) {		
 		return classMember.invoke(object, args);
 	}
-
 }

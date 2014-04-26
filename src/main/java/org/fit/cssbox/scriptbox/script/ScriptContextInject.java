@@ -21,15 +21,34 @@ package org.fit.cssbox.scriptbox.script;
 
 import javax.script.ScriptContext;
 
+/**
+ * Abstract class for constructing the injects which serve for putting custom objects
+ * inside script context when script engine is being initialized.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class ScriptContextInject implements Comparable<ScriptContextInject> {
 	public static final int ZERO_PRIORITY = 0;
 	
 	public abstract boolean inject(ScriptContext context);
 	
+	/**
+	 * Returns priority which have this script context inject.
+	 * 
+	 * @return Priority which have this script context inject.
+	 */
 	public int getPriority() {
 		return ZERO_PRIORITY;
 	}
 	
+	/**
+	 * Tests whether is this script context inject valid for a given script context.
+	 * 
+	 * @param context Script context against which to be tested.
+	 * @return True if is script context valid, otherwise false.
+	 */
 	public boolean isValid(ScriptContext context) {
 		return true;
 	}

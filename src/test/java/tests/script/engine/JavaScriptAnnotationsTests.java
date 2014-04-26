@@ -13,9 +13,9 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptField;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
-import org.fit.cssbox.scriptbox.script.java.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
+import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
 import org.junit.Test;
 import org.mozilla.javascript.TopLevel;
 

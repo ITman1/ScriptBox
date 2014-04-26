@@ -26,6 +26,18 @@ import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 
+/*
+ * TODO: Implement.
+ */
+/**
+ * Content handler factory for handlers following the processing model for media.
+ * 
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-media">Read media</a>
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class MediaHandlerFactory extends ContentHandlerFactory {
 	@Override
 	public ContentHandler getContentHandler(NavigationAttempt navigationAttempt) {

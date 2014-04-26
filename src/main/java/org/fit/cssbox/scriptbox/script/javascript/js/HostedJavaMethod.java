@@ -26,11 +26,11 @@ import java.util.Set;
 import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
-import org.fit.cssbox.scriptbox.script.java.ClassField;
-import org.fit.cssbox.scriptbox.script.java.ClassFunction;
-import org.fit.cssbox.scriptbox.script.java.InvocableMember;
-import org.fit.cssbox.scriptbox.script.java.MemberFunction;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.reflect.ClassField;
+import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
+import org.fit.cssbox.scriptbox.script.reflect.FunctionMember;
+import org.fit.cssbox.scriptbox.script.reflect.InvocableMember;
 import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -54,19 +54,19 @@ public class HostedJavaMethod extends FunctionObject {
 	private static final long serialVersionUID = -5644060115581311028L;
 
 	private Object object;
-	private Set<MemberFunction> objectFunctions;
+	private Set<FunctionMember> objectFunctions;
 	
-	public HostedJavaMethod(Scriptable scope, Object object, Set<? extends MemberFunction> objectFunctions) {
+	public HostedJavaMethod(Scriptable scope, Object object, Set<? extends FunctionMember> objectFunctions) {
 		super(objectFunctions.iterator().next().getMember().getName(), FUNCTION_METHOD, scope);
 		
 		this.object = object;
-		this.objectFunctions = new HashSet<MemberFunction>();
+		this.objectFunctions = new HashSet<FunctionMember>();
 		this.objectFunctions.addAll(objectFunctions);
 	}
 	
-	public HostedJavaMethod(Scriptable scope, Object object, final MemberFunction objectFunction) {
+	public HostedJavaMethod(Scriptable scope, Object object, final FunctionMember objectFunction) {
 		this(scope, object,
-			new HashSet<MemberFunction>() {
+			new HashSet<FunctionMember>() {
 				private static final long serialVersionUID = -7257365623995694177L;
 				{
 					add(objectFunction);
@@ -83,11 +83,11 @@ public class HostedJavaMethod extends FunctionObject {
 		throw new FunctionException("Function object must be of class HostedJavaMethod");
 	}
 	
-	public Set<? extends MemberFunction> getAttachedObjectFunctions() {
+	public Set<? extends FunctionMember> getAttachedObjectFunctions() {
 		return objectFunctions;
 	}
 	
-	public void attachObjectFunction(MemberFunction objectFunction) {
+	public void attachObjectFunction(FunctionMember objectFunction) {
 		this.objectFunctions.add(objectFunction);
 	}
 	
@@ -99,7 +99,7 @@ public class HostedJavaMethod extends FunctionObject {
 			throw new FunctionException("Unable to match nearest function");
 		}
 		
-		MemberFunction nearestFunctionObject = (MemberFunction)nearestInvocable;
+		FunctionMember nearestFunctionObject = (FunctionMember)nearestInvocable;
 		
 		Method functionMethod = nearestFunctionObject.getMember();
 		Class<?> returnType = functionMethod.getReturnType();
