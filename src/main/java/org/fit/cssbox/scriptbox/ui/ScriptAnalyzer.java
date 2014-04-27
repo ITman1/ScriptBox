@@ -32,6 +32,13 @@ import org.fit.cssbox.layout.Viewport;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.swingbox.util.DefaultAnalyzer;
 
+/**
+ * Analyzer that ensures rendering of the parsed Document passed via input stream. 
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ScriptAnalyzer extends DefaultAnalyzer {
     @Override
     public Viewport analyze(DocumentSource d, Dimension dim)

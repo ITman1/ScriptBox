@@ -27,11 +27,25 @@ import org.apache.commons.lang3.ClassUtils;
 import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.mozilla.javascript.Scriptable;
 
+/**
+ * Extends hosted Java object class about accessing the collection 
+ * items via indexed or mapped properties.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class HostedJavaCollection extends HostedJavaObject {
 	private static final long serialVersionUID = -369637419233477403L;
 	
 	protected Class<?> javaObjectType;
 	
+	/**
+	 * Constructs new hosted Java collection.
+	 * 
+	 * @param scope Parent scope where to place this hosted object.
+	 * @param javaObject Object to be wrapped.
+	 */
 	public HostedJavaCollection(Scriptable scope, Object javaObject) {
 		super(scope, javaObject);
 		
@@ -58,6 +72,12 @@ public class HostedJavaCollection extends HostedJavaObject {
 		return object;
 	}
 	
+	/**
+	 * Locates the value for a given key.
+	 * 
+	 * @param key Key that should be located.
+	 * @return If this object wraps the collection then returns the value of the collection using given key, otherwise null.
+	 */
 	protected Object collectionGet(Object key) {
 		Method method = null;
 		Object result = Scriptable.NOT_FOUND;

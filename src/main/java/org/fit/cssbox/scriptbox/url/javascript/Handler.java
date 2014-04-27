@@ -46,6 +46,14 @@ import org.fit.cssbox.scriptbox.window.WindowScript;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.mozilla.javascript.Undefined;
 
+/**
+ * Handler that enables us to use JAVASCRIPT protocol and also provides 
+ * URL connection that executes underlying JavaScript source code. 
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class Handler extends URLStreamHandler {
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
@@ -59,6 +67,10 @@ public class Handler extends URLStreamHandler {
 				super(TaskSource.DOM_MANIPULATION, browsingContext);
 			}
 
+			/*
+			 * According to the step 14), see:
+			 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate
+			 */
 			@Override
 			public void execute() throws TaskAbortedException, InterruptedException {
 				Html5DocumentImpl sourceDocument = sourceContext.getActiveDocument();
@@ -96,7 +108,7 @@ public class Handler extends URLStreamHandler {
 				processResults();
 			}
 			
-			protected void processResults() {
+			private void processResults() {
 				BrowsingUnit unit = destinationContext.getBrowsingUnit();
 				UserAgent agent = (unit != null)? unit.getUserAgent() : null;
 				boolean scriptingEnabled = (agent != null)? agent.scriptsSupported() : true;
@@ -130,13 +142,13 @@ public class Handler extends URLStreamHandler {
 			
 		}
 		
-		protected BrowsingContext sourceContext;
-		protected BrowsingContext destinationContext;
+		private BrowsingContext sourceContext;
+		private BrowsingContext destinationContext;
 		
-		protected JavascriptFetchTask fetchTask;
-		protected Object result;
-		protected Exception exception;
-		protected InputStream is;
+		private JavascriptFetchTask fetchTask;
+		private Object result;
+		private Exception exception;
+		private InputStream is;
 		
 		public JavaScriptURLConnection(URL url) {
 			super(url);
@@ -183,7 +195,10 @@ public class Handler extends URLStreamHandler {
 			return result;
 		}
 		
-		protected void waitFetchTask() {
+		/*
+		 * Waits until fetch ends.
+		 */
+		private void waitFetchTask() {
 			Thread currentThread = Thread.currentThread();
 			Thread eventThread = (destinationContext != null)? destinationContext.getEventLoop().getEventThread() : null;
 			if (fetchTask != null && destinationContext != null && currentThread != eventThread) {

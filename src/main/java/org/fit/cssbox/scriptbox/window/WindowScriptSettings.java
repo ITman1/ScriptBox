@@ -27,6 +27,14 @@ import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 
+/**
+ * Represents class for creating script settings that have Window as a global object.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#script-settings-for-browsing-contexts">Script settings for browsing contexts</a>
+ */
 public class WindowScriptSettings extends ScriptSettings<Window> {
 
 	private Window _window;
@@ -78,11 +86,11 @@ public class WindowScriptSettings extends ScriptSettings<Window> {
 
 	@Override
 	public Origin<?> getOrigin() {
-		return getResponsibleDocument().getOriginContainer().getOrigin();
+		return getResponsibleDocument().getOrigin();
 	}
 
 	@Override
 	public Origin<?> getEffectiveScriptOrigin() {
-		return getResponsibleDocument().getOriginContainer().getEffectiveScriptOrigin();
+		return getResponsibleDocument().getEffectiveScriptOrigin();
 	}
 }

@@ -13,6 +13,14 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 /*
  * http://url.spec.whatwg.org/#urlutils
  */
+/**
+ * Class implementing script visible method for the URL manipulation.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://url.spec.whatwg.org/#urlutils">Interface URLUtils</a>
+ */
 public class URLUtils {
 
 	protected String input;
@@ -21,12 +29,20 @@ public class URLUtils {
 	
 	protected ParserURL baseUrl;
 		
+	/**
+	 * Returns query encoding.
+	 * 
+	 * @return Query encoding.
+	 */
 	public String getQueryEncoding() {
 		return "UTF-8";
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#dom-url-href
+	/**
+	 * Returns associated URL.
+	 * 
+	 * @return Associated URL.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-href">URL href</a>
 	 */
 	@ScriptGetter
 	public String getHref() {
@@ -37,8 +53,11 @@ public class URLUtils {
 		}
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#dom-url-href
+	/**
+	 * Sets associated URL.
+	 * 
+	 * @param scheme New associated URL.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-href">URL href</a>
 	 */
 	@ScriptSetter
 	public void setHref(String href) {
@@ -52,9 +71,11 @@ public class URLUtils {
 		preUpdateSteps(href);
 	}
 	
-	/*
-	 * TODO: Implement
-	 * http://url.spec.whatwg.org/#dom-url-origin
+	/**
+	 * Returns URL origin.
+	 * 
+	 * @return URL origin.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-origin">ORigin</a>
 	 */
 	@ScriptGetter
 	public String getOrigin() {
@@ -65,8 +86,11 @@ public class URLUtils {
 		return "";
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#dom-url-protocol
+	/**
+	 * Returns protocol component.
+	 * 
+	 * @return Protocol component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-protocol">Protocol</a>
 	 */
 	@ScriptGetter
 	public String getProtocol() {
@@ -77,8 +101,11 @@ public class URLUtils {
 		return url.getScheme() + ":";
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#dom-url-protocol
+	/**
+	 * Sets protocol component.
+	 * 
+	 * @param scheme New protocol component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-protocol">Protocol</a>
 	 */
 	@ScriptSetter
 	public void setProtocol(String protocol) {
@@ -91,8 +118,11 @@ public class URLUtils {
 		preUpdateSteps(null);
 	}
 
-	/*
-	 * http://url.spec.whatwg.org/#dom-url-username
+	/**
+	 * Returns username component.
+	 * 
+	 * @return Username component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-username">Username</a>
 	 */
 	@ScriptGetter
 	public String getUsername() {
@@ -103,8 +133,11 @@ public class URLUtils {
 		return url.getUsername();
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#dom-url-username
+	/**
+	 * Sets username component.
+	 * 
+	 * @param username New username component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-username">Username</a>
 	 */
 	@ScriptSetter
 	public void setUsername(String username) {
@@ -123,6 +156,12 @@ public class URLUtils {
 		preUpdateSteps(null);
 	}
 	
+	/**
+	 * Returns password component.
+	 * 
+	 * @return Password component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-password">Password</a>
+	 */
 	@ScriptGetter
 	public String getPassword() {
 		if (url == null) {
@@ -132,6 +171,12 @@ public class URLUtils {
 		return url.getPassword();
 	}
 	
+	/**
+	 * Sets password component.
+	 * 
+	 * @param password New password component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-password">Password</a>
+	 */
 	@ScriptSetter
 	public void setPassword(String password) {
 		if (url == null || !url.isRelativeFlag()) {
@@ -155,6 +200,12 @@ public class URLUtils {
 		preUpdateSteps(null);
 	}
 	
+	/**
+	 * Returns host component.
+	 * 
+	 * @return Host component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-host">Host</a>
+	 */
 	@ScriptGetter
 	public String getHost() {
 		if (url == null) {
@@ -170,6 +221,12 @@ public class URLUtils {
 		}
 	}
 	
+	/**
+	 * Sets host component.
+	 * 
+	 * @param host New host component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-host">Host</a>
+	 */
 	@ScriptSetter
 	public void setHost(String host) {
 		if (url == null || !url.isRelativeFlag()) {
@@ -181,6 +238,12 @@ public class URLUtils {
 		preUpdateSteps(null);
 	}
 	
+	/**
+	 * Returns host name.
+	 * 
+	 * @return Host name.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-hostname">Host</a>
+	 */
 	@ScriptGetter
 	public String getHostname() {
 		if (url == null) {
@@ -190,6 +253,12 @@ public class URLUtils {
 		return url.serializedHost();
 	}
 	
+	/**
+	 * Sets host name.
+	 * 
+	 * @param host New host name.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-hostname">Host</a>
+	 */
 	@ScriptSetter
 	public void setHostname(String hostname) {
 		if (url == null || !url.isRelativeFlag()) {
@@ -201,6 +270,12 @@ public class URLUtils {
 		preUpdateSteps(null);
 	}
 	
+	/**
+	 * Returns port component.
+	 * 
+	 * @return Port component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-port">Port</a>
+	 */
 	@ScriptGetter
 	public String getPort() {
 		if (url == null) {
@@ -210,6 +285,12 @@ public class URLUtils {
 		return url.getPort();
 	}
 	
+	/**
+	 * Sets port component.
+	 * 
+	 * @param port New port component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-port">Port</a>
+	 */
 	@ScriptSetter
 	public void setPort(String port) {
 		if (url == null || !url.isRelativeFlag() || url.getScheme().equalsIgnoreCase("file")) {
@@ -221,6 +302,12 @@ public class URLUtils {
 		preUpdateSteps(null);
 	}
 	
+	/**
+	 * Returns path name.
+	 * 
+	 * @return Path name.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-pathname">Path name</a>
+	 */
 	@ScriptGetter
 	public String getPathname() {
 		if (url == null) {
@@ -236,6 +323,12 @@ public class URLUtils {
 		return StringUtils.join(pathList, "/");
 	}
 	
+	/**
+	 * Sets path name.
+	 * 
+	 * @param host New path name.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-pathname">Path name</a>
+	 */
 	@ScriptSetter
 	public void setPathname(String path) {
 		if (url == null || !url.isRelativeFlag()) {
@@ -251,6 +344,12 @@ public class URLUtils {
 		preUpdateSteps(null);
 	}
 	
+	/**
+	 * Returns search.
+	 * 
+	 * @return Search.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-search">Search</a>
+	 */
 	@ScriptGetter
 	public String getSearch() {
 		if (url == null) {
@@ -265,6 +364,12 @@ public class URLUtils {
 		return "?" + query;
 	}
 	
+	/**
+	 * Sets search.
+	 * 
+	 * @param host New search.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-search">Search</a>
+	 */
 	@ScriptSetter
 	public void setSearch(String search) {
 		if (url == null || !url.isRelativeFlag()) {
@@ -292,6 +397,12 @@ public class URLUtils {
 	 * TODO: Implement search params
 	 * http://url.spec.whatwg.org/#dom-url-searchparams
 	 */
+	/**
+	 * Returns search parameters.
+	 * 
+	 * @return Search parameters.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-searchparams">Search parameters</a>
+	 */
 	@ScriptGetter
 	public URLSearchParams getSearchParams() {
 		return null;
@@ -301,11 +412,23 @@ public class URLUtils {
 	 * TODO: Implement search params
 	 * http://url.spec.whatwg.org/#dom-url-searchparams
 	 */
+	/**
+	 * Sets search parameters.
+	 * 
+	 * @param host New search parameters.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-searchparams">Search parameters</a>
+	 */
 	@ScriptSetter
 	public void setSearchParams(URLSearchParams href) {
 		
 	}
 	
+	/**
+	 * Returns hash component.
+	 * 
+	 * @return Hash component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-hash">Hash</a>
+	 */
 	@ScriptGetter
 	public String getHash() {
 		if (url == null) {
@@ -321,6 +444,12 @@ public class URLUtils {
 		return "#" + fragment;
 	}
 	
+	/**
+	 * Sets hash component.
+	 * 
+	 * @param fragment New hash component.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url-hash">Hash</a>
+	 */
 	@ScriptSetter
 	public void setHash(String fragment) {
 		if (url == null || url.getScheme().equalsIgnoreCase("javascript")) {
@@ -342,8 +471,11 @@ public class URLUtils {
 		preUpdateSteps(null);
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#concept-uu-set-the-input
+	/**
+	 * Sets new URL as current URL.
+	 * 
+	 * @param newInput Serialized new URL.
+	 * @see <a href="http://url.spec.whatwg.org/#concept-uu-set-the-input">Set the input</a>
 	 */
 	protected void setInput(String newInput) {
 		url = null;
@@ -366,22 +498,31 @@ public class URLUtils {
 		}
 	}
 
-	/*
-	 * http://url.spec.whatwg.org/#concept-uu-get-the-base
+	/**
+	 * Returns associated base.
+	 * 
+	 * @return Appropriate base URL for this object.
+	 * @see <a href="http://url.spec.whatwg.org/#concept-uu-get-the-base">Get the base</a>
 	 */
 	protected ParserURL getBase() {
 		return baseUrl;
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#concept-uu-get-the-base
+	/**
+	 * Sets associated base.
+	 * 
+	 * @param baseUrl Sets appropriate base URL for this object.
+	 * @see <a href="http://url.spec.whatwg.org/#concept-uu-get-the-base">Get the base</a>
 	 */
 	protected void setBaseUrl(ParserURL baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#pre-update-steps
+	/**
+	 * Runs pre-update steps for this object.
+	 * 
+	 * @param value New URL value that has been set.
+	 * @see <a href="http://url.spec.whatwg.org/#pre-update-steps">Pre-update steps</a>
 	 */
 	public void preUpdateSteps(String value) {
 		if (value == null) {
@@ -391,16 +532,28 @@ public class URLUtils {
 		updateSteps(value);
 	}
 	
-	/*
-	 * http://url.spec.whatwg.org/#concept-uu-update
+	/**
+	 * Runs update steps for this object.
+	 * 
+	 * @param value New URL value that has been set.
+	 * @see <a href=http://url.spec.whatwg.org/#concept-uu-update">Update steps</a>
 	 */
 	public void updateSteps(String value) {
 	}
 	
+	/**
+	 * Returns context object.
+	 * 
+	 * @return Context object.
+	 * @see <a href="http://dom.spec.whatwg.org/#context-object">Context object</a>
+	 */
 	protected Object getContextObject() {
 		return this;
 	}
 	
+	/**
+	 * Throws type error exception.
+	 */
 	protected void throwTypeErrorException() {
 		throw new DOMException(DOMException.SYNTAX_ERR, "SyntaxError");
 	}

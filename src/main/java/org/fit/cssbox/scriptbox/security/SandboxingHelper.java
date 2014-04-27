@@ -23,6 +23,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Helper class for manipulating the sandboxing flags and sets.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#sandboxing-flag-set">A sandboxing flag set</a>
+ */
 public class SandboxingHelper {
 	public static final String ALLOW_POPUPS_KEYWORD = "allow-popups";
 	public static final String ALLOW_TOP_NAVIGATION = "allow-top-navigation";
@@ -30,11 +38,26 @@ public class SandboxingHelper {
 	public static final String ALLOW_FORMS = "allow-forms";
 	public static final String ALLOW_POINTER_LOCK = "allow-pointer-lock";
 	public static final String ALLOW_SCRIPTS = "allow-scripts";
-	
+
+	/**
+	 * Parses sandboxing directive
+	 * 
+	 * @param sandboxingDirective Directive to be parsed.
+	 * @return Set of the parsed sandboxing flags.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#parse-a-sandboxing-directive">Parse a sandboxing directive</a>
+	 */
 	public static Set<SandboxingFlag> parseSandboxingDirective(String sandboxingDirective) {
 		return parseSandboxingDirective(sandboxingDirective, false);
 	}
 	
+	/**
+	 * Parses sandboxing directive
+	 * 
+	 * @param sandboxingDirective Directive to be parsed.
+	 * @param allowFullScreen Flag which defines whether should be included also SandboxingFlag.FULLSCREEN_BROWSING_CONTEXT_FLAG.
+	 * @return Set of the parsed sandboxing flags.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#parse-a-sandboxing-directive">Parse a sandboxing directive</a>
+	 */
 	public static Set<SandboxingFlag> parseSandboxingDirective(String sandboxingDirective, boolean allowFullScreen) {	
 		String[] tokensArr = sandboxingDirective.split("\\s+");
 		Set<String> tokens = new HashSet<String>(Arrays.asList(tokensArr));

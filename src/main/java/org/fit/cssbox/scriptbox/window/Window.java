@@ -70,6 +70,14 @@ import org.w3c.dom.views.DocumentView;
 
 import com.google.common.base.Predicate;
 
+/**
+ * Represents global object.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#window">Window</a>
+ */
 public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, WindowEventHandlers, AbstractView {
 	final public static String DEFAULT_TARGET =  "_blank";
 	final public static String DEFAULT_FEATURES = "";
@@ -79,87 +87,94 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	protected BrowsingContext context;
 	protected UserAgent userAgent;
 	
-	// FIXME: When it gets fire there should be copy for case that we remove listener while processing event
-	protected Map<String, Vector<EventListenerEntry>> listeners;
-	protected WindowScriptSettings scriptSettings;
+	// FIXME: When it gets fire, there should be copy for case that we remove listener while processing event
+	private Map<String, Vector<EventListenerEntry>> listeners;
+	private WindowScriptSettings scriptSettings;
 			
 	// Global event handler listeners
-	protected EventHandlerEventListener onabortHandlerListener;
-	protected EventHandlerEventListener onblurHandlerListener;
-	protected EventHandlerEventListener oncancelHandlerListener;
-	protected EventHandlerEventListener oncanplayHandlerListener;
-	protected EventHandlerEventListener oncanplaythroughHandlerListener;
-	protected EventHandlerEventListener onchangeHandlerListener;
-	protected EventHandlerEventListener onclickHandlerListener;
-	protected EventHandlerEventListener oncloseHandlerListener;
-	protected EventHandlerEventListener oncuechangeHandlerListener;
-	protected EventHandlerEventListener ondblclickHandlerListener;
-	protected EventHandlerEventListener ondragHandlerListener;
-	protected EventHandlerEventListener ondragendHandlerListener;
-	protected EventHandlerEventListener ondragenterHandlerListener;
-	protected EventHandlerEventListener ondragexitHandlerListener;
-	protected EventHandlerEventListener ondragleaveHandlerListener;
-	protected EventHandlerEventListener ondragoverHandlerListener;
-	protected EventHandlerEventListener ondragstartHandlerListener;
-	protected EventHandlerEventListener ondropHandlerListener;
-	protected EventHandlerEventListener ondurationchangeHandlerListener;
-	protected EventHandlerEventListener onemptiedHandlerListener;
-	protected EventHandlerEventListener onendedHandlerListener;
-	protected EventHandlerEventListener onfocusHandlerListener;
-	protected EventHandlerEventListener oninputHandlerListener;
-	protected EventHandlerEventListener oninvalidHandlerListener;
-	protected EventHandlerEventListener onkeydownHandlerListener;
-	protected EventHandlerEventListener onkeypressHandlerListener;
-	protected EventHandlerEventListener onkeyupHandlerListener;
-	protected EventHandlerEventListener onloadHandlerListener;
-	protected EventHandlerEventListener onloadeddataHandlerListener;
-	protected EventHandlerEventListener onloadedmetadataHandlerListener;
-	protected EventHandlerEventListener onloadstartHandlerListener;
-	protected EventHandlerEventListener onmousedownHandlerListener;
-	protected EventHandlerEventListener onmouseenterHandlerListener;
-	protected EventHandlerEventListener onmouseleaveHandlerListener;
-	protected EventHandlerEventListener onmousemoveHandlerListener;
-	protected EventHandlerEventListener onmouseoutHandlerListener;
-	protected EventHandlerEventListener onmouseoverHandlerListener;
-	protected EventHandlerEventListener onmouseupHandlerListener;
-	protected EventHandlerEventListener onmousewheelHandlerListener;
-	protected EventHandlerEventListener onpauseHandlerListener;
-	protected EventHandlerEventListener onplayHandlerListener;
-	protected EventHandlerEventListener onplayingHandlerListener;
-	protected EventHandlerEventListener onprogressHandlerListener;
-	protected EventHandlerEventListener onratechangeHandlerListener;
-	protected EventHandlerEventListener onresetHandlerListener;
-	protected EventHandlerEventListener onresizeHandlerListener;
-	protected EventHandlerEventListener onscrollHandlerListener;
-	protected EventHandlerEventListener onseekedHandlerListener;
-	protected EventHandlerEventListener onseekingHandlerListener;
-	protected EventHandlerEventListener onselectHandlerListener;
-	protected EventHandlerEventListener onshowHandlerListener;
-	protected EventHandlerEventListener onstalledHandlerListener;
-	protected EventHandlerEventListener onsubmitHandlerListener;
-	protected EventHandlerEventListener onsuspendHandlerListener;
-	protected EventHandlerEventListener ontimeupdateHandlerListener;
-	protected EventHandlerEventListener ontoggleHandlerListener;
-	protected EventHandlerEventListener onvolumechangeHandlerListener;
-	protected EventHandlerEventListener onwaitingHandlerListener;
+	private EventHandlerEventListener onabortHandlerListener;
+	private EventHandlerEventListener onblurHandlerListener;
+	private EventHandlerEventListener oncancelHandlerListener;
+	private EventHandlerEventListener oncanplayHandlerListener;
+	private EventHandlerEventListener oncanplaythroughHandlerListener;
+	private EventHandlerEventListener onchangeHandlerListener;
+	private EventHandlerEventListener onclickHandlerListener;
+	private EventHandlerEventListener oncloseHandlerListener;
+	private EventHandlerEventListener oncuechangeHandlerListener;
+	private EventHandlerEventListener ondblclickHandlerListener;
+	private EventHandlerEventListener ondragHandlerListener;
+	private EventHandlerEventListener ondragendHandlerListener;
+	private EventHandlerEventListener ondragenterHandlerListener;
+	private EventHandlerEventListener ondragexitHandlerListener;
+	private EventHandlerEventListener ondragleaveHandlerListener;
+	private EventHandlerEventListener ondragoverHandlerListener;
+	private EventHandlerEventListener ondragstartHandlerListener;
+	private EventHandlerEventListener ondropHandlerListener;
+	private EventHandlerEventListener ondurationchangeHandlerListener;
+	private EventHandlerEventListener onemptiedHandlerListener;
+	private EventHandlerEventListener onendedHandlerListener;
+	private EventHandlerEventListener onfocusHandlerListener;
+	private EventHandlerEventListener oninputHandlerListener;
+	private EventHandlerEventListener oninvalidHandlerListener;
+	private EventHandlerEventListener onkeydownHandlerListener;
+	private EventHandlerEventListener onkeypressHandlerListener;
+	private EventHandlerEventListener onkeyupHandlerListener;
+	private EventHandlerEventListener onloadHandlerListener;
+	private EventHandlerEventListener onloadeddataHandlerListener;
+	private EventHandlerEventListener onloadedmetadataHandlerListener;
+	private EventHandlerEventListener onloadstartHandlerListener;
+	private EventHandlerEventListener onmousedownHandlerListener;
+	private EventHandlerEventListener onmouseenterHandlerListener;
+	private EventHandlerEventListener onmouseleaveHandlerListener;
+	private EventHandlerEventListener onmousemoveHandlerListener;
+	private EventHandlerEventListener onmouseoutHandlerListener;
+	private EventHandlerEventListener onmouseoverHandlerListener;
+	private EventHandlerEventListener onmouseupHandlerListener;
+	private EventHandlerEventListener onmousewheelHandlerListener;
+	private EventHandlerEventListener onpauseHandlerListener;
+	private EventHandlerEventListener onplayHandlerListener;
+	private EventHandlerEventListener onplayingHandlerListener;
+	private EventHandlerEventListener onprogressHandlerListener;
+	private EventHandlerEventListener onratechangeHandlerListener;
+	private EventHandlerEventListener onresetHandlerListener;
+	private EventHandlerEventListener onresizeHandlerListener;
+	private EventHandlerEventListener onscrollHandlerListener;
+	private EventHandlerEventListener onseekedHandlerListener;
+	private EventHandlerEventListener onseekingHandlerListener;
+	private EventHandlerEventListener onselectHandlerListener;
+	private EventHandlerEventListener onshowHandlerListener;
+	private EventHandlerEventListener onstalledHandlerListener;
+	private EventHandlerEventListener onsubmitHandlerListener;
+	private EventHandlerEventListener onsuspendHandlerListener;
+	private EventHandlerEventListener ontimeupdateHandlerListener;
+	private EventHandlerEventListener ontoggleHandlerListener;
+	private EventHandlerEventListener onvolumechangeHandlerListener;
+	private EventHandlerEventListener onwaitingHandlerListener;
 	
 	// Window handler listeners
-	protected EventHandlerEventListener onafterprintHandlerListener;
-	protected EventHandlerEventListener onbeforeprintHandlerListener;
-	protected EventHandlerEventListener onhashchangeHandlerListener;
-	protected EventHandlerEventListener onmessageHandlerListener;
-	protected EventHandlerEventListener onofflineHandlerListener;
-	protected EventHandlerEventListener ononlineHandlerListener;
-	protected EventHandlerEventListener onpagehideHandlerListener;
-	protected EventHandlerEventListener onpageshowHandlerListener;
-	protected EventHandlerEventListener onpopstateHandlerListener;
-	protected EventHandlerEventListener onstorageHandlerListener;
-	protected EventHandlerEventListener onunloadHandlerListener;
+	private EventHandlerEventListener onafterprintHandlerListener;
+	private EventHandlerEventListener onbeforeprintHandlerListener;
+	private EventHandlerEventListener onhashchangeHandlerListener;
+	private EventHandlerEventListener onmessageHandlerListener;
+	private EventHandlerEventListener onofflineHandlerListener;
+	private EventHandlerEventListener ononlineHandlerListener;
+	private EventHandlerEventListener onpagehideHandlerListener;
+	private EventHandlerEventListener onpageshowHandlerListener;
+	private EventHandlerEventListener onpopstateHandlerListener;
+	private EventHandlerEventListener onstorageHandlerListener;
+	private EventHandlerEventListener onunloadHandlerListener;
+	
+	private String status;
 	
 	// TODO: Change visibility to protected, now for test only
 	public Window() {
 	}
 	
+	/**
+	 * Constructs new window.
+	 * 
+	 * @param document Document that owns this window.
+	 */
 	public Window(Html5DocumentImpl document) {
 		setDocumentImpl(document);
 		
@@ -241,6 +256,11 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		this.onunloadHandlerListener = new EventHandlerEventListener(this, WindowEventHandlers.onunload);
 	}
 	
+	/**
+	 * Returns all nested frames for associated document.
+	 * 
+	 * @return All nested frames fot associated document.
+	 */
 	private List<IFrameBrowsingContext> getNestedFrames() {
 		if (context instanceof IFrameContainerBrowsingContext) {
 			IFrameContainerBrowsingContext iframeContainerContext = (IFrameContainerBrowsingContext)context;
@@ -258,32 +278,68 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return "[object Window]";
 	}
 	
+	/**
+	 * Returns associated document.
+	 * 
+	 * @return Associated document.
+	 */
 	public Html5DocumentImpl getDocumentImpl() {
 		return documentImpl;
 	}
 	
+	/**
+	 * Sets document that owns this window or is associated with this window.
+	 * 
+	 * @param documentImpl New document that is associated with this window.
+	 */
 	public void setDocumentImpl(Html5DocumentImpl documentImpl) {
 		this.documentImpl = documentImpl;
 		this.context = documentImpl.getBrowsingContext();
 		this.userAgent = context.getBrowsingUnit().getUserAgent();
 	}
 	
+	/**
+	 * Returns associated script settings.
+	 * 
+	 * @return Associated script settings.
+	 */
 	public WindowScriptSettings getScriptSettings() {
 		return scriptSettings;
 	}
 			
+	/**
+	 * Dispatches (queues task for it) given event at given target.
+	 * 
+	 * @param event Event to be dispatched.
+	 * @param target Target where to dispatch.
+	 */
 	public void dispatchEvent(Event event, org.w3c.dom.events.EventTarget target) {
 		Task dispatcherTask = new DispatcherTask(documentImpl, target, event);
 		context.getEventLoop().queueTask(dispatcherTask);
 	}
 	
-	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#fire-a-simple-event
+	/**
+	 * Fires simple event (without queuing new task for it) with the given name 
+	 * at given target that cannot bubble and is not cancellable.
+	 * 
+	 * @param eventName Event type name.
+	 * @param target Target where to dispatch the event.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#fire-a-simple-event">Fire a simple event</a>
 	 */
 	public boolean fireSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target) {
 		return fireSimpleEvent(eventName, target, false, false);
 	}
 	
+	/**
+	 * Fires simple event (without queuing new task for it) with the given name 
+	 * at given target that cannot bubble and is not cancellable.
+	 * 
+	 * @param eventName Event type name.
+	 * @param target Target where to dispatch the event.
+	 * @param bubbles If true then this event can bubble.
+	 * @param cancelable If true then this event can be cancelled.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#fire-a-simple-event">Fire a simple event</a>
+	 */
 	public boolean fireSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target, boolean bubbles, boolean cancelable) {
 		EventImpl event = new EventImpl();
 		event.initEvent(eventName, bubbles, cancelable);
@@ -293,10 +349,24 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return event.stopPropagation;
 	}
 	
+	/**
+	 * Dispatches (queues task for it) simple event with the given name at given target that cannot bubble and is not cancellable.
+	 * 
+	 * @param eventName Event type name.
+	 * @param target Target where to dispatch the event.
+	 */
 	public void dispatchSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target) {
 		dispatchSimpleEvent(eventName, target, false, false);
 	}
 	
+	/**
+	 * Dispatches (queues task for it) simple event with the given name at given target.
+	 * 
+	 * @param eventName Event type name.
+	 * @param target Target where to dispatch the event.
+	 * @param bubbles If true then this event can bubble.
+	 * @param cancelable If true then this event can be cancelled.
+	 */
 	public void dispatchSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target, boolean bubbles, boolean cancelable) {
 		EventImpl event = new EventImpl();
 		event.initEvent(eventName, bubbles, cancelable);
@@ -306,93 +376,211 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		dispatchEvent(event, target);
 	}
 	
+	/**
+	 * Returns Window object's browsing context's WindowProxy object.
+	 * 
+	 * @return Window object's browsing context's WindowProxy object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window">window</a>
+	 */
 	@ScriptGetter
 	public WindowProxy getWindow() {
 		return context.getWindowProxy();
 	}
 	
+	/**
+	 * Returns Window object's browsing context's WindowProxy object.
+	 * 
+	 * @return Window object's browsing context's WindowProxy object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-self">self</a>
+	 */
 	@ScriptGetter
 	public WindowProxy getSelf() {
 		return context.getWindowProxy();
 	}
 
+	/**
+	 * Returns Window object's browsing context's WindowProxy object.
+	 * 
+	 * @return Window object's browsing context's WindowProxy object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-frames">frames</a>
+	 */
+	@ScriptGetter
+	public WindowProxy getFrames() {
+		return context.getWindowProxy();
+	}
+	
+	/**
+	 * Returns Window object's newest Document object.
+	 * 
+	 * @return Window object's newest Document object. 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-document-0">document</a>
+	 */
 	@ScriptGetter
 	public DocumentView getDocument() {
 		return documentImpl;
 	}
 
+	/**
+	 * Returns the current name of the browsing context.
+	 * 
+	 * @return Current name of the browsing context.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-name">name</a>
+	 */
 	@ScriptGetter
 	public String getName() {
 		return context.getName();
 	}
 	
+	/**
+	 * Sets the current name of the browsing context.
+	 * 
+	 * @param name New name of the browsing context.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-name">name</a>
+	 */
 	@ScriptSetter
 	public void setName(String name) {
 		context.setName(name);
 	}
 
+	/**
+	 * Returns location object of the Window object's Document.
+	 * 
+	 * @return Location object of the Window object's Document.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location">Location</a>
+	 */
 	@ScriptGetter
 	public Location getLocation() {
 		return documentImpl.getLocation();
 	}
 	
+	/**
+	 * Sets new URL into location objects and redirects the current document.
+	 * 
+	 * @param url New URL where to redirect.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location">Location</a>
+	 */
 	@ScriptSetter
 	public void setLocation(String url) {
 		Location location = getLocation();
 		location.assign(url);
 	}
 
+	/**
+	 * Returns the History object the newest Document of this Window.
+	 * 
+	 * @return History object the newest Document of this Window.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history">History</a>
+	 */
 	@ScriptGetter
 	public History getHistory() {
 		return documentImpl.getHistory();
 	}
 
+	/**
+	 * Returns the location bar BarProp object.
+	 * 
+	 * @return Location bar BarProp object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-locationbar">Location bar</a>
+	 */
 	@ScriptGetter
 	public BarProp getLocationbar() {
 		return context.getBrowsingUnit().getLocationbar();
 	}
 
+	/**
+	 * Returns the menu bar BarProp object.
+	 * 
+	 * @return Menu bar BarProp object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-menubar">Menu bar</a>
+	 */
 	@ScriptGetter
 	public BarProp getMenubar() {
 		return context.getBrowsingUnit().getMenubar();
 	}
 
+	/**
+	 * Returns the personal bar BarProp object.
+	 * 
+	 * @return Personal bar BarProp object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-personalbar">Personal bar</a>
+	 */
 	@ScriptGetter
 	public BarProp getPersonalbar() {
 		return context.getBrowsingUnit().getPersonalbar();
 	}
 
+	/**
+	 * Returns the scrollbar BarProp object.
+	 * 
+	 * @return Scrollbar BarProp object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-scrollbars">Scrollbar</a>
+	 */
 	@ScriptGetter
 	public ScrollBarsProp getScrollbars() {
 		return context.getBrowsingUnit().getScrollbars();
 	}
 
+	/**
+	 * Returns the status bar BarProp object.
+	 * 
+	 * @return Status bar BarProp object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-statusbar">Status bar</a>
+	 */
 	@ScriptGetter
 	public BarProp getStatusbar() {
 		return context.getBrowsingUnit().getStatusbar();
 	}
 
+	/**
+	 * Returns the tool bar BarProp object.
+	 * 
+	 * @return Tool bar BarProp object.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-toolbar">Tool bar</a>
+	 */
 	@ScriptGetter
 	public BarProp getToolbar() {
 		return context.getBrowsingUnit().getToolbar();
 	}
 
+	/**
+	 * Returns the last string it was set to.
+	 * 
+	 * @return String it was set to.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-status">Status</a>
+	 */
 	@ScriptGetter
 	public String getStatus() {
-		// TODO: Implement.
-		return null;
+		return status;
+	}
+	
+	/**
+	 * Sets new status.
+	 * 
+	 * @param value Value to be set as a status.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-status">Status</a>
+	 */
+	@ScriptGetter
+	public void setStatus(String value) {
+		status = value;
 	}
 
+	/**
+	 * Tests whether is the Window object's browsing context discarded.
+	 * 
+	 * @return True if the Window object's browsing context has been discarded or false otherwise.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-closed">Closed</a>
+	 */
 	@ScriptGetter
 	public boolean getClosed() {
 		return context.isDiscarded();
 	}
 
-	@ScriptGetter
-	public WindowProxy getFrames() {
-		return context.getWindowProxy();
-	}
-
+	/**
+	 * Returns the number of child browsing contexts.
+	 * 
+	 * @return Number of child browsing contexts.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-length">Length</a>
+	 */
 	@ScriptGetter
 	public long getLength() {
 		/*
@@ -417,11 +605,23 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return 0;
 	}
 
+	/**
+	 * Returns the WindowProxy object of its top-level browsing context.
+	 * 
+	 * @return WindowProxy object of its top-level browsing context.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-top">Length</a>
+	 */
 	@ScriptGetter
 	public WindowProxy getTop() {
 		return context.getTopLevelContext().getWindowProxy();
 	}
 
+	/**
+	 * Returns the WindowProxy object of the browsing context from which the current browsing context was created.
+	 * 
+	 * @return WindowProxy object of the browsing context from which the current browsing context was created.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-opener">Opener</a>
+	 */
 	@ScriptGetter
 	public WindowProxy getOpener() {
 		if (context instanceof AuxiliaryBrowsingContext) {
@@ -430,12 +630,24 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return null;
 	}
 	
+	/**
+	 * Returns the WindowProxy for the parent browsing context.
+	 * 
+	 * @return WindowProxy for the parent browsing context.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-parent">Length</a>
+	 */
 	@ScriptGetter
 	public WindowProxy getParent() {
 		BrowsingContext parentContext = context.getParentContext();
 		return (parentContext != null)? parentContext.getWindowProxy() : null;
 	}
 
+	/**
+	 * Returns the Element for the browsing context container.
+	 * 
+	 * @return Element for the browsing context container.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-frameelement">Frame element</a>
+	 */
 	@ScriptGetter
 	public Element getFrameElement() {
 		/* If d is not a Document in a nested browsing context, return null and abort these steps. */
@@ -458,24 +670,38 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return context.getContainer();
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-navigator">Navigator</a>
+	 */
 	@ScriptGetter
 	public Navigator getNavigator() {
 		// TODO Implement
 		return null;
 	}
 	
+	/**¨
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-external">External</a>
+	 */
 	@ScriptGetter
 	public External getExternal() {
 		// TODO Implement
 		return null;
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-applicationcache">Application cache</a>
+	 */
 	@ScriptGetter
 	public ApplicationCache getApplicationCache() {
 		// TODO Implement
 		return null;
 	}
 	
+	/**
+	 * Closes the browsing context.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-frameelement">Frame element</a>
+	 */
 	@ScriptFunction
 	public void close() {
 		if (!context.isScriptClosable()) {
@@ -498,6 +724,13 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		context.close();
 	}
 	
+	/**
+	 * If there is an existing attempt to navigate the browsing context 
+	 * and that attempt is not currently running the unload a document algorithm then 
+	 * cancels that navigation and aborts active document.
+	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-stop">Stop</a>
+	 */
 	@ScriptFunction
 	public void stop() {
 		NavigationController controller = context.getNavigationController();
@@ -513,36 +746,87 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		activeDocument.abort();
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-focus">Focus</a>
+	 */
 	@ScriptFunction
 	public void focus() {
 		throw new UnsupportedOperationException("Method focus() has not been implemented yet!");
 	}
 	
+	/**
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-blur">Blur</a>
+	 */
 	@ScriptFunction
 	public void blur() {
 		throw new UnsupportedOperationException("Method close() has not been implemented yet!");
 	}
 	
+	/**
+	 * Navigates an existing browsing context or opens and navigates an auxiliary browsing context.
+	 * 
+	 * @return WindowProxy object of the browsing context that was navigated, 
+	 *         or null if no browsing context was navigated.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 */
 	@ScriptFunction
 	public WindowProxy open() {
 		return open(Html5DocumentImpl.DEFAULT_URL_ADDRESS, DEFAULT_TARGET, DEFAULT_FEATURES, DEFAULT_REAPLACE);
 	}
 	
+	/**
+	 * Navigates an existing browsing context or opens and navigates an auxiliary browsing context.
+	 * 
+	 * @param url URL to be navigated.
+	 * @return WindowProxy object of the browsing context that was navigated, 
+	 *         or null if no browsing context was navigated.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 */
 	@ScriptFunction
 	public WindowProxy open(String url) {
 		return open(url, DEFAULT_TARGET, DEFAULT_FEATURES, DEFAULT_REAPLACE);
 	}
 	
+	/**
+	 * Navigates an existing browsing context or opens and navigates an auxiliary browsing context.
+	 * 
+	 * @param url URL to be navigated.
+	 * @param target Target browsing context name.
+	 * @return WindowProxy object of the browsing context that was navigated, 
+	 *         or null if no browsing context was navigated.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 */
 	@ScriptFunction
 	public WindowProxy open(String url, String target) {
 		return open(url, target, DEFAULT_FEATURES, DEFAULT_REAPLACE);
 	}
 	
+	/**
+	 * Navigates an existing browsing context or opens and navigates an auxiliary browsing context.
+	 * 
+	 * @param url URL to be navigated.
+	 * @param target Target browsing context name.
+	 * @param features Features.
+	 * @return WindowProxy object of the browsing context that was navigated, 
+	 *         or null if no browsing context was navigated.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 */
 	@ScriptFunction
 	public WindowProxy open(String url, String target, String features) {
 		return open(url, target, features, DEFAULT_REAPLACE);
 	}
 	
+	/**
+	 * Navigates an existing browsing context or opens and navigates an auxiliary browsing context.
+	 * 
+	 * @param url URL to be navigated.
+	 * @param target Target browsing context name.
+	 * @param features Features.
+	 * @param replace If true than active document will be replaced.
+	 * @return WindowProxy object of the browsing context that was navigated, 
+	 *         or null if no browsing context was navigated.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 */
 	@ScriptFunction
 	public WindowProxy open(String url, String target, String features, boolean replace) {
 		BrowsingUnit browsingUnit = context.getBrowsingUnit();
@@ -608,6 +892,12 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	}
 
 	// FIXME?: Everybody who gets proxy can scroll, is that correct? Should not be here check against origins or script setting stack?
+	/**
+	 * Scrolls the current document to given coordinates.
+	 * 
+	 * @param xCoord X coordinate
+	 * @param yCoord Y coordinate
+	 */
 	@ScriptFunction
 	public void scroll(int xCoord, int yCoord) {
 		ScrollBarsProp scrollBars = context.getBrowsingUnit().getScrollbars();
@@ -647,7 +937,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return ObjectGetter.UNDEFINED_VALUE;
 	}
 
-	protected boolean beforeShowModal() {
+	private boolean beforeShowModal() {
 		int nestingLevel = context.getEventLoop().getTerminationNestingLevel();
 		
 		if (nestingLevel > 0) {
@@ -659,6 +949,11 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return true;
 	}
 	
+	/**
+	 * Shows alert dialog with given message.
+	 * 
+	 * @param message Message to be displayed.
+	 */
 	@ScriptFunction
 	public void alert(String message) {
 		boolean beforeShowModal = beforeShowModal();
@@ -671,11 +966,20 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		context.getBrowsingUnit().showAlertDialog(message);
 	}
 	
+	/**
+	 * Shows alert dialog with an empty message.
+	 */
 	@ScriptFunction
 	public void alert() {
 		alert("");
 	}
 	
+	/**
+	 * Shows confirm dialog with given message.
+	 * 
+	 * @param message Message to be displayed.
+	 * @return True if dialog was submitted with OK option, otherwise false.
+	 */
 	@ScriptFunction
 	public boolean confirm(String message) {
 		boolean beforeShowModal = beforeShowModal();
@@ -688,11 +992,23 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return context.getBrowsingUnit().showConfirmDialog(message);
 	}
 	
+	/**
+	 * Shows confirm dialog with an empty message.
+	 * 
+	 * @return True if dialog was submitted with OK option, otherwise false.
+	 */
 	@ScriptFunction
 	public boolean confirm() {
 		return confirm("");
 	}
 	
+	/**
+	 * Shows prompt dialog with given message.
+	 * 
+	 * @param message Message to be displayed.
+	 * @param defaultChoice Choice to be returned if user canceled the prompt.
+	 * @return Value which was typed and submitted by user.
+	 */
 	@ScriptFunction
 	public String prompt(String message, String defaultChoice) {
 		boolean beforeShowModal = beforeShowModal();
@@ -705,11 +1021,22 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return context.getBrowsingUnit().showPromptDialog(message, defaultChoice);
 	}
 	
+	/**
+	 * Shows prompt dialog with given message.
+	 * 
+	 * @param message Message to be displayed.
+	 * @return Value which was typed and submitted by user.
+	 */
 	@ScriptFunction
 	public String prompt(String message) {
 		return prompt(message, "");
 	}
 	
+	/**
+	 * Shows prompt dialog with an empty message.
+	 * 
+	 * @return Value which was typed and submitted by user.
+	 */
 	@ScriptFunction
 	public String prompt() {
 		return prompt("", "");

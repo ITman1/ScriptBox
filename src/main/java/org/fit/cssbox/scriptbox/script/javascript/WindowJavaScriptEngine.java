@@ -44,23 +44,45 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.TopLevel;
 import org.mozilla.javascript.Wrapper;
 
+/**
+ * JavaScript engine for the browser. It implements the Window object into 
+ * top level scope and wraps this scope by ScriptContextScriptable above 
+ * which runs the scripts.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class WindowJavaScriptEngine extends WindowScriptEngine {
 
 	public static final String JAVASCRIPT_LANGUAGE = "text/javascript";
 	
-	static {
+	/*static {
 		ContextFactory globalFactory = new JavaScriptContextFactory();
 		ContextFactory.initGlobal(globalFactory);
-	}
+	}*/
 
 	protected ContextFactory contextFactory;
 	protected TopLevel topLevel;
 	protected Scriptable runtimeScope;
 	
+	/**
+	 * Constructs window JavaScript engine for the given settings and that was constructed using passed factory.
+	 * 
+	 * @param factory Script engine factory that created this browser engine.
+	 * @param scriptSettings Script settings that might be used for initialization of this script engine.
+	 */
 	public WindowJavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
 		this(factory, scriptSettings, null);
 	}
 	
+	/**
+	 * Constructs window JavaScript engine for the given settings and that was constructed using passed factory.
+	 * 
+	 * @param factory Script engine factory that created this browser engine.
+	 * @param scriptSettings Script settings that might be used for initialization of this script engine.
+	 * @param contextFactory Context factory to be used for this script engine.
+	 */
 	public WindowJavaScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings, ContextFactory contextFactory) {
 		super(factory, scriptSettings);
 		
@@ -76,9 +98,7 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 		ClassMembersResolverFactory factory = new ScriptAnnotationClassMembersResolverFactory(this, explicitGrantShutter);
 		return factory;
 	}
-	
-
-	
+		
 	@Override
 	public Object eval(Reader reader, ScriptContext context) throws ScriptException {
 		Object ret = null;
@@ -106,14 +126,28 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 		return new SimpleBindings();
 	}
 
+	/**
+	 * Enters new context.
+	 * 
+	 * @return New entered context.
+	 */
 	public Context enterContext() {
 		return contextFactory.enterContext();
 	}
 	
+	/**
+	 * Exits opened context for this thread.
+	 */
 	public void exitContext() {
 		Context.exit();
 	}
 	
+	/**
+	 * Wraps given exception and throws it as ScriptException.
+	 * 
+	 * @param ex Exception to be wrapped.
+	 * @throws ScriptException Thrown always by this method.
+	 */
 	public static void throwWrappedScriptException(Exception ex) throws ScriptException {
 		if ( ex instanceof RhinoException) {
 			RhinoException rhinoException = (RhinoException)ex;
@@ -135,6 +169,12 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 		} 
 	}
 	
+	/**
+	 * Converts JavaScript object to Java object, e.g. HostedJavaObject into wrapped Java object.
+	 * 
+	 * @param jsObj JavaScript object to be converted.
+	 * @return Converted Java object.
+	 */
 	public static Object jsToJava(Object jsObj) {
 		if (jsObj instanceof Wrapper) {
 			Wrapper njb = (Wrapper) jsObj;
@@ -155,10 +195,22 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 		}
 	}
 	
+	/**
+	 * Converts Java object into JavaScript object.
+	 * 
+	 * @param object Object to be converted.
+	 * @param scope Scope to be used as parent scope.
+	 * @return New converted JavaScript object.
+	 */
 	public static Object javaToJS(Object object, Scriptable scope) {
 		return Context.javaToJS(object, scope);
 	}
 	
+	/**
+	 * Initializes global top level scope.
+	 * 
+	 * @return New top level scope.
+	 */
 	protected TopLevel initializeTopLevel() {
 		Object object = (scriptSettings != null)? scriptSettings.getGlobalObject() : null;
 		
@@ -178,7 +230,13 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 		return new ObjectTopLevel(object, this);
 	}
 	
-	protected Scriptable getRuntimeScope(ScriptContext context) throws ScriptException {		
+	/**
+	 * Returns scope for running the scripts.
+	 * 
+	 * @param context Script context to be included into top level scope.
+	 * @return New scope constructed from the top level scope and wrapped script context scope.
+	 */
+	protected Scriptable getRuntimeScope(ScriptContext context) {		
 		if (runtimeScope == null) {
 			runtimeScope = new ScriptContextScriptable(context);
 			
@@ -189,6 +247,12 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 		return runtimeScope;
 	}
 	
+	/**
+	 * Unwraps passed value from JavaScript wrapper interface.
+	 * 
+	 * @param value Value to be unwrapped.
+	 * @return Unwrapped value.
+	 */
 	protected Object unwrap(Object value) {
 		if (value == null) {
 			return null;

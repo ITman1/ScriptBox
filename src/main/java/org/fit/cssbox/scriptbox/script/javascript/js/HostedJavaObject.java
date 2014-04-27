@@ -37,16 +37,23 @@ import org.fit.cssbox.scriptbox.script.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
 import org.fit.cssbox.scriptbox.script.reflect.ConstructorMember;
+import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
 import org.fit.cssbox.scriptbox.script.reflect.InvocableMember;
 import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
-import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
+import org.fit.cssbox.scriptbox.script.reflect.ObjectMembers;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
-/*
- * Creates scope for java native object.
+/**
+ * Creates scope for native Java object which contains its class 
+ * member properties. In other words, wraps the native Java object
+ * and makes it accessible from the JavaScript.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
  */
 public class HostedJavaObject extends BaseFunction implements Wrapper {
 
@@ -57,13 +64,25 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 	
 	protected boolean hasNonObjectGetterGet;
 		
-	protected DefaultObjectMembers objectMembers;
+	protected ObjectMembers objectMembers;
 	
+	/**
+	 * Constructs new scope representing the native Java object.
+	 * 
+	 * @param scope Scope to become the parent scope of this Java object.
+	 * @param javaObject Java object to be wrapped.
+	 */
 	public HostedJavaObject(Scriptable scope, Object javaObject) {
 		this(scope, DefaultObjectMembers.getObjectMembers(javaObject));
 	}
 	
-	public HostedJavaObject(Scriptable scope, DefaultObjectMembers objectMembers) {
+	/**
+	 * Constructs new scope that contains the passed object members.
+	 * 
+	 * @param scope Scope to become the parent scope of this Java object.
+	 * @param objectMembers Object and its members to be put into this new scope.
+	 */
+	public HostedJavaObject(Scriptable scope, ObjectMembers objectMembers) {
 		super(scope, null);
 		
 		this.objectMembers = objectMembers;
@@ -205,15 +224,32 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		return javaObject.toString();
 	}
 
+	/**
+	 * Wraps the given object.
+	 * 
+	 * @param object Object to be wrapped.
+	 * @return Wrapped passed object.
+	 */
 	protected Object wrapObject(Object object) {		
 		return WindowJavaScriptEngine.javaToJS(object, this);
 	}
 	
+	/**
+	 * Removes the property from the Native java object. (not supported)
+	 * 
+	 * @param name Name of the property to be removed from the Java object.
+	 */
 	protected void hostDelete(String name) {
 		// TODO: It can be feature
 		throw new FieldException("Deleting host properties is not supported");
 	}
 	
+	/**
+	 * Sets new value to the field of the wrapped object.
+	 * 
+	 * @param name Name of the field that should be set.
+	 * @param value Value to be set into field.
+	 */
 	protected void hostPut(String name, Object value) {
 		if (objectMembers.hasMemberWithName(name)) {
 			Set<ClassMember<?>> members = objectMembers.getMembersByName(name);
@@ -233,6 +269,12 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		throw new FieldException("Scope does not contain property with this name!");
 	}
 	
+	/**
+	 * Returns value of the wrapped object field with the given name.
+	 * 
+	 * @param name Name of the property.
+	 * @return Value of the property of the wrapped java object.
+	 */
 	protected Object hostGet(String name) {
 		Object result = Scriptable.NOT_FOUND;
 		
@@ -249,35 +291,12 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		return result;
 	}
 	
-	protected Object wrapGet(Set<ClassMember<?>> members) {
-		Object result = Scriptable.NOT_FOUND;
-		ClassMember<?> firstMember = members.iterator().next();
-		if (firstMember instanceof ClassField) {
-			result = hostGet((ClassField)firstMember, javaObject);
-		} else if (firstMember instanceof ClassFunction) {
-			Set<ClassFunction> functions = new HashSet<ClassFunction>();
-			boolean failed = false;
-			for (ClassMember<?> member : members) {
-				if (member instanceof ClassFunction) {
-					functions.add((ClassFunction)member);
-				} else {
-					failed = true;
-					break;
-				}
-			}
-			if (!failed) {
-				result = hostFunctionGet(functions);
-			}
-		}
-		
-		return result;
-
-	}
-	
-	protected Object hostFunctionGet(Set<ClassFunction> functions) {
-		return new HostedJavaMethod(this, javaObject, functions);
-	}
-	
+	/**
+	 * Returns the value of the object getter it there is any for the wrapped java object.
+	 * 
+	 * @param key Key that should be searched using the object getter.
+	 * @return Value of the property of the wrapped java object
+	 */
 	protected Object objectGetterGet(Object key) {
 		Method method = null;
 		Object result = Scriptable.NOT_FOUND;
@@ -303,7 +322,43 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		return result;
 	}
 	
-	public static Object[] getIds(DefaultObjectMembers objectMembers, Object[] superIds) {
+	private Object wrapGet(Set<ClassMember<?>> members) {
+		Object result = Scriptable.NOT_FOUND;
+		ClassMember<?> firstMember = members.iterator().next();
+		if (firstMember instanceof ClassField) {
+			result = hostGet((ClassField)firstMember, javaObject);
+		} else if (firstMember instanceof ClassFunction) {
+			Set<ClassFunction> functions = new HashSet<ClassFunction>();
+			boolean failed = false;
+			for (ClassMember<?> member : members) {
+				if (member instanceof ClassFunction) {
+					functions.add((ClassFunction)member);
+				} else {
+					failed = true;
+					break;
+				}
+			}
+			if (!failed) {
+				result = hostFunctionGet(functions);
+			}
+		}
+		
+		return result;
+
+	}
+
+	private Object hostFunctionGet(Set<ClassFunction> functions) {
+		return new HostedJavaMethod(this, javaObject, functions);
+	}
+	
+	/**
+	 * Returns merged enumerable properties from given object members and already known super IDs.
+	 * 
+	 * @param objectMembers Object members that might have some enumerable properties.
+	 * @param superIds IDs that should be included into result array.
+	 * @return Array of the enumerable properties.
+	 */
+	public static Object[] getIds(ObjectMembers objectMembers, Object[] superIds) {
 		Set<String> membersNames = objectMembers.getEnumerableMemberNames();
 		
 		Object[] returnIds = new Object[membersNames.size() + superIds.length];
@@ -321,6 +376,13 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		return returnIds;
 	}
 	
+	/**
+	 * Implements put operation into native Java object.
+	 * 
+	 * @param objectField Field into which should we are putting.
+	 * @param object Object having the passed field.
+	 * @param value Value to be put into passed field.
+	 */
 	public static void hostPut(ClassField objectField, Object object, Object value) {
 		object = WindowJavaScriptEngine.jsToJava(object);
 		value = WindowJavaScriptEngine.jsToJava(value);
@@ -329,6 +391,13 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 		objectField.set(object, value);
 	}
 	
+	/**
+	 * Implements get operation onto native Java object.
+	 * 
+	 * @param objectField Field into which should we are putting.
+	 * @param object Object having the passed field.
+	 * @return Value retrieved from the passed field.
+	 */
 	public static Object hostGet(ClassField objectField, Object object) {
 		object = WindowJavaScriptEngine.jsToJava(object);
 		Object value = objectField.get(object);

@@ -38,6 +38,14 @@ import org.mozilla.javascript.FunctionObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
 
+/**
+ * Creates function scope for native Java method - wraps the native Java method
+ * and makes it callable from the JavaScript.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class HostedJavaMethod extends FunctionObject {
 	public final static Method FUNCTION_METHOD;
 	
@@ -56,6 +64,13 @@ public class HostedJavaMethod extends FunctionObject {
 	private Object object;
 	private Set<FunctionMember> objectFunctions;
 	
+	/**
+	 * Constructs new hosted Java method for given parent scope, of the passed object and with the passed overloaded function members.
+	 * 
+	 * @param scope Scope to become the parent scope of this function.
+	 * @param object Object with the wrapped method.
+	 * @param objectFunctions Overloaded function members which should have the same name.
+	 */
 	public HostedJavaMethod(Scriptable scope, Object object, Set<? extends FunctionMember> objectFunctions) {
 		super(objectFunctions.iterator().next().getMember().getName(), FUNCTION_METHOD, scope);
 		
@@ -64,6 +79,13 @@ public class HostedJavaMethod extends FunctionObject {
 		this.objectFunctions.addAll(objectFunctions);
 	}
 	
+	/**
+	 * Constructs new hosted Java method for given parent scope, of the passed object and with the passed function member.
+	 * 
+	 * @param scope Scope to become the parent scope of this function.
+	 * @param object Object with the wrapped method.
+	 * @param objectFunction Function member to be wrapped.
+	 */
 	public HostedJavaMethod(Scriptable scope, Object object, final FunctionMember objectFunction) {
 		this(scope, object,
 			new HashSet<FunctionMember>() {
@@ -75,18 +97,20 @@ public class HostedJavaMethod extends FunctionObject {
 		);
 	}
 	
-	public static Object invoke(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-		if (funObj instanceof HostedJavaMethod) {
-			((HostedJavaMethod)funObj).call(cx, thisObj, thisObj, args);
-		}
-
-		throw new FunctionException("Function object must be of class HostedJavaMethod");
-	}
-	
+	/**
+	 * Returns attached object overloaded function members.
+	 * 
+	 * @return All associated function members.
+	 */
 	public Set<? extends FunctionMember> getAttachedObjectFunctions() {
 		return objectFunctions;
 	}
 	
+	/**
+	 * Adds new overloaded member into this wrapped function object.
+	 * 
+	 * @param objectFunction New function member to be attached.
+	 */
 	public void attachObjectFunction(FunctionMember objectFunction) {
 		this.objectFunctions.add(objectFunction);
 	}
@@ -115,6 +139,28 @@ public class HostedJavaMethod extends FunctionObject {
 		}
 	}
 	
+	/**
+	 * Invokes given function object.
+	 * 
+	 * @param funObj Function object to be invoked.
+	 * @see Function#call(Context, Scriptable, Scriptable, Object[])
+	 */
+	public static Object invoke(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		if (funObj instanceof HostedJavaMethod) {
+			((HostedJavaMethod)funObj).call(cx, thisObj, thisObj, args);
+		}
+
+		throw new FunctionException("Function object must be of class HostedJavaMethod");
+	}
+	
+	/**
+	 * Returns the nearest function - searches inside set of functions and
+	 * tries to match the appropriate function according to given arguments.
+	 * 
+	 * @param args Arguments that are passed in the function call.
+	 * @param invocableMembers Set of the functions.
+	 * @return Function member if there was any that matched the passed arguments.
+	 */
 	public static InvocableMember<?> getNearestObjectFunction(Object[] args, Set<? extends InvocableMember<?>> invocableMembers) {
 		Class<?> argsTypes[] = new Class<?>[args.length];
 		
@@ -139,9 +185,14 @@ public class HostedJavaMethod extends FunctionObject {
 		return null;
 	}
 	
+	/**
+	 * Casts the given arguments into given expected types.
+	 * 
+	 * @param expectedTypes Types into which should be casted the given arguments.
+	 * @param args Arguments to be casted.
+	 * @return Array of the casted arguments if casting was successful, otherwise null.
+	 */
 	public static Object[] castArgs(Class<?>[] expectedTypes, Object... args) {
-
-		
 		if (expectedTypes != null && args != null) {
 
 			if (expectedTypes.length <= args.length + 1 && expectedTypes.length > 0) {

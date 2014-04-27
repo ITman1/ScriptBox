@@ -19,6 +19,17 @@
 
 package org.fit.cssbox.scriptbox.search;
 
+/*
+ * TODO: This class should be implemented.
+ */
+/**
+ * Class representing interface for search providers.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#external">The External interface</a>
+ */
 public class External {
 
 }

@@ -8,6 +8,15 @@ import java.util.List;
  * TODO: The basic URL parser 
  * http://url.spec.whatwg.org/#concept-basic-url-parser
  */
+/**
+ * Represents basic URL parser - parser that takes a string input, URL base, encoding override, 
+ * url and state override state override and then parses into Parser URL.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://url.spec.whatwg.org/#concept-basic-url-parser">Basic URL parser</a>
+ */
 public class BasicURLParser {
 	static private BasicURLParser instance;
 	

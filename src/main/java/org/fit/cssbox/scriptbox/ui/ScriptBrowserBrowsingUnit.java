@@ -30,6 +30,14 @@ import javax.swing.SwingUtilities;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 
+/**
+ * Browsing units containing a simple user interface and browsable canvas
+ * provided by a ScriptBrowser. 
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 	protected LocationBarProp locationBarProp;
 	protected UiScrollBarsProp uiScrollBarsProp;
@@ -138,6 +146,14 @@ public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 	
 	protected ScriptBrowser scriptBrowser;
 	
+	/**
+	 * Constructs browsing unit that was constructed by passed user agent.
+	 * 
+	 * @param userAgent User agent that constructed this browsing unit.
+	 * @param constructScriptBrowser If true then should be explicitly constructed 
+	 *        ScriptBrowser inside this constructor. If false, then it should be 
+	 *        associated later via {@link #setScriptBrowser(ScriptBrowser)} 
+	 */
 	protected ScriptBrowserBrowsingUnit(ScriptBrowserUserAgent userAgent, boolean constructScriptBrowser) {
 		super(userAgent);
 		
@@ -147,26 +163,51 @@ public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 		}
 	}
 	
+	/**
+	 * Constructs browsing unit that was constructed by passed user agent and creates new {@link #setScriptBrowser(ScriptBrowser)}.
+	 * 
+	 * @param userAgent User agent that constructed this browsing unit.
+	 * @see #ScriptBrowserBrowsingUnit(ScriptBrowserUserAgent, boolean)
+	 */
 	public ScriptBrowserBrowsingUnit(ScriptBrowserUserAgent userAgent) {
 		this(userAgent, true);
 	}
 	
+	/**
+	 * Constructs browsing unit that was constructed by user agent of the passed {@link #setScriptBrowser(ScriptBrowser)}.
+	 * 
+	 * @param scriptBrowser Script browser used for this browsing unit.
+	 * @see #ScriptBrowserBrowsingUnit(ScriptBrowserUserAgent, boolean)
+	 */
 	public ScriptBrowserBrowsingUnit(ScriptBrowser scriptBrowser) {
 		super(scriptBrowser.getUserAgent());
 		
 		setScriptBrowser(scriptBrowser);
 	}
 	
+	/**
+	 * Sets new script browser.
+	 * 
+	 * @param scriptBrowser New script browser to be set.
+	 */
 	public void setScriptBrowser(ScriptBrowser scriptBrowser) {
 		this.scriptBrowser = scriptBrowser;
 		
 		initialize();
 	}
 	
+	/**
+	 * Returns associated script browser.
+	 * 
+	 * @return Associated script browser.
+	 */
 	public ScriptBrowser getScriptBrowser() {
 		return scriptBrowser;
 	}
 	
+	/**
+	 * Initializes this browsing unit.
+	 */
 	protected void initialize() {
 		if (scriptBrowser.getBrowsingUnit() != this) {
 			scriptBrowser.setBrowsingUnit(this);

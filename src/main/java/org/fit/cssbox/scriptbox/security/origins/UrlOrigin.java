@@ -24,12 +24,25 @@ import java.net.URL;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+/**
+ * Class for creating URL origins.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#origin-0">Origin</a>
+ */
 public class UrlOrigin extends Origin<URL> {
 
 	private int _port;
 	private String _protocol;
 	private String _host;
 	
+	/**
+	 * Constructs new URL origin from the given URL.
+	 * 
+	 * @param originSource URL used for this origin
+	 */
 	public UrlOrigin(URL originSource) {
 		super(originSource);
 		
@@ -48,15 +61,15 @@ public class UrlOrigin extends Origin<URL> {
 	}
 
 	@Override
-	protected boolean originEquals(Object obj) {
-		if (obj == null)
+	protected boolean originEquals(Origin<?> origin) {
+		if (origin == null)
 			return false;
-		if (obj == this)
+		if (origin == this)
 			return true;
-		if (!(obj instanceof UrlOrigin))
+		if (!(origin instanceof UrlOrigin))
 			return false;
 
-		UrlOrigin rhs = (UrlOrigin) obj;
+		UrlOrigin rhs = (UrlOrigin) origin;
 		return new EqualsBuilder().
 			append(_port, rhs._port).
 			append(_protocol, rhs._protocol).

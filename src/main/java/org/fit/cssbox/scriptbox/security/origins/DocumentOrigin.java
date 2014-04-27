@@ -23,6 +23,14 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 
+/**
+ * Class for creating Document origins.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#origin-0">Origin</a>
+ */
 public class DocumentOrigin extends Origin<Html5DocumentImpl> {
 	private Object _uniqueIdentifier;
 	
@@ -32,18 +40,45 @@ public class DocumentOrigin extends Origin<Html5DocumentImpl> {
 		_uniqueIdentifier = uniqueIdentifier;
 	}
 	
+	/**
+	 * Creates origin for the given document which is aliased from the given alias.
+	 * 
+	 * @param originDocument Document that owns the origin.
+	 * @param alias Alias which is used for resolving.
+	 * @return New constructed Document origin.
+	 */
 	public static DocumentOrigin create(Html5DocumentImpl originDocument, Origin<?> alias) {
 		return new DocumentOrigin(originDocument, alias, null);
 	}
 	
+	/**
+	 * Creates unique origin for the given document, but with a given alias.
+	 * 
+	 * @param originDocument Document that owns the origin.
+	 * @param alias Alias which is used for resolving.
+	 * @return New constructed Document origin.
+	 */
 	public static DocumentOrigin createUnique(Html5DocumentImpl originDocument, Origin<?> alias) {
 		return new DocumentOrigin(originDocument, alias, new Object());
 	}
 	
+	/**
+	 * Creates origin for the given document.
+	 * 
+	 * @param originDocument Document that owns the origin.
+	 * @return New constructed Document origin.
+	 */
 	public static DocumentOrigin create(Html5DocumentImpl originDocument) {
 		return create(originDocument, null);
 	}
 	
+	
+	/**
+	 * Creates unique origin for the given document.
+	 * 
+	 * @param originDocument Document that owns the origin.
+	 * @return New constructed Document origin.
+	 */
 	public static DocumentOrigin createUnique(Html5DocumentImpl originDocument) {
 		return createUnique(originDocument, null);
 	}
@@ -56,15 +91,15 @@ public class DocumentOrigin extends Origin<Html5DocumentImpl> {
 	}
 
 	@Override
-	protected boolean originEquals(Object obj) {
-		if (obj == null)
+	protected boolean originEquals(Origin<?> origin) {
+		if (origin == null)
 			return false;
-		if (obj == this)
+		if (origin == this)
 			return true;
-		if (!(obj instanceof DocumentOrigin))
+		if (!(origin instanceof DocumentOrigin))
 			return false;
 
-		DocumentOrigin rhs = (DocumentOrigin) obj;
+		DocumentOrigin rhs = (DocumentOrigin) origin;
 		return new EqualsBuilder().
 			append(_uniqueIdentifier, rhs._uniqueIdentifier).
 			isEquals();

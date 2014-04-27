@@ -19,6 +19,14 @@
 
 package org.fit.cssbox.scriptbox.security;
 
+/**
+ * Enumeration of all sandboxing flags.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#sandboxing-flag-set">A sandboxing flag set</a>
+ */
 public enum SandboxingFlag {	
 	NAVIGATION_BROWSING_CONTEXT_FLAG,
 	AUXILARY_NAVIGATION_BROWSING_CONTEXT_FLAG,

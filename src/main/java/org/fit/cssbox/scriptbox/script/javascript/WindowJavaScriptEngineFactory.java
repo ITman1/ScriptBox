@@ -28,6 +28,13 @@ import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 
+/**
+ * JavaScript engine factory for creating the {@link WindowJavaScriptEngine} instances.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class WindowJavaScriptEngineFactory extends BrowserScriptEngineFactory {
 
 	private static List<String> mimeTypes;

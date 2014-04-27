@@ -26,6 +26,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+/**
+ * Handler that enables us to use DATA protocol. 
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class Handler extends URLStreamHandler {
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {

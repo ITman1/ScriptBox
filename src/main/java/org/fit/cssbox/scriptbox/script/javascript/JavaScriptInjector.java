@@ -21,6 +21,13 @@ package org.fit.cssbox.scriptbox.script.javascript;
 
 import org.fit.cssbox.scriptbox.script.ScriptContextInjector;
 
+/**
+ * Abstract class for all injectors that are only JavaScript specific.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public abstract class JavaScriptInjector extends ScriptContextInjector {
 
 	public JavaScriptInjector() {

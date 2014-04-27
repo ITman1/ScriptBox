@@ -480,8 +480,8 @@ public class EventLoop {
 			_runningTask.execute();
 		} catch (TaskAbortedException e) {
 			// It is OK, task only ended earlier
-		} catch (LifetimeEndedException e) {
-			throw new InterruptedException();
+		} catch (InterruptedException e) {
+			throw e;
 		} catch (Exception e) {
 			reportException(e);
 		} finally {

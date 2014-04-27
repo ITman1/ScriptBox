@@ -4,6 +4,15 @@ package org.fit.cssbox.scriptbox.url;
  * TODO:
  * http://url.spec.whatwg.org/#concept-url-parser
  */
+/**
+ * Represents URL parser - parser that takes a string input, URL base, 
+ * encoding override and then parses into Parser URL.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://url.spec.whatwg.org/#concept-url-parser">URL parser</a>
+ */
 public class URLParser {
 	
 	static private URLParser instance;

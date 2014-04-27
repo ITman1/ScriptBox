@@ -31,6 +31,14 @@ import org.fit.cssbox.swingbox.util.DefaultHyperlinkHandler;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+/**
+ * Handler for handling hyperlinks according to the specification. 
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/links.html#following-hyperlinks">Follow a hyperlink </a>
+ */
 public class ScriptBrowserHyperlinkHandler extends DefaultHyperlinkHandler
 {    
     @Override

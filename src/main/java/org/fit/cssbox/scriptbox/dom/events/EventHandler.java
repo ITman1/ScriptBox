@@ -32,5 +32,10 @@ import org.w3c.dom.events.Event;
  * @since 0.9 - 21.4.2014
  */
 public interface EventHandler {
+	/**
+	 * Callback function that handles passed event.
+	 * 
+	 * @param event Event that occured.
+	 */
 	public void handleEvent(Event event);
 }

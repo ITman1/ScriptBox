@@ -25,7 +25,22 @@ import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
+/**
+ * Collects common static methods for managing the java.net.URL.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://url.spec.whatwg.org/#urlsearchparams">Interface URLSearchParams</a>
+ */
 public class URLUtilsHelper {
+	/**
+	 * Enumeration of all URL components.
+	 *
+	 * @author Radim Loskot
+	 * @version 0.9
+	 * @since 0.9 - 21.4.2014
+	 */
 	public enum UrlComponent {
 		PROTOCOL,
 		HOST,
@@ -37,10 +52,27 @@ public class URLUtilsHelper {
 		QUERY_PARAM
 	};
 	
+	/**
+	 * Sets given URL component to the given argument.
+	 * 
+	 * @param url Old URL where to set the component.
+	 * @param compoenent Component to be set.
+	 * @param arg1 Argument which to set into URL.
+	 * @return New URL containing modified component.
+	 */
 	static public URL setComponent(URL url, UrlComponent compoenent, Object arg1) {
 		return setComponent(url, compoenent, arg1, null);
 	}
 	
+	/**
+	 * Sets given URL component to the given arguments. Two arguments as used for setting the query parameters.
+	 * 
+	 * @param url Old URL where to set the component.
+	 * @param compoenent Component to be set.
+	 * @param arg1 First argument which to set into URL.
+	 * @param arg2 Second argument which to set into URL.
+	 * @return New URL containing modified component.
+	 */
 	static public URL setComponent(URL url, UrlComponent compoenent, Object arg1, Object arg2) {
 		UriBuilder builder;
 		try {
@@ -82,10 +114,25 @@ public class URLUtilsHelper {
 		return url;
 	}
 	
+	/**
+	 * Tests whether are two passed components completely identical.
+	 * 
+	 * @param url1 First URL to be compared.
+	 * @param url2 Second URL to be compared.
+	 * @return True if these URLs are identical.
+	 */
 	static public boolean identicalComponents(URL url1, URL url2) {
 		return identicalComponents(url1, url2, UrlComponent.PROTOCOL, UrlComponent.HOST, UrlComponent.PORT, UrlComponent.PATH, UrlComponent.QUERY, UrlComponent.REF);
 	}
 	
+	/**
+	 * Tests whether are two passed components identical at given components.
+	 * 
+	 * @param url1 First URL to be compared.
+	 * @param url2 Second URL to be compared.
+	 * @param components Components to be compared.
+	 * @return True if these URLs are identical at given components.
+	 */
 	static public boolean identicalComponents(URL url1, URL url2, UrlComponent ...components) {
 		Set<UrlComponent> componentsSet = new HashSet<UrlComponent>();
 		
@@ -147,7 +194,12 @@ public class URLUtilsHelper {
 		return true;
 	}
 	
-
+	/**
+	 * Registers given package with URL handlers.
+	 * 
+	 * @param handlerPackageName Package name that contains the URL handlers.
+	 * @return True if registration was successful, otherwise false.
+	 */
 	public static boolean registerUrlHandlerPackage(String handlerPackageName) {
 		try {
 			String handlerPkgs = System.getProperty("java.protocol.handler.pkgs");

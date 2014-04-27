@@ -13,6 +13,7 @@ import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.window.Window;
+import org.mozilla.javascript.Undefined;
 
 public class TestUtils {
 	public static interface Resetable {
@@ -106,6 +107,10 @@ public class TestUtils {
 		public void assertNotNull(String executionScript, String scriptValue) {
 			Object resultValue = evalScript(executionScript, scriptValue);	
 			org.junit.Assert.assertNotNull(resultValue);
+		}
+		
+		public void assertUndefined(String scriptValue) {
+			assertEquals(null, scriptValue, Undefined.instance);
 		}
 		
 		public void assertEquals(String scriptValue, Object expectedValue) {

@@ -2,8 +2,13 @@ package org.fit.cssbox.scriptbox.url;
 
 import org.fit.cssbox.scriptbox.script.annotation.ScriptConstructor;
 
-/*
- * http://url.spec.whatwg.org/#dom-url
+/**
+ * Represents URL interface visible in scripts.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://url.spec.whatwg.org/#url">URL</a>
  */
 public class URL extends URLUtils {
 	
@@ -12,11 +17,24 @@ public class URL extends URLUtils {
 	 */
 	public URL() {}
 	
+	/**
+	 * Constructs URL from given URL string and default base URL address.
+	 * 
+	 * @param url URL
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url">URL</a>
+	 */
 	@ScriptConstructor
 	public URL(String url) {
 		this(url, "about:blank");
 	}
 	
+	/**
+	 * Constructs URL from given URL string and base URL address.
+	 * 
+	 * @param url URL
+	 * @param base URL base address.
+	 * @see <a href="http://url.spec.whatwg.org/#dom-url">URL</a>
+	 */
 	@ScriptConstructor
 	public URL(String url, String base) {
 		// 1) Basic URL parse base and set base to the result of that algorithm. 

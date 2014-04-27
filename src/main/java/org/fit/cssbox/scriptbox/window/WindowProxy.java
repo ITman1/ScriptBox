@@ -172,6 +172,11 @@ public class WindowProxy extends Window {
 	public String getStatus() {
 		return getProxiedWindow().getStatus();
 	}
+	
+	@Override
+	public void setStatus(String value) {
+		getProxiedWindow().setStatus(value);
+	}
 
 	@ScriptGetter
 	@Override

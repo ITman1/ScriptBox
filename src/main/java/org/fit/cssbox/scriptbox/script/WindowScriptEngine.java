@@ -33,10 +33,16 @@ import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 public abstract class WindowScriptEngine extends GlobalObjectScriptEngine {
 	private Window window;
 	
+	/**
+	 * Constructs window script engine for the given settings and that was constructed using passed factory.
+	 * 
+	 * @param factory Script engine factory that created this browser engine.
+	 * @param scriptSettings Script settings that might be used for initialization of this script engine.
+	 */
 	public WindowScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
-		super(factory, scriptSettings);
+		super(factory, scriptSettings, (scriptSettings != null)? scriptSettings.getGlobalObject() : null);
 		
-		window = (scriptSettings != null)? scriptSettings.getGlobalObject() : null;
+		window = (globalObject != null)? (Window) globalObject : null;
 	}
 	
 	/**

@@ -16,8 +16,19 @@ import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
  */
 public abstract class GlobalObjectScriptEngine extends BrowserScriptEngine {
 
-	public GlobalObjectScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings) {
+	protected Object globalObject;
+	
+	/**
+	 * Constructs global object script engine for the given settings and that was constructed using passed factory.
+	 * 
+	 * @param factory Script engine factory that created this browser engine.
+	 * @param scriptSettings Script settings that might be used for initialization of this script engine.
+	 * @param globalObject Global object that should be implemented.
+	 */
+	public GlobalObjectScriptEngine(BrowserScriptEngineFactory factory, WindowScriptSettings scriptSettings, Object globalObject) {
 		super(factory, scriptSettings);
+		
+		this.globalObject = globalObject;
 	}
 	
 	@Override

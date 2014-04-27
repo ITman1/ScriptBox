@@ -27,10 +27,26 @@ import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+/**
+ * Wrap factory decorator that wraps Java native collections and makes 
+ * accessible their items via JavaScript indexed properties or mapped properties.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class CollectionsWrapFactoryDecorator extends WrapFactoryDecorator {
 	
+	/**
+	 * Constructs leaf collections wrap factory decorator. 
+	 */
 	public CollectionsWrapFactoryDecorator() {}
 	
+	/**
+	 * Constructs new wrap factory decorator.
+	 * 
+	 * @param decorator Decorator the be added as a child decorator and chained.
+	 */
 	public CollectionsWrapFactoryDecorator(WrapFactoryDecorator decorator) {
 		super(decorator);
 	}

@@ -28,19 +28,27 @@ import org.fit.cssbox.scriptbox.script.reflect.ObjectFunction;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+/**
+ * Class that adds functionality of the defining class members into this scriptable object.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ObjectScriptable extends ScriptableObject  {
 	private static final long serialVersionUID = 1531587729453175461L;
 	
-	protected Object object;
-	
-	public ObjectScriptable(Object object) {
-		this.object = object;
+	/**
+	 * @see ScriptableObject
+	 */
+	public ObjectScriptable() {
 	}
 	
-	public ObjectScriptable(Object object, Scriptable scope, Scriptable prototype) {
+	/**
+	 * @see ScriptableObject
+	 */
+	public ObjectScriptable(Scriptable scope, Scriptable prototype) {
 		super(scope, prototype);
-		
-		this.object = object;
 	}
 	
 	@Override
@@ -48,14 +56,33 @@ public class ObjectScriptable extends ScriptableObject  {
 		return "ObjectScriptable";
 	}
 
+	/**
+	 * Defines given object field into this scope with the passed name.
+	 * 
+	 * @param fieldName Name of the new property.
+	 * @param objectField Field to be defined into this scope.
+	 */
 	public void defineObjectField(String fieldName, ObjectField objectField) {
 		defineObjectField(this, fieldName, objectField);
 	}
 	
+	/**
+	 * Defines given object function into this scope with the passed name.
+	 * 
+	 * @param fieldName Name of the new property.
+	 * @param objectField Function to be defined into this scope.
+	 */
 	public void defineObjectFunction(String functionName, ObjectFunction objectFunction) {		
 		defineObjectFunction(this, functionName, objectFunction);
 	}
 	
+	/**
+	 * Defines given object field into passed scope with the passed name.
+	 * 
+	 * @param fieldScopeObject Scope where to define the passed field.
+	 * @param fieldName Name of the new property.
+	 * @param objectField Field to be defined into passed scope.
+	 */
 	public static void defineObjectField(ScriptableObject fieldScopeObject, String fieldName, ObjectField objectField) {
 		Method fieldGetterMethod = objectField.getFieldGetterMethod();
 		Method fieldSetterMethod = objectField.getFieldSetterMethod();
@@ -69,6 +96,13 @@ public class ObjectScriptable extends ScriptableObject  {
 		fieldScopeObject.defineProperty(fieldName, objectField, wrappedFieldGetterMethod, wrappedFieldSetterMethod, attributes);
 	}
 	
+	/**
+	 * Defines given object function into passed scope with the passed name.
+	 * 
+	 * @param fieldScopeObject Scope where to define the passed function.
+	 * @param fieldName Name of the new property.
+	 * @param objectField Function to be defined into passed scope.
+	 */
 	public static void defineObjectFunction(ScriptableObject functionScopeObject, String functionName, ObjectFunction objectFunction) {		
 		Object function = ScriptableObject.getProperty(functionScopeObject, functionName);
 		

@@ -28,6 +28,14 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.Script;
 
+/**
+ * Represents class for creating scripts that have Window as a global object.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#script-settings-for-browsing-contexts">Script settings for browsing contexts</a>
+ */
 public class WindowScript extends Script<Reader, WindowScriptSettings> {
 	
 	public WindowScript(Reader source, URL sourceURL, String language, WindowScriptSettings settings, boolean mutedErrorsFlag) {

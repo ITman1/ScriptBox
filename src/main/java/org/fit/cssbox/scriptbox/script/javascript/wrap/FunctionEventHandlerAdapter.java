@@ -30,9 +30,21 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.w3c.dom.events.Event;
 
+/**
+ * Adapter class that adapts native JavaScript function object into EventHandler.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class FunctionEventHandlerAdapter implements EventHandler {
 	protected Function function;
 	
+	/**
+	 * Constructs new adapter for given function.
+	 * 
+	 * @param function Function to be adapted.
+	 */
 	public FunctionEventHandlerAdapter(Function function) {
 		this.function = function;
 	}
@@ -59,10 +71,21 @@ public class FunctionEventHandlerAdapter implements EventHandler {
 		}
 	}
 
+	/**
+	 * Returns adapted function.
+	 * 
+	 * @return Adapted function.
+	 */
 	public Function getFunction() {
 		return function;
 	}
 	
+	/**
+	 * Returns top level scope for the passed scope.
+	 * 
+	 * @param scope Scope for which should be returned the top level scope.
+	 * @return Top level scope for the passed scope.
+	 */
 	protected ObjectTopLevel getObjectTopLevel(Scriptable scope) {
 		Scriptable parentScope;
 		while ((parentScope = scope.getParentScope()) != null) {

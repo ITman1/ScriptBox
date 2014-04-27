@@ -88,8 +88,8 @@ public class CollectionsWrapFactoryTests {
 	public void TestNativeJavaObjectCollections() {
 		tester.assertEquals("foobarMap['foo']", "bar");
 		tester.assertEquals("foobarList[0]", "foobar");
-		tester.assertNull("foobarList['str']");
-		tester.assertNull("foobarList[1]");
+		tester.assertUndefined("foobarList['str']");
+		tester.assertUndefined("foobarList[1]");
 	}
 	
 }

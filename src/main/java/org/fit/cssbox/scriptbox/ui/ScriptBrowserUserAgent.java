@@ -22,6 +22,13 @@ package org.fit.cssbox.scriptbox.ui;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
 
+/**
+ * User agent that creates browsing units containing a simple user interface.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ScriptBrowserUserAgent extends UserAgent {
 	
 	@Override

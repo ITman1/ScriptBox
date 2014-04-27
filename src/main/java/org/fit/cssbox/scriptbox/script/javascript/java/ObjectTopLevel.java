@@ -27,6 +27,14 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.TopLevel;
 
+/**
+ * Class that represents the sealed global scope, which provides global properties 
+ * and implements the native Java global object.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ObjectTopLevel extends TopLevel {	
 	private static final long serialVersionUID = -824471943182669084L;
 
@@ -34,6 +42,13 @@ public class ObjectTopLevel extends TopLevel {
 	protected WindowJavaScriptEngine scriptEngine;
 	protected ObjectImplementor implementor;
 	
+	/**
+	 * Constructs the global scope with the implemented global object.
+	 * 
+	 * @param globalObject Global object to be implemented into this global scope.
+	 * @param scriptEngine Script engine which owns this global scope.
+	 * @param implementor Implementor that ensures the implementing of the global object into this scope.
+	 */
 	public ObjectTopLevel(Object globalObject, WindowJavaScriptEngine scriptEngine, ObjectImplementor implementor) {
 		this.globalObject = globalObject;
 		this.scriptEngine = scriptEngine;
@@ -53,14 +68,30 @@ public class ObjectTopLevel extends TopLevel {
 		}
 	}
 	
+	/**
+	 * Constructs the global scope with the implemented global object.
+	 * 
+	 * @param globalObject Global object to be implemented into this global scope.
+	 * @param scriptEngine Script engine which owns this global scope.
+	 */
 	public ObjectTopLevel(Object globalObject, WindowJavaScriptEngine browserScriptEngine) {
 		this(globalObject, browserScriptEngine, null);
 	}
 	
+	/**
+	 * Returns associated global object.
+	 * 
+	 * @return Associated global object that was implemented into this global scope.
+	 */
 	public Object getGlobalObject() {
 		return globalObject;
 	}
 	
+	/**
+	 * Returns associated script engine.
+	 * 
+	 * @return Associated script engine that owns this global scope.
+	 */
 	public WindowJavaScriptEngine getBrowserScriptEngine() {
 		return scriptEngine;
 	}
@@ -100,6 +131,12 @@ public class ObjectTopLevel extends TopLevel {
 		return superIds;
 	}
 	
+	/**
+	 * Ensures getting the object getter values from the wrapped global object.
+	 *  
+	 * @param arg Key for the object getter. 
+	 * @return Value to a given key whether there was any object getter and if there existed any returning value.
+	 */
 	protected Object objectGetterGet(Object arg) {
 		ClassFunction objectGetter = (implementor != null)? implementor.getObjectMembers().getObjectGetter() : null;
 		
@@ -114,6 +151,9 @@ public class ObjectTopLevel extends TopLevel {
 		return Scriptable.NOT_FOUND;
 	}
 	
+	/**
+	 * Implements associated global object into this scope.
+	 */
 	protected void implementGlobalObject() {
 		if (implementor == null) {
 			implementor = new ObjectImplementor(globalObject, scriptEngine);
@@ -122,10 +162,16 @@ public class ObjectTopLevel extends TopLevel {
 		implementor.implementObject(this);
 	}
 	
+	/**
+	 * Defines builtin properties into this top level scope.
+	 */
 	protected void defineBuiltinProperties() {
 		
 	}
 	
+	/**
+	 * Defines builtin functions into this top level scope.
+	 */
 	protected void defineBuiltinFunctions() {
 
 	}

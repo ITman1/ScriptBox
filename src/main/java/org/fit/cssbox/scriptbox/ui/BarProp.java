@@ -21,7 +21,20 @@ package org.fit.cssbox.scriptbox.ui;
 
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 
+/**
+ * Abstract class for browser UI elements that are exposed in a limited way to scripts.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#barprop">BarProp interface</a>
+ */
 public abstract class BarProp {
+	/**
+	 * Tests whether is this UI element is visible.
+	 * 
+	 * @return True if is this UI element visible, otherwise false.
+	 */
 	@ScriptGetter
 	public abstract boolean getVisible();
 	

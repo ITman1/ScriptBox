@@ -29,19 +29,40 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+/**
+ * Wrapper scope that makes available the binded properties 
+ * from the script context - enables data binding as defined in JSR 223 API 
+ * in the script engine.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class ScriptContextScriptable extends ScriptableObject {
 	private static final long serialVersionUID = 1531587729453175461L;
 
 	private ScriptContext context;
 
+	/**
+	 * Constructs new wrapping scope that makes accessible 
+	 * the properties from the underlying data bindings.
+	 * 
+	 * @param context Context that contains the properties that should be made accessible.
+	 */
 	public ScriptContextScriptable(ScriptContext context) {
 		this.context = context;
 	}
 
+	@Override
 	public String getClassName() {
 		return "ContextScriptable";
 	}
 	
+	/**
+	 * Returns associated script context.
+	 * 
+	 * @return Wrapped script context.
+	 */
 	public ScriptContext getContext() {
 		return context;
 	}

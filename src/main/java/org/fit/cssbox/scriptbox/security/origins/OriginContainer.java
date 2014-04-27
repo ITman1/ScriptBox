@@ -19,19 +19,44 @@
 
 package org.fit.cssbox.scriptbox.security.origins;
 
+/**
+ * Collects origin types of some resource.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#origin-0">Origin</a>
+ * @deprecated This is meaningless if there are only two types of origins.
+ */
 public class OriginContainer<E extends Origin<?>> {
 	private E _origin;
 	private E _effectiveScriptOrigin;
 	
+	/**
+	 * Constructs container of the origins for given origins.
+	 * 
+	 * @param origin Origin
+	 * @param effectiveScriptOrigin Effective script origin 
+	 */
 	public OriginContainer(E origin, E effectiveScriptOrigin) {
 		_origin = origin;
 		_effectiveScriptOrigin = effectiveScriptOrigin;
 	}
 
+	/**
+	 * Returns origin.
+	 * 
+	 * @return Origin
+	 */
 	public E getOrigin() {
 		return _origin;
 	}
 
+	/**
+	 * Returns effective script origin.
+	 * 
+	 * @return Effective script origin
+	 */
 	public E getEffectiveScriptOrigin() {
 		return _effectiveScriptOrigin;
 	}

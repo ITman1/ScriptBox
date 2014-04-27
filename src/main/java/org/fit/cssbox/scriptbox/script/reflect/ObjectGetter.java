@@ -35,6 +35,18 @@ public interface ObjectGetter {
 	public static final String METHOD_NAME = "get";
 	public static final Class<?>[] METHOD_ARG_TYPES = {Object.class};
 	
+	/**
+	 * Returns value for given key.
+	 * 
+	 * @param arg Key for which should be returned the value.
+	 * @return Value for given key.
+	 */
 	public Object get(Object arg);
+	
+	/**
+	 * Returns all explicitly known keys.
+	 * 
+	 * @return All explicitly known keys.
+	 */
 	public Collection<Object> getKeys();
 }

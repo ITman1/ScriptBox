@@ -20,6 +20,7 @@
 package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
 import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
+
 import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.reflect.DefaultClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
@@ -27,8 +28,16 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.WrapFactory;
 
+/**
+ * Default wrap factory decorator which wraps Java object using the {@link HostedJavaObject}
+ * and class members resolver.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class DefaultWrapFactoryDecorator extends WrapFactoryDecorator {
-	protected class DecoratedWrapFactory extends WrapFactory {
+	private class DecoratedWrapFactory extends WrapFactory {
 		@Override
 		public Object wrap(Context cx, Scriptable scope, Object obj, Class<?> staticType) {
 			return topWrap(cx, scope, obj, staticType);
@@ -54,10 +63,6 @@ public class DefaultWrapFactoryDecorator extends WrapFactoryDecorator {
 			return super.wrap(cx, scope, obj, staticType);
 		}
 		
-		public Scriptable decoratorWrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, Class<?> staticType) {
-			return super.wrapAsJavaObject(cx, scope, javaObject, staticType);
-		}
-		
 		public Scriptable decoratorWrapJavaClass(Context cx, Scriptable scope, Class<?> javaClass) {
 			return super.wrapJavaClass(cx, scope, javaClass);
 		}
@@ -70,18 +75,37 @@ public class DefaultWrapFactoryDecorator extends WrapFactoryDecorator {
 	protected DecoratedWrapFactory factory;
 	protected ClassMembersResolverFactory membersResolverFactory;
 	
+	/**
+	 * Constructs leaf wrap factory decorator using the default class members resolver. 
+	 */
 	public DefaultWrapFactoryDecorator() {
 		this(null, null);
 	}
 	
+	/**
+	 * Constructs new wrap factory decorator and chains the passed decorator.
+	 * 
+	 * @param decorator Decorator the be added as a child decorator and chained.
+	 */
 	public DefaultWrapFactoryDecorator(WrapFactoryDecorator decorator) {
 		this(decorator, null);
 	}
 	
+	/**
+	 * Constructs leaf wrap factory decorator.
+	 * 
+	 * @param membersResolverFactory Members resolver factory used for wrapping of the Java object.
+	 */
 	public DefaultWrapFactoryDecorator(ClassMembersResolverFactory membersResolverFactory) {
 		this(null, membersResolverFactory);
 	}
 	
+	/**
+	 * Constructs new wrap factory decorator and chains the passed decorator.
+	 * 
+	 * @param decorator Decorator the be added as a child decorator and chained.
+	 * @param membersResolverFactory Members resolver factory used for wrapping of the Java object.
+	 */
 	public DefaultWrapFactoryDecorator(WrapFactoryDecorator decorator, ClassMembersResolverFactory membersResolverFactory) {
 		super(decorator);
 		

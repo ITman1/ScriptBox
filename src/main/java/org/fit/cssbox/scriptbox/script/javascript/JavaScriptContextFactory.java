@@ -31,16 +31,30 @@ import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 
+/**
+ * Context factory that is used for all JavaScript engines.
+ * This context should be associated with the JavaScriptEngine 
+ * that is unique for one thread, because there should be one context per one thread.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class JavaScriptContextFactory extends ContextFactory {
 	
 	protected WindowJavaScriptEngine scriptEngine;
 	protected ClassMembersResolverFactory membersResolverFactory;
 	protected AdapterRegistry adapterRegistry;
 	
-	public JavaScriptContextFactory() {
+	/*public JavaScriptContextFactory() {
 		this(new WindowJavaScriptEngine(null, null));
-	}
+	}*/
 	
+	/**
+	 * Constructs new JavaScript context with the associated script engine.
+	 * 
+	 * @param scriptEngine Script engine to be associated with this context factory.
+	 */
 	public JavaScriptContextFactory(WindowJavaScriptEngine scriptEngine) {
 		this.scriptEngine = scriptEngine;
 		this.membersResolverFactory = scriptEngine.getClassMembersResolverFactory();

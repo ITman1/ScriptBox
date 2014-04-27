@@ -42,6 +42,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.events.EventTarget;
 
+/**
+ * Mouse adapter that captures mouse events above the document 
+ * and dispatches corresponding events to the DOM. 
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
 public class MouseEventsDispatcher extends MouseAdapter {
 	
 	protected NodeImpl previousTarget;
@@ -50,7 +58,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		reset();
 	}
 	
-	public void reset() {
+	private void reset() {
 		previousTarget = null;
 	}
 	
@@ -122,7 +130,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		previousTarget = null;
 	}
 	
-	protected boolean isDescendantNode(Node descendant, Node parent) {
+	private boolean isDescendantNode(Node descendant, Node parent) {
 		while (descendant != null && descendant != parent) {
 			descendant = descendant.getParentNode();
 		}
@@ -130,7 +138,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		return parent == descendant;
 	}
 	
-	protected void mouseEnter(MouseEvent e) {
+	private void mouseEnter(MouseEvent e) {
 		NodeImpl currentTarget = getTargetNode(e);
 		
 		if (previousTarget == null || !isDescendantNode(currentTarget, previousTarget)) {
@@ -140,7 +148,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseover, true, true);
 	}
 
-	protected void mouseMove(EventTarget target, MouseEvent e) {
+	private void mouseMove(EventTarget target, MouseEvent e) {
 		NodeImpl currentTarget = getTargetNode(e);
 		
 		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmousemove, true, true);
@@ -148,12 +156,12 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		previousTarget = currentTarget;
 	}
 
-	protected void mouseExit(MouseEvent e) {
+	private void mouseExit(MouseEvent e) {
 		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseout, true, true);
 		dispatchMouseMotionEvent(e, GlobalEventHandlers.onmouseleave, false, false);
 	}
 	
-	protected void dispatchMouseMotionEvent(MouseEvent e, String argType, boolean canBubble, boolean cancelable) {
+	private void dispatchMouseMotionEvent(MouseEvent e, String argType, boolean canBubble, boolean cancelable) {
 		NodeImpl node = getTargetNode(e);
 		MouseEventImpl event = new MouseEventImpl();
 		Window window = getWindowFromNode(node);
@@ -164,7 +172,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		window.dispatchEvent(event, node);
 	}
 	
-	protected void dispatchMouseButtonEvent(MouseEvent e, String argType) {
+	private void dispatchMouseButtonEvent(MouseEvent e, String argType) {
 		NodeImpl node = getTargetNode(e);
 		Window window = getWindowFromNode(node);
 		MouseEventImpl event = new MouseEventImpl();
@@ -174,7 +182,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		window.dispatchEvent(event, node);
 	}
 	
-	protected NodeImpl getTargetNode(MouseEvent e) {
+	private NodeImpl getTargetNode(MouseEvent e) {
 		JEditorPane editor = (JEditorPane) e.getSource();
 		NodeImpl node = getNodeFromCoordinates(editor, e.getX(), e.getY());
 		
@@ -187,7 +195,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		
 	}
 	
-	protected NodeImpl getNodeFromCoordinates(JEditorPane editor, int x, int y) {
+	private NodeImpl getNodeFromCoordinates(JEditorPane editor, int x, int y) {
 		Bias[] bias = new Bias[1];
 		Point pt = new Point(x, y);
 		int pos = editor.getUI().viewToModel(editor, pt, bias);
@@ -208,7 +216,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		return null;
 	}
 	
-	protected Window getWindowFromNode(Node node) {
+	private Window getWindowFromNode(Node node) {
 		Document doc = node.getOwnerDocument();
 
 		if (doc instanceof Html5DocumentImpl) {
@@ -219,7 +227,7 @@ public class MouseEventsDispatcher extends MouseAdapter {
 		return null;
 	}
 
-	protected short getButton(MouseEvent event) {
+	private short getButton(MouseEvent event) {
 		if (SwingUtilities.isLeftMouseButton(event)) {
 			return 0;
 		}

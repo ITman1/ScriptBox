@@ -214,7 +214,7 @@ public class HostedJavaObjectTests {
 				object.publicNestedObject);
 		tester.assertEquals(scopeObject + ".publicProperty = 'new property'", "new property");
 
-		tester.assertNull(scopeObject + "['METHOD_NAME']");
+		tester.assertUndefined(scopeObject + "['METHOD_NAME']");
 		
 		object.reset();
 	}
@@ -222,8 +222,8 @@ public class HostedJavaObjectTests {
 	public void TestObjectGetter(String scopeObject, NestedObjectWithGetter object) {
 		tester.assertEquals(scopeObject + "['foo']", "bar");
 		tester.assertEquals(scopeObject + "[0]", 1);
-		tester.assertNull(scopeObject + "['str']");
-		tester.assertNull(scopeObject + "['1']");
+		tester.assertUndefined(scopeObject + "['str']");
+		tester.assertUndefined(scopeObject + "['1']");
 	}
 	
 	public void TestPropertyGetter(String scopeObject, NestedObjectWithGetter object) {
@@ -261,8 +261,8 @@ public class HostedJavaObjectTests {
 	
 	@Test
 	public void TestEnumerableProperties() {
-		tester.assertEquals(topLevelCountOfEnumerablePropertiesScript, "count", 24);
-		tester.assertEquals(hostedCountOfEnumerablePropertiesScript, "count", 22);
+		tester.assertEquals(topLevelCountOfEnumerablePropertiesScript, "count", 26);
+		tester.assertEquals(hostedCountOfEnumerablePropertiesScript, "count", 28);
 		
 		TestEnumerableProperties("this");
 		TestEnumerableProperties("publicNestedObject");

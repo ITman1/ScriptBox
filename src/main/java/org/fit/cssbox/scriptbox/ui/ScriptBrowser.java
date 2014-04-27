@@ -54,15 +54,30 @@ public class ScriptBrowser extends BrowserPane {
 	
 	public ScriptBrowser() {}
 	
+	/**
+	 * User agent that will be used for opening browsing unit which will be used by this browsing component.
+	 * 
+	 * @param userAgent User agent.
+	 */
 	public ScriptBrowser(UserAgent userAgent) {
 		BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
 		setBrowsingUnit(browsingUnit);
 	}
 	
+	/**
+	 * Constructs new browser with an associated browsing unit.
+	 * 
+	 * @param browsingUnit Browsing unit to be associated with this browser.
+	 */
 	public ScriptBrowser(BrowsingUnit browsingUnit) {
 		setBrowsingUnit(browsingUnit);
 	}
-		
+
+	/**
+	 * Sets new browsing unit that will be used for retrieving the Document.
+	 * 
+	 * @param browsingUnit Browsing unit to be associated with this browser.
+	 */
 	public void setBrowsingUnit(BrowsingUnit browsingUnit) {
 		this.browsingUnit = browsingUnit;
 		this.userAgent = browsingUnit.getUserAgent();
@@ -70,6 +85,9 @@ public class ScriptBrowser extends BrowserPane {
 		initialize();
 	}
 	
+	/**
+	 * Initializes this component.
+	 */
 	protected void initialize() {
 		this.analyzer = new ScriptAnalyzer();
 
@@ -84,18 +102,27 @@ public class ScriptBrowser extends BrowserPane {
 		addMouseMotionListener(mouseDispatcher);
 	}
 	
+	/**
+	 * Returns associated user agent.
+	 * 
+	 * @return Associated user agent.
+	 */
 	public UserAgent getUserAgent() {
 		return userAgent;
 	}
 	
+	/**
+	 * Returns associated browsing unit.
+	 * 
+	 * @return Associated browsing unit.
+	 */
 	public BrowsingUnit getBrowsingUnit() {
 		return browsingUnit;
 	}
-
-	public void setPositionsToScroll() {
-		
-	}
 	
+	/**
+	 * Refreshes the canvas. This should be used when user agent finished the parsing.
+	 */
 	public void refresh() {
 		browsingUnit.queueTask(new Task(TaskSource.DOM_MANIPULATION, browsingUnit.getWindowBrowsingContext()) {
 			

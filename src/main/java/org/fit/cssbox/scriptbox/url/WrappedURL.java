@@ -6,10 +6,22 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 
-
+/**
+ * Implements abstract ParserURL class.
+ *
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ * @see <a href="http://url.spec.whatwg.org/#concept-url">URL</a>
+ */
 public class WrappedURL extends ParserURL {
 	protected java.net.URL wrappedUrl;
 
+	/**
+	 * Constructs {@link ParserURL} from the URL.
+	 * 
+	 * @param wrappedUrl URL from which to create {@link ParserURL}.
+	 */
 	public WrappedURL(java.net.URL wrappedUrl) {
 		this.wrappedUrl = wrappedUrl;
 	}
