@@ -74,7 +74,7 @@ import org.w3c.dom.views.DocumentView;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#document">HTML5 document</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#document">HTML5 document</a>
  * @see <a href="http://dom.spec.whatwg.org/#html-document">HTML document accoring to DOM</a>
  */
 public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, DocumentView {
@@ -85,7 +85,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @author Radim Loskot
 	 * @version 0.9
 	 * @since 0.9 - 21.4.2014
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#current-document-readiness">Document readiness</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#current-document-readiness">Document readiness</a>
 	 */
 	public enum DocumentReadiness {
 		LOADING,
@@ -167,7 +167,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * b) The script element is in a Document and a node or document fragment is inserted into the script element
 	 * c) The script element is in a Document and has a src attribute set where previously the element had no such attribute 
 	 * 
-	 * - See paragraph after: http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#the-script-block%27s-fallback-character-encoding
+	 * - See paragraph after: http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#the-script-block%27s-fallback-character-encoding
 	 */
 	private EventListener documentEventListener = new EventListener() {
 		
@@ -220,12 +220,12 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @param contentType Content-Type of which is this Document.
 	 * @param parser Associated parser, which will parse, or parsed, or is parsing this Document.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#document">HTML5 document</a>
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-address">The document's address</a>
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-referrer">The document's referrer</a>
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#sandboxing-flag-set">A sandboxing flag set </a>
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#html-parser">HTML parser</a>
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#concept-document-content-type">Content type</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#document">HTML5 document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#the-document%27s-address">The document's address</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#the-document%27s-referrer">The document's referrer</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#sandboxing-flag-set">A sandboxing flag set </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#html-parser">HTML parser</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#concept-document-content-type">Content type</a>
 	 */
 	protected Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {	
 		listeners = new HashSet<Html5DocumentEventListener>();
@@ -458,7 +458,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns fallback base address.
 	 * 
 	 * @return Fallback base address.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#fallback-base-url">Fallback base URL</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#fallback-base-url">Fallback base URL</a>
 	 */
 	public URL getFallbackBaseAddress() {
 		
@@ -500,7 +500,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns Document base address.
 	 * 
 	 * @return Document base address.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#document-base-url">Document base URL</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#document-base-url">Document base URL</a>
 	 */
 	public URL getBaseAddress() {
 		HTMLBaseElement baseElement = getBaseElement();
@@ -521,7 +521,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		
 		/*
 		 * TODO?: Implement frozen URL?
-		 * http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#frozen-base-url
+		 * http://www.w3.org/html/wg/drafts/html/master/document-metadata.html#frozen-base-url
 		 */
 		/*
 		 * 2) Otherwise, the document base URL is the frozen base URL of the first 
@@ -535,7 +535,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Tests whether this Document is fully active.
 	 * 
 	 * @return True if this Document is fully active, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#fully-active">Fully active</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#fully-active">Fully active</a>
 	 */
 	public boolean isFullyActive() {
 		/*
@@ -561,7 +561,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Tests whether this Document is the active document of the associated browsing context.
 	 * 
 	 * @return True if this Document is the active document of the associated browsing context, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-document">Active document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#active-document">Active document</a>
 	 */
 	public boolean isActiveDocument() {
 		return _browsingContext.getActiveDocument() == this;
@@ -571,7 +571,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns document family of this document.
 	 * 
 	 * @return Document family of this document.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#document-family">The document family</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#document-family">The document family</a>
 	 */
 	public Collection<Html5DocumentImpl> getDocumentFamily() {
 		/*
@@ -592,7 +592,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns active sandboxing flag set.
 	 * 
 	 * @return active sandboxing flag set
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
 	 */
 	public Set<SandboxingFlag> getActiveSandboxingFlagSet() {
 		return Collections.unmodifiableSet(_activeSandboxingFlagSet);
@@ -602,7 +602,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Sets new active sandboxing flag set.
 	 * 
 	 * @param flags New active sandboxing flag set
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
 	 */
 	public void setActiveSandboxingFlags(Collection<SandboxingFlag> flags) {
 		if (flags == null) {
@@ -618,7 +618,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Adds new flag into active sandboxing flag set.
 	 * 
 	 * @param flag New flag to be added into active sandboxing flag set.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#active-sandboxing-flag-set">Active sandboxing flag set</a>
 	 */
 	public void setActiveSandboxingFlag(SandboxingFlag flag) {
 		_activeSandboxingFlagSet.add(flag);
@@ -638,7 +638,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Sets latest session history entry.
 	 * 
 	 * @param entry New latest session history entry
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#latest-entry">Latest entry</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#latest-entry">Latest entry</a>
 	 */
 	public void setLatestEntry(SessionHistoryEntry entry) {
 		_latestEntry = entry;
@@ -648,7 +648,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns latest session history entry.
 	 * 
 	 * @return Latest session history entry
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#latest-entry">Latest entry</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#latest-entry">Latest entry</a>
 	 */
 	public SessionHistoryEntry getLatestEntry() {
 		return _latestEntry;
@@ -658,7 +658,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Sets Document's address.
 	 * 
 	 * @param address New address with which should be associated this Document
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-address">The document's address</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#the-document%27s-address">The document's address</a>
 	 */
 	public void setAddress(URL address) {
 		_address = address;
@@ -672,7 +672,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns Document's address.
 	 * 
 	 * @return Address with which is associated this Document
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-address">The document's address</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#the-document%27s-address">The document's address</a>
 	 */
 	public URL getAddress() {
 		return _address;
@@ -682,7 +682,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns Document's address.
 	 * 
 	 * @return Address with which is associated this Document
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-address">The document's address</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#the-document%27s-address">The document's address</a>
 	 */
 	@Override
 	public String getURL() {
@@ -693,7 +693,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns Document's referrer.
 	 * 
 	 * @return Refferer address
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#the-document%27s-referrer">The document's referrer</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#the-document%27s-referrer">The document's referrer</a>
 	 */
 	@Override
 	public String getReferrer() {
@@ -731,7 +731,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns effective script origin.
 	 * 
 	 * @return Effective script origin.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#effective-script-origin">Effective script origin</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#effective-script-origin">Effective script origin</a>
 	 */
 	public Origin<?> getEffectiveScriptOrigin() {
 		return _originContainer.getEffectiveScriptOrigin();
@@ -740,7 +740,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	/**
 	 * Implements sandboxing for this Document.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#implement-the-sandboxing">Implement the sandboxing for a Document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#implement-the-sandboxing">Implement the sandboxing for a Document</a>
 	 */
 	public void implementSandboxing() {
 		if (_browsingContext instanceof WindowBrowsingContext) {
@@ -765,7 +765,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Prompts to unload this Document.
 	 * 
 	 * @return True if prompt was submitted, otherwise false. 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#prompt-to-unload-a-document">Prompt to unload a document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#prompt-to-unload-a-document">Prompt to unload a document</a>
 	 */
 	public boolean promptToUnload() {
 		return true;
@@ -804,7 +804,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Unloads this Document.
 	 * 
 	 * @param recycle Specifies whether recycle this document.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unload-a-document">Unload a document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#unload-a-document">Unload a document</a>
 	 */
 	public void unload(boolean recycle) {
 		synchronized (this) {
@@ -842,7 +842,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Tests whether is fullscreen enabled flag set.
 	 * 
 	 * @return True if is fullscreen enabled flag set, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#fullscreen-enabled-flag">Fullscreen enabled flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#fullscreen-enabled-flag">Fullscreen enabled flag</a>
 	 */
 	public boolean isFullscreenEnabledFlag() {
 		return _fullscreenEnabledFlag;
@@ -852,7 +852,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Sets fullscreen enabled flag to passed value.
 	 * 
 	 * @param value Boolean value to be fullscreen enabled flag set to.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#fullscreen-enabled-flag">Fullscreen enabled flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#fullscreen-enabled-flag">Fullscreen enabled flag</a>
 	 */
 	public void setEnableFullscreenFlag(boolean value) {
 		_fullscreenEnabledFlag = value;
@@ -862,7 +862,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns content type of this document.
 	 * 
 	 * @return Content type of this document.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#concept-document-content-type">Content type</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#concept-document-content-type">Content type</a>
 	 */
 	public String getContentType() {
 		return _contentType;
@@ -872,7 +872,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Returns document's readiness.
 	 * 
 	 * @return Document's readiness.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#current-document-readiness">Document readiness</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#current-document-readiness">Document readiness</a>
 	 */
 	public DocumentReadiness getDocumentReadiness() {
 		return _documentReadiness;
@@ -882,7 +882,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Sets document's readiness.
 	 * 
 	 * @param readiness New value of the Document's readiness.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#current-document-readiness">Document readiness</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#current-document-readiness">Document readiness</a>
 	 */
 	public void setDocumentReadiness(DocumentReadiness readiness) {
 		_documentReadiness = readiness;
@@ -962,7 +962,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	/**
 	 * Discards this document.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#discard-a-document">Discard a document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#discard-a-document">Discard a document</a>
 	 */
 	public void discard() {
 		_browsingContext = null;
@@ -1037,7 +1037,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	/**
 	 * Runs unloading document cleanup steps
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unloading-document-cleanup-steps">Unloading document cleanup steps</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#unloading-document-cleanup-steps">Unloading document cleanup steps</a>
 	 */
 	public void runUnloadingDocumentCleanupSteps() {
 		
@@ -1046,7 +1046,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	/**
 	 * Aborts a document
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#abort-a-document">Abort a document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#abort-a-document">Abort a document</a>
 	 */
 	@Override
 	public void abort() {
@@ -1086,7 +1086,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Tests whether this Document has salvageable flag set.
 	 * 
 	 * @return True if this Document has salvageable flag set, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#concept-document-salvageable">Salvageable flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#concept-document-salvageable">Salvageable flag</a>
 	 */
 	public boolean isSalvageableFlag() {
 		return _salvageableFlag;
@@ -1096,7 +1096,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Sets salvageable flag to a given value.
 	 * 
 	 * @param salvageableFlag New value of the flag.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#concept-document-salvageable">Salvageable flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#concept-document-salvageable">Salvageable flag</a>
 	 */
 	public void setSalvageableFlag(boolean salvageableFlag) {
 		this._salvageableFlag = salvageableFlag;
@@ -1106,7 +1106,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Tests whether this Document has fired unload flag set.
 	 * 
 	 * @return True if this Document has fired unload flag set, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#fired-unload">Fired unload flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#fired-unload">Fired unload flag</a>
 	 */
 	public boolean isFiredUnloadFlag() {
 		return _firedUnloadFlag;
@@ -1116,7 +1116,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Sets fired unload flag to a given value.
 	 * 
 	 * @param firedUnloadFlag New value of the flag.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#fired-unload">Fired unload flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#fired-unload">Fired unload flag</a>
 	 */
 	public void setFiredUnloadFlag(boolean firedUnloadFlag) {
 		this._firedUnloadFlag = firedUnloadFlag;
@@ -1126,7 +1126,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Tests whether this Document has page showing flag set.
 	 * 
 	 * @return True if this Document has page showing flag set, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#page-showing">Page showing flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#page-showing">Page showing flag</a>
 	 */
 	public boolean isPageShowingFlag() {
 		return _pageShowingFlag;
@@ -1136,7 +1136,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * Sets page showing flag to a given value.
 	 * 
 	 * @param pageShowingFlag New value of the flag.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#page-showing">Page showing flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#page-showing">Page showing flag</a>
 	 */
 	public void setPageShowingFlag(boolean pageShowingFlag) {
 		this._pageShowingFlag = pageShowingFlag;
@@ -1145,7 +1145,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	/**
 	 * Increments ignore-destructive-writes counter.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#ignore-destructive-writes-counter">Ignore-destructive-writes counter</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#ignore-destructive-writes-counter">Ignore-destructive-writes counter</a>
 	 */
 	public synchronized void incrementIgnoreDestructiveWritesCounter() {
 		_ignoreDestructiveWritesCounter++;
@@ -1154,7 +1154,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	/**
 	 * Decrements ignore-destructive-writes counter.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#ignore-destructive-writes-counter">Ignore-destructive-writes counter</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#ignore-destructive-writes-counter">Ignore-destructive-writes counter</a>
 	 */
 	public synchronized void decrementIgnoreDestructiveWritesCounter() {
 		_ignoreDestructiveWritesCounter--;

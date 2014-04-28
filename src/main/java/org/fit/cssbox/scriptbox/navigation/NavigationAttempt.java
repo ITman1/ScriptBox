@@ -24,6 +24,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.CancelablePrintJob;
+
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.DOMException;
@@ -32,6 +34,7 @@ import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
+import org.fit.cssbox.scriptbox.exceptions.WrappedException;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.resource.Resource;
@@ -50,7 +53,7 @@ import com.google.common.base.Predicate;
  * Abstract class for all navigations that follows navigation algorithm
  * and fulfills standard navigation attempts. 
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">Navigate algorithm</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -66,14 +69,29 @@ public abstract class NavigationAttempt {
 			// 17) Let gone async be true.
 			goneAsync = true;
 			
+			Exception exception = null;
 			try {
 				performFromHandleRedirects();
 			} catch (InterruptedException e) {
-				onCancelled();
+			} catch (WrappedException e) {
+				Exception ue = e.unwrap();
+				if (!(ue instanceof InterruptedException)) {
+					exception = e;
+				}
+			} catch (Exception e) {
+				exception = e;
 			} finally {
 				synchronized (NavigationAttempt.this) {
 					asyncPerformThread = null;
 				}
+			}
+			
+			if (exception != null) {
+				exception.printStackTrace();
+				synchronized (NavigationAttempt.this) {
+					cancelled = true;
+				}
+				onCancelled();
 			}
 		}
 		
@@ -153,7 +171,7 @@ public abstract class NavigationAttempt {
 	 * @param explicitSelfNavigationOverride If should not be resolved effective destination 
 	 *        context and use browsing context of this controller.
 	 * @param replacementEnabled If current session entry should be replaced.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">Navigate algorithm</a>
 	 */
 	public NavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride, boolean replacementEnabled) {
 		this.navigationController = navigationController;
@@ -364,7 +382,7 @@ public abstract class NavigationAttempt {
 	/**
 	 * Runs navigation attempt.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">Navigate algorithm</a>
 	 */
 	public void perform() {
 		perform(EMPTY_NAVIGATION_ATTEMPT_LISTENER);
@@ -373,7 +391,7 @@ public abstract class NavigationAttempt {
 	/**
 	 * Runs navigation attempt.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">Navigate algorithm</a>
 	 */
 	public void perform(NavigationAttemptListener listener) {
 		if (cancelled) {
@@ -556,13 +574,10 @@ public abstract class NavigationAttempt {
 		testForInterruption();
 		
 		// 19) Wait for incoming byte(s) or abort if resource is empty
-		// FIXME: Wait for 10 seconds - reach it from constant or from User agent settings
-		synchronized (this) {
-			if (!resource.waitForBytes(10000)) {
-				// TODO: Throw timeout or similar exception
-				asyncCancel();
-				return;
-			}
+		if (!resource.waitForBytes(10000)) {
+			// TODO: Throw timeout or similar exception
+			asyncCancel();
+			return;
 		}
 		
 		testForInterruption();
@@ -627,7 +642,7 @@ public abstract class NavigationAttempt {
 	/**
 	 * Navigates to fragment identifier.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#scroll-to-fragid">Gragment identifier</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#scroll-to-fragid">Gragment identifier</a>
 	 */
 	protected void navigateToFragmentIdentifier(String fragment) {
 		SessionHistory sessionHistory = destinationBrowsingContext.getSesstionHistory();
@@ -660,7 +675,7 @@ public abstract class NavigationAttempt {
 	/**
 	 * Downloads resource.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/links.html#as-a-download">Download</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/links.html#as-a-download">Download</a>
 	 */
 	protected void downloadResource(Resource resource) {
 		

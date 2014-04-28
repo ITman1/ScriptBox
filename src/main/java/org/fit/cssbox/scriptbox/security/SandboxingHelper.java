@@ -29,7 +29,7 @@ import java.util.Set;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#sandboxing-flag-set">A sandboxing flag set</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#sandboxing-flag-set">A sandboxing flag set</a>
  */
 public class SandboxingHelper {
 	public static final String ALLOW_POPUPS_KEYWORD = "allow-popups";
@@ -44,7 +44,7 @@ public class SandboxingHelper {
 	 * 
 	 * @param sandboxingDirective Directive to be parsed.
 	 * @return Set of the parsed sandboxing flags.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#parse-a-sandboxing-directive">Parse a sandboxing directive</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#parse-a-sandboxing-directive">Parse a sandboxing directive</a>
 	 */
 	public static Set<SandboxingFlag> parseSandboxingDirective(String sandboxingDirective) {
 		return parseSandboxingDirective(sandboxingDirective, false);
@@ -56,7 +56,7 @@ public class SandboxingHelper {
 	 * @param sandboxingDirective Directive to be parsed.
 	 * @param allowFullScreen Flag which defines whether should be included also SandboxingFlag.FULLSCREEN_BROWSING_CONTEXT_FLAG.
 	 * @return Set of the parsed sandboxing flags.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#parse-a-sandboxing-directive">Parse a sandboxing directive</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#parse-a-sandboxing-directive">Parse a sandboxing directive</a>
 	 */
 	public static Set<SandboxingFlag> parseSandboxingDirective(String sandboxingDirective, boolean allowFullScreen) {	
 		String[] tokensArr = sandboxingDirective.split("\\s+");

@@ -32,7 +32,7 @@ import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 /**
  * Content handler factory for handlers following the processing model for media.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-media">Read media</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#read-media">Read media</a>
  * 
  * @author Radim Loskot
  * @version 0.9

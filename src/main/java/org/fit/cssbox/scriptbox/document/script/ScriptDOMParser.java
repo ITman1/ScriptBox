@@ -58,7 +58,7 @@ import org.xml.sax.SAXException;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#parsing">Parsing</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#parsing">Parsing</a>
  */
 public class ScriptDOMParser extends DOMParser {
 	private ScriptableDocumentParser _parser;
@@ -243,7 +243,7 @@ public class ScriptDOMParser extends DOMParser {
 	 * Processes end of the HTML script tag.
 	 * 
 	 * @param scriptElement Parsed script element.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#scriptEndTag">SCRIPT end tag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#scriptEndTag">SCRIPT end tag</a>
  	 */
 	protected void endHtml5ScriptElement(final Html5ScriptElementImpl scriptElement) {		
 		// TODO: 1) Perform a microtask checkpoint.

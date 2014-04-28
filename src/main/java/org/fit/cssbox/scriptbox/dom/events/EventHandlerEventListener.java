@@ -27,7 +27,7 @@ import org.w3c.dom.events.EventListener;
  * specific event target if an event handler is set to non-null and
  * removing of the event listener if event handler is null.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#eventhandler">Event handler</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#eventhandler">Event handler</a>
  * 
  * @author Radim Loskot
  * @version 0.9

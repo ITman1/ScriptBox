@@ -39,7 +39,7 @@ import com.google.common.base.Predicate;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#event-loop">Event loop</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#event-loop">Event loop</a>
  */
 public class EventLoop {
 	/**
@@ -163,7 +163,7 @@ public class EventLoop {
 	/**
 	 * Decrements termination nesting level.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#termination-nesting-level">Termination nesting level</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#termination-nesting-level">Termination nesting level</a>
 	 */
 	public synchronized void decrementTerminationNestingLevel() {
 		terminationNestingLevel--;
@@ -172,7 +172,7 @@ public class EventLoop {
 	/**
 	 * Increments termination nesting level.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#termination-nesting-level">Termination nesting level</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#termination-nesting-level">Termination nesting level</a>
 	 */
 	public synchronized void incrementTerminationNestingLevel() {
 		terminationNestingLevel++;
@@ -182,7 +182,7 @@ public class EventLoop {
 	 * Returns termination nesting level.
 	 * 
 	 * @return termination nesting level
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#termination-nesting-level">Termination nesting level</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#termination-nesting-level">Termination nesting level</a>
 	 */
 	public synchronized int getTerminationNestingLevel() {
 		return terminationNestingLevel;
@@ -192,7 +192,7 @@ public class EventLoop {
 	 * Sets termination nesting level.
 	 * 
 	 * @param value New value of termination nesting level
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#termination-nesting-level">Termination nesting level</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#termination-nesting-level">Termination nesting level</a>
 	 */
 	public synchronized void setTerminationNestingLevel(int value) {
 		terminationNestingLevel = value;
@@ -245,7 +245,7 @@ public class EventLoop {
 	 *        spinned task into queue.
 	 * @throws TaskAbortedException This exception is always thrown by this function. 
 	 *         This ensures returning from the event loop stack trace.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#spin-the-event-loop">Spin the event loop</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#spin-the-event-loop">Spin the event loop</a>
 	 */
 	public synchronized void spinForCondition(final Runnable conditionRunnable, final Executable actionAfter) throws TaskAbortedException {
 		testForAbort();

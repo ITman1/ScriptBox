@@ -33,7 +33,7 @@ import org.fit.cssbox.scriptbox.security.origins.Origin;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#script-settings-for-browsing-contexts">Script settings for browsing contexts</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#script-settings-for-browsing-contexts">Script settings for browsing contexts</a>
  */
 public class WindowScriptSettings extends ScriptSettings<Window> {
 

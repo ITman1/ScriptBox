@@ -39,7 +39,7 @@ import org.fit.cssbox.scriptbox.window.Window;
  * Class implementing History interface which allows traversing
  * history from the scripts.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#history-1">History interface</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#history-1">History interface</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -57,7 +57,7 @@ public class History {
 	 * Returns the number of entries in the joint session history.
 	 * 
 	 * @return Number of entries in the joint session history.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-length">History length</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-length">History length</a>
 	 */
 	@ScriptGetter
 	public int getLength() {
@@ -71,7 +71,7 @@ public class History {
 	 * Returns the current state object.
 	 * 
 	 * @return Current state object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#state-object">State object</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#state-object">State object</a>
 	 */
 	@ScriptGetter
 	public StateObject getState() {
@@ -84,7 +84,7 @@ public class History {
 	 * Goes back or forward the specified number of steps in the joint session history.
 	 * 
 	 * @param delta Number of traversal steps.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-go">History go()</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-go">History go()</a>
 	 */
 	@ScriptFunction
 	public void go(long delta) {
@@ -97,7 +97,7 @@ public class History {
 	/**
 	 * Goes back one step in the joint session history.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-back">History back()</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-back">History back()</a>
 	 */
 	@ScriptFunction
 	public void back() {
@@ -107,7 +107,7 @@ public class History {
 	/**
 	 * Goes forward one step in the joint session history.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-forward">History forward()</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-forward">History forward()</a>
 	 */
 	@ScriptFunction
 	public void forward() {
@@ -121,7 +121,7 @@ public class History {
 	 * @param data Data to be pushed into history.
 	 * @param title Title of the page to be stored inside history.
 	 * @param url New URL of the new state history entry.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-pushstate">History pushState()</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-pushstate">History pushState()</a>
 	 */
 	@ScriptFunction
 	public void pushState(StateObject data, String title, String url) {
@@ -147,7 +147,7 @@ public class History {
 	 * @param data Data to be replaced inside history.
 	 * @param title Title of the page to be replaced inside history.
 	 * @param url New URL of the current state history entry.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-replacestate">History replaceState()</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-replacestate">History replaceState()</a>
 	 */
 	@ScriptFunction
 	public void replaceState(StateObject data, String title, String url) {
@@ -194,7 +194,7 @@ public class History {
 	}
 	
 	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-pushstate
+	 * http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-pushstate
 	 */
 	private void setState(StateObject data, String title, String url, boolean replace){
 		testIsActive();

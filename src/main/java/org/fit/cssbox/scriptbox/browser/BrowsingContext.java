@@ -42,7 +42,7 @@ import org.w3c.dom.Node;
 /**
  * Represents class of the environment in which Document is presented to user.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#browsing-context">Browsing context</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#browsing-context">Browsing context</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -77,7 +77,7 @@ public class BrowsingContext {
 	 * @param contextName Name of the new browsing context.
 	 * @param container Element which wraps/contains this browsing context.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#browsing-context">Browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#browsing-context">Browsing context</a>
 	 */
 	protected BrowsingContext(BrowsingContext parentContext, BrowsingUnit browsingUnit, String contextName, Element container) {
 		this.parentContext = parentContext;
@@ -156,7 +156,7 @@ public class BrowsingContext {
 	/**
 	 * Closes this browsing context.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#closing-browsing-contexts">Closing browsing contexts</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#closing-browsing-contexts">Closing browsing contexts</a>
 	 */
 	public synchronized void close() {
 		Html5DocumentImpl document = getActiveDocument();
@@ -193,7 +193,7 @@ public class BrowsingContext {
 	/**
 	 * Discards this browsing context.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#a-browsing-context-is-discarded">Discarded browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#a-browsing-context-is-discarded">Discarded browsing context</a>
 	 * @see #isDiscarded()
 	 */
 	public void discard() {	
@@ -245,7 +245,7 @@ public class BrowsingContext {
 	 * Discards the document of this browsing context.
 	 * 
 	 * @param document Document which should be discarded.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#discard-a-document">Discard a document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#discard-a-document">Discard a document</a>
 	 */
 	public synchronized void discardDocument(Html5DocumentImpl document) {
 		if (document.getBrowsingContext() != this) {
@@ -271,7 +271,7 @@ public class BrowsingContext {
 	 * Returns Document which is designated as the active document for this browsing context.
 	 * 
 	 * @return Document which is designated as the active document for this browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#active-document">Active document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#active-document">Active document</a>
 	 */
 	public Html5DocumentImpl getActiveDocument() {
 		if (discarded) {
@@ -300,7 +300,7 @@ public class BrowsingContext {
 	 * Returns Document that was the active document of that creator browsing context at the time when this context was created. 
 	 * 
 	 * @return Document that was the active document of that creator browsing context at the time when this context was created.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#creator-document">Creator document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#creator-document">Creator document</a>
 	 * @see #hasCreatorDocument()
 	 */
 	public Html5DocumentImpl getCreatorDocument() {
@@ -311,7 +311,7 @@ public class BrowsingContext {
 	 * Returns browsing context that was responsible for creation of this browsing context. 
 	 * 
 	 * @return Browsing context that was responsible for creation of this browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#creator-browsing-context">Creator browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#creator-browsing-context">Creator browsing context</a>
 	 * @see #hasCreatorContext()
 	 */
 	public BrowsingContext getCreatorContext() {
@@ -340,7 +340,7 @@ public class BrowsingContext {
 	 * Returns parent browsing context.
 	 * 
 	 * @return Parent browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#parent-browsing-context">Parent browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#parent-browsing-context">Parent browsing context</a>
 	 * @see #hasParentContext()
 	 */
 	public BrowsingContext getParentContext() {
@@ -361,7 +361,7 @@ public class BrowsingContext {
 	 * Returns browsing context container.
 	 * 
 	 * @return Browsing context container.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#browsing-context-container">Browsing context container</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#browsing-context-container">Browsing context container</a>
 	 */
 	public Element getContainer() {
 		return container;
@@ -371,7 +371,7 @@ public class BrowsingContext {
 	 * Returns top-level browsing context.
 	 * 
 	 * @return Top-level browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#top-level-browsing-context">Top-level browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#top-level-browsing-context">Top-level browsing context</a>
 	 */
 	public BrowsingContext getTopLevelContext() {
 		BrowsingContext topLevelContext = this;
@@ -387,7 +387,7 @@ public class BrowsingContext {
 	 * Returns nested browsing contexts.
 	 * 
 	 * @return Collection of the nested browsing contexts.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#nested-browsing-context">Nested browsing contexts</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#nested-browsing-context">Nested browsing contexts</a>
 	 */
 	public Collection<BrowsingContext> getNestedContexts() {
 		return childContexts;
@@ -398,7 +398,7 @@ public class BrowsingContext {
 	 * of parent browsing contexts for a nested browsing context.
 	 * 
 	 * @return Collection of descendant browsing contexts of this browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#list-of-the-descendant-browsing-contexts">List of the descendant browsing contexts </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#list-of-the-descendant-browsing-contexts">List of the descendant browsing contexts </a>
 	 */
 	public Collection<BrowsingContext> getDescendantContexts() {
 		List<BrowsingContext> contextList = new ArrayList<BrowsingContext>();
@@ -415,7 +415,7 @@ public class BrowsingContext {
 	 * Returns Window proxy object for this browsing context.
 	 * 
 	 * @return Window proxy object for this browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#windowproxy">Window proxy </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#windowproxy">Window proxy </a>
 	 */
 	public WindowProxy getWindowProxy() {
 		return windowProxy;
@@ -425,7 +425,7 @@ public class BrowsingContext {
 	 * Tests whether this browsing context is script closable.
 	 * 
 	 * @return True if this browsing context is script closable, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#script-closable">Script closable </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#script-closable">Script closable </a>
 	 */
 	public boolean isScriptClosable() {
 		List<SessionHistoryEntry> entries = sessionHistory.getSessionHistoryEntries();
@@ -448,7 +448,7 @@ public class BrowsingContext {
 	 * Tests whether this browsing context has scripting enabled.
 	 * 
 	 * @return True if this browsing context has scripting enabled, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#concept-bc-script">Scripting enabled for browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#concept-bc-script">Scripting enabled for browsing context</a>
 	 */
 	public boolean scriptingEnabled() {	
 		Html5DocumentImpl activeDocument = getActiveDocument();
@@ -474,7 +474,7 @@ public class BrowsingContext {
 	 * 
 	 * @param node Node against which is test performed.
 	 * @return True if passed node has scripting enabled, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#concept-n-script">Scripting enabled for a node</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#concept-n-script">Scripting enabled for a node</a>
 	 */
 	public static boolean scriptingEnabled(Node node) {
 		boolean isEnabled = true;
@@ -504,7 +504,7 @@ public class BrowsingContext {
 	 * 
 	 * @param context Browsing context against which is test performed.
 	 * @return True if this browsing context is ancestor of the passed browsing context, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#ancestor-browsing-context">Ancestor browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#ancestor-browsing-context">Ancestor browsing context</a>
 	 */
 	public boolean isAncestorOf(BrowsingContext context) {
 		BrowsingContext ancestorContext = context;
@@ -524,7 +524,7 @@ public class BrowsingContext {
 	 * Returns ancestor browsing contexts.
 	 * 
 	 * @return Collection of ancestor browsing contexts of this browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#ancestor-browsing-context">Ancestor browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#ancestor-browsing-context">Ancestor browsing context</a>
 	 */
 	public Collection<BrowsingContext> getAncestorContexts() {
 		List<BrowsingContext> contextList = new ArrayList<BrowsingContext>();
@@ -576,7 +576,7 @@ public class BrowsingContext {
 	 * Returns document family of this browsing context.
 	 * 
 	 * @return Collection of documents which belongs to one family.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#document-family">Document family </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#document-family">Document family </a>
 	 */
 	public Collection<Html5DocumentImpl> getDocumentFamily() {
 		Set<Html5DocumentImpl> family = new HashSet<Html5DocumentImpl>();
@@ -600,7 +600,7 @@ public class BrowsingContext {
 	 * 
 	 * @param destinationBrowsingContext Browsing context which is designed as a destination browsing context.
 	 * @return True if this browsing context is allowed to navigate the destination browsing context, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#allowed-to-navigate">Allowed to navigate</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#allowed-to-navigate">Allowed to navigate</a>
 	 */
 	public boolean isAllowedToNavigate(BrowsingContext destinationBrowsingContext) {
 		BrowsingContext a = this;
@@ -632,7 +632,7 @@ public class BrowsingContext {
 	 * 
 	 * @param context Browsing context against which is test performed.
 	 * @return True if this browsing context is familiar with the passed browsing context, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#familiar-with">Familiar with</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#familiar-with">Familiar with</a>
 	 */
 	public boolean isFamiliarWith(BrowsingContext context) {
 		BrowsingContext a = this;
@@ -671,7 +671,7 @@ public class BrowsingContext {
 	 * 
 	 * @param name Browsing context name which is tested.
 	 * @return True if is passed string the valid browsing context name, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#valid-browsing-context-name">Valid browsing context name</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#valid-browsing-context-name">Valid browsing context name</a>
 	 */
 	public static boolean isValidBrowsingContextName(String name) {
 		return !name.startsWith("_");
@@ -682,7 +682,7 @@ public class BrowsingContext {
 	 * 
 	 * @param name Browsing context name which is tested.
 	 * @return True if is passed string the valid browsing context name or keyword, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#valid-browsing-context-name-or-keyword">Valid browsing context name or keyword</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#valid-browsing-context-name-or-keyword">Valid browsing context name or keyword</a>
 	 */
 	public static boolean isValidBrowsingContextNameOrKeyword(String name) {
 		return name.equalsIgnoreCase(SELF_KEYWORD) || 
@@ -742,7 +742,7 @@ public class BrowsingContext {
 	 * @param name Browsing context name or keyword.
 	 * @return Resulted browsing context for a given browsing context name or keyword.
 	 * @see #isBlankBrowsingContext(String)
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name">Choosing browsing context given a browsing context name or keyword</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name">Choosing browsing context given a browsing context name or keyword</a>
 	 */
 	public BrowsingContext chooseBrowsingContextByName(String name) {
 		BrowsingUnit browsingUnit = getBrowsingUnit();
@@ -804,7 +804,7 @@ public class BrowsingContext {
 	 * Returns browsing context name.
 	 * 
 	 * @return Browsing context name.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#browsing-context-name">Browsing context name</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#browsing-context-name">Browsing context name</a>
 	 */
 	public String getName() {
 		return contextName;
@@ -814,7 +814,7 @@ public class BrowsingContext {
 	 * Sets browsing context name.
 	 * 
 	 * @param name New browsing context name.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#browsing-context-name">Browsing context name</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#browsing-context-name">Browsing context name</a>
 	 */
 	public void setName(String name) {
 		this.contextName = name;
@@ -824,7 +824,7 @@ public class BrowsingContext {
 	 * Returns session history.
 	 * 
 	 * @return Session history.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#session-history">Session history</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#session-history">Session history</a>
 	 */
 	public SessionHistory getSesstionHistory() {
 		return sessionHistory;
@@ -834,7 +834,7 @@ public class BrowsingContext {
 	 * Returns browsing unit.
 	 * 
 	 * @return Browsing unit.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unit-of-related-browsing-contexts">Unit of related browsing contexts</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#unit-of-related-browsing-contexts">Unit of related browsing contexts</a>
 	 */
 	public BrowsingUnit getBrowsingUnit() {
 		BrowsingContext ancestorContext = this;
@@ -858,7 +858,7 @@ public class BrowsingContext {
 	 * Returns event loop.
 	 * 
 	 * @return Event loop.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#event-loop">The event loop</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#event-loop">The event loop</a>
 	 */
 	public EventLoop getEventLoop() {
 		BrowsingUnit browsingUnit = getBrowsingUnit();

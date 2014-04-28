@@ -41,7 +41,7 @@ import org.fit.cssbox.scriptbox.window.Window;
  * Class representing history for a browsing context.
  * The sequence of Documents and additional informations in a browsing context is its session history.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#session-history">Session history</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#session-history">Session history</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -70,7 +70,7 @@ public class SessionHistory {
 	 * Returns current entry of this session history.
 	 * 
 	 * @return Current entry of this session history
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#current-entry">Current entry</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#current-entry">Current entry</a>
 	 */
 	public SessionHistoryEntry getCurrentEntry() {
 		if (currentEntryPosition != -1) {
@@ -256,7 +256,7 @@ public class SessionHistory {
 	 * @param specifiedEntry Session history entry where to traverse this session history.
 	 * @param replacementEnabled Flag signaling whether to replace current session history entry or not.
 	 * @param asynchronousEvents Flag signaling whether to dispatch generated events, or simple fire in the current task.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history">Traverse the history</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#traverse-the-history">Traverse the history</a>
 	 */
 	public void traverseHistory(SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents) {
 		traverseHistory(context, specifiedEntry, replacementEnabled, asynchronousEvents);
@@ -317,7 +317,7 @@ public class SessionHistory {
 	 * @param specifiedEntry Session history entry where to traverse this session history.
 	 * @param replacementEnabled Flag signaling whether to replace current session history entry or not.
 	 * @param asynchronousEvents Flag signaling whether to dispatch generated events, or simple fire in the current task.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history">Traverse the history</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#traverse-the-history">Traverse the history</a>
 	 */
 	public static void traverseHistory(final BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents ) {
 		// 1) If there is no longer a Document object for the entry in question, 

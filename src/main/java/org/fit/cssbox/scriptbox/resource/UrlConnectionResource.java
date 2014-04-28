@@ -87,7 +87,7 @@ public abstract class UrlConnectionResource extends Resource {
 	public String getContentType() {
 		/*
 		 *  FIXME: Check for correctness and use MIME sniffing instead.
-		 *  See: http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#content-type-sniffing-0
+		 *  See: http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#content-type-sniffing-0
 		 */
 		String contentTypeField = conn.getContentType();
 		String[] contentTypeValues = (contentTypeField != null)? contentTypeField.split(";") : null;

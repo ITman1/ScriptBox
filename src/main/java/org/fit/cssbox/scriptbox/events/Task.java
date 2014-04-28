@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#event-loop">Event loop</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#event-loop">Event loop</a>
  */
 public abstract class Task implements Executable {
 	private Html5DocumentImpl _document;

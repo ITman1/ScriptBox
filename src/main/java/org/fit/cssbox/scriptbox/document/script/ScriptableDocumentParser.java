@@ -54,8 +54,8 @@ import org.xml.sax.SAXException;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#html-parser">HTML parser</a>
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#parsing">Parsing</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#html-parser">HTML parser</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#parsing">Parsing</a>
  */
 public class ScriptableDocumentParser {
 	
@@ -283,7 +283,7 @@ public class ScriptableDocumentParser {
 	 * Returns value of the pause flag.
 	 * 
 	 * @return Boolean value of the pause flag.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#parser-pause-flag">Parser pause flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#parser-pause-flag">Parser pause flag</a>
 	 */
 	public synchronized boolean getPauseFlag() {
 		return pauseFlag;
@@ -293,7 +293,7 @@ public class ScriptableDocumentParser {
 	 * Sets value of the pause flag.
 	 * 
 	 * @param flag New boolean value of the pause flag.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#parser-pause-flag">Parser pause flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#parser-pause-flag">Parser pause flag</a>
 	 */
 	public synchronized void setPauseFlag(boolean flag) {
 		pauseFlag = flag;
@@ -332,7 +332,7 @@ public class ScriptableDocumentParser {
 	 * as it gets fetched from the external resource.
 	 * 
 	 * @return Pending parsing-blocking script.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#pending-parsing-blocking-script">Pending parsing-blocking script </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#pending-parsing-blocking-script">Pending parsing-blocking script </a>
 	 */
 	public synchronized Html5ScriptElementImpl getPendingParsingBlockingScript() {
 		return pendingParsingBlockingScript;
@@ -343,7 +343,7 @@ public class ScriptableDocumentParser {
 	 * as it gets fetched from the external resource.
 	 * 
 	 * @param script Pending parsing-blocking script.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#pending-parsing-blocking-script">Pending parsing-blocking script </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#pending-parsing-blocking-script">Pending parsing-blocking script </a>
 	 */
 	public synchronized void setPendingParsingBlockingScript(Html5ScriptElementImpl script) {
 		pendingParsingBlockingScript = script;
@@ -354,7 +354,7 @@ public class ScriptableDocumentParser {
 	 * Sets script nesting level.
 	 * 
 	 * @param level New script nesting level.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#script-nesting-level">Script nesting level </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#script-nesting-level">Script nesting level </a>
 	 */
 	public synchronized void setScriptNestingLevel(int level) {
 		scriptNestingLevel = level;
@@ -365,7 +365,7 @@ public class ScriptableDocumentParser {
 	 * Returns script nesting level.
 	 * 
 	 * @return Script nesting level.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#script-nesting-level">Script nesting level </a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#script-nesting-level">Script nesting level </a>
 	 */
 	public synchronized int getScriptNestingLevel() {
 		return scriptNestingLevel;
@@ -375,7 +375,7 @@ public class ScriptableDocumentParser {
 	 * Returns true if parser has style sheet that blocks script execution.
 	 * 
 	 * @return True if parser has style sheet that blocks script execution, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/document-metadata.html#has-a-style-sheet-that-is-blocking-scripts">Style sheet that is blocking scripts</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/document-metadata.html#has-a-style-sheet-that-is-blocking-scripts">Style sheet that is blocking scripts</a>
 	 */
 	public synchronized boolean hasStyleSheetBlockScripts() {
 		return hasStyleSheetBlockScripts;
@@ -385,7 +385,7 @@ public class ScriptableDocumentParser {
 	 * Returns true if parser is still active.
 	 * 
 	 * @return True if parser is still active, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/dom.html#active-parser">Active parser</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#active-parser">Active parser</a>
 	 */
 	public synchronized boolean isActive() {
 		return _parser != null;
@@ -395,7 +395,7 @@ public class ScriptableDocumentParser {
 	 * Returns true if parser has stopped parsing.
 	 * 
 	 * @return True if parser has stopped parsing, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#stop-parsing">Stopped parser</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#stop-parsing">Stopped parser</a>
 	 */
 	public synchronized boolean isStopped() {
 		return _finished;
@@ -405,7 +405,7 @@ public class ScriptableDocumentParser {
 	 * Returns true if parser has been aborted.
 	 * 
 	 * @return True if parser has been aborted, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#abort-a-parser">Abort a parser</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#abort-a-parser">Abort a parser</a>
 	 */
 	public synchronized boolean isAborted() {
 		return aborted;
@@ -414,7 +414,7 @@ public class ScriptableDocumentParser {
 	/**
 	 * Aborts parser, not matter if it runs or not.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#abort-a-parser">Abort a parser</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#abort-a-parser">Abort a parser</a>
 	 */
 	public synchronized void abort() {
 		if (!aborted) {

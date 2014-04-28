@@ -46,7 +46,9 @@ import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
 import org.fit.cssbox.scriptbox.events.EventLoop;
+import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
@@ -76,7 +78,7 @@ import com.google.common.base.Predicate;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#window">Window</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#window">Window</a>
  */
 public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, WindowEventHandlers, AbstractView {
 	final public static String DEFAULT_TARGET =  "_blank";
@@ -324,7 +326,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * 
 	 * @param eventName Event type name.
 	 * @param target Target where to dispatch the event.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#fire-a-simple-event">Fire a simple event</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#fire-a-simple-event">Fire a simple event</a>
 	 */
 	public boolean fireSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target) {
 		return fireSimpleEvent(eventName, target, false, false);
@@ -338,7 +340,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * @param target Target where to dispatch the event.
 	 * @param bubbles If true then this event can bubble.
 	 * @param cancelable If true then this event can be cancelled.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#fire-a-simple-event">Fire a simple event</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#fire-a-simple-event">Fire a simple event</a>
 	 */
 	public boolean fireSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target, boolean bubbles, boolean cancelable) {
 		EventImpl event = new EventImpl();
@@ -376,11 +378,31 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		dispatchEvent(event, target);
 	}
 	
+	/*
+	 * TODO:
+	 * For tests purposes only...
+	 * Remove, or implement according the specification:
+	 * http://www.whatwg.org/specs/web-apps/current-work/multipage/timers.html#timers
+	 */
+	@ScriptFunction
+	public void setTimeout(final EventHandler handler, int ms) {
+		try {
+			documentImpl.getEventLoop().spinForAmountTime(ms, new Executable() {
+				
+				@Override
+				public void execute() throws TaskAbortedException, InterruptedException {
+					handler.handleEvent(null);
+				}
+			});
+		} catch (TaskAbortedException e) {
+		}
+	}
+	
 	/**
 	 * Returns Window object's browsing context's WindowProxy object.
 	 * 
 	 * @return Window object's browsing context's WindowProxy object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window">window</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window">window</a>
 	 */
 	@ScriptGetter
 	public WindowProxy getWindow() {
@@ -391,7 +413,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns Window object's browsing context's WindowProxy object.
 	 * 
 	 * @return Window object's browsing context's WindowProxy object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-self">self</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-self">self</a>
 	 */
 	@ScriptGetter
 	public WindowProxy getSelf() {
@@ -402,7 +424,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns Window object's browsing context's WindowProxy object.
 	 * 
 	 * @return Window object's browsing context's WindowProxy object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-frames">frames</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-frames">frames</a>
 	 */
 	@ScriptGetter
 	public WindowProxy getFrames() {
@@ -413,7 +435,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns Window object's newest Document object.
 	 * 
 	 * @return Window object's newest Document object. 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-document-0">document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-document-0">document</a>
 	 */
 	@ScriptGetter
 	public DocumentView getDocument() {
@@ -424,7 +446,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the current name of the browsing context.
 	 * 
 	 * @return Current name of the browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-name">name</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-name">name</a>
 	 */
 	@ScriptGetter
 	public String getName() {
@@ -435,7 +457,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Sets the current name of the browsing context.
 	 * 
 	 * @param name New name of the browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-name">name</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-name">name</a>
 	 */
 	@ScriptSetter
 	public void setName(String name) {
@@ -446,7 +468,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns location object of the Window object's Document.
 	 * 
 	 * @return Location object of the Window object's Document.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location">Location</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-location">Location</a>
 	 */
 	@ScriptGetter
 	public Location getLocation() {
@@ -457,7 +479,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Sets new URL into location objects and redirects the current document.
 	 * 
 	 * @param url New URL where to redirect.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location">Location</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-location">Location</a>
 	 */
 	@ScriptSetter
 	public void setLocation(String url) {
@@ -469,7 +491,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the History object the newest Document of this Window.
 	 * 
 	 * @return History object the newest Document of this Window.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history">History</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history">History</a>
 	 */
 	@ScriptGetter
 	public History getHistory() {
@@ -480,7 +502,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the location bar BarProp object.
 	 * 
 	 * @return Location bar BarProp object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-locationbar">Location bar</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-locationbar">Location bar</a>
 	 */
 	@ScriptGetter
 	public BarProp getLocationbar() {
@@ -491,7 +513,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the menu bar BarProp object.
 	 * 
 	 * @return Menu bar BarProp object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-menubar">Menu bar</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-menubar">Menu bar</a>
 	 */
 	@ScriptGetter
 	public BarProp getMenubar() {
@@ -502,7 +524,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the personal bar BarProp object.
 	 * 
 	 * @return Personal bar BarProp object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-personalbar">Personal bar</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-personalbar">Personal bar</a>
 	 */
 	@ScriptGetter
 	public BarProp getPersonalbar() {
@@ -513,7 +535,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the scrollbar BarProp object.
 	 * 
 	 * @return Scrollbar BarProp object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-scrollbars">Scrollbar</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-scrollbars">Scrollbar</a>
 	 */
 	@ScriptGetter
 	public ScrollBarsProp getScrollbars() {
@@ -524,7 +546,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the status bar BarProp object.
 	 * 
 	 * @return Status bar BarProp object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-statusbar">Status bar</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-statusbar">Status bar</a>
 	 */
 	@ScriptGetter
 	public BarProp getStatusbar() {
@@ -535,7 +557,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the tool bar BarProp object.
 	 * 
 	 * @return Tool bar BarProp object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-toolbar">Tool bar</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-toolbar">Tool bar</a>
 	 */
 	@ScriptGetter
 	public BarProp getToolbar() {
@@ -546,7 +568,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the last string it was set to.
 	 * 
 	 * @return String it was set to.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-status">Status</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-status">Status</a>
 	 */
 	@ScriptGetter
 	public String getStatus() {
@@ -557,7 +579,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Sets new status.
 	 * 
 	 * @param value Value to be set as a status.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-status">Status</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-status">Status</a>
 	 */
 	@ScriptGetter
 	public void setStatus(String value) {
@@ -568,7 +590,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Tests whether is the Window object's browsing context discarded.
 	 * 
 	 * @return True if the Window object's browsing context has been discarded or false otherwise.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-closed">Closed</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-closed">Closed</a>
 	 */
 	@ScriptGetter
 	public boolean getClosed() {
@@ -579,7 +601,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the number of child browsing contexts.
 	 * 
 	 * @return Number of child browsing contexts.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-length">Length</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-length">Length</a>
 	 */
 	@ScriptGetter
 	public long getLength() {
@@ -609,7 +631,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the WindowProxy object of its top-level browsing context.
 	 * 
 	 * @return WindowProxy object of its top-level browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-top">Length</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-top">Length</a>
 	 */
 	@ScriptGetter
 	public WindowProxy getTop() {
@@ -620,7 +642,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the WindowProxy object of the browsing context from which the current browsing context was created.
 	 * 
 	 * @return WindowProxy object of the browsing context from which the current browsing context was created.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-opener">Opener</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-opener">Opener</a>
 	 */
 	@ScriptGetter
 	public WindowProxy getOpener() {
@@ -634,7 +656,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the WindowProxy for the parent browsing context.
 	 * 
 	 * @return WindowProxy for the parent browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-parent">Length</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-parent">Length</a>
 	 */
 	@ScriptGetter
 	public WindowProxy getParent() {
@@ -646,7 +668,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * Returns the Element for the browsing context container.
 	 * 
 	 * @return Element for the browsing context container.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-frameelement">Frame element</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-frameelement">Frame element</a>
 	 */
 	@ScriptGetter
 	public Element getFrameElement() {
@@ -671,7 +693,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	}
 	
 	/**
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-navigator">Navigator</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-navigator">Navigator</a>
 	 */
 	@ScriptGetter
 	public Navigator getNavigator() {
@@ -679,8 +701,8 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		return null;
 	}
 	
-	/**¨
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-external">External</a>
+	/**??
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-external">External</a>
 	 */
 	@ScriptGetter
 	public External getExternal() {
@@ -689,7 +711,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	}
 	
 	/**
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-applicationcache">Application cache</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-applicationcache">Application cache</a>
 	 */
 	@ScriptGetter
 	public ApplicationCache getApplicationCache() {
@@ -700,7 +722,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	/**
 	 * Closes the browsing context.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-frameelement">Frame element</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-frameelement">Frame element</a>
 	 */
 	@ScriptFunction
 	public void close() {
@@ -729,7 +751,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * and that attempt is not currently running the unload a document algorithm then 
 	 * cancels that navigation and aborts active document.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-stop">Stop</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-stop">Stop</a>
 	 */
 	@ScriptFunction
 	public void stop() {
@@ -747,7 +769,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	}
 	
 	/**
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-focus">Focus</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-focus">Focus</a>
 	 */
 	@ScriptFunction
 	public void focus() {
@@ -755,7 +777,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	}
 	
 	/**
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-blur">Blur</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-blur">Blur</a>
 	 */
 	@ScriptFunction
 	public void blur() {
@@ -767,7 +789,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * 
 	 * @return WindowProxy object of the browsing context that was navigated, 
 	 *         or null if no browsing context was navigated.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-open">Open</a>
 	 */
 	@ScriptFunction
 	public WindowProxy open() {
@@ -780,7 +802,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * @param url URL to be navigated.
 	 * @return WindowProxy object of the browsing context that was navigated, 
 	 *         or null if no browsing context was navigated.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-open">Open</a>
 	 */
 	@ScriptFunction
 	public WindowProxy open(String url) {
@@ -794,7 +816,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * @param target Target browsing context name.
 	 * @return WindowProxy object of the browsing context that was navigated, 
 	 *         or null if no browsing context was navigated.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-open">Open</a>
 	 */
 	@ScriptFunction
 	public WindowProxy open(String url, String target) {
@@ -809,7 +831,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * @param features Features.
 	 * @return WindowProxy object of the browsing context that was navigated, 
 	 *         or null if no browsing context was navigated.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-open">Open</a>
 	 */
 	@ScriptFunction
 	public WindowProxy open(String url, String target, String features) {
@@ -825,7 +847,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 * @param replace If true than active document will be replaced.
 	 * @return WindowProxy object of the browsing context that was navigated, 
 	 *         or null if no browsing context was navigated.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-window-open">Open</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-window-open">Open</a>
 	 */
 	@ScriptFunction
 	public WindowProxy open(String url, String target, String features, boolean replace) {

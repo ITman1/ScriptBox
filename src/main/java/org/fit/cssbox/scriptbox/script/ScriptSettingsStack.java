@@ -26,7 +26,7 @@ import java.util.Stack;
 /**
  * Represents stack of script settings objects.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#stack-of-script-settings-objects">Stack of script settings objects</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#stack-of-script-settings-objects">Stack of script settings objects</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -65,7 +65,7 @@ public class ScriptSettingsStack implements Cloneable {
 	 * 
 	 * @param settings New script settings to be pushed onto stack.
 	 * @param candidateEntry If set then labels the passed settings as candidate entry settings object
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#candidate-entry-settings-object">Candidate entry settings objects</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#candidate-entry-settings-object">Candidate entry settings objects</a>
 	 */
 	void push(ScriptSettings<?> settings, boolean candidateEntry) {
 		_stack.push(new ScriptSettingsEntry(settings, candidateEntry));
@@ -111,7 +111,7 @@ public class ScriptSettingsStack implements Cloneable {
 	 * Returns the incumbent settings object.
 	 * 
 	 * @return The incumbent settings object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#incumbent-settings-object">The incumbent settings object</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#incumbent-settings-object">The incumbent settings object</a>
 	 */
 	public ScriptSettings<?> getIncumbentScriptSettings() {
 		ScriptSettingsEntry settings = _stack.peek();
@@ -122,7 +122,7 @@ public class ScriptSettingsStack implements Cloneable {
 	 * Returns the candidate entry settings object.
 	 * 
 	 * @return The candidate entry settings settings object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#candidate-entry-settings-object">Candidate entry settings objects</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#candidate-entry-settings-object">Candidate entry settings objects</a>
 	 */
 	public ScriptSettings<?> getEntryScriptSettings() {
 		int endPos = _stack.size() - 1;
@@ -139,9 +139,13 @@ public class ScriptSettingsStack implements Cloneable {
 	 * Pops the incumbent settings object.
 	 * 
 	 * @return The incumbent settings object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#incumbent-settings-object">The incumbent settings object</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#incumbent-settings-object">The incumbent settings object</a>
 	 */
 	public ScriptSettings<?> popIncumbentScriptSettings() {
+		if (_stack.isEmpty()) {
+			return null;
+		}
+		
 		ScriptSettingsEntry settings = _stack.pop();
 		isEmptyCheckpoint();
 		return (settings != null)? settings.scriptSettings : null;
@@ -178,7 +182,7 @@ public class ScriptSettingsStack implements Cloneable {
 	
 	/*
 	 * TODO:
-	 * http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#perform-a-microtask-checkpoint
+	 * http://www.w3.org/html/wg/drafts/html/master/webappapis.html#perform-a-microtask-checkpoint
 	 */
 	protected void performMicrotaskCheckpoint() {
 		

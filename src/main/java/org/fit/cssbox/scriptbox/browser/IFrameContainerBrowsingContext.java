@@ -99,7 +99,7 @@ public class IFrameContainerBrowsingContext extends BrowsingContext {
 	 * Tests whether is this or nested browsing context in delaying load event mode.
 	 * 
 	 * @return True if is this or nested browsing context in delaying load event mode, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
 	 */
 	public synchronized boolean hasDelayingLoadEventsMode() {		
 		Document document = getActiveDocument();

@@ -37,7 +37,7 @@ import org.w3c.dom.Text;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/links.html#following-hyperlinks">Follow a hyperlink </a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/links.html#following-hyperlinks">Follow a hyperlink </a>
  */
 public class ScriptBrowserHyperlinkHandler extends DefaultHyperlinkHandler
 {    

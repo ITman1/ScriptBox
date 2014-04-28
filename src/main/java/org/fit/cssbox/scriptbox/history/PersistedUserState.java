@@ -7,7 +7,7 @@ import org.fit.cssbox.scriptbox.window.Window;
 /**
  * Represents class for storing user persisted states.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -68,7 +68,7 @@ public class PersistedUserState {
 	/**
 	 * Updates settings in user persisted state.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
 	 */
 	public void updateState() {
 		Window currentWindow = _document.getWindow();
@@ -86,7 +86,7 @@ public class PersistedUserState {
 	/**
 	 * Applies settings from the user persisted state.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
 	 */
 	public void applyState() {
 		Window currentWindow = _document.getWindow();

@@ -35,7 +35,7 @@ import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
 /**
  * Content handler factory for handlers following the processing model for text files.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-text">Read text</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#read-text">Read text</a>
  * 
  * @author Radim Loskot
  * @version 0.9

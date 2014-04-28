@@ -68,7 +68,7 @@ public class Html5IFrameElementImpl extends HTMLIFrameElementImpl implements Htm
 	}
 	
 	public boolean isInSeamlessMode() {
-		//TODO: Implement according to http://www.w3.org/html/wg/drafts/html/CR/embedded-content-0.html#in-seamless-mode
+		//TODO: Implement according to http://www.w3.org/html/wg/drafts/html/master/embedded-content-0.html#in-seamless-mode
 		return false;
 	}
 

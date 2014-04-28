@@ -25,7 +25,7 @@ package org.fit.cssbox.scriptbox.security;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#sandboxing-flag-set">A sandboxing flag set</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#sandboxing-flag-set">A sandboxing flag set</a>
  */
 public enum SandboxingFlag {	
 	NAVIGATION_BROWSING_CONTEXT_FLAG,

@@ -83,7 +83,7 @@ public class UserAgent {
 	 * 
 	 * @param page Address for which is test performed.
 	 * @return True if scripting is enabled for given address, otherwise false.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#concept-bc-script">Scripting is enabled</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#concept-bc-script">Scripting is enabled</a>
 	 */
 	public boolean scriptsEnabled(URL page) {
 		return true;

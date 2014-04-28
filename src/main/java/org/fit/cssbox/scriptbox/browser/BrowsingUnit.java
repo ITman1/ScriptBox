@@ -40,7 +40,7 @@ import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#unit-of-related-browsing-contexts">Unit of related browsing contexts</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#unit-of-related-browsing-contexts">Unit of related browsing contexts</a>
  */
 public class BrowsingUnit {
 	/**
@@ -146,7 +146,7 @@ public class BrowsingUnit {
 	 * Returns associated event loop.
 	 * 
 	 * @return Associated event loop.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#event-loop">The event loop</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#event-loop">The event loop</a>
 	 */
 	public EventLoop getEventLoop() {
 		return eventLoop;
@@ -156,7 +156,7 @@ public class BrowsingUnit {
 	 * Returns associated script settings stack.
 	 * 
 	 * @return Associated script settings stack
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#stack-of-script-settings-objects">Stack of script settings objects</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#stack-of-script-settings-objects">Stack of script settings objects</a>
 	 */
 	public ScriptSettingsStack getScriptSettingsStack() {
 		return scriptSettingsStack;
@@ -166,7 +166,7 @@ public class BrowsingUnit {
 	 * Returns associated joint session history.
 	 * 
 	 * @return Associated hoint session history
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#joint-session-history">Joint session history</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#joint-session-history">Joint session history</a>
 	 */
 	public JointSessionHistory getJointSessionHistory() {
 		return jointSessionHistory;

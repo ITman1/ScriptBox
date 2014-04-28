@@ -19,7 +19,6 @@
 
 package org.fit.cssbox.scriptbox.script;
 
-import java.io.Reader;
 import java.net.URL;
 
 import javax.script.ScriptException;
@@ -30,14 +29,14 @@ import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 /**
  * Represents class for creating and executing the scripts.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#concept-script">Script</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#concept-script">Script</a>
  * 
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends ScriptSettings<?>> {
-	protected Reader source;
+public abstract class Script<Source, CodeEntryPoint, ScriptSettingsTemplate extends ScriptSettings<?>> {
+	protected Source source;
 	protected URL sourceURL;
 	protected String language;
 	protected boolean mutedErrorsFlag;
@@ -53,10 +52,10 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	 * @param language Language of the script engine that should be used for executing this script.
 	 * @param settings Script settings to be used for this script.
 	 * @param mutedErrorsFlag If true then no script errors are signaled.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#create-a-script">Create a script</a>
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#muted-errors">Muted errors flag</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#create-a-script">Create a script</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#muted-errors">Muted errors flag</a>
 	 */
-	public Script(Reader source, URL sourceURL, String language, ScriptSettingsTemplate settings, boolean mutedErrorsFlag) {
+	public Script(Source source, URL sourceURL, String language, ScriptSettingsTemplate settings, boolean mutedErrorsFlag) {
 		this.source = source;
 		this.sourceURL = sourceURL;
 		this.language = language;
@@ -71,7 +70,7 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	 * 
 	 * @return Associated script source code
 	 */
-	public Reader getSource() {
+	public Source getSource() {
 		return source;
 	}
 	
@@ -134,7 +133,7 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	 * 
 	 * @param codeEntryPoint Code entry-point to be executed
 	 * @see <a href="www.w3.org/html/wg/drafts/html/CR/webappapis.html#jump-to-a-code-entry-point">Jump to a code entry point</a>
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#code-entry-point">A code entry-point</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#code-entry-point">A code entry-point</a>
 	 */
 	protected void jumpToCodeEntryPoint(CodeEntryPoint codeEntryPoint) {		
 		if (!prepareRunCallback(settings)) {
@@ -163,7 +162,7 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	 * 
 	 * @param context Script settings object
 	 * @return Either "run" or "do not run" as boolean values.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#prepare-to-run-a-callback">Prepare to run a callback</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#prepare-to-run-a-callback">Prepare to run a callback</a>
 	 */
 	protected boolean prepareRunCallback(ScriptSettingsTemplate context) {	
 		if (isScriptingDisabled()) {
@@ -187,7 +186,7 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	/**
 	 * Runs finalization steps after run script callback.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#clean-up-after-running-a-callback">Clean up after running a callback</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#clean-up-after-running-a-callback">Clean up after running a callback</a>
 	 */
 	protected void cleanupAfterRunningCallback() {
 		BrowsingContext browsingContext = settings.getResposibleBrowsingContext();
@@ -209,7 +208,7 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	/**
 	 * Creates new script.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#create-a-script">Create a script</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#create-a-script">Create a script</a>
 	 */
 	protected void createScript() {
 		if (isScriptingDisabled()) {
@@ -254,7 +253,7 @@ public abstract class Script<CodeEntryPoint, ScriptSettingsTemplate extends Scri
 	 * @param source Source from which to get the code entry-point
 	 * @return Corresponding code entry-point.
 	 */
-	protected abstract CodeEntryPoint obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader source);
+	protected abstract CodeEntryPoint obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Source source);
 	
 	/**
 	 * Executes code entry-point inside execution environment.

@@ -151,6 +151,12 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		@Override
 		public void onHistoryEvent(final JointSessionHistoryEvent event) {
 			SessionHistoryEntry _whereTraversed = null;
+			int position = jointSessionHistory.getPosition();
+			
+			if (position == -1) {
+				return;
+			}
+			
 			if (event.getEventType() == JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
 				_whereTraversed = jointSessionHistory.getCurrentEntry();
 			} else if (event.getEventType() == JointSessionHistoryEvent.EventType.TRAVERSED) {

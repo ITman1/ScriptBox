@@ -52,7 +52,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	
 	/*
 	 * Proceeds 1), 2) and 3) steps of the update session history with the new page:
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page
+	 * http://www.w3.org/html/wg/drafts/html/master/browsers.html#update-the-session-history-with-the-new-page
 	 */
 	protected class UpdateSessionHistoryTask extends Task {
 
@@ -106,7 +106,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	
 	/*
 	 * Proceeds 4), 5) and 6) steps of the update session history with the new page:
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page
+	 * http://www.w3.org/html/wg/drafts/html/master/browsers.html#update-the-session-history-with-the-new-page
 	 */
 	private class ScrollToFragmentRunnable implements Executable {
 		@Override
@@ -175,7 +175,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	 * Updates session history with a new document.
 	 * 
 	 * @param newDocument New document that should be inserted into history.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#update-the-session-history-with-the-new-page">Update the session history with the new page</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#update-the-session-history-with-the-new-page">Update the session history with the new page</a>
 	 */
 	protected void updateSessionHistory(Html5DocumentImpl newDocument) {
 		SessionHistory sessionHistory = context.getSesstionHistory();

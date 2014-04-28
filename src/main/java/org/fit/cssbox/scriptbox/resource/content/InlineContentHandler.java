@@ -29,7 +29,7 @@ import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
  * an error message because the specified type is not supported, or an inline 
  * prompt to allow the user to select a registered handler.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-ua-inline">Read inline content</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#read-ua-inline">Read inline content</a>
  * 
  * @author Radim Loskot
  * @version 0.9

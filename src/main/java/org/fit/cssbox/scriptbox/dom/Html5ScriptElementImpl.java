@@ -43,7 +43,7 @@ import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineManager;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.window.Window;
-import org.fit.cssbox.scriptbox.window.WindowScript;
+import org.fit.cssbox.scriptbox.window.EvalWindowScript;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -86,7 +86,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 
 		/*
-		 * See: http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#script-processing-src-sync
+		 * See: http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#script-processing-src-sync
 		 */
 		@Override
 		public void execute() throws TaskAbortedException, InterruptedException {
@@ -125,7 +125,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 
 		/*
-		 * See: http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#script-processing-src
+		 * See: http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#script-processing-src
 		 */
 		@Override
 		public void execute() throws TaskAbortedException, InterruptedException {
@@ -217,7 +217,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	 * Runs prepare algorithm which might result in execution of the script.
 	 * 
 	 * @return True if prepare completed, false on some error.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#prepare-a-script">Prepare a script</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#prepare-a-script">Prepare a script</a>
 	 */
 	public boolean prepareScript() {		
 		/* Step 1*/
@@ -351,7 +351,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	 * Runs execution algorithm above current script element.
 	 * 
 	 * @return True if execution ran to completion, false on some error.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#execute-the-script-block">Execute the script block</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#execute-the-script-block">Execute the script block</a>
 	 */
 	public boolean executeScript() {
 		if (_parserInserted && (_creatorParser == null || _creatorParser.getDocument() != getOwnerDocument())) {
@@ -388,7 +388,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		String language = getMimeType();
 		
 		// 1) Initialize the script block's source 
-		// FIXME: http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html#the-script-block%27s-source
+		// FIXME: http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#the-script-block%27s-source
 		if (resource == null) { // We are processing inline script
 			source = getScriptBlockSource(); 
 		} else {
@@ -408,7 +408,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		}
 		
 		// 4) Create a script
-		new WindowScript(source, url, language, settings, false);
+		new EvalWindowScript(source, url, language, settings, false);
 		
 		// 5) Decrement the ignore-destructive-writes counter 
 		if (resource != null) {

@@ -70,7 +70,7 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 	 * Returns IFRAME sandboxing flag set.
 	 * 
 	 * @return IFRAME sandboxing flag set
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#iframe-sandboxing-flag-set">IFRAME sandboxing flag set</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#iframe-sandboxing-flag-set">IFRAME sandboxing flag set</a>
 	 */
 	public Set<SandboxingFlag> getIframeSandboxingFlagSet() {
 		return iframeSandboxingFlagSet;
@@ -93,7 +93,7 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 	/**
 	 * Removes delaying load event mode.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
 	 */
 	public synchronized void resetDelayingLoadEventsMode() {
 		delayingLoadEventsMode = false;
@@ -112,7 +112,7 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 	/**
 	 * Enables delaying load event mode.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
 	 */
 	public synchronized void delayLoadEvents() {
 		delayingLoadEventsMode = true;

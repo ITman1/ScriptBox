@@ -44,7 +44,7 @@ import org.fit.cssbox.scriptbox.window.Window;
  * Class implementing Location interface which allows navigating of the new
  * documents/resources inside browsing contexts.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#location">Location interface</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#location">Location interface</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -72,7 +72,7 @@ public class Location extends URLUtils {
 	 * Navigates to the given page without replacement enabled if there is not reason.
 	 * 
 	 * @param url New URL where to navigate current browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location-assign">Location assign()</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-location-assign">Location assign()</a>
 	 */
 	@ScriptFunction
 	public void assign(String url) {
@@ -106,7 +106,7 @@ public class Location extends URLUtils {
 	 * Removes the current page from the session history and navigates to the given page.
 	 * 
 	 * @param url New URL where to navigate current browsing context.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location-replace">Location replace()</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-location-replace">Location replace()</a>
 	 */
 	@ScriptFunction
 	public void replace(String url) {
@@ -120,7 +120,7 @@ public class Location extends URLUtils {
 	/**
 	 * Reloads the current page.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-location-reload">Location reload()</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-location-reload">Location reload()</a>
 	 */
 	@ScriptFunction
 	public void reload() {
@@ -323,7 +323,7 @@ public class Location extends URLUtils {
 	}
 	
 	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#security-location
+	 * http://www.w3.org/html/wg/drafts/html/master/browsers.html#security-location
 	 */
 	private void securityTest() {
 		if (!isRelatedDocumentEffectiveScriptOriginEqual()) {

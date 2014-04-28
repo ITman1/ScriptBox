@@ -38,11 +38,11 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
-import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
+import org.fit.cssbox.scriptbox.exceptions.WrappedException;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
 import org.fit.cssbox.scriptbox.window.Window;
-import org.fit.cssbox.scriptbox.window.WindowScript;
+import org.fit.cssbox.scriptbox.window.EvalWindowScript;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.mozilla.javascript.Undefined;
 
@@ -69,7 +69,7 @@ public class Handler extends URLStreamHandler {
 
 			/*
 			 * According to the step 14), see:
-			 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate
+			 * http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate
 			 */
 			@Override
 			public void execute() throws TaskAbortedException, InterruptedException {
@@ -100,7 +100,7 @@ public class Handler extends URLStreamHandler {
 				
 				URL address = destinationDocument.getAddress();
 				Reader source = new StringReader(scriptSource);
-				WindowScript script = new WindowScript(source, address, WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE, destinationScriptSettings, true);
+				EvalWindowScript script = new EvalWindowScript(source, address, WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE, destinationScriptSettings, true);
 				
 				result = script.getResult();
 				exception = script.getException();
@@ -205,8 +205,7 @@ public class Handler extends URLStreamHandler {
 				try {
 					fetchTask.join();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
-					throw new UnknownException(e);
+					throw new WrappedException(e);
 				}
 			}
 		}

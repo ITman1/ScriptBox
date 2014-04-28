@@ -19,10 +19,12 @@
 
 package org.fit.cssbox.scriptbox.window;
 
+import java.io.Reader;
 import java.net.URL;
 
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.script.Script;
+import javax.script.ScriptException;
+
+import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 
 /**
  * Represents class for creating scripts that have Window as a global object.
@@ -32,19 +34,20 @@ import org.fit.cssbox.scriptbox.script.Script;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#script-settings-for-browsing-contexts">Script settings for browsing contexts</a>
  */
-public abstract class WindowScript<Source> extends Script<Source, Source, WindowScriptSettings> {
+public class EvalWindowScript extends WindowScript<Reader> {
 	
-	public WindowScript(Source source, URL sourceURL, String language, WindowScriptSettings settings, boolean mutedErrorsFlag) {
+	public EvalWindowScript(Reader source, URL sourceURL, String language, WindowScriptSettings settings, boolean mutedErrorsFlag) {
 		super(source, sourceURL, language, settings, mutedErrorsFlag);
+	}
+	
+	// Parse/compile/initialize the source of the script using the script execution environment
+	@Override
+	protected Reader obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader source) {
+		return source;
 	}
 
 	@Override
-	protected boolean prepareRunCallback(WindowScriptSettings settings) {
-		Window window = settings.getGlobalObject();
-		Html5DocumentImpl windowDocument = window.getDocumentImpl();
-		if (!windowDocument.isFullyActive()) {
-			return false;
-		}
-		return super.prepareRunCallback(settings);
+	protected Object executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader codeEntryPoint) throws ScriptException {
+		return executionEnviroment.eval(codeEntryPoint);		
 	}
 }

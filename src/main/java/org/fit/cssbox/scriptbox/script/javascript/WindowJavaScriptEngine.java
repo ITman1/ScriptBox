@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import javax.script.Bindings;
+import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
@@ -31,12 +32,14 @@ import org.apache.html.dom.HTMLElementImpl;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.WindowScriptEngine;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptAnnotationClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.reflect.DefaultShutter;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaClass;
 import org.mozilla.javascript.RhinoException;
@@ -53,7 +56,7 @@ import org.mozilla.javascript.Wrapper;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class WindowJavaScriptEngine extends WindowScriptEngine {
+public class WindowJavaScriptEngine extends WindowScriptEngine implements Invocable {
 
 	public static final String JAVASCRIPT_LANGUAGE = "text/javascript";
 	
@@ -105,7 +108,7 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 
 		Context cx = enterContext();
 		try {
-			Scriptable executionScope = getRuntimeScope(context);
+			Scriptable executionScope = getExecutionScope(context);
 			ret = cx.evaluateReader(executionScope, reader, "<inline script>" , 1,  null);
 		} catch (Exception ex) {
 			throwWrappedScriptException(ex);
@@ -140,6 +143,28 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 	 */
 	public void exitContext() {
 		Context.exit();
+	}
+	
+	@Override
+	public Object invokeMethod(Object thiz, String name, Object... args) throws ScriptException, NoSuchMethodException {
+		//throw new UnsupportedOperationException("getInterface() is not implemented yet!");
+		return invoke(thiz, name, args);
+	}
+
+	@Override
+	public Object invokeFunction(String name, Object... args) throws ScriptException, NoSuchMethodException {
+		//throw new UnsupportedOperationException("getInterface() is not implemented yet!");
+		return invoke(null, name, args);
+	}
+
+	@Override
+	public <T> T getInterface(Class<T> clasz) {
+		throw new UnsupportedOperationException("getInterface() is not implemented yet!");
+	}
+
+	@Override
+	public <T> T getInterface(Object thiz, Class<T> clasz) {
+		throw new UnsupportedOperationException("getInterface() is not implemented yet!");
 	}
 	
 	/**
@@ -207,6 +232,23 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 	}
 	
 	/**
+	 * Converts array of Java objects into array of JavaScript objects.
+	 * 
+	 * @param args Arguments to be converted.
+	 * @param scope Top scope object
+	 * @return Array of converted JavaScript objects.
+	 */
+	public static Object[] javaToJS(Object[] args, Scriptable scope) {
+		Object[] wrapped = new Object[args.length];
+		
+		for (int i = 0; i < wrapped.length; i++) {
+			wrapped[i] = javaToJS(args[i], scope);
+		}
+		
+		return wrapped;
+	}
+	
+	/**
 	 * Initializes global top level scope.
 	 * 
 	 * @return New top level scope.
@@ -236,7 +278,7 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 	 * @param context Script context to be included into top level scope.
 	 * @return New scope constructed from the top level scope and wrapped script context scope.
 	 */
-	protected Scriptable getRuntimeScope(ScriptContext context) {		
+	protected Scriptable getExecutionScope(ScriptContext context) {		
 		if (runtimeScope == null) {
 			runtimeScope = new ScriptContextScriptable(context);
 			
@@ -264,4 +306,53 @@ public class WindowJavaScriptEngine extends WindowScriptEngine {
 
 		return value;
 	}
+
+	private Object invoke(Object thiz, String name, Object... args) throws ScriptException, NoSuchMethodException {
+		Object ret = null;
+		Context cx = enterContext();
+		try {
+			Scriptable executionScope = getExecutionScope(context);
+			Scriptable functionScope = null;
+			
+			if (thiz == null) {
+				functionScope = executionScope;
+			} else {
+				if (!(thiz instanceof Scriptable)) {
+					thiz = Context.toObject(thiz, topLevel);
+				}
+				functionScope = (Scriptable) thiz;
+			}
+
+			Function function = null;
+			
+			if (name != null && !name.isEmpty()) {
+				Object objectProperty = ObjectScriptable.getProperty(functionScope, name);
+				if (!(objectProperty instanceof Function)) {
+					throw new NoSuchMethodException("Function not found!");
+				}
+
+				function = (Function) objectProperty;
+			} else if (thiz instanceof Function) {
+				function = (Function)thiz;
+			} else {
+				throw new NoSuchMethodException("Passed function name is empty and passed thiz object is not function!");
+			}
+	 
+			Scriptable parentScope = function.getParentScope();
+			if (parentScope == null) {
+				parentScope = functionScope;
+			}
+			
+			Object[] callArgs = javaToJS(args, topLevel);
+			ret = function.call(cx, parentScope, functionScope, callArgs);
+		} catch (Exception ex) {
+			throwWrappedScriptException(ex);
+		} finally {
+			exitContext();
+		}
+		
+		return unwrap(ret);
+	}
+	
+
 }

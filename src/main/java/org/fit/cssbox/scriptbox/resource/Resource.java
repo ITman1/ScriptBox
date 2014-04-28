@@ -183,7 +183,7 @@ public abstract class Resource {
 	 * Address that should be used for setting some common aspects instead of fetch address.
 	 * 
 	 * @return Address which overrides fetch address.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#override-url">Override address</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#override-url">Override address</a>
 	 */
 	public URL getOverrideAddress() {
 		return null;
@@ -193,7 +193,7 @@ public abstract class Resource {
 	 * Referrer.
 	 * 
 	 * @return Referrer.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/infrastructure.html#referrer-source">A referrer source</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#referrer-source">A referrer source</a>
 	 */
 	public String getReferrer() {
 		return "";

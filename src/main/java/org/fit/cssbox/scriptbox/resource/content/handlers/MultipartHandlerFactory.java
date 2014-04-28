@@ -32,7 +32,7 @@ import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 /**
  * Content handler factory for handlers following the processing model for multipart/x-mixed-replace resources.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-multipart-x-mixed-replace">Read multipart/x-mixed-replace</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#read-multipart-x-mixed-replace">Read multipart/x-mixed-replace</a>
  * 
  * @author Radim Loskot
  * @version 0.9

@@ -35,7 +35,7 @@ import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
 /**
  * Content handler factory for handlers following the processing model for XML files.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-xml">Read XML</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#read-xml">Read XML</a>
  * 
  * @author Radim Loskot
  * @version 0.9

@@ -41,7 +41,7 @@ import org.fit.cssbox.scriptbox.navigation.NavigationController;
 /**
  * Class grouping history entries from all active document session history objects.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#joint-session-history">Joint session history</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#joint-session-history">Joint session history</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -87,7 +87,7 @@ public class JointSessionHistory {
 			/*
 			 * 2) If the specified browsing context's active document is not the same Document 
 			 * as the Document of the specified entry, then run ...
-			 * @see http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history-by-a-delta
+			 * @see http://www.w3.org/html/wg/drafts/html/master/browsers.html#traverse-the-history-by-a-delta
 			 */
 			Html5DocumentImpl specifiedBrowsingContextDocument = _specifiedBrowsingContext.getActiveDocument();
 			Html5DocumentImpl specifiedEntryDocument = _specifiedEntry.getDocument();
@@ -224,7 +224,7 @@ public class JointSessionHistory {
 	 * Returns the number of entries in the joint session history.
 	 * 
 	 * @return Number of entries in the joint session history.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#dom-history-length">History length</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-length">History length</a>
 	 */
 	public int getLength() {
 		return _historyEntries.size();
@@ -234,7 +234,7 @@ public class JointSessionHistory {
 	 * Goes back or forward the specified number of steps in this joint session history.
 	 * 
 	 * @param delta Number of traversal steps.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#traverse-the-history-by-a-delta">Traverse the history by a delta</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#traverse-the-history-by-a-delta">Traverse the history by a delta</a>
 	 */
 	public void traverse(int delta) {
 		int destinationIndex = _currentJointSessionHistoryEntryPosition + delta;

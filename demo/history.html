@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Engine Demos - History interface</title>
+<style media='all' type='text/css'>
+@import "style.css";
+</style>
+</head>
+<body>
+    <script type="text/javascript" src="navigation.js"></script>
+    <div id="header">
+        <div>
+            <a href="javascript:go_back()">back</a> | <a
+                href="javascript:go_forward()">forward</a>
+        </div>
+        <h1>
+            JavaScript Engine Demos<span>History interface</span>
+        </h1>
+    </div>
+    <div id="content">
+        <script type="text/javascript">
+            var storedMessage;
+
+            function init_forward() {
+                location = "redirected_page_A.html";
+            }
+
+            function storeMessagePromptWithDefault() {
+                storedMessage = prompt("Please type message to store:", "default message");
+            }
+            
+            function displayConfirm() {
+                var ret = confirm("If You wish to print into console 'YES' then select Yes, otherwise if You wish to print 'NO' then select No."); 
+                
+                if (ret) {
+                    console.info("Selected 'YES'");
+                } else {
+                    console.info("Selected 'NO'");
+                }
+            }
+        </script>
+        <p>Global <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#window">Window</a> object
+        contains readonly property <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history">history</a> that should implement the 
+        <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#history-1">History</a> interface.
+        This interface is fully supported. Properties and functions that contains this interface are mentioned bellow:</p>
+        <div class="code">
+            <span>readonly attribute long length;</span>
+            <span>readonly attribute any state;</span>
+            <span>void go(optional long delta);</span>
+            <span>void back();</span>
+            <span>void forward();</span>
+            <span>void pushState(any data, DOMString title, optional DOMString? url = null);</span>
+            <span>void replaceState(any data, DOMString title, optional DOMString? url = null);</span>
+        </div>
+        <h2>History interface tests</h2>
+        <p>
+            To test the traversing functions firstly click on this <a href="javascript:init_forward()">this</a> that initializes 
+            the history by some forward navigations.
+            
+            Functions back() and forward() can be tested by clicking on these links: <a href="javascript:go_back()">back</a> and <a
+                href="javascript:go_forward()">forward</a>.
+        </p>
+        <p>
+            Previously stored message you can display by a simple alert, clicking
+            on <a href="javascript:alert(storedMessage)">this</a>.
+        </p>
+        <p>
+            Latest supported dialog is the confirmation dialog, click <a href="javascript:displayConfirm()">here</a> to test.
+        </p>
+    </div>
+    <div id="footer">
+        <p>
+            Author: Radim Loskot | Contact (Gmail): radim.loskot | Project pages:
+            <a href="https://github.com/ITman1/ScriptBox">ScriptBox</a>
+        </p>
+    </div>
+</body>
+</html>

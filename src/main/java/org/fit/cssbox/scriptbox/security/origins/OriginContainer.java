@@ -25,7 +25,7 @@ package org.fit.cssbox.scriptbox.security.origins;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#origin-0">Origin</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#origin-0">Origin</a>
  * 
  * deprecated This is meaningless if there are only two types of origins.
  */

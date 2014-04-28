@@ -63,7 +63,7 @@ public class WindowBrowsingContext extends IFrameContainerBrowsingContext {
 	 * Returns popup sandboxing flag set.
 	 * 
 	 * @return Popup sandboxing flag set
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#popup-sandboxing-flag-set">Popup sandboxing flag set</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#popup-sandboxing-flag-set">Popup sandboxing flag set</a>
 	 */
 	public Set<SandboxingFlag> getPopupSandboxingFlagSet() {
 		return popupSandboxingFlagSet;

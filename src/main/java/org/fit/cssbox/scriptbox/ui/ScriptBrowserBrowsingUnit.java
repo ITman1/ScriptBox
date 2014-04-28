@@ -81,7 +81,7 @@ public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 				public void run() {
 					browser.scrollRectToVisible(rect);
 				}
-			});		
+			});
 		}
 		
 		@Override
@@ -240,7 +240,7 @@ public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 	
 	@Override
 	public String showPromptDialog(String message, String defaultChoice) {
-		String res = JOptionPane.showInputDialog(scriptBrowser, message, "Prompt dialog", JOptionPane.QUESTION_MESSAGE);
+		String res = (String)JOptionPane.showInputDialog(scriptBrowser, message, "Prompt dialog", JOptionPane.QUESTION_MESSAGE, null, null, defaultChoice);
 		return (res == null)? defaultChoice : res;
 	}
 	

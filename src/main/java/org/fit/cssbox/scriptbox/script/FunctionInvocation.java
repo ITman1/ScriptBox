@@ -1,5 +1,5 @@
 /**
- * BarProp.java
+ * FunctionInvocation.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,29 +17,34 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.ui;
-
-import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
+package org.fit.cssbox.scriptbox.script;
 
 /**
- * Abstract class for browser UI elements that are exposed in a limited way to scripts.
- *
+ * Interface that collects informations necessary for the function invocation.
+ * 
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#barprop">BarProp interface</a>
  */
-public abstract class BarProp {
+public interface FunctionInvocation {
 	/**
-	 * Tests whether is this UI element is visible.
+	 * Returns scope object of the function.
 	 * 
-	 * @return True if is this UI element visible, otherwise false.
+	 * @return Scope object of the function.
 	 */
-	@ScriptGetter
-	public abstract boolean getVisible();
+	public Object getThiz();
 	
-	@Override
-	public String toString() {
-		return "[object BarProp]";
-	}
+	/**
+	 * Returns name of the function.
+	 * 
+	 * @return Name of the function.
+	 */
+	public String getName();
+	
+	/**
+	 * Returns invocation arguments.
+	 * 
+	 * @return Invocation arguments.
+	 */
+	public Object[] getArgs();
 }

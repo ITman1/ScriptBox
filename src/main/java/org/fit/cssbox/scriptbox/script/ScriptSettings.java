@@ -32,7 +32,7 @@ import org.fit.cssbox.scriptbox.security.origins.Origin;
 /**
  * Represents class for creating settings which is passed into scripts and script engines.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#script-settings-object">Script settings object</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#script-settings-object">Script settings object</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -62,7 +62,7 @@ public abstract class ScriptSettings<GlobalObject> {
 	 * @param script Script
 	 * @return Execution environment for the passed script
 	 */
-	public BrowserScriptEngine getExecutionEnviroment(Script<?, ?> script) {
+	public BrowserScriptEngine getExecutionEnviroment(Script<?, ?, ?> script) {
 		String language = script.getLanguage();
 		
 		return getExecutionEnviroment(language);
@@ -90,7 +90,7 @@ public abstract class ScriptSettings<GlobalObject> {
 	 * Returns an object that provides the APIs that can be called by the code in scripts.
 	 * 
 	 * @return An object that provides the APIs that can be called by the code in scripts.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#global-object">Global object</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#global-object">Global object</a>
 	 */
 	public abstract GlobalObject getGlobalObject();
 	
@@ -98,7 +98,7 @@ public abstract class ScriptSettings<GlobalObject> {
 	 * Returns a browsing context that is assigned responsibility for actions taken by the scripts.
 	 * 
 	 * @return A browsing context that is assigned responsibility for actions taken by the scripts.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#responsible-browsing-context">A responsible browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#responsible-browsing-context">A responsible browsing context</a>
 	 */
 	public abstract BrowsingContext getResposibleBrowsingContext();
 	
@@ -106,7 +106,7 @@ public abstract class ScriptSettings<GlobalObject> {
 	 * Returns a Document that is assigned responsibility for actions taken by the scripts.
 	 * 
 	 * @return A Document that is assigned responsibility for actions taken by the scripts.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#responsible-document">A responsible document</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#responsible-document">A responsible document</a>
 	 */
 	public abstract Html5DocumentImpl getResponsibleDocument();
 	
@@ -114,7 +114,7 @@ public abstract class ScriptSettings<GlobalObject> {
 	 * Returns an event loop that is used when it would not be immediately clear what event loop to use.
 	 * 
 	 * @return An event loop that is used when it would not be immediately clear what event loop to use.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#responsible-event-loop">A responsible event loop</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#responsible-event-loop">A responsible event loop</a>
 	 */
 	public abstract EventLoop getResposibleEventLoop();
 	
@@ -124,7 +124,7 @@ public abstract class ScriptSettings<GlobalObject> {
 	 * 
 	 * @return Either a Document (specifically, the responsible document), or a URL, which is used by some APIs to determine 
 	 * what value to use for the Referer (sic) header in calls to the fetching algorithm.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#api-referrer-source">An API referrer source</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#api-referrer-source">An API referrer source</a>
 	 */
 	public abstract Object getReferrerSource();
 	
@@ -132,7 +132,7 @@ public abstract class ScriptSettings<GlobalObject> {
 	 * Returns a character encoding used to encode URLs by APIs called by scripts.
 	 * 
 	 * @return A character encoding used to encode URLs by APIs called by scripts.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#api-url-character-encoding">An API URL character encoding</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#api-url-character-encoding">An API URL character encoding</a>
 	 */
 	public abstract String getUrlCharacterEncoding();
 	
@@ -140,7 +140,7 @@ public abstract class ScriptSettings<GlobalObject> {
 	 * Returns an absolute URL used by APIs called by scripts.
 	 * 
 	 * @return An absolute URL used by APIs called by scripts.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#api-base-url">An API base URL</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#api-base-url">An API base URL</a>
 	 */
 	public abstract URL getBaseUrl();
 	

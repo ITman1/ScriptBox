@@ -29,7 +29,7 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#origin-0">Origin</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#origin-0">Origin</a>
  */
 public class DocumentOrigin extends Origin<Html5DocumentImpl> {
 	private Object _uniqueIdentifier;

@@ -25,7 +25,7 @@ package org.fit.cssbox.scriptbox.ui;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#barprop">BarProp interface</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#barprop">BarProp interface</a>
  */
 public abstract class ScrollBarsProp extends BarProp {
 	/**

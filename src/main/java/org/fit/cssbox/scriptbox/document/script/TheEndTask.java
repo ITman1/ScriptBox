@@ -41,7 +41,7 @@ import org.fit.cssbox.scriptbox.window.Window;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/syntax.html#the-end">The end</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#the-end">The end</a>
  */
 public class TheEndTask extends ParserFinishedTask {
 	/*

@@ -11,7 +11,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#event-popstate">Pop state event</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#event-popstate">Pop state event</a>
  */
 public class PopStateEvent extends Event {
 	protected StateObject state;

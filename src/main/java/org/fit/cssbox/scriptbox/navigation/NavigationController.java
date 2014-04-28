@@ -140,7 +140,7 @@ public class NavigationController {
 	 *        context and use browsing context of this controller.
 	 * @param replacementEnabled If current session entry should be replaced.
 	 * @return New navigation attempt.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">Navigate algorithm</a>
 	 */
 	public synchronized NavigationAttempt navigate(BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride, boolean replacementEnabled) {
 		NewNavigationAttempt attempt = new NewNavigationAttempt(this, sourceBrowsingContext, url, exceptionEnabled, explicitSelfNavigationOverride, replacementEnabled);
@@ -163,7 +163,7 @@ public class NavigationController {
 	 * Navigates to given hyperlink with specified source browsing context.
 	 * 
 	 * @param subject Element with the hyperlink.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/links.html#following-hyperlinks">Following hyperlinks</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/links.html#following-hyperlinks">Following hyperlinks</a>
 	 */
 	public static void followHyperlink(Element subject, BrowsingContext specificSource) {
        	boolean _replace = false;

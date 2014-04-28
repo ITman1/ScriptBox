@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Engine Demos - Window object's dialogs</title>
+<style media='all' type='text/css'>
+@import "style.css";
+</style>
+</head>
+<body>
+	<script type="text/javascript" src="navigation.js"></script>
+	<div id="header">
+		<div>
+			<a href="javascript:go_back()">back</a> | <a
+				href="javascript:go_forward()">forward</a>
+		</div>
+		<h1>
+			JavaScript Engine Demos<span>Window object's dialogs</span>
+		</h1>
+	</div>
+	<div id="content">
+		<script type="text/javascript">
+			var storedMessage;
+
+			function storeMessagePrompt() {
+				storedMessage = prompt("Please type message to store:");
+			}
+
+			function storeMessagePromptWithDefault() {
+				storedMessage = prompt("Please type message to store:", "default message");
+			}
+			
+	        function displayConfirm() {
+	            var ret = confirm("If You wish to print into console 'YES' then select Yes, otherwise if You wish to print 'NO' then select No."); 
+	            
+	            if (ret) {
+	            	console.info("Selected 'YES'");
+	            } else {
+	            	console.info("Selected 'NO'");
+	            }
+	        }
+		</script>
+		<p>Global <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#window">Window</a> object
+		defines 5 basic user prompts. Currently are supported the following types:</p>
+        <div class="code">
+            <span>void alert(optional DOMString message = "");</span>
+            <span>boolean confirm(optional DOMString message = "");</span>
+            <span>DOMString? prompt(optional DOMString message = "", optional DOMString default = "");</span>
+        </div>
+        <h2>User prompts tests</h2>
+		<p>
+			After clicking the following link you will be prompted to type some message that you can 
+			display later. Please <a href="javascript:storeMessagePrompt()">click</a> to store some
+			message. You can also use prompt with a default message to be stored by clicking 
+			<a href="javascript:storeMessagePromptWithDefault()">this</a>.
+		</p>
+		<p>
+			Previously stored message you can display by a simple alert, clicking
+			on <a href="javascript:alert(storedMessage)">this</a>.
+		</p>
+		<p>
+            Latest supported dialog is the confirmation dialog, click <a href="javascript:displayConfirm()">here</a> to test.
+        </p>
+	</div>
+	<div id="footer">
+		<p>
+			Author: Radim Loskot | Contact (Gmail): radim.loskot | Project pages:
+			<a href="https://github.com/ITman1/ScriptBox">ScriptBox</a>
+		</p>
+	</div>
+</body>
+</html>

@@ -23,7 +23,7 @@ package org.fit.cssbox.scriptbox.browser;
  * Class representing auxiliary browsing contexts constructed e.g. by scripts
  * without being nested through an element.
  *
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#auxiliary-browsing-context">Auxiliary browsing contexts</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#auxiliary-browsing-context">Auxiliary browsing contexts</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -38,7 +38,7 @@ public class AuxiliaryBrowsingContext extends BrowsingContext {
 	/**
 	 * Browsing context from which the auxiliary browsing context was created.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#opener-browsing-context">Opener browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#opener-browsing-context">Opener browsing context</a>
 	 */
 	protected BrowsingContext openerBrowsingContext;
 	
@@ -69,7 +69,7 @@ public class AuxiliaryBrowsingContext extends BrowsingContext {
 	 * Returns browsing context from which the auxiliary browsing context was created.
 	 * 
 	 * @return Browsing context from which the auxiliary browsing context was created.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#opener-browsing-context">Opener browsing context</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#opener-browsing-context">Opener browsing context</a>
 	 */
 	public BrowsingContext getOpenerContext() {
 		return openerBrowsingContext;
@@ -108,7 +108,7 @@ public class AuxiliaryBrowsingContext extends BrowsingContext {
 	}
 	
 	/*
-	 * http://www.w3.org/html/wg/drafts/html/CR/browsers.html#script-closable
+	 * http://www.w3.org/html/wg/drafts/html/master/browsers.html#script-closable
 	 */
 	@Override
 	public boolean isScriptClosable() {

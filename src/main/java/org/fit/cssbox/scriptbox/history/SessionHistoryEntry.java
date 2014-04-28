@@ -30,7 +30,7 @@ import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
 /**
  * Class collecting all informations which are being stored into session history.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#session-history-entry">Session history entry</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#session-history-entry">Session history entry</a>
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -226,7 +226,7 @@ public class SessionHistoryEntry {
 	 * Tests whether has this session history entry persisted user state.
 	 * 
 	 * @return True if has this session history entry persisted user state.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
 	 */
 	public boolean hasPersistedUserState() {
 		return _persistedUserState != null;
@@ -236,7 +236,7 @@ public class SessionHistoryEntry {
 	 * Tests whether has this session history entry associated state object.
 	 * 
 	 * @return True if has this session history entry associated state object.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#state-object">State object</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#state-object">State object</a>
 	 */
 	public boolean hasStateObject() {
 		return _stateObject != null;
@@ -246,7 +246,7 @@ public class SessionHistoryEntry {
 	 * Returns state object associated with this session history entry.
 	 * 
 	 * @return State object associated with this session history entry.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#state-object">State object</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#state-object">State object</a>
 	 */
 	public StateObject getStateObject() {
 		return _stateObject;
@@ -256,7 +256,7 @@ public class SessionHistoryEntry {
 	 * Sets new state object for this session history entry.
 	 * 
 	 * @param stateObject New state object for this session history entry.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#state-object">State object</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#state-object">State object</a>
 	 */
 	public void setStateObject(StateObject stateObject) {
 		_stateObject = stateObject;
@@ -265,7 +265,7 @@ public class SessionHistoryEntry {
 	/**
 	 * Updates settings in user persisted state.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
 	 */
 	public void updatePersistedUserState() {
 		if (_persistedUserState == null && PersistedUserState.shouldPersist(_document)) {
@@ -280,7 +280,7 @@ public class SessionHistoryEntry {
 	/**
 	 * Applies settings from the user persisted state.
 	 * 
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
 	 */
 	public void applyPersistedUserState() {	
 		if (_persistedUserState != null) {
@@ -292,7 +292,7 @@ public class SessionHistoryEntry {
 	 * Returns user persisted state associated with this session history entry.
 	 * 
 	 * @return User persisted state associated with this session history entry.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
 	 */
 	public PersistedUserState getPersistedUserState() {
 		return _persistedUserState;
@@ -302,7 +302,7 @@ public class SessionHistoryEntry {
 	 * Sets new state object for this session history entry.
 	 * 
 	 * @param stateObject New state object for this session history entry.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#an-entry-with-persisted-user-state">An entry with persisted user state</a>
 	 */
 	public void setPpersistedUserState(PersistedUserState persistedUserState) {
 		this._persistedUserState = persistedUserState;

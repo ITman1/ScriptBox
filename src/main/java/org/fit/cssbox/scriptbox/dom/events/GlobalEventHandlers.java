@@ -22,7 +22,7 @@ package org.fit.cssbox.scriptbox.dom.events;
 /**
  * Interface for defining global event handler for objects which support this.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#globaleventhandlers">GlobalEventHandlers </a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#globaleventhandlers">GlobalEventHandlers </a>
  * 
  * @author Radim Loskot
  * @version 0.9

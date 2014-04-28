@@ -32,7 +32,7 @@ import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
 /**
  * Content handler factory for handlers following the processing model for content that uses plugins.
  * 
- * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#read-plugin">Read plugin</a>
+ * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#read-plugin">Read plugin</a>
  * 
  * @author Radim Loskot
  * @version 0.9

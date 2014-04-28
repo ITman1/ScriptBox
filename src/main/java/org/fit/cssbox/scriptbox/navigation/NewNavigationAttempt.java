@@ -42,7 +42,7 @@ public class NewNavigationAttempt extends NavigationAttempt {
 	 * @param explicitSelfNavigationOverride If should not be resolved effective destination 
 	 *        context and use browsing context of this controller.
 	 * @param replacementEnabled If current session entry should be replaced.
-	 * @see <a href="http://www.w3.org/html/wg/drafts/html/CR/browsers.html#navigate">Navigate algorithm</a>
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">Navigate algorithm</a>
 	 */
 	public NewNavigationAttempt(NavigationController navigationController, BrowsingContext sourceBrowsingContext, URL url, boolean exceptionEnabled, boolean explicitSelfNavigationOverride, boolean replacementEnabled) {
 		super(navigationController, sourceBrowsingContext, url, exceptionEnabled, explicitSelfNavigationOverride, replacementEnabled);
