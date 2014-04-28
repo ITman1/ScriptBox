@@ -36,7 +36,16 @@ import org.w3c.dom.events.EventListener;
 public interface EventTarget extends org.w3c.dom.events.EventTarget {
 	public void addEventListener(String type, EventListener listener, boolean useCapture);
 	public void removeEventListener(String type, EventListener listener, boolean useCapture);
+	
+	/**
+	 * @see #addEventListener(String, EventListener, boolean)
+	 */
 	public void addEventListener(String type, EventListener listener);
+	
+	/**
+	 * @see #removeEventListener(String, EventListener, boolean)
+	 */
 	public void removeEventListener(String type, EventListener listener);
+	
 	public boolean dispatchEvent(Event evt);
 }

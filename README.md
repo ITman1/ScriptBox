@@ -44,7 +44,8 @@ Library package contains some demos located on `org.fit.cssbox.scriptbox.demo`.
   
 **List of demos:**
   
-1. `JavaScriptTesterController` - Simple web browser which adds debugging components for testing scripts
+1. `SimpleUserAgent` - Simple web browser that have only location bar and history traversal buttons
+2. `JavaScriptTesterUserAgent` - Application that adds simple debugging components for testing the scripts
 
 ### Example of using library
 
