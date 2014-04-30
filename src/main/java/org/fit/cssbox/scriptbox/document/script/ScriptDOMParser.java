@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.html.dom.HTMLTitleElementImpl;
 import org.apache.xerces.dom.CoreDocumentImpl;
 import org.apache.xerces.xni.Augmentations;
 import org.apache.xerces.xni.NamespaceContext;
@@ -40,6 +41,7 @@ import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
+import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.w3c.dom.Document;
@@ -195,10 +197,25 @@ public class ScriptDOMParser extends DOMParser {
 				endHtml5ScriptElement((Html5ScriptElementImpl)prevNode);
 			} else if (prevNode instanceof Html5IFrameElementImpl) {
 				endHtml5IframeElement((Html5IFrameElementImpl)prevNode);
+			} else if (prevNode instanceof HTMLTitleElementImpl) {
+				endTitleElement((HTMLTitleElementImpl)prevNode);
 			}
 		}
 	}
 
+	private void endTitleElement(HTMLTitleElementImpl titleElement) {
+		String title = titleElement.getText();
+		
+		synchronized (_document) {
+			if (_document.isActiveDocument()) {
+				SessionHistoryEntry entry = _document.getLatestEntry();
+				if (!entry.hasPushedStateTitle()) {
+					entry.setTitle(title);
+				}
+			}
+		}
+		
+	}
 	
 	/* FIXME: Simplified, does not follow the specification.
 	 * See for completing of this: http://www.w3.org/html/wg/drafts/html/master/embedded-content.html#the-iframe-element

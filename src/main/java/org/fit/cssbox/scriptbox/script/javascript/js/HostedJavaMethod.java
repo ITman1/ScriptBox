@@ -250,7 +250,7 @@ public class HostedJavaMethod extends FunctionObject {
 						castedArgs[i] = null;
 					} else if (arg instanceof ConsString) {
 						castedArgs[i] = ((ConsString)arg).toString();
-					} else if (arg instanceof Double && (expectedType.equals(Integer.class) || expectedType.equals(int.class))) {
+					} else if (arg instanceof Double && (expectedType.equals(Integer.class) || expectedType.equals(int.class) || expectedType.equals(Long.class) || expectedType.equals(long.class))) {
 						castedArgs[i] = ((Double)arg).intValue();
 					} else {
 						castedArgs[i] = WindowJavaScriptEngine.jsToJava(arg);

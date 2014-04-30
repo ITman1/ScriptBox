@@ -26,6 +26,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
@@ -83,6 +84,16 @@ public class History {
 	/**
 	 * Goes back or forward the specified number of steps in the joint session history.
 	 * 
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-go">History go()</a>
+	 */
+	@ScriptFunction
+	public void go() {
+		go(0);
+	}
+	
+	/**
+	 * Goes back or forward the specified number of steps in the joint session history.
+	 * 
 	 * @param delta Number of traversal steps.
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history-go">History go()</a>
 	 */
@@ -90,8 +101,13 @@ public class History {
 	public void go(long delta) {
 		testIsActive();
 		
-		JointSessionHistory jointHistory = getJointSessionHistory();
-		jointHistory.traverse((int)delta);
+		if (delta == 0) {
+			Location location = document.getLocation();
+			location.reload();
+		} else {
+			JointSessionHistory jointHistory = getJointSessionHistory();
+			jointHistory.traverse((int)delta);
+		}
 	}
 	
 	/**

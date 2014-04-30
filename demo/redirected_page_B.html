@@ -20,10 +20,18 @@
 	</div>
 	<div id="content">
 		<script type="text/javascript">
+		    var loaded = false;
+        
 		    onload = function () {
-		    	history.go(-2);
+                if (!loaded) {
+                	history.go(-2);
+                }
+                loaded = true;
 	        }
 		</script>
+        <p style="text-align: center">
+        <a href="javascript:go_back()">back</a> | <a href="javascript:go_forward()">forward</a>
+        </p>
 	</div>
 	<div id="footer">
 		<p>

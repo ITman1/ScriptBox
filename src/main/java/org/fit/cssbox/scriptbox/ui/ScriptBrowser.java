@@ -164,14 +164,17 @@ public class ScriptBrowser extends BrowserPane {
 					SessionHistory sessionHistory = context.getSesstionHistory();
 					visibleSessionHistoryEntry = sessionHistory.getCurrentEntry();
 					
-					if (delayedScrollRect != null) {
-						SwingUtilities.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								scrollRectToVisible(delayedScrollRect);
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							synchronized (ScriptBrowser.this) {
+								if (delayedScrollRect != null) {
+									scrollRectToVisible(delayedScrollRect);
+								}
 							}
-						});
-					}
+						}
+					});
+					
 				}
 				
 				/* TODO?:
@@ -185,7 +188,7 @@ public class ScriptBrowser extends BrowserPane {
 	}
 	
 	@Override
-	public synchronized void scrollRectToVisible(Rectangle aRect) {
+	public synchronized void scrollRectToVisible(Rectangle aRect) {		
 		BrowsingContext context = browsingUnit.getWindowBrowsingContext();
 		SessionHistory sessionHistory = context.getSesstionHistory();
 		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();

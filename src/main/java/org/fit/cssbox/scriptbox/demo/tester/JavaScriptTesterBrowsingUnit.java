@@ -90,6 +90,7 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	private final JFileChooser fileChooser = new JFileChooser();
 	
 	private ScriptBrowser scriptBrowser;
+	private JFrame frame;
 	private JTabbedPane sourceCodeTabbedPane;
 	private JTextField navigationField;
 	private JTextField newWatchedVariableField;
@@ -176,7 +177,7 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 					}
 					
 					if (browsingContext.isTopLevelBrowsingContext()) {
-						currentEntry = whereTraversed;
+						currentEntry = (whereTraversed != null)? whereTraversed : currentEntry;
 						navigationFieldSetByUser = false;
 					}
 					
@@ -361,9 +362,9 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			char pressedKey = e.getKeyChar(); 
+			TreePath path = scriptObjectsWatchList.getSelectionPath();
 			
-			if (pressedKey == KeyEvent.VK_DELETE) {
-				TreePath path = scriptObjectsWatchList.getSelectionPath();
+			if (pressedKey == KeyEvent.VK_DELETE && path != null) {
 				Object selectedNode = path.getPathComponent(1);
 				
 				if (selectedNode instanceof MutableTreeNode) {
@@ -476,10 +477,14 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		historyBackButton.setEnabled(historyPosition != - 1 && historyPosition != 0);
 		historyForwardButton.setEnabled(historyPosition != historyLength - 1);
 		
+
 		if (currentEntry != null && !navigationFieldSetByUser) {
 			final String urlString = currentEntry.getURL().toExternalForm();
 			navigationField.setText(urlString);
 		}
+		
+		String title = (currentEntry != null)? currentEntry.getTitle() : null;
+		frame.setTitle((title == null)? "" : title);
 	}
 	
 	private void initializeUiComponents() {
@@ -491,6 +496,7 @@ public class JavaScriptTesterBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		windowObjectViewer = tester.getWindowObjectViewer();
 		scriptObjectsWatchList = tester.getObjectsWatchList();
 		
+		frame = tester.getWindow();
 		statusLabel = tester.getStatusLabel();
 		historyBackButton = tester.getHistoryBackButton();
 		historyForwardButton = tester.getHistoryForwardButton();

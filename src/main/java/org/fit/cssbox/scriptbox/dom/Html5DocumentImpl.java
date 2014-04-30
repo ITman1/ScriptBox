@@ -811,6 +811,8 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 			unloadTask = getEventLoop().getRunningTask();
 		}
 		
+		_pageShowingFlag = false;
+		
 		/*
 		 * TODO: Implement
 		 */

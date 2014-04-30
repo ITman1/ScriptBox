@@ -29,9 +29,13 @@ import java.util.Set;
 import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
 import org.fit.cssbox.scriptbox.dom.events.script.HashChangeEvent;
 import org.fit.cssbox.scriptbox.dom.events.script.PopStateEvent;
+import org.fit.cssbox.scriptbox.events.Task;
+import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
@@ -384,7 +388,34 @@ public class SessionHistory {
 			
 			// TODO: 4.5) If the specified entry's Document has any form controls whose autofill field name is "off", invoke the reset algorithm of each of those elements.
 			
-			// TODO: 4.6) If the current document readiness of the specified entry's Document is "complete", queue a task to run the following sub-sub-steps
+			// 4.6) If the current document readiness of the specified entry's Document is "complete", queue a task 
+			if (specifiedDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE) {
+				specifiedBrowsingContext.getEventLoop().queueTask(new Task(TaskSource.DOM_MANIPULATION, specifiedDocument) {
+					
+					@Override
+					public void execute() throws TaskAbortedException, InterruptedException {
+						Html5DocumentImpl document = getDocument();
+						
+						// If the Document's page showing flag is true, then abort this task 
+						if (document.isPageShowingFlag()) {
+							return;
+						}
+						
+						// Set the Document's page showing flag to true.
+						document.setPageShowingFlag(true);
+						
+						// TODO: Run any session history document visibility change steps for Document that are defined by other applicable specifications
+						// FIXME?: Should be load fired here?
+						org.fit.cssbox.scriptbox.dom.events.script.Event event = new org.fit.cssbox.scriptbox.dom.events.script.Event(true, document);
+						Window window = document.getWindow();
+						event.initEvent("load", false, false);
+						window.dispatchEvent(event);
+						
+						// TODO: Fire a trusted event with the name pageshow at the Window
+					}
+				});
+			}
+
 		}
 		
 		// 5) Set the document's address to the URL of the specified entry.

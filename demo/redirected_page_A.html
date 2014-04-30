@@ -20,13 +20,21 @@
     </div>
     <div id="content">
         <script type="text/javascript">
+            var loaded = false;
+            
             function timeoutCallback() {
-            	location = "redirected_page_B.html";
+            	if (!loaded) {
+                    location = "redirected_page_B.html";
+            	}
+            	loaded = true;
             }
             onload = function () {
             	setTimeout(timeoutCallback, 500);
             }
         </script>
+        <p style="text-align: center">
+        <a href="javascript:go_back()">back</a> | <a href="javascript:go_forward()">forward</a>
+        </p>
     </div>
     <div id="footer">
         <p>

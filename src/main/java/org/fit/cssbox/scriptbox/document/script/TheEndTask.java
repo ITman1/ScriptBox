@@ -221,5 +221,7 @@ public class TheEndTask extends ParserFinishedTask {
 		}
 		
 		// TODO: 8), 9), 10), 11), 12) steps
+		Html5DocumentImpl document = getDocument();
+		document.setPageShowingFlag(true);
 	}
 }

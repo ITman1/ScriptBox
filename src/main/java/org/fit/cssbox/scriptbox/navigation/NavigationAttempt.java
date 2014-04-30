@@ -24,8 +24,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.print.CancelablePrintJob;
-
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.DOMException;
@@ -72,7 +70,6 @@ public abstract class NavigationAttempt {
 			Exception exception = null;
 			try {
 				performFromHandleRedirects();
-			} catch (InterruptedException e) {
 			} catch (WrappedException e) {
 				Exception ue = e.unwrap();
 				if (!(ue instanceof InterruptedException)) {
@@ -87,7 +84,10 @@ public abstract class NavigationAttempt {
 			}
 			
 			if (exception != null) {
-				exception.printStackTrace();
+				if (!(exception instanceof InterruptedException)) {
+					exception.printStackTrace();
+				}
+				
 				synchronized (NavigationAttempt.this) {
 					cancelled = true;
 				}
@@ -841,26 +841,47 @@ public abstract class NavigationAttempt {
 	}
 	
 	private void fireCompleted() {
-		listener.onCompleted(this);
+		EventLoop eventLoop = sourceBrowsingContext.getEventLoop();
+		
+		if (Thread.currentThread() instanceof AsyncPerformThread) {
+			eventLoop.queueTask(new Task(TaskSource.NETWORKING, sourceBrowsingContext) {
+				@Override
+				public void execute() throws TaskAbortedException, InterruptedException {
+					listener.onCompleted(NavigationAttempt.this);
+				}
+			});
+		} else {
+			listener.onCompleted(NavigationAttempt.this);
+		}
 	}
 	
 	private void fireMatured() {
-		listener.onMatured(this);
+		EventLoop eventLoop = sourceBrowsingContext.getEventLoop();
+		
+		if (Thread.currentThread() instanceof AsyncPerformThread) {
+			eventLoop.queueTask(new Task(TaskSource.NETWORKING, sourceBrowsingContext) {
+				@Override
+				public void execute() throws TaskAbortedException, InterruptedException {
+					listener.onMatured(NavigationAttempt.this);
+				}
+			});
+		} else {
+			listener.onMatured(NavigationAttempt.this);
+		}
 	}
 	
 	private void fireCancelled() {
 		EventLoop eventLoop = sourceBrowsingContext.getEventLoop();
-		Thread loopThread = eventLoop.getEventThread();
 		
-		if (Thread.currentThread() == loopThread) {
-			listener.onCancelled(NavigationAttempt.this);
-		} else {
+		if (Thread.currentThread() instanceof AsyncPerformThread) {
 			eventLoop.queueTask(new Task(TaskSource.NETWORKING, sourceBrowsingContext) {
 				@Override
 				public void execute() throws TaskAbortedException, InterruptedException {
 					listener.onCancelled(NavigationAttempt.this);
 				}
 			});
+		} else {
+			listener.onCancelled(NavigationAttempt.this);
 		}
 	}
 }
