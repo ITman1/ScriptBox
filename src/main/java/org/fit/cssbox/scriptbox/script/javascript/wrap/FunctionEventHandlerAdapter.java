@@ -23,22 +23,18 @@ import java.net.URL;
 
 import javax.script.ScriptException;
 
-import org.fit.cssbox.scriptbox.dom.Html5DocumentEvent;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
-import org.fit.cssbox.scriptbox.exceptions.WrappedException;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.FunctionInvocation;
-import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.WindowScriptEngine;
 import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
+import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
 import org.fit.cssbox.scriptbox.window.InvokeWindowScript;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
-import org.mozilla.javascript.BaseFunction;
-import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.w3c.dom.events.Event;
@@ -64,65 +60,8 @@ public class FunctionEventHandlerAdapter implements EventHandler {
 	
 	@Override
 	public void handleEvent(final Event event) {
-		FunctionInvocation invocation = new FunctionInvocation() {
-			@Override
-			public Object getThiz() {
-				return function;
-			}
-			
-			@Override
-			public String getName() {
-				return "";
-			}
-			
-			@Override
-			public Object[] getArgs() {
-				Object[] args = {event};
-				return args;
-			}
-		};
-		
-		// FIXME?: Should not be here an origin check?
-		
-		Scriptable scope = function.getParentScope();
-		ObjectTopLevel topLevel = getObjectTopLevel(scope);
-		if (topLevel == null) {
-			throw new InternalException("Top level scope is null");
-		}
-
-		BrowserScriptEngine engine = topLevel.getBrowserScriptEngine();
-		WindowScriptEngine windowEngine = null;
-		if (engine instanceof WindowScriptEngine) {
-			windowEngine = (WindowScriptEngine)engine;
-		} else {
-			throw new InternalException("Scripting engine is not WindowScriptEngine");
-		}
-		
-		Window window = windowEngine.getWindow();
-		WindowScriptSettings settings = window.getScriptSettings();
-		Html5DocumentImpl document = window.getDocumentImpl();
-		URL address = document.getAddress();
-		
-		InvokeWindowScript script = new InvokeWindowScript(invocation, address, WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE, settings, false);
-		
-		/*Scriptable scope = function.getParentScope();
-		ObjectTopLevel topLevel = getObjectTopLevel(scope);
-		if (topLevel != null) {
-			Context cx = topLevel.getBrowserScriptEngine().enterContext();
-			try {
-				Object arg = WindowJavaScriptEngine.javaToJS(event, scope);
-				Object[] args = {arg};
-				function.call(cx, scope, scope, args);
-			} catch (Exception ex) {
-				try {
-					WindowJavaScriptEngine.throwWrappedScriptException(ex);
-				} catch (ScriptException e) {
-					throw new WrappedException(e);
-				}
-			} finally {
-				Context.exit();
-			}
-		}*/
+		Object[] args = {event};
+		HostedJavaMethod.call(function, args);
 	}
 
 	/**
@@ -134,23 +73,10 @@ public class FunctionEventHandlerAdapter implements EventHandler {
 		return function;
 	}
 	
-	/**
-	 * Returns top level scope for the passed scope.
-	 * 
-	 * @param scope Scope for which should be returned the top level scope.
-	 * @return Top level scope for the passed scope.
-	 */
-	protected ObjectTopLevel getObjectTopLevel(Scriptable scope) {
-		Scriptable parentScope;
-		while ((parentScope = scope.getParentScope()) != null) {
-			scope = parentScope;
-		}
-		
-		Scriptable prototypeScope = scope.getPrototype();
-		if (prototypeScope instanceof ObjectTopLevel) {
-			return (ObjectTopLevel)prototypeScope;
-		}
-		
-		return null;
+	@Override
+	public String toString() {
+		return "function ()";
 	}
+	
+
 }

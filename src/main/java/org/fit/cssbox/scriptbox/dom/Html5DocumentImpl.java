@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.script.ScriptException;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.xerces.dom.NodeImpl;
 import org.apache.xerces.dom.events.EventImpl;
@@ -39,12 +42,15 @@ import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentEvent.EventType;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
+import org.fit.cssbox.scriptbox.dom.events.script.ErrorEvent;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.Location;
+import org.fit.cssbox.scriptbox.script.Script;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
@@ -96,22 +102,12 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	/**
 	 * Default address which has every document set.
 	 */
-	final public static String DEFAULT_URL_ADDRESS = "about:blank";
+	final public static String DEFAULT_URL_ADDRESS = org.fit.cssbox.scriptbox.url.about.Handler.DEFAULT_URL_ADDRESS;
 	
 	/**
 	 * Default URL address which has every document set by default.
 	 */
-	final public static URL DEFAULT_URL;
-	
-	static {
-		URL defaultURL = null;
-		try {
-			defaultURL = new URL(DEFAULT_URL_ADDRESS); // FIXME: about is not supported!
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		DEFAULT_URL = defaultURL;
-	}
+	final public static URL DEFAULT_URL = org.fit.cssbox.scriptbox.url.about.Handler.DEFAULT_URL;
 	final public static String JAVASCRIPT_SCHEME_NAME = "javascript";
 	final public static String DATA_SCHEME_NAME = "data";
 
@@ -159,6 +155,8 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	private boolean _pageShowingFlag;
 	
 	private Set<Html5DocumentEventListener> listeners;
+	
+	private boolean errorReportingMode;
 	
 	/*
 	 * Document event listener which captures events and runs prepare script
@@ -383,6 +381,16 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	@Override
 	public Text createTextNode(String data) {
 		return super.createTextNode(data);
+	}
+	
+	/*
+	 * FIXME: Only for testing purposes, use Document adapter instead 
+	 *        for exposing into the script and then remove this method.
+	 */
+	@ScriptGetter
+	@Override
+	public synchronized HTMLElement getBody() {
+		return super.getBody();
 	}
 	
 	/*
@@ -1208,6 +1216,43 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 */
 	public void fullyExitFullscreen() {
 		
+	}
+	
+	/**
+	 * Reports document's script error.
+	 * 
+	 * @see <a href=http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#runtime-script-errors-in-documents">Runtime script errors in documents</a>
+	 */
+	public void reportScriptError(Script<?,?,?> script) {
+		if (errorReportingMode) {
+			return;
+		}		
+		ScriptException scriptException = script.getException();
+		Throwable rootException = ExceptionUtils.getRootCause(scriptException);
+		
+		if (scriptException == null) {
+			return;
+		}
+		
+		errorReportingMode = true;
+		
+		int lineno = scriptException.getLineNumber();
+		int colno = scriptException.getColumnNumber();;
+		String message = rootException.getMessage();
+		String location = _address.toExternalForm();
+		Object errorObject = rootException; // TODO: Here should be an Error object
+		
+		if (script.hasMutedErros()) {
+			message = "Script error.";
+		}
+		
+		ErrorEvent errorEvent = new ErrorEvent();
+		
+		errorEvent.initEvent("error", false, true, message, location, lineno, colno, errorObject);
+		
+		errorReportingMode = false;
+		
+		_window.dispatchEvent(errorEvent);
 	}
 	
 	/**

@@ -63,6 +63,8 @@ public class Handler extends URLStreamHandler {
 	public static class JavaScriptURLConnection extends HttpURLConnection {
 		class JavascriptFetchTask extends Task {
 
+			private EvalWindowScript script;
+			
 			public JavascriptFetchTask(BrowsingContext browsingContext) {
 				super(TaskSource.DOM_MANIPULATION, browsingContext);
 			}
@@ -100,7 +102,7 @@ public class Handler extends URLStreamHandler {
 				
 				URL address = destinationDocument.getAddress();
 				Reader source = new StringReader(scriptSource);
-				EvalWindowScript script = new EvalWindowScript(source, address, WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE, destinationScriptSettings, true);
+				script = new EvalWindowScript(source, address, WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE, destinationScriptSettings, false);
 				
 				result = script.getResult();
 				exception = script.getException();
@@ -115,6 +117,11 @@ public class Handler extends URLStreamHandler {
 				
 				if (exception != null || result == null || !scriptingEnabled) {
 					result = Undefined.instance;
+				}
+				
+				if (exception != null) {
+					Html5DocumentImpl sourceDocument = sourceContext.getActiveDocument();
+					sourceDocument.reportScriptError(script);
 				}
 				
 				String outputText = "";

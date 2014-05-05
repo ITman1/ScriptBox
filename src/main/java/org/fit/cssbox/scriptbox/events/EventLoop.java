@@ -477,6 +477,7 @@ public class EventLoop {
 	private void executeTask(Task task) throws InterruptedException {
 		try {
 			_taskScheduler.onTaskStarted(_runningTask);
+			//System.out.println("Started task source: " + task.getTaskSource());
 			_runningTask.execute();
 		} catch (TaskAbortedException e) {
 			// It is OK, task only ended earlier

@@ -221,8 +221,19 @@ public abstract class Script<Source, CodeEntryPoint, ScriptSettingsTemplate exte
 			return;
 		}
 		
-		CodeEntryPoint codeEntryPoint = obtainCodeEntryPoint(executionEnviroment, source);
-		jumpToCodeEntryPoint(codeEntryPoint);
+		CodeEntryPoint codeEntryPoint = null;
+		try {
+			exception = null;
+			codeEntryPoint = obtainCodeEntryPoint(executionEnviroment, source);
+		} catch (ScriptException e) {
+			e.printStackTrace();
+			exception = e;
+			result = null;
+		}
+		
+		if (exception == null) {
+			jumpToCodeEntryPoint(codeEntryPoint);
+		}
 	}
 	
 	/**
@@ -252,8 +263,9 @@ public abstract class Script<Source, CodeEntryPoint, ScriptSettingsTemplate exte
 	 * @param executionEnviroment Execution environment to be used for obtaining the code entry-point.
 	 * @param source Source from which to get the code entry-point
 	 * @return Corresponding code entry-point.
+	 * @throws ScriptException Exception thrown by the execution.
 	 */
-	protected abstract CodeEntryPoint obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Source source);
+	protected abstract CodeEntryPoint obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Source source) throws ScriptException;
 	
 	/**
 	 * Executes code entry-point inside execution environment.

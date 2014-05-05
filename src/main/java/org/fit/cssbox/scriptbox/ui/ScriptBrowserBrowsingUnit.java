@@ -79,7 +79,7 @@ public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					browser.scrollRectToVisible(rect);
+					browser.scrollRectToVisible(rect, true);
 				}
 			});
 		}

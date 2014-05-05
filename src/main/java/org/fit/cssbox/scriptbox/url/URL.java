@@ -55,7 +55,7 @@ public class URL extends URLUtils {
 		
 		// 6) If result's url is null, throw a TypeError exception
 		if (super.url == null) {
-			throwTypeErrorException();
+			throwTypeErrorException("\"" + url + "\" is not a valid URL.");
 		}
 	}
 }

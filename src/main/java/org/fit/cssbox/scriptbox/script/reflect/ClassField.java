@@ -24,11 +24,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
+import org.fit.cssbox.scriptbox.dom.events.OnErrorEventHandler;
 import org.fit.cssbox.scriptbox.history.StateObject;
 import org.fit.cssbox.scriptbox.script.exceptions.FieldException;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.FunctionEventHandlerAdapter;
+import org.fit.cssbox.scriptbox.script.javascript.wrap.FunctionEventListenerAdapter;
+import org.fit.cssbox.scriptbox.script.javascript.wrap.FunctionOnErrorEventHandlerAdapter;
 import org.mozilla.javascript.Function;
+import org.w3c.dom.events.EventListener;
 
 /**
  * Represents the field of the class which might be accessible via field, getter, or setter.
@@ -222,8 +226,12 @@ public class ClassField extends ClassMember<Field> implements FieldMember {
 	// FIXME: It could be here some adapter/registry mechanism here
 	// FIXME: Here should not be referenced mozilla javascript packages, this should be generalized in future!
 	public static Object wrap(Class<?> type, Object value) {
-		if (type.equals(EventHandler.class) && value instanceof Function) {
+		if (type.equals(EventListener.class) && value instanceof Function) {
+			value = new FunctionEventListenerAdapter((Function)value);
+		} else if (type.equals(EventHandler.class) && value instanceof Function) {
 			value = new FunctionEventHandlerAdapter((Function)value);
+		} else if (type.equals(OnErrorEventHandler.class) && value instanceof Function) {
+			value = new FunctionOnErrorEventHandlerAdapter((Function)value);
 		} else if (type.equals(StateObject.class) && value instanceof Object) {
 			value = new StateObject(value);
 		}
@@ -233,7 +241,9 @@ public class ClassField extends ClassMember<Field> implements FieldMember {
 	
 	// FIXME: It could be here some adapter/registry mechanism here, not hard coded...
 	public static Object unwrap(Object value) {
-		if (value instanceof FunctionEventHandlerAdapter) {
+		if (value instanceof FunctionEventListenerAdapter) {
+			value = ((FunctionEventListenerAdapter)value).getFunction();
+		} else if (value instanceof FunctionEventHandlerAdapter) {
 			value = ((FunctionEventHandlerAdapter)value).getFunction();
 		} else if (value instanceof StateObject) {
 			value = ((StateObject)value).getObject();

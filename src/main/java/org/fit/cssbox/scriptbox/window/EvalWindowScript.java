@@ -22,8 +22,11 @@ package org.fit.cssbox.scriptbox.window;
 import java.io.Reader;
 import java.net.URL;
 
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.ScriptException;
 
+import org.fit.cssbox.scriptbox.resource.ResourceReader;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 
 /**
@@ -34,20 +37,34 @@ import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#script-settings-for-browsing-contexts">Script settings for browsing contexts</a>
  */
-public class EvalWindowScript extends WindowScript<Reader> {
+public class EvalWindowScript extends WindowScript<Reader, Object> {
+	
+	static final boolean COMPILE_SCRIPTS = false;
 	
 	public EvalWindowScript(Reader source, URL sourceURL, String language, WindowScriptSettings settings, boolean mutedErrorsFlag) {
-		super(source, sourceURL, language, settings, mutedErrorsFlag);
+		super(new ResourceReader(sourceURL, source), sourceURL, language, settings, mutedErrorsFlag);
 	}
 	
 	// Parse/compile/initialize the source of the script using the script execution environment
+	@SuppressWarnings("unused")
 	@Override
-	protected Reader obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader source) {
-		return source;
+	protected Object obtainCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader source) throws ScriptException {
+		if (COMPILE_SCRIPTS && executionEnviroment instanceof Compilable) {
+			return ((Compilable)executionEnviroment).compile(source);
+		} else {
+			return source;
+		}
 	}
 
 	@Override
-	protected Object executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, Reader codeEntryPoint) throws ScriptException {
-		return executionEnviroment.eval(codeEntryPoint);		
+	protected Object executeCodeEntryPoint(BrowserScriptEngine executionEnviroment, Object codeEntryPoint) throws ScriptException {
+		if (codeEntryPoint instanceof CompiledScript) {
+			return ((CompiledScript)codeEntryPoint).eval();	
+		} else if (codeEntryPoint instanceof Reader) {
+			return executionEnviroment.eval((Reader)codeEntryPoint);
+		} else {
+			throw new ScriptException("Invalid type of code entry point!");
+		}
+			
 	}
 }

@@ -114,7 +114,11 @@ public abstract class TaskQueuesScheduler {
 				wait();
 			}
 		
-			return scheduledTasks.remove(0);
+			Task task = scheduledTasks.remove(0);
+			
+			notifyAll();
+			
+			return task;
 		}
 	}
 	
@@ -256,7 +260,7 @@ public abstract class TaskQueuesScheduler {
 	 * Method which should schedule next task if there is any.
 	 * @return New scheduled task if there is any, or null.
 	 */
-	protected abstract Task scheduleTask();
+	protected abstract Task scheduleTask() throws InterruptedException;
 
 	private void testForAbort() {
 		if (aborted) {

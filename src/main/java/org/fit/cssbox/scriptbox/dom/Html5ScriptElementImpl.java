@@ -28,6 +28,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import javax.script.ScriptException;
+
 import org.apache.html.dom.HTMLDocumentImpl;
 import org.apache.html.dom.HTMLScriptElementImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
@@ -36,6 +38,7 @@ import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
+import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
@@ -48,6 +51,7 @@ import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * Implements script element according to HTML5.
@@ -59,6 +63,24 @@ import org.w3c.dom.NodeList;
  * @see <a href="http://www.whatwg.org/specs/web-apps/current-work/#the-script-element">HTML script element</a>
  */
 public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Html5ScriptElement {
+	
+	/**
+	 * Thread which parses the Document.
+	 */
+	private class ExecutionThread extends Thread {		
+		@Override
+		public void run() {
+			executeScript();
+			_creatorParser.removeASAPScript(Html5ScriptElementImpl.this);
+		}
+		
+		@Override
+		public String toString() {
+			URL address = _creatorDocument.getAddress();
+			String sourceUrl = (address != null)? address.toExternalForm() : "(no url)";
+			return "Script execution Thread - " + sourceUrl;
+		}
+	}
 	
 	/*
 	 * Task which marks scripts as ready to be parser executed.
@@ -132,7 +154,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 			Html5ScriptElementImpl.this.executeScript();
 			_creatorParser.removeASAPScript(Html5ScriptElementImpl.this);
 		}
-	}	
+	}
 
 	
 	private static final long serialVersionUID = 4725269642619675257L;
@@ -185,11 +207,30 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		return _parserInserted;
 	}
 	
+	/*
+	 * FIXME: This should be fixed:
+	 * See:
+	 * The async IDL attribute controls whether the element will execute asynchronously 
+	 * or not. If the element's "force-async" flag is set, then, on getting, the async 
+	 * IDL attribute must return true, and on setting, the "force-async" flag must first
+	 *  be unset, and then the content attribute must be removed if the IDL attribute's new 
+	 *  value is false, and must be set to the empty string if the IDL attribute's new value 
+	 *  is true. If the element's "force-async" flag is not set, the IDL attribute must 
+	 *  reflect the async content attribute.
+	 * (non-Javadoc)
+	 * @see org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement#getAsync()
+	 */
 	@Override
 	public boolean getAsync() {
-		return !getAttribute(ASYNC_ATTR_NAME).isEmpty();
+		return hasAttribute(ASYNC_ATTR_NAME);
 	}
 	
+	/*
+	 * FIXME: See getAsync()
+	 * 
+	 * (non-Javadoc)
+	 * @see org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement#setAsync(boolean)
+	 */
 	@Override
 	public void setAsync(boolean value) {
 		if (value) {
@@ -201,7 +242,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	
 	@Override
 	public boolean getDefer() {
-		return !getAttribute(DEFER_ATTR_NAME).isEmpty();
+		return hasAttribute(DEFER_ATTR_NAME);
 	}
 	
 	@Override
@@ -354,78 +395,17 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#execute-the-script-block">Execute the script block</a>
 	 */
 	public boolean executeScript() {
-		if (_parserInserted && (_creatorParser == null || _creatorParser.getDocument() != getOwnerDocument())) {
-			return false;
-		}
-		
-		Document _document = getOwnerDocument();
-		Html5DocumentImpl document = null;
-			
-		if (_document instanceof Html5DocumentImpl) {
-			document = (Html5DocumentImpl)_document;
-		} else {
-			return false;
-		}
-		
-		Window window = document.getWindow();
-		
-		Resource resource = null;
-		if (scriptFetch != null) {
-			boolean error = !scriptFetch.isValid();
-			resource = scriptFetch.getResource();
-			error = error || resource == null;
-			
-			if (error) {
-
-				window.fireSimpleEvent(GlobalEventHandlers.onerror, this);
-				return false;
-			}
-		}
-
-		Reader source = null;
-		URL url = null;
-		WindowScriptSettings settings = window.getScriptSettings();
-		String language = getMimeType();
-		
-		// 1) Initialize the script block's source 
-		// FIXME: http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#the-script-block%27s-source
-		if (resource == null) { // We are processing inline script
-			source = getScriptBlockSource(); 
-		} else {
-			url = resource.getAddress();
-			source = getScriptBlockSource(resource); 
-		}
-		
-		// 2) Fire a simple event named beforescriptexecute that bubbles and is cancelable at the script element.
-		boolean canceled = window.fireSimpleEvent("beforescriptexecute", this, true, true);
-		if (canceled) {
-			return false;
-		}
-		
-		// 3) If the script is from an external file, then increment the ignore-destructive-writes counter 
-		if (resource != null) {
-			document.incrementIgnoreDestructiveWritesCounter();
-		}
-		
-		// 4) Create a script
-		new EvalWindowScript(source, url, language, settings, false);
-		
-		// 5) Decrement the ignore-destructive-writes counter 
-		if (resource != null) {
-			document.decrementIgnoreDestructiveWritesCounter();
-		}
-		
-		// 6) Fire a simple event named afterscriptexecute that bubbles (but is not cancelable) 
-		window.fireSimpleEvent("afterscriptexecute", this, true, false);
-		
-		// 7) If the script is from an external file, fire a simple event named load at the script element.
-		if (resource != null) {
-			window.fireSimpleEvent("load", this);
-		} else {
-			window.dispatchSimpleEvent("load", this);
-		}
-		
-		return true;
+		return executeScriptSync();
+	}
+	
+	/**
+	 * Runs execution algorithm above current script element in separate asynchronous thread.
+	 * 
+	 * @return True if execution ran to completion, false on some error.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#execute-the-script-block">Execute the script block</a>
+	 */
+	public void executeScriptAsync() {
+		new ExecutionThread().start();
 	}
 	
 	/**
@@ -509,7 +489,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		 * 2) If src is the empty string, queue a task to fire a simple event and abort 
 		 */
 		if (_creatorDocument == null || src == null || src.isEmpty()) {			
-			window.fireSimpleEvent(GlobalEventHandlers.onerror, this);
+			window.dispatchSimpleEvent(GlobalEventHandlers.onerror, this);
 			return;
 		}
 		
@@ -521,7 +501,7 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 		try {
 			url = new URL(baseUrl, src);
 		} catch (MalformedURLException e) {
-			window.fireSimpleEvent(GlobalEventHandlers.onerror, this);
+			window.dispatchSimpleEvent(GlobalEventHandlers.onerror, this);
 			return;
 		}
 		
@@ -532,11 +512,97 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 			try {
 				scriptFetch.fetch();
 			} catch (IOException e) {
-				window.fireSimpleEvent(GlobalEventHandlers.onerror, this);
+				window.dispatchSimpleEvent(GlobalEventHandlers.onerror, this);
 			}
 		} else {
-			window.fireSimpleEvent(GlobalEventHandlers.onerror, this);
+			window.dispatchSimpleEvent(GlobalEventHandlers.onerror, this);
 		}
+	}
+		
+	/**
+	 * Runs execution algorithm above current script element.
+	 * 
+	 * @return True if execution ran to completion, false on some error.
+	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#execute-the-script-block">Execute the script block</a>
+	 */
+	public boolean executeScriptSync() {
+		if (_parserInserted && (_creatorParser == null || _creatorParser.getDocument() != getOwnerDocument())) {
+			return false;
+		}
+		
+		Document _document = getOwnerDocument();
+		Html5DocumentImpl document = null;
+			
+		if (_document instanceof Html5DocumentImpl) {
+			document = (Html5DocumentImpl)_document;
+		} else {
+			return false;
+		}
+		
+		Window window = document.getWindow();
+		
+		Resource resource = null;
+		if (scriptFetch != null) {
+			boolean error = !scriptFetch.isValid();
+			resource = scriptFetch.getResource();
+			error = error || resource == null || !resource.isContentValid();
+			
+			if (error) {
+
+				window.fireSimpleEvent(GlobalEventHandlers.onerror, this);
+				return false;
+			}
+		}
+
+		Reader source = null;
+		URL url = null;
+		WindowScriptSettings settings = window.getScriptSettings();
+		String language = getMimeType();
+		
+		// 1) Initialize the script block's source 
+		// FIXME: http://www.w3.org/html/wg/drafts/html/master/scripting-1.html#the-script-block%27s-source
+		if (resource == null) { // We are processing inline script
+			source = getScriptBlockSource(); 
+		} else {
+			url = resource.getAddress();
+			source = getScriptBlockSource(resource); 
+		}
+		
+		// 2) Fire a simple event named beforescriptexecute that bubbles and is cancelable at the script element.
+		boolean canceled = window.fireSimpleEvent("beforescriptexecute", this, true, true);
+		if (canceled) {
+			return false;
+		}
+		
+		// 3) If the script is from an external file, then increment the ignore-destructive-writes counter 
+		if (resource != null) {
+			document.incrementIgnoreDestructiveWritesCounter();
+		}
+		
+		// 4) Create a script
+		EvalWindowScript script = new EvalWindowScript(source, url, language, settings, false);
+		
+		ScriptException scriptException = script.getException();
+		if (scriptException != null) {
+			document.reportScriptError(script);
+		}
+		
+		// 5) Decrement the ignore-destructive-writes counter 
+		if (resource != null) {
+			document.decrementIgnoreDestructiveWritesCounter();
+		}
+		
+		// 6) Fire a simple event named afterscriptexecute that bubbles (but is not cancelable) 
+		window.fireSimpleEvent("afterscriptexecute", this, true, false);
+		
+		// 7) If the script is from an external file, fire a simple event named load at the script element.
+		if (resource != null) {
+			window.fireSimpleEvent("load", this);
+		} else {
+			window.dispatchSimpleEvent("load", this);
+		}
+		
+		return true;
 	}
 	
 	/**

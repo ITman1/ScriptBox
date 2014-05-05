@@ -19,6 +19,8 @@
 
 package org.fit.cssbox.scriptbox.script;
 
+import java.net.URL;
+
 /**
  * Interface that collects informations necessary for the function invocation.
  * 
@@ -27,6 +29,14 @@ package org.fit.cssbox.scriptbox.script;
  * @since 0.9 - 21.4.2014
  */
 public interface FunctionInvocation {
+	
+	/**
+	 * Returns origin of this function.
+	 * 
+	 * @return Origin of this function.
+	 */
+	public URL getOrigin();
+	
 	/**
 	 * Returns scope object of the function.
 	 * 

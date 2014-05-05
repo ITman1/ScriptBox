@@ -95,9 +95,11 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 	 * 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#delaying-load-events-mode">Delaying load events mode</a>
 	 */
-	public synchronized void resetDelayingLoadEventsMode() {
-		delayingLoadEventsMode = false;
-		
+	public void resetDelayingLoadEventsMode() {
+		synchronized (this) {
+			delayingLoadEventsMode = false;
+		}
+
 		Collection<BrowsingContext> contexts = getAncestorContexts();
 		
 		for (BrowsingContext context : contexts) {
@@ -106,7 +108,9 @@ public class IFrameBrowsingContext extends IFrameContainerBrowsingContext {
 			}
 		}
 		
-		notifyAll();
+		synchronized (this) {
+			notifyAll();
+		}
 	}
 	
 	/**

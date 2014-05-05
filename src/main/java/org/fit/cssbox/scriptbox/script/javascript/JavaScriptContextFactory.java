@@ -26,6 +26,7 @@ import org.fit.cssbox.scriptbox.script.adapter.AdapterRegistry;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.AdapterWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.CollectionsWrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.DefaultWrapFactoryDecorator;
+import org.fit.cssbox.scriptbox.script.javascript.wrap.ErrorAdapter;
 import org.fit.cssbox.scriptbox.script.javascript.wrap.WrapFactoryDecorator;
 import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
 import org.mozilla.javascript.Context;
@@ -63,6 +64,7 @@ public class JavaScriptContextFactory extends ContextFactory {
 		this.adapterRegistry.registerAdapter(EventAdapter.class);
 		this.adapterRegistry.registerAdapter(UIEventAdapter.class);
 		this.adapterRegistry.registerAdapter(MouseEventAdapter.class);
+		this.adapterRegistry.registerAdapter(ErrorAdapter.class);
 	}
 	
 	@Override

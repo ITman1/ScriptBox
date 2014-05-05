@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 
+import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -85,7 +86,7 @@ public class ScriptContextScriptable extends ScriptableObject {
 			int sourceScope = context.getAttributesScope(name);
 			if (sourceScope != -1) {
 				Object value = context.getAttribute(name, sourceScope);
-				return Context.javaToJS(value, this);
+				return javaToJS(value, this);
 			} else {
 				return NOT_FOUND;
 			}
@@ -134,4 +135,18 @@ public class ScriptContextScriptable extends ScriptableObject {
 		
 		return idSet.toArray(new String[idSet.size()]);
 	}
+	
+	/**
+	 * Converts java representation into nearest JavaScript representation.
+	 * 
+	 * @param value Value to be converted.
+	 * @param scope Scope where is the value.
+	 * @return Converted object.
+	 */
+	public static Object javaToJS(Object value, Scriptable scope) {
+		if (value instanceof ConsString) {
+			value = value.toString();
+		}
+		return Context.javaToJS(value, scope);
+    }
 }

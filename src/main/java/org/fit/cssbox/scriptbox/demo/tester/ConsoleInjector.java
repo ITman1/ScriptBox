@@ -21,6 +21,7 @@ package org.fit.cssbox.scriptbox.demo.tester;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public class ConsoleInjector extends JavaScriptInjector {
 	public static class Console {
 		
 		private StyledDocument doc;
-		private JScrollPane scrollPane;
+		private JTextPane textPane;
 		private Map<String, Date> namedStartTimes;
 		
 		private final static SimpleAttributeSet warningKeyword;
@@ -89,11 +90,7 @@ public class ConsoleInjector extends JavaScriptInjector {
 		Console(JTextPane textPane) {
 			this.doc = textPane.getStyledDocument();
 			this.namedStartTimes = new HashMap<String, Date>();
-			
-			Container container = textPane.getParent();
-			if (container instanceof JScrollPane) {
-				this.scrollPane = (JScrollPane)container;
-			}
+			this.textPane = textPane;
 		}
 		
 		@ScriptFunction
@@ -171,10 +168,12 @@ public class ConsoleInjector extends JavaScriptInjector {
 			try {
 				doc.insertString(doc.getLength(), " " + header + " ", attr);
 				doc.insertString(doc.getLength(), " - " + joinedList + "\n", null);
-				
-				if (scrollPane != null) {
-					JScrollBar vertical = scrollPane.getVerticalScrollBar();
-					vertical.setValue(vertical.getMaximum());
+								
+				if (textPane != null) {
+					Rectangle bottom = new Rectangle(0, textPane.getHeight() - 1, 1, 1);
+					textPane.scrollRectToVisible(bottom);
+					/*JScrollBar vertical = scrollPane.getVerticalScrollBar();
+					vertical.setValue(vertical.getMaximum());*/
 				}
 				
 			} catch (BadLocationException e) {

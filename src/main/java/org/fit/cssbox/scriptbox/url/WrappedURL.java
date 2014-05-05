@@ -26,6 +26,15 @@ public class WrappedURL extends ParserURL {
 		this.wrappedUrl = wrappedUrl;
 	}
 
+	/**
+	 * Returns wrapped URL.
+	 * 
+	 * @return Wrapped URL.
+	 */
+	public java.net.URL getWrappedURL() {
+		return wrappedUrl;
+	}
+	
 	@Override
 	public String getScheme() {
 		if (wrappedUrl == null) {

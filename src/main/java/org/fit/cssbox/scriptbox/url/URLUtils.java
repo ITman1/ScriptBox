@@ -65,13 +65,14 @@ public class URLUtils {
 		
 		Object contextObject = getContextObject();
 		if (contextObject.getClass().equals(org.fit.cssbox.scriptbox.url.URL.class) && url == null) {
-			throwTypeErrorException();
+			throwTypeErrorException("\"" + href + "\" is not a valid URL.");
 		}
 		
 		preUpdateSteps(href);
 	}
 	
 	/**
+	 * TODO:
 	 * Returns URL origin.
 	 * 
 	 * @return URL origin.
@@ -320,7 +321,7 @@ public class URLUtils {
 		
 		List<String> pathList = url.getPath();
 		
-		return StringUtils.join(pathList, "/");
+		return "/" + StringUtils.join(pathList, "/");
 	}
 	
 	/**
@@ -555,6 +556,15 @@ public class URLUtils {
 	 * Throws type error exception.
 	 */
 	protected void throwTypeErrorException() {
-		throw new DOMException(DOMException.SYNTAX_ERR, "SyntaxError");
+		throwTypeErrorException("SyntaxError");
+	}
+	
+	/**
+	 * Throws type error exception.
+	 * 
+	 * @param message Message.
+	 */
+	protected void throwTypeErrorException(String message) {
+		throw new DOMException(DOMException.SYNTAX_ERR, message);
 	}
 }

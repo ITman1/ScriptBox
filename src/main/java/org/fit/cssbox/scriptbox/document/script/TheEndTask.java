@@ -44,30 +44,11 @@ import org.fit.cssbox.scriptbox.window.Window;
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#the-end">The end</a>
  */
 public class TheEndTask extends ParserFinishedTask {
-	/*
-	 * Injects exception information into already existing instance of ParserFinishedTask
-	 */
-	private class ParserFinishedTaskExceptionInjector extends ParserFinishedTask {
-		protected ParserFinishedTask wrapped;
-		
-		public ParserFinishedTaskExceptionInjector(ParserFinishedTask wrapped) {
-			super(wrapped.getTaskSource(), wrapped.getDocument());
 
-			this.wrapped = wrapped;
-		}
-
-		@Override
-		public void execute() throws TaskAbortedException, InterruptedException {}
-		
-		public void inject(Exception exception) {
-			wrapped.exception = exception;
-		}
-	}
-	
 	protected ScriptableDocumentParser parser;
 	
-	public TheEndTask(ScriptableDocumentParser parser, Exception exception) {
-		super(TaskSource.DOM_MANIPULATION, parser.getDocument(), exception);
+	public TheEndTask(ScriptableDocumentParser parser) {
+		super(TaskSource.DOM_MANIPULATION, parser.getDocument());
 		
 		this.parser = parser;
 	}
@@ -117,9 +98,10 @@ public class TheEndTask extends ParserFinishedTask {
 					if (!scripts.isEmpty()) {
 						executeFirstOnFinishScript();
 					}
+					
+					contentLoaded();
 				}
 			});
-			return;
 		}
 		
 		contentLoaded();
@@ -213,10 +195,8 @@ public class TheEndTask extends ParserFinishedTask {
 			
 		});
 		
-		ParserFinishedTask onFinishedTask = parser.getOnFinishedTask();
+		Task onFinishedTask = parser.getOnFinishedTask();
 		if (onFinishedTask != null) {
-			ParserFinishedTaskExceptionInjector injector = new ParserFinishedTaskExceptionInjector(onFinishedTask);
-			injector.inject(exception);
 			getEventLoop().queueTask(onFinishedTask);
 		}
 		

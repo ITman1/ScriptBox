@@ -44,6 +44,7 @@ import org.fit.cssbox.scriptbox.dom.events.EventHandlerEventListener;
 import org.fit.cssbox.scriptbox.dom.events.EventListenerEntry;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.dom.events.GlobalEventHandlers;
+import org.fit.cssbox.scriptbox.dom.events.OnErrorEventHandler;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Executable;
@@ -115,6 +116,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	private EventHandlerEventListener ondurationchangeHandlerListener;
 	private EventHandlerEventListener onemptiedHandlerListener;
 	private EventHandlerEventListener onendedHandlerListener;
+	private EventHandlerEventListener onerrorHandlerListener;
 	private EventHandlerEventListener onfocusHandlerListener;
 	private EventHandlerEventListener oninputHandlerListener;
 	private EventHandlerEventListener oninvalidHandlerListener;
@@ -206,6 +208,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		this.ondurationchangeHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.ondurationchange);
 		this.onemptiedHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onemptied);
 		this.onendedHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onended);
+		this.onerrorHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onerror);
 		this.onfocusHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.onfocus);
 		this.oninputHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oninput);
 		this.oninvalidHandlerListener = new EventHandlerEventListener(this, GlobalEventHandlers.oninvalid);
@@ -372,8 +375,6 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	public void dispatchSimpleEvent(String eventName, org.w3c.dom.events.EventTarget target, boolean bubbles, boolean cancelable) {
 		EventImpl event = new EventImpl();
 		event.initEvent(eventName, bubbles, cancelable);
-		
-		target.dispatchEvent(event);
 		
 		dispatchEvent(event, target);
 	}
@@ -1401,6 +1402,12 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	public EventHandler getOnended() {
 		return onemptiedHandlerListener.getEventHandler();
 	}
+	
+	@ScriptGetter
+	@Override
+	public OnErrorEventHandler getOnerror() {
+		return (OnErrorEventHandler)onerrorHandlerListener.getEventHandler();
+	}
 
 	@ScriptGetter
 	@Override
@@ -1810,9 +1817,16 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		onemptiedHandlerListener.setEventHandler(handler);
 	}
 
+	@ScriptSetter
 	@Override
 	public void setOnended(EventHandler handler) {
 		onendedHandlerListener.setEventHandler(handler);
+	}
+	
+	@ScriptSetter
+	@Override
+	public void setOnerror(OnErrorEventHandler handler) {
+		onerrorHandlerListener.setEventHandler(handler);
 	}
 
 	@ScriptSetter

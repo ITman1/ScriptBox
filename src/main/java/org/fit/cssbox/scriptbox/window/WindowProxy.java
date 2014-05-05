@@ -25,6 +25,7 @@ import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
+import org.fit.cssbox.scriptbox.dom.events.OnErrorEventHandler;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
@@ -557,6 +558,12 @@ public class WindowProxy extends Window {
 
 	@ScriptGetter
 	@Override
+	public OnErrorEventHandler getOnerror() {
+		return getProxiedWindow().getOnerror();
+	}
+	
+	@ScriptGetter
+	@Override
 	public EventHandler getOnfocus() {
 		return getProxiedWindow().getOnfocus();
 	}
@@ -963,9 +970,16 @@ public class WindowProxy extends Window {
 		getProxiedWindow().setOnemptied(handler);;
 	}
 
+	@ScriptSetter
 	@Override
 	public void setOnended(EventHandler handler) {
 		getProxiedWindow().setOnended(handler);;
+	}
+	
+	@ScriptSetter
+	@Override
+	public void setOnerror(OnErrorEventHandler handler) {
+		getProxiedWindow().setOnerror(handler);
 	}
 
 	@ScriptSetter

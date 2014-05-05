@@ -125,10 +125,14 @@ public class RoundRobinScheduler extends TaskQueuesScheduler {
 	}
 	
 	@Override
-	protected Task scheduleTask() {
+	protected Task scheduleTask() throws InterruptedException {
 		synchronized (this) {
 			if (queuedTaskSources.isEmpty()) { // Division by zero check
 				return null;
+			}
+			
+			if (scheduledTasks.size() > 2) { // FIXME?: This ensures forward planning only of two tasks
+				wait();
 			}
 			
 			sourcesListPosition = (sourcesListPosition + 1) % queuedTaskSources.size();

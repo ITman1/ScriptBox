@@ -56,7 +56,7 @@ public class ObjectTopLevel extends TopLevel {
 		
 		Context cx = scriptEngine.enterContext();
 		try {
-			cx.initStandardObjects(this, true);
+			cx.initStandardObjects(this, false); // FIXME?: should be sealed some objects? e.g. Object and function.
 			deleteRhinoUnsafeProperties();
 			
 			implementGlobalObject();

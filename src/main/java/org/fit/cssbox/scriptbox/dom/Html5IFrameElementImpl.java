@@ -55,7 +55,7 @@ public class Html5IFrameElementImpl extends HTMLIFrameElementImpl implements Htm
 
 	@Override
 	public boolean getSeamless() {
-		return !getAttribute(SEAMLESS_ATTR_NAME).isEmpty();
+		return hasAttribute(SEAMLESS_ATTR_NAME);
 	}
 
 	@Override

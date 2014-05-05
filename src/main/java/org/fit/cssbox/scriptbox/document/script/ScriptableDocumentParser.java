@@ -34,6 +34,7 @@ import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
+import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -58,6 +59,26 @@ import org.xml.sax.SAXException;
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#parsing">Parsing</a>
  */
 public class ScriptableDocumentParser {
+	
+	/*
+	 * Injects exception information into already existing instance of ParserFinishedTask
+	 */
+	private class ParserFinishedTaskExceptionInjector extends ParserFinishedTask {
+		protected ParserFinishedTask wrapped;
+		
+		public ParserFinishedTaskExceptionInjector(ParserFinishedTask wrapped) {
+			super(wrapped.getTaskSource(), wrapped.getDocument());
+
+			this.wrapped = wrapped;
+		}
+
+		@Override
+		public void execute() throws TaskAbortedException, InterruptedException {}
+		
+		public void inject(Exception exception) {
+			wrapped.exception = exception;
+		}
+	}
 	
 	/**
 	 * Thread which parses the Document.
@@ -458,8 +479,17 @@ public class ScriptableDocumentParser {
 		 * Expected to be called from parser thread, so it is necessary to queue a new task.
 		 */
 		BrowsingContext context = _document.getBrowsingContext();
-		context.getEventLoop().queueTask(new TheEndTask(this, exception));
 		
+		if (exception != null) {
+			if (_onFinishedTask != null) {
+				ParserFinishedTaskExceptionInjector injector = new ParserFinishedTaskExceptionInjector(_onFinishedTask);
+				injector.inject(exception);
+				context.getEventLoop().queueTask(_onFinishedTask);
+			}
+		} else {
+			context.getEventLoop().queueTask(new TheEndTask(this));
+		}
+				
 		synchronized (this) {
 			_finished = true;
 			_parser = null;

@@ -223,7 +223,6 @@ public class TestUtils {
 			try {
 				browsingUnit.navigate(url);
 			} catch (MalformedURLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			

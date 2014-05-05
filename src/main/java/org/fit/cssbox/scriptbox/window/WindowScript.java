@@ -32,7 +32,7 @@ import org.fit.cssbox.scriptbox.script.Script;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#script-settings-for-browsing-contexts">Script settings for browsing contexts</a>
  */
-public abstract class WindowScript<Source> extends Script<Source, Source, WindowScriptSettings> {
+public abstract class WindowScript<Source, CodeEntryPoint> extends Script<Source, CodeEntryPoint, WindowScriptSettings> {
 	
 	public WindowScript(Source source, URL sourceURL, String language, WindowScriptSettings settings, boolean mutedErrorsFlag) {
 		super(source, sourceURL, language, settings, mutedErrorsFlag);

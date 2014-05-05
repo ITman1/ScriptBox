@@ -20,17 +20,29 @@
 package org.fit.cssbox.scriptbox.script.javascript.js;
 
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.script.ScriptException;
+
 import org.apache.commons.lang3.ClassUtils;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
+import org.fit.cssbox.scriptbox.script.FunctionInvocation;
+import org.fit.cssbox.scriptbox.script.WindowScriptEngine;
 import org.fit.cssbox.scriptbox.script.exceptions.FunctionException;
+import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.fit.cssbox.scriptbox.script.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.reflect.FunctionMember;
 import org.fit.cssbox.scriptbox.script.reflect.InvocableMember;
+import org.fit.cssbox.scriptbox.window.InvokeWindowScript;
+import org.fit.cssbox.scriptbox.window.Window;
+import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -265,5 +277,82 @@ public class HostedJavaMethod extends FunctionObject {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Calls JavaScript native function.
+	 * 
+	 * @param function Function to be called.
+	 * @param args Call arguments.
+	 */
+	public static void call(final Function function, final Object... args) {
+		// FIXME?: Should not be here an origin check?
+		
+		Scriptable scope = function.getParentScope();
+		ObjectTopLevel topLevel = WindowJavaScriptEngine.getObjectTopLevel(scope);
+		if (topLevel == null) {
+			throw new InternalException("Top level scope is null");
+		}
+
+		BrowserScriptEngine engine = topLevel.getBrowserScriptEngine();
+		WindowScriptEngine windowEngine = null;
+		if (engine instanceof WindowScriptEngine) {
+			windowEngine = (WindowScriptEngine)engine;
+		} else {
+			throw new InternalException("Scripting engine is not WindowScriptEngine");
+		}
+		
+		Window window = windowEngine.getWindow();
+		WindowScriptSettings settings = window.getScriptSettings();
+		Html5DocumentImpl document = window.getDocumentImpl();
+		final URL address = document.getAddress();
+		
+		FunctionInvocation invocation = new FunctionInvocation() {
+			@Override
+			public Object getThiz() {
+				return function;
+			}
+			
+			@Override
+			public String getName() {
+				return "";
+			}
+			
+			@Override
+			public Object[] getArgs() {
+				return args;
+			}
+
+			@Override
+			public URL getOrigin() {
+				return address;
+			}
+		};
+		
+		InvokeWindowScript script = new InvokeWindowScript(invocation, address, WindowJavaScriptEngine.JAVASCRIPT_LANGUAGE, settings, false);
+		ScriptException scriptException = script.getException();
+		
+		if (scriptException != null) {
+			document.reportScriptError(script);
+		}
+		
+		/*Scriptable scope = function.getParentScope();
+		ObjectTopLevel topLevel = getObjectTopLevel(scope);
+		if (topLevel != null) {
+			Context cx = topLevel.getBrowserScriptEngine().enterContext();
+			try {
+				Object arg = WindowJavaScriptEngine.javaToJS(event, scope);
+				Object[] args = {arg};
+				function.call(cx, scope, scope, args);
+			} catch (Exception ex) {
+				try {
+					WindowJavaScriptEngine.throwWrappedScriptException(ex);
+				} catch (ScriptException e) {
+					throw new WrappedException(e);
+				}
+			} finally {
+				Context.exit();
+			}
+		}*/
 	}
 }

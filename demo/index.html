@@ -8,13 +8,13 @@
     </style>
 </head>
 <body>
-    <script type="text/javascript" src="navigation.js"></script>
+    <script type="text/javascript" src="global.js"></script>
     <div id="header">
         <div><a href="javascript:go_back()">back</a> | <a href="javascript:go_forward()">forward</a></div>
         <h1>JavaScript Engine Demos<span>Table of contents</span></h1>
     </div>
     <div id="content">
-		<ol>
+		<ol class="content-list">
 		    <li>
 	            <a href="introduction.html">Introduction</a>
 	            <span>A brief introduction to this page with demos and what you can expect from it.</span>
@@ -26,6 +26,26 @@
 		    <li>
                 <a href="history.html">History interface</a>
                 <span>Traversing the browsing history using the <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#history-1">History</a> interface.</span>
+            </li>
+            <li>
+                <a href="location.html">Location interface</a>
+                <span>Navigating the browsing contexts using the <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#history-1">Location</a> interface.</span>
+            </li>
+            <li>
+                <a href="scripts.html">Loading scripts</a>
+                <span>Describes implemented methods how to insert and execute scripts on the page. Note: Navigating this page might take a some while.</span>
+            </li>
+            <li>
+                <a href="events.html">Events</a>
+                <span>Listening, dispatching events above event targets. Setting the event handlers.</span>
+            </li>
+            <li>
+                <a href="browsing_contexts.html">Browsing contexts</a>
+                <span>Opening, closing new top level and nested browsing contexts and their properties.</span>
+            </li>
+            <li>
+                <a href="benchmark/sunspider.html">SunSpider benchmark</a>
+                <span>HTML interface for running the SunSpider benchmark. It allows to compare performances of various browsers.</span>
             </li>
 		</ol>
 	</div>

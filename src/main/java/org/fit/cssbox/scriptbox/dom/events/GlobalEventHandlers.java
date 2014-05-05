@@ -110,7 +110,7 @@ public interface GlobalEventHandlers {
 	public EventHandler getOndurationchange();
 	public EventHandler getOnemptied();
 	public EventHandler getOnended();
-	//TODO: OnErrorEventHandler onerr;
+	public OnErrorEventHandler getOnerror();
 	public EventHandler getOnfocus();
 	public EventHandler getOninput();
 	public EventHandler getOninvalid();
@@ -170,7 +170,7 @@ public interface GlobalEventHandlers {
 	public void setOndurationchange(EventHandler handler);
 	public void setOnemptied(EventHandler handler);
 	public void setOnended(EventHandler handler);
-	//TODO: OnErrorEventHandler onerror;
+	public void setOnerror(OnErrorEventHandler onerror);
 	public void setOnfocus(EventHandler handler);
 	public void setOninput(EventHandler handler);
 	public void setOninvalid(EventHandler handler);

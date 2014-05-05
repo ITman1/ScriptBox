@@ -291,8 +291,8 @@ public class JavaScriptTester {
 		objectsWatchListPanel.add(watchListScrollPane, BorderLayout.CENTER);
 
 		objectsWatchList = new ScriptObjectsWatchList();
-		objectsWatchList.setPreferredSize(new Dimension(0, 0));
-		objectsWatchList.setMinimumSize(new Dimension(0, 0));
+		/*objectsWatchList.setPreferredSize(new Dimension(0, 0));
+		objectsWatchList.setMinimumSize(new Dimension(0, 0));*/
 		watchListScrollPane.setViewportView(objectsWatchList);
 		
 		JPanel objectsWatchListHeaderPanel = new JPanel();

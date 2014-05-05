@@ -6,6 +6,5 @@ function go_back() {
 
 function go_forward() {
 	console.info("called go_forward()");
-	
-	window.history.forward();
+		window.history.forward();
 }

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Engine Demos - Location interface</title>
+<style media='all' type='text/css'>
+@import "style.css";
+</style>
+</head>
+<body>
+    <script type="text/javascript" src="global.js"></script>
+    <div id="header">
+        <div>
+            <a href="javascript:go_back()">back</a> | <a
+                href="javascript:go_forward()">forward</a>
+        </div>
+        <h1 id="location-interface">
+            JavaScript Engine Demos<span>Location interface</span>
+        </h1>
+    </div>
+    <div id="content">
+        <script type="text/javascript">
+            function page_reload() {
+            	console.info("started loading of location.html");
+            	location.reload();
+            }
+            
+            function page_assign() {
+                var page = prompt("Type in url where to navigate, e.g. index.html.", "index.html");
+                location.assign(page);
+            }
+            
+            function page_replace() {
+                var page = prompt("Type in url where to navigate, e.g. index.html.", "index.html");
+                location.replace(page);
+            }
+            
+            function urlutils_test() {
+                var url = prompt("Type in new url to be constructed or left empty for printing the current location.");
+                
+                if (url.length == 0) {
+                	url = location;
+                } else {
+                	url = new URL(url);
+                }
+                
+                for (var attr in url) {
+                	console.info(attr + " -> " + url[attr]);
+                }
+            }
+            
+            onload = function () {
+            	console.info("completed loading of location.html");
+            }
+        </script>
+        <p>Global <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#location">Location</a> object
+        contains property <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-location">location</a> that should implement the 
+        <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#location">Location</a> interface.
+        This interface is fully supported, including its super interface <a href="http://url.spec.whatwg.org/#urlutils">URLUtils</a> 
+        except the origin and searchParams attributes. It has been also partially implemented the URL interface that implements
+        also the <a href="http://url.spec.whatwg.org/#urlutils">URLUtils</a> interface.</p>
+        
+        <p>Navigation is accomplished to the <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">navigation</a>
+         algorithm according the specification. At this moment are supported following schemas: "http", "file", 
+         "javascript" and "https". Even if we can now handle only text/html content type, it has been implemented
+         general mechanism for handling also such contents like are: plain text, multipart, media, plugin, XML, etc.
+         </p>
+        
+        <h3>Location interface</h3>
+        <div class="code">
+            <span>void assign(DOMString url);</span>
+		    <span>void replace(DOMString url);</span>
+		    <span>void reload();</span>
+        </div>
+        <h3>URLUtils interface</h3>
+        <div class="code">
+            <span>DOMString href;</span>
+            <span>DOMString origin;</span>
+            <span>DOMString protocol;</span>
+            <span>DOMString username;</span>
+            <span>DOMString password;</span>
+            <span>DOMString host;</span>
+            <span>DOMString hostname;</span>
+            <span>DOMString port;</span>
+            <span>DOMString pathname;</span>
+            <span>DOMString search;</span>
+            <span>URLSearchParams searchParams;</span>
+            <span>DOMString hash;</span>
+        </div>
+        <h3>URL interface</h3>
+        <div class="code">
+            <span>URL(DOMString url, optional DOMString base = "about:blank");</span>
+        </div>
+        <h2>Location interface tests</h2>
+        <p>
+            Test reload() by clicking on <a href="javascript:page_reload()">this</a>. For navigating inside 
+            this browsing context and testing assign() click on <a href="javascript:page_assign()">this</a>,
+            then traverse the history back and you should get on this page. Finally try replace() 
+            by clicking on <a href="javascript:page_replace()">this</a> that causes removing the current
+            entry from the session history.
+        </p>
+        <p>
+            For testing the URLUtils and URL interface click on <a href="javascript:urlutils_test()">this</a>. 
+            The corresponding attributes will be printed into the console.
+        </p>
+        <p>
+            For testing the fragment navigation click on <a href="#location-interface">this</a>
+            and you should be navigated to the page title. To test new navigation with the bookmarklet test
+            by clicking on <a href="javascript:'Bookmarklet content'">this</a> or simply write custom 
+            JavaScript code into navigation panel with the 'javascript:' scheme.
+        </p>
+    </div>
+    <div id="footer">
+        <p>
+            Author: Radim Loskot | Contact (Gmail): radim.loskot | Project pages:
+            <a href="https://github.com/ITman1/ScriptBox">ScriptBox</a>
+        </p>
+    </div>
+</body>
+</html>

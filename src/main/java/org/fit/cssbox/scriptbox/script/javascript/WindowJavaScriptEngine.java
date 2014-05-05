@@ -21,14 +21,19 @@ package org.fit.cssbox.scriptbox.script.javascript;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URL;
 
 import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
 import org.apache.html.dom.HTMLElementImpl;
+import org.apache.xerces.dom.TextImpl;
+import org.fit.cssbox.scriptbox.resource.ResourceReader;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.WindowScriptEngine;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptAnnotationClassMembersResolverFactory;
@@ -43,6 +48,7 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaClass;
 import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.TopLevel;
 import org.mozilla.javascript.Wrapper;
@@ -56,7 +62,7 @@ import org.mozilla.javascript.Wrapper;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class WindowJavaScriptEngine extends WindowScriptEngine implements Invocable {
+public class WindowJavaScriptEngine extends WindowScriptEngine implements Invocable, Compilable {
 
 	public static final String JAVASCRIPT_LANGUAGE = "text/javascript";
 	
@@ -93,14 +99,6 @@ public class WindowJavaScriptEngine extends WindowScriptEngine implements Invoca
 
 		this.topLevel = initializeTopLevel();
 	}
-	
-	@Override
-	protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
-		DefaultShutter explicitGrantShutter = new DefaultShutter();
-		explicitGrantShutter.addVisibleClass(HTMLElementImpl.class, true, false, false);
-		ClassMembersResolverFactory factory = new ScriptAnnotationClassMembersResolverFactory(this, explicitGrantShutter);
-		return factory;
-	}
 		
 	@Override
 	public Object eval(Reader reader, ScriptContext context) throws ScriptException {
@@ -109,7 +107,8 @@ public class WindowJavaScriptEngine extends WindowScriptEngine implements Invoca
 		Context cx = enterContext();
 		try {
 			Scriptable executionScope = getExecutionScope(context);
-			ret = cx.evaluateReader(executionScope, reader, "<inline script>" , 1,  null);
+			String filename = getFilenameFromReader(reader);
+			ret = cx.evaluateReader(executionScope, reader, filename, 1,  null);
 		} catch (Exception ex) {
 			throwWrappedScriptException(ex);
 		} finally {
@@ -165,6 +164,30 @@ public class WindowJavaScriptEngine extends WindowScriptEngine implements Invoca
 	@Override
 	public <T> T getInterface(Object thiz, Class<T> clasz) {
 		throw new UnsupportedOperationException("getInterface() is not implemented yet!");
+	}
+	
+	@Override
+	public CompiledScript compile(String script) throws ScriptException {
+		return compile(new StringReader(script));
+	}
+
+	@Override
+	public CompiledScript compile(Reader script) throws ScriptException {
+		CompiledScript compiledScript = null;
+		
+		Context cx = enterContext();
+
+		try {
+			String filename = getFilenameFromReader(script);
+			Script rhinoScript = cx.compileReader(script, filename, 1, null);
+			compiledScript = new CompiledJavaScript(this, rhinoScript);
+		} catch (Exception e) {
+			throwWrappedScriptException(e);
+		} finally {
+			exitContext();
+		}
+		
+		return compiledScript;
 	}
 	
 	/**
@@ -232,6 +255,26 @@ public class WindowJavaScriptEngine extends WindowScriptEngine implements Invoca
 	}
 	
 	/**
+	 * Returns top level scope for the passed scope.
+	 * 
+	 * @param scope Scope for which should be returned the top level scope.
+	 * @return Top level scope for the passed scope.
+	 */
+	public static ObjectTopLevel getObjectTopLevel(Scriptable scope) {
+		Scriptable parentScope;
+		while ((parentScope = scope.getParentScope()) != null) {
+			scope = parentScope;
+		}
+		
+		Scriptable prototypeScope = scope.getPrototype();
+		if (prototypeScope instanceof ObjectTopLevel) {
+			return (ObjectTopLevel)prototypeScope;
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Converts array of Java objects into array of JavaScript objects.
 	 * 
 	 * @param args Arguments to be converted.
@@ -246,6 +289,16 @@ public class WindowJavaScriptEngine extends WindowScriptEngine implements Invoca
 		}
 		
 		return wrapped;
+	}
+	
+	@Override
+	protected ClassMembersResolverFactory initializeClassMembersResolverFactory() {
+		DefaultShutter explicitGrantShutter = new DefaultShutter();
+		explicitGrantShutter.addVisibleClass(HTMLElementImpl.class, true, false, false);
+		explicitGrantShutter.addVisibleClass(TextImpl.class, true, true, false);
+		//explicitGrantShutter.addVisibleClass(ConsString.class, true, true, false);
+		ClassMembersResolverFactory factory = new ScriptAnnotationClassMembersResolverFactory(this, explicitGrantShutter);
+		return factory;
 	}
 	
 	/**
@@ -354,5 +407,18 @@ public class WindowJavaScriptEngine extends WindowScriptEngine implements Invoca
 		return unwrap(ret);
 	}
 	
+	private String getFilenameFromReader(Reader reader) {
+		String filename = "<inline script>";
+		if (reader instanceof ResourceReader) {
+			ResourceReader resourceScript = (ResourceReader)reader;
+			URL url = resourceScript.getURL();
+			
+			if (url != null) {
+				filename = url.toExternalForm();
+			}
+		}
+		
+		return filename;
+	}
 
 }

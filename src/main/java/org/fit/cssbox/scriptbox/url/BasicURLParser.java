@@ -4,6 +4,8 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.fit.cssbox.scriptbox.url.about.Handler;
+
 /*
  * TODO: The basic URL parser 
  * http://url.spec.whatwg.org/#concept-basic-url-parser
@@ -73,7 +75,7 @@ public class BasicURLParser {
 		if (url == null) {
 			try {
 				java.net.URL netUrl = null;
-				if (base != null) {
+				if (base != null && base instanceof WrappedURL && !((WrappedURL)base).getWrappedURL().equals(Handler.DEFAULT_URL)) {
 					java.net.URL context = new java.net.URL(base.serialize());
 					netUrl = new java.net.URL(context, input);
 				} else {

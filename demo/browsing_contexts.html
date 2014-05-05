@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Engine Demos - Browsing contexts</title>
+<style media='all' type='text/css'>
+@import "style.css";
+</style>
+</head>
+<body>
+    <script type="text/javascript" src="global.js"></script>
+    <div id="header">
+        <div>
+            <a href="javascript:go_back()">back</a> | <a
+                href="javascript:go_forward()">forward</a>
+        </div>
+        <h1>
+            JavaScript Engine Demos<span>Browsing contexts</span>
+        </h1>
+    </div>
+    <div id="content">
+        <script type="text/javascript">
+        var testtes = eval(11);
+            function init_forward() {
+                location = "redirected_page_A.html";
+            }
+            
+            function test_go() {
+            	var steps = prompt("Type number of the traversing steps. Positive number means traversing forward and negative number traversing back.");
+                
+            	if (!isNaN(steps)) {
+            		steps = parseInt(steps);
+            		history.go(steps);
+            	} else {
+            		alert("Typed expression is not a number!");
+            	}
+            }
+            
+            var currentPosition = 5; // prefilled by server
+            function go_pos(d) {
+                setupPosition(currentPosition + d);
+                history.pushState(currentPosition, "JavaScript Engine Demos - History interface (" + currentPosition + ")", '?position=' + currentPosition);
+            }
+           
+            onpopstate = function(event) {
+                setupPosition(event.state);
+            }
+           
+            function setupPosition(position) {
+                currentPosition = position;
+                console.info("Current position: ", position);
+            }
+        </script>
+        <p>Window implements...</p>
+        <div class="code">
+            <span>void addEventListener(DOMString type, EventListener? callback, optional boolean capture = false);</span>
+            <span>void removeEventListener(DOMString type, EventListener? callback, optional boolean capture = false);</span>
+            <span>boolean dispatchEvent(Event event);</span>
+        </div>
+    </div>
+    <div id="footer">
+        <p>
+            Author: Radim Loskot | Contact (Gmail): radim.loskot | Project pages:
+            <a href="https://github.com/ITman1/ScriptBox">ScriptBox</a>
+        </p>
+    </div>
+</body>
+</html>

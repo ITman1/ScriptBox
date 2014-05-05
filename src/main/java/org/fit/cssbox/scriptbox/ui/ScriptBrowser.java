@@ -21,6 +21,7 @@ package org.fit.cssbox.scriptbox.ui;
 
 import java.awt.Rectangle;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
 import javax.swing.SwingUtilities;
@@ -158,25 +159,37 @@ public class ScriptBrowser extends BrowserPane {
 				}
 
 				/* Set the document to the component */
-				setDocument(document);
+				final Document _document = document;
+				try {
+					SwingUtilities.invokeAndWait(new Runnable() {
+						
+						@Override
+						public void run() {
+							setDocument(_document);
+						}
+					});
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 
 				synchronized (ScriptBrowser.this) {
 					SessionHistory sessionHistory = context.getSesstionHistory();
 					visibleSessionHistoryEntry = sessionHistory.getCurrentEntry();
-					
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							synchronized (ScriptBrowser.this) {
-								if (delayedScrollRect != null) {
-									scrollRectToVisible(delayedScrollRect);
-								}
+				}	
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						synchronized (ScriptBrowser.this) {
+							if (delayedScrollRect != null) {
+								scrollRectToVisible(delayedScrollRect, true);
 							}
 						}
-					});
+					}
+				});
 					
-				}
-				
 				/* TODO?:
 				 * SwingUtilities.invokeLater(new Runnable() {
 				 * 
@@ -196,14 +209,38 @@ public class ScriptBrowser extends BrowserPane {
 		aRect = new Rectangle(aRect);
 		aRect.setSize(1, 1);
 		
+		/*
+		Rectangle visibleRect = getVisibleRect();
+		
+		double startX = visibleRect.getX();
+		double startY = visibleRect.getY();
+		double endX = startX + visibleRect.getWidth();
+		double endY = startY + visibleRect.getHeight();
+		
+		if (startX <= aRect.getX() && endX >= aRect.getX() && startY <= aRect.getY() && endY >= aRect.getY()) {
+			return;
+		}*/
+		
 		if (visibleSessionHistoryEntry != currentEntry) {
 			delayedScrollRect = aRect;
 		} else {
-			Rectangle bottom = new Rectangle(0, getHeight() - 1, 1, 1);
-			super.scrollRectToVisible(bottom);
 			super.scrollRectToVisible(aRect);
-			
 			delayedScrollRect = null;
 		}
+	}
+	
+	/**
+	 * Scrolls to given rectangle.
+	 * 
+	 * @param aRect Rectangle where to scroll.
+	 * @param forced If set, then scrolling will be forced even if it is visible.
+	 */
+	public synchronized void scrollRectToVisible(Rectangle aRect, boolean forced) {
+		if (forced) {
+			Rectangle bottom = new Rectangle(0, getHeight() - 1, 1, 1);
+			super.scrollRectToVisible(bottom);
+		}
+		
+		scrollRectToVisible(aRect);
 	}
 }

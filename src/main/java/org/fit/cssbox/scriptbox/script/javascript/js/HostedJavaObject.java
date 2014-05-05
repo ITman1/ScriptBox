@@ -32,6 +32,7 @@ import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.exceptions.ObjectException;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
+import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.fit.cssbox.scriptbox.script.reflect.ClassConstructor;
 import org.fit.cssbox.scriptbox.script.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
@@ -41,9 +42,11 @@ import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
 import org.fit.cssbox.scriptbox.script.reflect.InvocableMember;
 import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.reflect.ObjectMembers;
-import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
 /**
@@ -55,7 +58,7 @@ import org.mozilla.javascript.Wrapper;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class HostedJavaObject extends BaseFunction implements Wrapper {
+public class HostedJavaObject extends ObjectScriptable implements Wrapper, Function {
 
 	private static final long serialVersionUID = 6761328943903362404L;
 
@@ -109,8 +112,14 @@ public class HostedJavaObject extends BaseFunction implements Wrapper {
 	}
 	
 	@Override
+	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
+		return Undefined.instance;
+	}
+	
+	@Override
 	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
-		Scriptable result = createObject(cx, scope);
+		Scriptable result = new NativeObject();
+		result.setParentScope(getParentScope());
 		
 		Set<ClassConstructor> constructors = objectMembers.getConstructors();
 		

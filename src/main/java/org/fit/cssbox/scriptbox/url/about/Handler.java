@@ -22,6 +22,7 @@ package org.fit.cssbox.scriptbox.url.about;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -34,6 +35,26 @@ import java.net.URLStreamHandler;
  * @since 0.9 - 21.4.2014
  */
 public class Handler extends URLStreamHandler {
+	/**
+	 * Default address which has every document set.
+	 */
+	final public static String DEFAULT_URL_ADDRESS = "about:blank";
+	
+	/**
+	 * Default URL address which has every document set by default.
+	 */
+	final public static URL DEFAULT_URL;
+	
+	static {
+		URL defaultURL = null;
+		try {
+			defaultURL = new URL(DEFAULT_URL_ADDRESS);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		DEFAULT_URL = defaultURL;
+	}
+	
 	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
 		return new UserURLConnection(url);

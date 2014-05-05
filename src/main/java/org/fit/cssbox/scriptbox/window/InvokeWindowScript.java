@@ -36,7 +36,7 @@ import org.fit.cssbox.scriptbox.script.FunctionInvocation;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#script-settings-for-browsing-contexts">Script settings for browsing contexts</a>
  */
-public class InvokeWindowScript extends WindowScript<FunctionInvocation> {
+public class InvokeWindowScript extends WindowScript<FunctionInvocation, FunctionInvocation> {
 	
 	public InvokeWindowScript(FunctionInvocation source, URL sourceURL, String language, WindowScriptSettings settings, boolean mutedErrorsFlag) {
 		super(source, sourceURL, language, settings, mutedErrorsFlag);
