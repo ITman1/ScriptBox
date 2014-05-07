@@ -425,8 +425,10 @@ public class SessionHistory {
 		boolean hashChanged = false;
 		URL specifiedURI = specifiedEntry.getURL();
 		URL currentURI = currentEntry.getURL();
+		SessionHistoryEntry specifiedPushedEnty = specifiedEntry.getPushedEntry();
+		SessionHistoryEntry currentPushedEnty = currentEntry.getPushedEntry();
 		
-		if (specifiedDocument == currentDocument) {
+		if (specifiedDocument == currentDocument && (!specifiedEntry.hasStateObject() || !currentEntry.hasStateObject()) && specifiedPushedEnty != currentEntry && currentPushedEnty != specifiedEntry) {
 			hashChanged = !URLUtilsHelper.identicalComponents(specifiedURI, currentURI, UrlComponent.REF);
 		}
 		
@@ -441,6 +443,8 @@ public class SessionHistory {
 		String specifiedUriFragment =  specifiedURI.getRef();
 		if (!specifiedEntry.hasPersistedUserState() && specifiedUriFragment != null && !specifiedUriFragment.isEmpty()) {
 			specifiedBrowsingContext.scrollToFragment(specifiedUriFragment);
+		} else if (!specifiedEntry.hasPersistedUserState() && !specifiedEntry.hasStateObject()) {
+			specifiedBrowsingContext.scroll(0, 0);
 		}
 		
 		// 9) If the entry is an entry with persisted user state, the user agent may update aspects of the document

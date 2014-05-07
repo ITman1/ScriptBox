@@ -20,6 +20,7 @@
 package org.fit.cssbox.scriptbox.dom.events.script;
 
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 
@@ -31,6 +32,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#hashchangeevent">Hash change event</a>
  */
+@ScriptClass
 public class HashChangeEvent extends Event {
 	protected String oldURL;
 	protected String newURL;
@@ -75,7 +77,7 @@ public class HashChangeEvent extends Event {
 		super.initEvent(eventTypeArg, canBubbleArg, cancelableArg);
 		
 		this.oldURL = oldURL;
-		this.oldURL = oldURL;
+		this.newURL = newURL;
 	}
 	
 	@ScriptFunction

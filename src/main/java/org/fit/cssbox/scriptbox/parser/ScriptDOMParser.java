@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.document.script;
+package org.fit.cssbox.scriptbox.parser;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

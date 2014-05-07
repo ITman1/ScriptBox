@@ -1,5 +1,6 @@
 package org.fit.cssbox.scriptbox.url;
 
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptConstructor;
 
 /**
@@ -10,6 +11,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptConstructor;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://url.spec.whatwg.org/#url">URL</a>
  */
+@ScriptClass
 public class URL extends URLUtils {
 	
 	/*

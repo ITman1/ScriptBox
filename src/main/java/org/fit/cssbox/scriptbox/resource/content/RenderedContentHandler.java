@@ -22,7 +22,6 @@ package org.fit.cssbox.scriptbox.resource.content;
 import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
@@ -37,6 +36,7 @@ import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.scriptbox.navigation.UpdateNavigationAttempt;
+import org.fit.cssbox.scriptbox.parser.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.w3c.dom.Element;

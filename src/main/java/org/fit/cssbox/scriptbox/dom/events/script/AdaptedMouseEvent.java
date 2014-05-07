@@ -20,6 +20,7 @@
 package org.fit.cssbox.scriptbox.dom.events.script;
 
 import org.apache.xerces.dom.events.MouseEventImpl;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.w3c.dom.events.EventTarget;
@@ -35,6 +36,7 @@ import org.w3c.dom.views.AbstractView;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-MouseEvent">Mouse Event interface</a>
  */
+@ScriptClass(name="MouseEvent")
 public class AdaptedMouseEvent<MouseEventTypeImpl extends MouseEventImpl> extends AdaptedUIEvent<MouseEventTypeImpl> implements MouseEvent {
 
 	public AdaptedMouseEvent(MouseEventTypeImpl eventImpl) {

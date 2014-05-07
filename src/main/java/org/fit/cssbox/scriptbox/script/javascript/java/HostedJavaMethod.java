@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.js;
+package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -35,7 +35,6 @@ import org.fit.cssbox.scriptbox.script.exceptions.FunctionException;
 import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
 import org.fit.cssbox.scriptbox.script.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.reflect.FunctionMember;
@@ -43,11 +42,14 @@ import org.fit.cssbox.scriptbox.script.reflect.InvocableMember;
 import org.fit.cssbox.scriptbox.window.InvokeWindowScript;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
+import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.ConsString;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.FunctionObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.TopLevel;
+import org.mozilla.javascript.TopLevel.Builtins;
 import org.mozilla.javascript.Undefined;
 
 /**
@@ -72,7 +74,7 @@ public class HostedJavaMethod extends FunctionObject {
 	}
 	
 	private static final long serialVersionUID = -5644060115581311028L;
-
+	
 	private Object object;
 	private Set<FunctionMember> objectFunctions;
 	
@@ -89,6 +91,10 @@ public class HostedJavaMethod extends FunctionObject {
 		this.object = object;
 		this.objectFunctions = new HashSet<FunctionMember>();
 		this.objectFunctions.addAll(objectFunctions);
+		
+		TopLevel topLevel = WindowJavaScriptEngine.getObjectTopLevel(scope);
+		Scriptable builtinFunction = topLevel.getBuiltinCtor(Builtins.Function);
+		setPrototype(builtinFunction);
 	}
 	
 	/**
@@ -277,6 +283,14 @@ public class HostedJavaMethod extends FunctionObject {
 		}
 		
 		return null;
+	}
+	
+	public static String getFunctionName(Function function) {
+		if (function instanceof BaseFunction) {
+			return "function " + ((BaseFunction)function).getFunctionName() + "()";
+		} else {
+			return "function ()";
+		}
 	}
 	
 	/**

@@ -14,48 +14,106 @@
             <a href="javascript:go_back()">back</a> | <a
                 href="javascript:go_forward()">forward</a>
         </div>
-        <h1>
+        <h1 id="top-title">
             JavaScript Engine Demos<span>Events</span>
         </h1>
     </div>
     <div id="content">
         <script type="text/javascript">
-        var testtes = eval(11);
-            function init_forward() {
-                location = "redirected_page_A.html";
+        
+            var mouse_events_enabled = false;
+        
+            function enable_mouse_events() {
+            	mouse_events_enabled=true;
             }
             
-            function test_go() {
-            	var steps = prompt("Type number of the traversing steps. Positive number means traversing forward and negative number traversing back.");
-                
-            	if (!isNaN(steps)) {
-            		steps = parseInt(steps);
-            		history.go(steps);
-            	} else {
-            		alert("Typed expression is not a number!");
+            function disable_mouse_events() {
+                mouse_events_enabled=false;
+            }
+            
+            function mouseEventHandler(event) {
+            	if (mouse_events_enabled) {
+            		var id = event.target.id;
+            		if (id) {
+            			console.info("event " + event.type + ":" + id);
+            		}
             	}
             }
             
-            var currentPosition = 5; // prefilled by server
-            function go_pos(d) {
-                setupPosition(currentPosition + d);
-                history.pushState(currentPosition, "JavaScript Engine Demos - History interface (" + currentPosition + ")", '?position=' + currentPosition);
+            function simpleEventHandler(event) {
+                console.info("event " + event.type);
             }
-           
-            onpopstate = function(event) {
-                setupPosition(event.state);
+        
+            function hashChangeEventHandler(event) {
+            	console.info("event " + event.type + ": " + event.oldURL + " -> " + event.newURL);
             }
-           
-            function setupPosition(position) {
-                currentPosition = position;
-                console.info("Current position: ", position);
+            
+            function popStateEventHandler(event) {
+            	console.info("event " + event.type + ": " + event.state);
             }
+            
+            function errorEventHandler(event) {
+            	console.error("event " + event.type + ": " + event.message);
+            }
+            
+            function init_states() {
+            	for (var position = 1; position < 5; position++) {
+            		history.pushState(position, "JavaScript Engine Demos - Events (" + position + ")", '?position=' + position + "#" + position);
+            	}
+            }
+            
+            ondblclick = mouseEventHandler;
+            onclick = mouseEventHandler;
+            onmousedown = mouseEventHandler;
+            onmouseup = mouseEventHandler;
+            onmouseenter = mouseEventHandler;
+            onmouseover = mouseEventHandler;
+            
+            onload = simpleEventHandler;
+            onunload = simpleEventHandler;
+            
+            onhashchange = hashChangeEventHandler;
+        
+            onpopstate = popStateEventHandler;
+            
+            onerror = errorEventHandler;
         </script>
-        <p>Window implements...</p>
+        <p>At this moment global window object allows registering various kind of event listeners. Window implements
+        <a href="http://www.w3.org/TR/dom/#interface-eventtarget">EventTarget</a> interface:</p>
+        
         <div class="code">
             <span>void addEventListener(DOMString type, EventListener? callback, optional boolean capture = false);</span>
             <span>void removeEventListener(DOMString type, EventListener? callback, optional boolean capture = false);</span>
             <span>boolean dispatchEvent(Event event);</span>
+        </div>
+                
+        <p>Window object is closely connected with the Document and acts as it was root element of the DOM for
+        all events that are dispatched inside DOM. Except of registering many customs event listeners we can 
+        also use Window's EventHandler properties that allows registering only one event listener for some
+        specific event type. Window implements all event handlers according to the specification, but dozen 
+        of them is never called, because corresponding events are never dispatched due to missing implementation. For Window are implemented
+        <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#globaleventhandlers">GlobalEventHandlers</a>
+        and <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#windoweventhandlers">WindowEventHandlers</a></p>
+    
+        <h2>Event tests</h2>
+        <p>The following list enumerates currently supported events:</p>
+        <ul>
+        <li><strong>popstate</strong> &#8211; To test firstly initialize the session history by clicking <a href="javascript:init_states()">here</a> and then 
+        traverse <a href="javascript:window.history.back()">back</a> to let this event be dispatched. Navigate to the <a href="#top-title">top</a>, for
+        dispatching the hashchange.</li>
+        <li><strong>load and unload</strong> &#8211; When page new page is loaded, it is generated unload
+        event for the current one page and load event for new page. To test click <a href="javascript:location.reload()">reload</a>.</li>
+        <li><strong>hashchange</strong> &#8211; Navigate to the <a href="#top-title">top</a>, for dispatching the hashchange.</li>
+        <li><strong>error event</strong> &#8211; To cause e.g. "Undefined reference error", click 
+        <a href="javascript:undefined_ref.property">here</a>.</li>
+        <li><strong>mouse events (mouseover, mousedown, mouseup, click, dblclick)</strong> &#8211; To enable handlers for mouse events, click <a href="javascript:enable_mouse_events()">ENABLE</a>
+        and for disabling <a href="javascript:disable_mouse_events()">DISABLE</a>. To test use the colored nested &lt;DIV&gt; bellow.
+        </li>
+        </ul>
+        <div id="red" style="margin-left:auto;margin-right:auto;margin-top:20px; width:120px; height:80px; background-color:#ff0000;">
+          <div id="green" style="margin:20px; width:80px; height:60px; background-color:#00ff00;">
+              <div id="blue" style="margin:20px; width:40px; height:40px; background-color:#0000ff;"></div>
+          </div>
         </div>
     </div>
     <div id="footer">

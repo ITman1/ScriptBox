@@ -261,15 +261,16 @@ public class WindowJavaScriptEngine extends WindowScriptEngine implements Invoca
 	 * @return Top level scope for the passed scope.
 	 */
 	public static ObjectTopLevel getObjectTopLevel(Scriptable scope) {
-		Scriptable parentScope;
+		Scriptable parentScope = scope;
 		while ((parentScope = scope.getParentScope()) != null) {
 			scope = parentScope;
 		}
-		
-		Scriptable prototypeScope = scope.getPrototype();
-		if (prototypeScope instanceof ObjectTopLevel) {
-			return (ObjectTopLevel)prototypeScope;
-		}
+
+		do  {
+			if (scope instanceof ObjectTopLevel) {
+				return (ObjectTopLevel)scope;
+			}
+		} while ((scope = scope.getPrototype()) != null);
 		
 		return null;
 	}

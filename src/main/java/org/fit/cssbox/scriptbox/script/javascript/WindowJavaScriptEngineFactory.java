@@ -26,6 +26,7 @@ import java.util.List;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
+import org.fit.cssbox.scriptbox.script.javascript.injectors.ClassObjectsInjector;
 import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
 
 /**
@@ -55,6 +56,10 @@ public class WindowJavaScriptEngineFactory extends BrowserScriptEngineFactory {
 	private static final String LANGUAGE_NAME = "ECMAScript";
 	private static final String LANGUAGE_VERSION = "1.8";
 		
+	public WindowJavaScriptEngineFactory() {
+		registerScriptContextsInject(new ClassObjectsInjector());
+	}
+	
 	@Override
 	public List<String> getExplicitlySupportedMimeTypes() {
 		return mimeTypes;

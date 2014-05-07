@@ -50,6 +50,8 @@ public class SessionHistoryEntry {
 	private String _browsingContextName;
 	private StateObject _stateObject;
 	
+	private SessionHistoryEntry _pushedEntry;
+	
 	public SessionHistoryEntry(SessionHistory sessionHistory) {
 		this(sessionHistory, false);
 	}
@@ -306,5 +308,23 @@ public class SessionHistoryEntry {
 	 */
 	public void setPpersistedUserState(PersistedUserState persistedUserState) {
 		this._persistedUserState = persistedUserState;
+	}
+
+	/**
+	 * Returns entry that was pushed from this entry.
+	 * 
+	 * @return Entry that was pushed from this entry
+	 */
+	public SessionHistoryEntry getPushedEntry() {
+		return _pushedEntry;
+	}
+
+	/**
+	 * Sets new entry that pushed this entry.
+	 * 
+	 * @param pushedEntry Entry that pushed this entry.
+	 */
+	public void setPushedEntry(SessionHistoryEntry pushedEntry) {
+		this._pushedEntry = pushedEntry;
 	}
 }

@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.js;
+package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -82,22 +82,22 @@ public class HostedJavaCollection extends HostedJavaObject {
 		Method method = null;
 		Object result = Scriptable.NOT_FOUND;
 		
-		if (javaObject instanceof List<?> && key instanceof Integer) {
+		if (object instanceof List<?> && key instanceof Integer) {
 			try {
 				method = ClassUtils.getPublicMethod(javaObjectType, "get", int.class);
 			} catch (Exception e) {
 				throw new InternalException(e);
 			}
-			List<?> list = (List<?>)javaObject;
+			List<?> list = (List<?>)object;
 			int index = (Integer)key;
 			result = (list.size() > index)? list.get((Integer)key) : Scriptable.NOT_FOUND;
-		} else if (javaObject instanceof Map<?,?>) {
+		} else if (object instanceof Map<?,?>) {
 			try {
 				method = ClassUtils.getPublicMethod(javaObjectType, "get", Object.class);
 			} catch (Exception e) {
 				throw new InternalException(e);
 			}
-			result = ((Map<?,?>)javaObject).get(key);
+			result = ((Map<?,?>)object).get(key);
 		}
 		
 		if (result != Scriptable.NOT_FOUND && method != null) {

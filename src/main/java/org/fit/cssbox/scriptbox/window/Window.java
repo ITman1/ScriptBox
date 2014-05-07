@@ -57,6 +57,7 @@ import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigator.Navigator;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
@@ -81,6 +82,7 @@ import com.google.common.base.Predicate;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#window">Window</a>
  */
+@ScriptClass
 public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, WindowEventHandlers, AbstractView {
 	final public static String DEFAULT_TARGET =  "_blank";
 	final public static String DEFAULT_FEATURES = "";
@@ -88,6 +90,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	
 	protected Html5DocumentImpl documentImpl;
 	protected BrowsingContext context;
+	protected IFrameContainerBrowsingContext iframeContainerContext;
 	protected UserAgent userAgent;
 	
 	// FIXME: When it gets fire, there should be copy for case that we remove listener while processing event
@@ -300,6 +303,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	public void setDocumentImpl(Html5DocumentImpl documentImpl) {
 		this.documentImpl = documentImpl;
 		this.context = documentImpl.getBrowsingContext();
+		this.iframeContainerContext = (context instanceof IFrameContainerBrowsingContext)? (IFrameContainerBrowsingContext)context : null;
 		this.userAgent = context.getBrowsingUnit().getUserAgent();
 	}
 	

@@ -21,6 +21,7 @@ package org.fit.cssbox.scriptbox.dom.events.script;
 
 import org.apache.xerces.dom.events.EventImpl;
 import org.fit.cssbox.scriptbox.script.Wrapper;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.w3c.dom.events.Event;
@@ -34,6 +35,7 @@ import org.w3c.dom.events.Event;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/TR/dom/#interface-event">Event interface</a>
  */
+@ScriptClass(name="Event")
 public class AdaptedEvent<EventTypeImpl extends EventImpl> implements Event, Wrapper<EventTypeImpl> {
 	/* TODO: Final fields are not supported yet by engine */
 	final static short NONE  = 0;

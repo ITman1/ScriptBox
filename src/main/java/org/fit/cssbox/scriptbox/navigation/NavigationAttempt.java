@@ -663,7 +663,7 @@ public abstract class NavigationAttempt {
 		newEntry.setDocument(currentEntry.getDocument());
 		newEntry.setURL(url);
 		newEntry.setBrowsingContextName(currentEntry.getBrowsingContextName());
-		newEntry.setStateObject(currentEntry.getStateObject());
+		newEntry.setPpersistedUserState(currentEntry.getPersistedUserState());
 		
 		sessionHistory.add(newEntry);
 		

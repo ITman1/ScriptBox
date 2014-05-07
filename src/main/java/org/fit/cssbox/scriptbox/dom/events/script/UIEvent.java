@@ -20,6 +20,7 @@
 package org.fit.cssbox.scriptbox.dom.events.script;
 
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.w3c.dom.views.AbstractView;
 
@@ -32,6 +33,7 @@ import org.w3c.dom.views.AbstractView;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/TR/dom/#exception-domexception">Event interface</a>
  */
+@ScriptClass
 public class UIEvent extends Event implements org.w3c.dom.events.UIEvent {
 	protected AbstractView view;
     protected int detail;

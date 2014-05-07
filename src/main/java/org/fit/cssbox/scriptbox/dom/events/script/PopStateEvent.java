@@ -21,6 +21,7 @@ package org.fit.cssbox.scriptbox.dom.events.script;
 
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.history.StateObject;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 
@@ -32,6 +33,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#event-popstate">Pop state event</a>
  */
+@ScriptClass
 public class PopStateEvent extends Event {
 	protected StateObject state;
 	

@@ -31,6 +31,7 @@ import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
@@ -50,6 +51,7 @@ import org.fit.cssbox.scriptbox.window.Window;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
+@ScriptClass
 public class Location extends URLUtils {
 	private Html5DocumentImpl document;
 	private NavigationController controller;

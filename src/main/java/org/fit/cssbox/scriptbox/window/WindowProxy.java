@@ -28,6 +28,7 @@ import org.fit.cssbox.scriptbox.dom.events.EventHandler;
 import org.fit.cssbox.scriptbox.dom.events.OnErrorEventHandler;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.navigation.Location;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
@@ -38,6 +39,7 @@ import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.views.DocumentView;
 
+@ScriptClass(name="Window")
 public class WindowProxy extends Window {
 	BrowsingContext proxyContext;
 	

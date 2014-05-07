@@ -25,8 +25,10 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
+import javax.swing.plaf.TextUI;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
+import javax.swing.text.Position;
 import javax.swing.text.Position.Bias;
 
 import org.apache.xerces.dom.CharacterDataImpl;
@@ -198,14 +200,27 @@ public class MouseEventsDispatcher extends MouseAdapter {
 	private NodeImpl getNodeFromCoordinates(JEditorPane editor, int x, int y) {
 		Bias[] bias = new Bias[1];
 		Point pt = new Point(x, y);
-		int pos = editor.getUI().viewToModel(editor, pt, bias);
+		TextUI ui = editor.getUI();
+		int pos = ui.viewToModel(editor, pt, bias);
 		
 		if (pos >= 0) {
 			SwingBoxDocument swingBoxDocument = (SwingBoxDocument) editor.getDocument();
 			Element element = swingBoxDocument.getCharacterElement(pos);
+			
+			if (bias[0] == Position.Bias.Backward) {
+				// FIXME: - 1 is bug, use getViewAtPoint, but it is protected, or getParagraphElement, but probably not implemented yet.
+				pos = element.getStartOffset() - 1; 
+				element = swingBoxDocument.getCharacterElement(pos);
+			}/* else if (bias[0] == Position.Bias.Forward) {
+				pos = element.getStartOffset();
+				element = swingBoxDocument.getCharacterElement(pos);
+			}*/
+			
 			AttributeSet attrSet = element.getAttributes();
 			Object boxObject = attrSet.getAttribute(Constants.ATTRIBUTE_BOX_REFERENCE);
 
+			//System.err.println(pos + " -> " + element + " $ " + element.hashCode());
+			
 			if (boxObject instanceof Box) {
 				Box box = (Box) boxObject;
 				Node node = box.getNode();
@@ -242,5 +257,4 @@ public class MouseEventsDispatcher extends MouseAdapter {
 
 		return (short)(event.getButton() - 1);
 	}
-	
 }

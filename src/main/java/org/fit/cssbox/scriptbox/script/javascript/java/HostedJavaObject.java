@@ -1,5 +1,5 @@
 /**
- * HostedJavaObject.java
+ * Hostedobject.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.script.javascript.js;
+package org.fit.cssbox.scriptbox.script.javascript.java;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -32,7 +32,6 @@ import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
 import org.fit.cssbox.scriptbox.script.exceptions.ObjectException;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectScriptable;
 import org.fit.cssbox.scriptbox.script.reflect.ClassConstructor;
 import org.fit.cssbox.scriptbox.script.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
@@ -46,6 +45,8 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.TopLevel;
+import org.mozilla.javascript.TopLevel.Builtins;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
@@ -61,9 +62,6 @@ import org.mozilla.javascript.Wrapper;
 public class HostedJavaObject extends ObjectScriptable implements Wrapper, Function {
 
 	private static final long serialVersionUID = 6761328943903362404L;
-
-	protected Object javaObject;
-	protected Class<?> javaObjectType;
 	
 	protected boolean hasNonObjectGetterGet;
 		
@@ -73,10 +71,10 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 	 * Constructs new scope representing the native Java object.
 	 * 
 	 * @param scope Scope to become the parent scope of this Java object.
-	 * @param javaObject Java object to be wrapped.
+	 * @param object Java object to be wrapped.
 	 */
-	public HostedJavaObject(Scriptable scope, Object javaObject) {
-		this(scope, DefaultObjectMembers.getObjectMembers(javaObject));
+	public HostedJavaObject(Scriptable scope, Object object) {
+		this(scope, DefaultObjectMembers.getObjectMembers(object));
 	}
 	
 	/**
@@ -86,16 +84,18 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 	 * @param objectMembers Object and its members to be put into this new scope.
 	 */
 	public HostedJavaObject(Scriptable scope, ObjectMembers objectMembers) {
-		super(scope, null);
+		super(objectMembers.getObject(), scope, null);
 		
 		this.objectMembers = objectMembers;
-		this.javaObject = objectMembers.getObject();
-		this.javaObjectType = this.javaObject.getClass();
 		
-		if (javaObject instanceof ObjectGetter) {
+		TopLevel topLevel = WindowJavaScriptEngine.getObjectTopLevel(scope);
+		Scriptable builtinObject = topLevel.getBuiltinCtor(Builtins.Object);
+		setPrototype(builtinObject);
+		
+		if (object instanceof ObjectGetter) {
 			Class<?>[] getterArgs = ObjectGetter.METHOD_ARG_TYPES;
 			String getterName = ObjectGetter.METHOD_NAME;
-			for (Method method : javaObjectType.getMethods()) {
+			for (Method method : objectClass.getMethods()) {
 				String methodName = method.getName();
 				Class<?>[] methodParams = method.getParameterTypes();
 				if (methodName.equals(getterName) && !Arrays.equals(methodParams, getterArgs)) {
@@ -108,7 +108,7 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 	
 	@Override
 	public String getClassName() {
-		return "HostedJavaObject";
+		return "Hostedobject";
 	}
 	
 	@Override
@@ -219,18 +219,18 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 		Object[] superIds = super.getAllIds();
 		return getIds(objectMembers, superIds);
 	}
-	
+		
 	@Override
 	public Object unwrap() {
-		if (javaObject instanceof org.fit.cssbox.scriptbox.script.Wrapper) {
-			return ((org.fit.cssbox.scriptbox.script.Wrapper<?>)javaObject).unwrap();
+		if (object instanceof org.fit.cssbox.scriptbox.script.Wrapper) {
+			return ((org.fit.cssbox.scriptbox.script.Wrapper<?>)object).unwrap();
 		}
-		return javaObject;
+		return object;
 	}
 	
 	@Override
 	public String toString() {
-		return javaObject.toString();
+		return object.toString();
 	}
 
 	/**
@@ -269,7 +269,7 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 
 			ClassMember<?> firstMember = members.iterator().next();
 			if (firstMember instanceof ClassField) {
-				hostPut((ClassField)firstMember, javaObject, value);
+				hostPut((ClassField)firstMember, object, value);
 				return;
 			} else {
 				throw new FieldException("Unsupported operation");
@@ -310,11 +310,11 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 		Method method = null;
 		Object result = Scriptable.NOT_FOUND;
 		
-		if (javaObject instanceof ObjectGetter) {
-			Object value = ((ObjectGetter)javaObject).get(key);
+		if (object instanceof ObjectGetter) {
+			Object value = ((ObjectGetter)object).get(key);
 			
 			try {
-				method = ClassUtils.getPublicMethod(javaObjectType, ObjectGetter.METHOD_NAME, ObjectGetter.METHOD_ARG_TYPES);
+				method = ClassUtils.getPublicMethod(objectClass, ObjectGetter.METHOD_NAME, ObjectGetter.METHOD_ARG_TYPES);
 			} catch (Exception e) {
 				throw new InternalException(e);
 			}
@@ -325,7 +325,7 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 		}
 		
 		if (result != Scriptable.NOT_FOUND && method != null) {
-			//result = new JavaMethodRedirectedWrapper(result, javaObject, method);
+			//result = new JavaMethodRedirectedWrapper(result, object, method);
 		}
 		
 		return result;
@@ -335,7 +335,7 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 		Object result = Scriptable.NOT_FOUND;
 		ClassMember<?> firstMember = members.iterator().next();
 		if (firstMember instanceof ClassField) {
-			result = hostGet((ClassField)firstMember, javaObject);
+			result = hostGet((ClassField)firstMember, object);
 		} else if (firstMember instanceof ClassFunction) {
 			Set<ClassFunction> functions = new HashSet<ClassFunction>();
 			boolean failed = false;
@@ -357,7 +357,7 @@ public class HostedJavaObject extends ObjectScriptable implements Wrapper, Funct
 	}
 
 	private Object hostFunctionGet(Set<ClassFunction> functions) {
-		return new HostedJavaMethod(this, javaObject, functions);
+		return new HostedJavaMethod(this, object, functions);
 	}
 	
 	/**

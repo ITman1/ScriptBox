@@ -19,8 +19,7 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
-import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
-
+import org.fit.cssbox.scriptbox.script.javascript.java.HostedJavaObject;
 import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.reflect.DefaultClassMembersResolverFactory;
 import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;

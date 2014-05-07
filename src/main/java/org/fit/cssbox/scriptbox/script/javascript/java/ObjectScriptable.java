@@ -22,7 +22,6 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
 import org.fit.cssbox.scriptbox.script.reflect.ObjectField;
 import org.fit.cssbox.scriptbox.script.reflect.ObjectFunction;
 import org.mozilla.javascript.Scriptable;
@@ -38,17 +37,43 @@ import org.mozilla.javascript.ScriptableObject;
 public class ObjectScriptable extends ScriptableObject  {
 	private static final long serialVersionUID = 1531587729453175461L;
 	
+	protected Object object;
+	protected Class<?> objectClass;
+	
 	/**
 	 * @see ScriptableObject
 	 */
-	public ObjectScriptable() {
+	public ObjectScriptable(Object object) {
+		this.object = object;
+		this.objectClass = object.getClass();
 	}
 	
 	/**
 	 * @see ScriptableObject
 	 */
-	public ObjectScriptable(Scriptable scope, Scriptable prototype) {
+	public ObjectScriptable(Object object, Scriptable scope, Scriptable prototype) {
 		super(scope, prototype);
+		
+		this.object = object;
+		this.objectClass = object.getClass();
+	}
+	
+	/**
+	 * Returns associated object.
+	 * 
+	 * @return Associated object.
+	 */
+	public Object getObject() {
+		return object;
+	}
+	
+	/**
+	 * Returns associated object's class.
+	 * 
+	 * @return Associated object's class.
+	 */
+	public Class<?> getObjectClass() {
+		return objectClass;
 	}
 	
 	@Override
@@ -56,6 +81,17 @@ public class ObjectScriptable extends ScriptableObject  {
 		return "ObjectScriptable";
 	}
 
+	@Override
+	public String toString() {
+		if (object == null) {
+			return "[object]";
+		} else {
+			Class<?> clazz = object.getClass();
+			String name = clazz.getSimpleName();
+			return "[object " + name + "]";
+		}
+	}
+	
 	/**
 	 * Defines given object field into this scope with the passed name.
 	 * 

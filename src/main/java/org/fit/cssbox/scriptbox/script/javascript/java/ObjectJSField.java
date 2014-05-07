@@ -3,7 +3,6 @@ package org.fit.cssbox.scriptbox.script.javascript.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaObject;
 import org.fit.cssbox.scriptbox.script.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.reflect.ObjectField;
 import org.mozilla.javascript.Scriptable;

@@ -19,24 +19,9 @@
 
 package org.fit.cssbox.scriptbox.script.javascript.wrap;
 
-import java.net.URL;
-
-import javax.script.ScriptException;
-
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.events.EventHandler;
-import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
-import org.fit.cssbox.scriptbox.script.FunctionInvocation;
-import org.fit.cssbox.scriptbox.script.WindowScriptEngine;
-import org.fit.cssbox.scriptbox.script.exceptions.InternalException;
-import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
-import org.fit.cssbox.scriptbox.script.javascript.java.ObjectTopLevel;
-import org.fit.cssbox.scriptbox.script.javascript.js.HostedJavaMethod;
-import org.fit.cssbox.scriptbox.window.InvokeWindowScript;
-import org.fit.cssbox.scriptbox.window.Window;
-import org.fit.cssbox.scriptbox.window.WindowScriptSettings;
+import org.fit.cssbox.scriptbox.script.javascript.java.HostedJavaMethod;
 import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
 import org.w3c.dom.events.Event;
 
 /**
@@ -75,7 +60,7 @@ public class FunctionEventHandlerAdapter implements EventHandler {
 	
 	@Override
 	public String toString() {
-		return "function ()";
+		return HostedJavaMethod.getFunctionName(function);
 	}
 	
 

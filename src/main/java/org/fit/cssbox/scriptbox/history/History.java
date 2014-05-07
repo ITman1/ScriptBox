@@ -28,6 +28,7 @@ import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.navigation.Location;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.security.origins.Origin;
@@ -46,6 +47,7 @@ import org.fit.cssbox.scriptbox.window.Window;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
+@ScriptClass
 public class History {	
 	protected StateObject state;
 	protected Html5DocumentImpl document;
@@ -284,6 +286,8 @@ public class History {
 			newEntry.setURL(newURL);
 			newEntry.setBrowsingContextName(currentEntry.getBrowsingContextName());
 			newEntry.setPpersistedUserState(currentEntry.getPersistedUserState());
+			
+			currentEntry.setPushedEntry(newEntry);
 			
 			sessionHistory.add(newEntry);
 			

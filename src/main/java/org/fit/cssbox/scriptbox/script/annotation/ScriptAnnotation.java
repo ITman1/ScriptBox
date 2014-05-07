@@ -445,6 +445,27 @@ public class ScriptAnnotation {
 	}
 	
 	/**
+	 * Extracts the name of the class from the class instance.
+	 * 
+	 * @param clazz Class.
+	 * @return Name of the class.
+	 */
+	public static String extractClassName(Class<?> clazz) {
+		String className = null;
+		Annotation annotation = getClassScriptAnnotation(clazz);
+		
+		if (annotation instanceof ScriptClass) {
+			ScriptClass classAnnotation = (ScriptClass) annotation;
+			className = classAnnotation.name();
+			if (!className.equals(ScriptClass.EMPTY)) {
+				return className;
+			}
+		}
+		
+		return clazz.getSimpleName();
+	}
+	
+	/**
 	 * Tests whether is given field enumerable.
 	 * 
 	 * @param objectFieldGetter Field getter of the script field to be tested.

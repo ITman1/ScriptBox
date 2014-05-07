@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.w3c.dom.views.AbstractView;
@@ -36,6 +37,7 @@ import org.w3c.dom.views.AbstractView;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://www.w3.org/TR/2003/NOTE-DOM-Level-3-Events-20031107/events.html#Events-KeyboardEvent">Keyboard event</a>
  */
+@ScriptClass
 public class KeyboardEvent extends UIEvent {
 	public static final String DOM_MODIFIER_CONTROL  = "Control";
 	public static final String DOM_MODIFIER_SHIFT    = "Shift";

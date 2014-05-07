@@ -879,6 +879,19 @@ public class BrowsingContext {
 	}
 	
 	/**
+	 * Scroll to given coordinates.
+	 * 
+	 * @param x X coordinate.
+	 * @param y Y coordinate.
+	 */
+	public void scroll(int x, int y) {
+		BrowsingUnit browsingUnit = getBrowsingUnit();
+		ScrollBarsProp scrollbars = browsingUnit.getScrollbars();
+		
+		scrollbars.scroll(x, y);
+	}
+	
+	/**
 	 * Returns navigation controller for this browsing context.
 	 * 
 	 * @return Navigation controller.

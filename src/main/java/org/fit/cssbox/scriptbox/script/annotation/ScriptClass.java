@@ -41,7 +41,9 @@ public @interface ScriptClass  {
 	public final String ALL_CONSTRUCTORS = "all_constructors";
 	public final String ALL_SATIC_METHODS = "all_static_methods";
 	public final String ALL_STATIC_FIELDS = "all_static_fields";
+	public static final String EMPTY = "";
 	
 	String[] engines() default {};
 	String[] options() default {};
+	String name() default EMPTY;
 }

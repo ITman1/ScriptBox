@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.fit.cssbox.scriptbox.dom.DOMException;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptClass;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
 
@@ -21,6 +22,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptSetter;
  * @since 0.9 - 21.4.2014
  * @see <a href="http://url.spec.whatwg.org/#urlutils">Interface URLUtils</a>
  */
+@ScriptClass
 public class URLUtils {
 
 	protected String input;

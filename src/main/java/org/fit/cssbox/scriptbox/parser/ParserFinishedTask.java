@@ -17,7 +17,7 @@
  * 
  */
 
-package org.fit.cssbox.scriptbox.document.script;
+package org.fit.cssbox.scriptbox.parser;
 
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;

@@ -39,7 +39,6 @@ import org.apache.xerces.dom.events.MutationEventImpl;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
-import org.fit.cssbox.scriptbox.document.script.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentEvent.EventType;
 import org.fit.cssbox.scriptbox.dom.events.EventTarget;
 import org.fit.cssbox.scriptbox.dom.events.script.ErrorEvent;
@@ -48,6 +47,7 @@ import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.Location;
+import org.fit.cssbox.scriptbox.parser.ScriptableDocumentParser;
 import org.fit.cssbox.scriptbox.script.Script;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
@@ -821,6 +821,11 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		
 		_pageShowingFlag = false;
 		
+		if (!_firedUnloadFlag) {
+			_window.fireSimpleEvent("unload", _window);
+			//_firedUnloadFlag = true;
+		}
+		
 		/*
 		 * TODO: Implement
 		 */
@@ -1061,6 +1066,11 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	@Override
 	public void abort() {
 		if (_browsingContext != null) {
+			
+			if (_browsingContext.getActiveDocument() == this) {
+				_window.dispatchSimpleEvent("abort", _window);
+			}
+			
 			Collection<BrowsingContext> contexts = _browsingContext.getNestedContexts();
 			
 			for (BrowsingContext context : contexts) {
