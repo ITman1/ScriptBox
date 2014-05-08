@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
@@ -441,10 +442,12 @@ public class SessionHistory {
 		// 8) If the specified entry is not an entry with persisted user state, but 
 		// its URL has a fragment identifier, scroll to the fragment identifier.
 		String specifiedUriFragment =  specifiedURI.getRef();
-		if (!specifiedEntry.hasPersistedUserState() && specifiedUriFragment != null && !specifiedUriFragment.isEmpty()) {
-			specifiedBrowsingContext.scrollToFragment(specifiedUriFragment);
-		} else if (!specifiedEntry.hasPersistedUserState() && !specifiedEntry.hasStateObject()) {
-			specifiedBrowsingContext.scroll(0, 0);
+		if (specifiedBrowsingContext instanceof IFrameContainerBrowsingContext) {
+			if (!specifiedEntry.hasPersistedUserState() && specifiedUriFragment != null && !specifiedUriFragment.isEmpty()) {
+				((IFrameContainerBrowsingContext)specifiedBrowsingContext).scrollToFragment(specifiedUriFragment);
+			} else if (!specifiedEntry.hasPersistedUserState() && !specifiedEntry.hasStateObject()) {
+				((IFrameContainerBrowsingContext)specifiedBrowsingContext).scroll(0, 0);
+			}
 		}
 		
 		// 9) If the entry is an entry with persisted user state, the user agent may update aspects of the document

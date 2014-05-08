@@ -511,7 +511,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 */
 	@ScriptGetter
 	public BarProp getLocationbar() {
-		return context.getBrowsingUnit().getLocationbar();
+		return (iframeContainerContext != null)? iframeContainerContext.getLocationbar() : null;
 	}
 
 	/**
@@ -522,7 +522,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 */
 	@ScriptGetter
 	public BarProp getMenubar() {
-		return context.getBrowsingUnit().getMenubar();
+		return (iframeContainerContext != null)? iframeContainerContext.getMenubar() : null;
 	}
 
 	/**
@@ -533,7 +533,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 */
 	@ScriptGetter
 	public BarProp getPersonalbar() {
-		return context.getBrowsingUnit().getPersonalbar();
+		return (iframeContainerContext != null)? iframeContainerContext.getPersonalbar() : null;
 	}
 
 	/**
@@ -544,7 +544,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 */
 	@ScriptGetter
 	public ScrollBarsProp getScrollbars() {
-		return context.getBrowsingUnit().getScrollbars();
+		return (iframeContainerContext != null)? iframeContainerContext.getScrollbars() : null;
 	}
 
 	/**
@@ -555,7 +555,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 */
 	@ScriptGetter
 	public BarProp getStatusbar() {
-		return context.getBrowsingUnit().getStatusbar();
+		return (iframeContainerContext != null)? iframeContainerContext.getStatusbar() : null;
 	}
 
 	/**
@@ -566,7 +566,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 */
 	@ScriptGetter
 	public BarProp getToolbar() {
-		return context.getBrowsingUnit().getToolbar();
+		return (iframeContainerContext != null)? iframeContainerContext.getToolbar() : null;
 	}
 
 	/**
@@ -880,7 +880,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 		
 		//the user agent must first select a browsing context 
 		boolean isTargetBlank = context.isBlankBrowsingContext(target);
-		BrowsingContext targetContext = context.chooseBrowsingContextByName(target);
+		BrowsingContext targetContext = context.chooseBrowsingContextByName(target, true);
 		
 		//then throw an InvalidAccessError exception 
 		if (targetContext == null) {
@@ -927,7 +927,7 @@ public class Window implements ObjectGetter, EventTarget, GlobalEventHandlers, W
 	 */
 	@ScriptFunction
 	public void scroll(int xCoord, int yCoord) {
-		ScrollBarsProp scrollBars = context.getBrowsingUnit().getScrollbars();
+		ScrollBarsProp scrollBars = (iframeContainerContext != null)? iframeContainerContext.getScrollbars() : null;
 		
 		if (scrollBars != null) {
 			scrollBars.scroll(xCoord, yCoord);

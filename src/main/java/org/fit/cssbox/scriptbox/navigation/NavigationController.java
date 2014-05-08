@@ -184,11 +184,11 @@ public class NavigationController {
        	if (specificSource != null) {
        		_target = specificSource;
        	} else if (isLinkableElement(subject) && (targetAttr = getTargetFromElement(subject)) != null) {
-       		_target = source.chooseBrowsingContextByName(targetAttr);
+       		_target = source.chooseBrowsingContextByName(targetAttr, false);
        		_replace = source.isBlankBrowsingContext(targetAttr);
        		_explicitSelfOverride = source.isExplicitSelfNavigationOverride(targetAttr);
        	} else if (isLinkableElement(subject) && targetAttr == null && baseElement != null && (targetAttr = baseElement.getTarget()) != null) {
-       		_target = source.chooseBrowsingContextByName(targetAttr);
+       		_target = source.chooseBrowsingContextByName(targetAttr, false);
        		_replace = source.isBlankBrowsingContext(targetAttr);
        		_explicitSelfOverride = source.isExplicitSelfNavigationOverride(targetAttr);
        	} else {

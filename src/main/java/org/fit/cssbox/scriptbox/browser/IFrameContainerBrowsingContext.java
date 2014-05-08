@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
+import org.fit.cssbox.scriptbox.ui.BarProp;
+import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -37,6 +40,62 @@ import org.w3c.dom.Element;
  * @since 0.9 - 21.4.2014
  */
 public class IFrameContainerBrowsingContext extends BrowsingContext {
+	
+	/**
+	 * Default class for bar properties which are not presented by this browsing unit. 
+	 * 
+	 * @author Radim Loskot
+	 */
+	public static class NoBarProp extends BarProp {
+		@ScriptGetter
+		@Override
+		public boolean getVisible() {
+			return false;
+		}
+	}
+	
+	/**
+	 * Default class for scrollbar properties which are not presented by this browsing unit. 
+	 * 
+	 * @author Radim Loskot
+	 */
+	public static class NoScrollBarsProp extends ScrollBarsProp {
+		@ScriptGetter
+		@Override
+		public boolean getVisible() {
+			return false;
+		}
+		
+		@Override
+		public void scroll(int xCoord, int yCoord) {
+		}
+
+		@Override
+		public boolean scrollToFragment(String fragment) {
+			return true;
+		}
+
+		@Override
+		public int getScrollPositionX() {
+			return -1;
+		}
+
+		@Override
+		public int getScrollPositionY() {
+			return -1;
+		}
+	}
+	
+	protected BarProp menuBar;
+	protected BarProp toolBar;
+	protected BarProp statusBar;
+	protected BarProp personalBar;
+	protected BarProp locationBar;
+	protected ScrollBarsProp scrollbars;
+	
+	private static BarProp noBarAvailable = new NoBarProp();
+	private static NoScrollBarsProp noScrollBarsAvailable = new NoScrollBarsProp();
+	
 	/**
 	 * Empty list of IFRAME browsing contexts.
 	 */
@@ -59,6 +118,13 @@ public class IFrameContainerBrowsingContext extends BrowsingContext {
 		super(parentContext, browsingUnit, contextName, container);
 	
 		this.documentIframes = new HashMap<Document, List<IFrameBrowsingContext>>();
+		
+		this.menuBar = noBarAvailable;
+		this.toolBar = noBarAvailable;
+		this.statusBar = noBarAvailable;
+		this.personalBar = noBarAvailable;
+		this.locationBar = noBarAvailable;
+		this.scrollbars = noScrollBarsAvailable;
 	}
 	
 	/**
@@ -69,7 +135,7 @@ public class IFrameContainerBrowsingContext extends BrowsingContext {
 	 */
 	public IFrameBrowsingContext createIFrameContext(Html5IFrameElementImpl iframeElement) {
 		Document document = iframeElement.getOwnerDocument();
-		IFrameBrowsingContext childContext = new IFrameBrowsingContext(this, iframeElement);
+		IFrameBrowsingContext childContext = getBrowsingUnit().openIFrameBrowsingContext(this, iframeElement);
 		
 		List<IFrameBrowsingContext> iframes = documentIframes.get(document);
 		if (iframes == null) {
@@ -122,6 +188,143 @@ public class IFrameContainerBrowsingContext extends BrowsingContext {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Returns menu bar properties.
+	 * 
+	 * @param context Asked browsing context.
+	 * @return Menu bar properties
+	 */
+	public BarProp getMenubar() {
+		return menuBar;
+	}
+
+	/**
+	 * Returns personal bar properties.
+	 * 
+	 * @param context Asked browsing context.
+	 * @return Personal bar properties
+	 */
+	public BarProp getPersonalbar() {
+		return personalBar;
+	}
+
+	/**
+	 * Returns scroll bar properties.
+	 * 
+	 * @param context Asked browsing context.
+	 * @return Scroll bar properties
+	 */
+	public ScrollBarsProp getScrollbars() {
+		return scrollbars;
+	}
+
+	/**
+	 * Returns status bar properties.
+	 * 
+	 * @param context Asked browsing context.
+	 * @return Status bar properties
+	 */
+	public BarProp getStatusbar() {
+		return statusBar;
+	}
+
+	/**
+	 * Returns tool bar properties.
+	 * 
+	 * @param context Asked browsing context.
+	 * @return Tool bar properties
+	 */
+	public BarProp getToolbar() {
+		return toolBar;
+	}
+	
+	/**
+	 * Returns location bar properties.
+	 * 
+	 * @return Location bar properties
+	 */
+	public BarProp getLocationbar() {
+		return locationBar;
+	}
+	
+	/**
+	 * Sets menu bar properties.
+	 * 
+	 * @param menuBar Menu bar.
+	 */
+	public void setMenubar(BarProp menuBar) {
+		this.menuBar = menuBar;
+	}
+
+	/**
+	 * Sets personal bar properties.
+	 * 
+	 * @param personalBar Personal bar.
+	 */
+	public void setPersonalbar(BarProp personalBar) {
+		this.personalBar = personalBar;
+	}
+
+	/**
+	 * Sets scroll bar properties.
+	 * 
+	 * @param scrollBar Scroll bar.
+	 */
+	public void setScrollbar(ScrollBarsProp scrollbars) {
+		this.scrollbars = scrollbars;
+	}
+
+	/**
+	 * Sets status bar properties.
+	 * 
+	 * @param statusBar Status bar.
+	 */
+	public void setStatusbar(BarProp statusBar) {
+		this.statusBar = statusBar;
+	}
+
+	/**
+	 * Sets tool bar properties.
+	 * 
+	 * @param toolBar Tool barLocation bar.
+	 */
+	public void setToolbar(BarProp toolBar) {
+		this.toolBar = toolBar;
+	}
+	
+	/**
+	 * Sets location bar properties.
+	 * 
+	 * @param locationBar Location bar.
+	 */
+	public void setLocationbar(BarProp locationBar) {
+		this.locationBar = locationBar;
+	}
+	
+	/**
+	 * Tries to scroll to fragment.
+	 * 
+	 * @param fragment Fragment where to scroll the document view.
+	 * @return True if scroll was successful, otherwise false.
+	 */
+	public boolean scrollToFragment(String fragment) {
+		ScrollBarsProp scrollbars = getScrollbars();
+		
+		return scrollbars.scrollToFragment(fragment);
+	}
+	
+	/**
+	 * Scroll to given coordinates.
+	 * 
+	 * @param x X coordinate.
+	 * @param y Y coordinate.
+	 */
+	public void scroll(int x, int y) {
+		ScrollBarsProp scrollbars = getScrollbars();
+		
+		scrollbars.scroll(x, y);
 	}
 	
 	@Override

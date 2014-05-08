@@ -29,7 +29,7 @@ package org.fit.cssbox.scriptbox.browser;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class AuxiliaryBrowsingContext extends BrowsingContext {
+public class AuxiliaryBrowsingContext extends WindowBrowsingContext {
 	/**
 	 * Specifies whether this context has been created by a script or not.
 	 */
@@ -117,5 +117,19 @@ public class AuxiliaryBrowsingContext extends BrowsingContext {
 		}
 	
 		return true;
+	}
+	
+	@Override
+	public void discard() {
+		synchronized (this) {
+			if (!discarded) {
+
+				if (openerBrowsingContext != null) {
+					openerBrowsingContext.removeAuxiliaryContext(this);
+				}
+			}			
+		}
+		
+		super.discard();
 	}
 }

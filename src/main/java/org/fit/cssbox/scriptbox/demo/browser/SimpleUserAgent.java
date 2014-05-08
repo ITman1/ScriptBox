@@ -3,12 +3,12 @@ package org.fit.cssbox.scriptbox.demo.browser;
 import javax.swing.UIManager;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
-import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowsingUnit;
+import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowserUiController;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserUserAgent;
 
 /**
  * User agent using browsing units with user interface.
- * This user agent constructs {@link SimpleBrowsingUnit} for a new browsing
+ * This user agent constructs {@link SimpleBrowserUiController} for a new browsing
  * units. When there are no browsing units then it exits the current running application.
  * 
  * @author Radim Loskot

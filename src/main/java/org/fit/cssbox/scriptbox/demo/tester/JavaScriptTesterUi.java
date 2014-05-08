@@ -43,6 +43,7 @@ import javax.swing.border.EtchedBorder;
 
 import jsyntaxpane.DefaultSyntaxKit;
 
+import org.fit.cssbox.scriptbox.demo.browser.BrowserUi;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 
 /**
@@ -52,7 +53,7 @@ import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class JavaScriptTester {
+public class JavaScriptTesterUi implements BrowserUi {
 	private JFrame frame;
 	private JTextField navigationField;
 	private JButton navigateButton;
@@ -81,7 +82,7 @@ public class JavaScriptTester {
 	/**
 	 * Create the view components of the JavaScript tester.
 	 */
-	public JavaScriptTester() {
+	public JavaScriptTesterUi() {
 		initialize();
 	}
 
@@ -345,14 +346,17 @@ public class JavaScriptTester {
 		return sourceCodeEditorPane;
 	}
 
+	@Override
 	public JFrame getWindow() {
 		return frame;
 	}
 
+	@Override
 	public JButton getNavigateButton() {
 		return navigateButton;
 	}
 
+	@Override
 	public JTextField getNavigationField() {
 		return navigationField;
 	}
@@ -425,10 +429,12 @@ public class JavaScriptTester {
 		return statusLabel;
 	}
 	
+	@Override
 	public JButton getHistoryBackButton() {
 		return historyBackButton;
 	}
 
+	@Override
 	public JButton getHistoryForwardButton() {
 		return historyForwardButton;
 	}

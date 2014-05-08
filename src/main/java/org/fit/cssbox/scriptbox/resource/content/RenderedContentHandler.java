@@ -22,6 +22,7 @@ package org.fit.cssbox.scriptbox.resource.content;
 import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
+import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
@@ -117,7 +118,11 @@ public abstract class RenderedContentHandler extends ContentHandler {
 				return;
 			}
 			
-			if (context.scrollToFragment(fragment)) {
+			if (!(context instanceof IFrameContainerBrowsingContext)) {
+				return;
+			}
+			
+			if (((IFrameContainerBrowsingContext)context).scrollToFragment(fragment)) {
 				return;
 			}
 			

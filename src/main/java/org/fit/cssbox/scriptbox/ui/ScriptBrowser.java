@@ -28,8 +28,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 
-import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
+import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.events.Task;
@@ -48,7 +48,7 @@ public class ScriptBrowser extends BrowserPane {
 	protected ScriptBrowserHyperlinkHandler hyperlinkHandler;
 	
 	protected UserAgent userAgent;
-	protected BrowsingUnit browsingUnit;
+	protected IFrameContainerBrowsingContext windowContext;
 	
 	protected SessionHistoryEntry visibleSessionHistoryEntry;
 	protected Rectangle delayedScrollRect;
@@ -56,32 +56,33 @@ public class ScriptBrowser extends BrowserPane {
 	public ScriptBrowser() {}
 	
 	/**
-	 * User agent that will be used for opening browsing unit which will be used by this browsing component.
+	 * User agent that will be used for opening browsing unit and window browsing context
+	 * which will be used by this browsing component.
 	 * 
 	 * @param userAgent User agent.
 	 */
 	public ScriptBrowser(UserAgent userAgent) {
 		BrowsingUnit browsingUnit = userAgent.openBrowsingUnit();
-		setBrowsingUnit(browsingUnit);
+		setWindowBrowsingContext(browsingUnit.getWindowBrowsingContext());
 	}
 	
 	/**
-	 * Constructs new browser with an associated browsing unit.
+	 * Constructs new browser with an associated window browsing context.
 	 * 
-	 * @param browsingUnit Browsing unit to be associated with this browser.
+	 * @param windowContext Window browsing context to be associated with this browser.
 	 */
-	public ScriptBrowser(BrowsingUnit browsingUnit) {
-		setBrowsingUnit(browsingUnit);
+	public ScriptBrowser(IFrameContainerBrowsingContext windowContext) {
+		setWindowBrowsingContext(windowContext);
 	}
 
 	/**
-	 * Sets new browsing unit that will be used for retrieving the Document.
+	 * Sets new window browsing ontext that will be used for retrieving the Document.
 	 * 
-	 * @param browsingUnit Browsing unit to be associated with this browser.
+	 * @param windowContext Window browsing context to be associated with this browser.
 	 */
-	public void setBrowsingUnit(BrowsingUnit browsingUnit) {
-		this.browsingUnit = browsingUnit;
-		this.userAgent = browsingUnit.getUserAgent();
+	public void setWindowBrowsingContext(IFrameContainerBrowsingContext windowContext) {
+		this.windowContext = windowContext;
+		this.userAgent = windowContext.getUserAgent();
 		
 		initialize();
 	}
@@ -113,18 +114,19 @@ public class ScriptBrowser extends BrowserPane {
 	}
 	
 	/**
-	 * Returns associated browsing unit.
+	 * Returns associated window browsing context.
 	 * 
-	 * @return Associated browsing unit.
+	 * @return Associated window browsing context.
 	 */
-	public BrowsingUnit getBrowsingUnit() {
-		return browsingUnit;
+	public IFrameContainerBrowsingContext getWindowBrowsingContext() {
+		return windowContext;
 	}
 	
 	/**
 	 * Refreshes the canvas. This should be used when user agent finished the parsing.
 	 */
 	public void refresh() {
+		BrowsingUnit browsingUnit = windowContext.getBrowsingUnit();
 		browsingUnit.queueTask(new Task(TaskSource.DOM_MANIPULATION, browsingUnit.getWindowBrowsingContext()) {
 			
 			@Override
@@ -140,8 +142,7 @@ public class ScriptBrowser extends BrowserPane {
 				
 				/* Get information about content to render */
 				
-				BrowsingContext context = browsingUnit.getWindowBrowsingContext();
-				Html5DocumentImpl activeDocument = context.getActiveDocument();
+				Html5DocumentImpl activeDocument = windowContext.getActiveDocument();
 				URL documentAddress = activeDocument.getAddress();
 
 				String contentType = activeDocument.getContentType();
@@ -175,7 +176,7 @@ public class ScriptBrowser extends BrowserPane {
 				
 
 				synchronized (ScriptBrowser.this) {
-					SessionHistory sessionHistory = context.getSesstionHistory();
+					SessionHistory sessionHistory = windowContext.getSesstionHistory();
 					visibleSessionHistoryEntry = sessionHistory.getCurrentEntry();
 				}	
 				
@@ -202,8 +203,7 @@ public class ScriptBrowser extends BrowserPane {
 	
 	@Override
 	public synchronized void scrollRectToVisible(Rectangle aRect) {		
-		BrowsingContext context = browsingUnit.getWindowBrowsingContext();
-		SessionHistory sessionHistory = context.getSesstionHistory();
+		SessionHistory sessionHistory = windowContext.getSesstionHistory();
 		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 		
 		aRect = new Rectangle(aRect);

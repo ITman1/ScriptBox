@@ -33,7 +33,6 @@ import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.fit.cssbox.scriptbox.security.origins.DocumentOrigin;
-import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 import org.fit.cssbox.scriptbox.window.WindowProxy;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,6 +61,7 @@ public class BrowsingContext {
 	protected BrowsingContext parentContext;
 	protected Html5DocumentImpl creatorDocument;
 	protected List<BrowsingContext> childContexts;
+	protected List<AuxiliaryBrowsingContext> auxiliaryContexts;
 	protected BrowsingUnit browsingUnit;
 	protected WindowProxy windowProxy;
 	protected Element container;
@@ -87,6 +87,7 @@ public class BrowsingContext {
 		
 		this.listeners = new HashSet<BrowsingContextListener>();
 		this.childContexts = new ArrayList<BrowsingContext>();
+		this.auxiliaryContexts = new ArrayList<AuxiliaryBrowsingContext>();
 		this.sessionHistory = new SessionHistory(this);
 		this.windowProxy = new WindowProxy(this);
 		this.navigationController = new NavigationController(this);
@@ -191,32 +192,51 @@ public class BrowsingContext {
 	}
 	
 	/**
+	 * Opens new top-level auxiliary browsing context.
+	 * 
+	 * @param name Name of the browsing context.
+	 * @param createdByScript Specifies whether this context has been created by a script or not.
+	 * @return New top-level auxiliary browsing context
+	 */
+	public AuxiliaryBrowsingContext openAuxiliaryBrowsingContext(String name, boolean createdByScript) {
+		AuxiliaryBrowsingContext auxiliaryContext = getBrowsingUnit().openAuxiliaryBrowsingContext(this, name, createdByScript);
+		addAuxiliaryContext(auxiliaryContext);
+		return auxiliaryContext;
+	}
+	
+	/**
 	 * Discards this browsing context.
 	 * 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#a-browsing-context-is-discarded">Discarded browsing context</a>
 	 * @see #isDiscarded()
 	 */
 	public void discard() {	
-		if (!discarded) {
-			/*
-			 * When a browsing context is discarded, the strong reference from the user agent itself to the browsing context must be severed, 
-			 * and all the Document objects for all the entries in the browsing context's session history must be discarded as well.
-			 */
-			synchronized (this) {
+		boolean wasDiscarded = true;
+		synchronized (this) {
+			wasDiscarded = discarded;
+			
+			if (!discarded) {
+				/*
+				 * When a browsing context is discarded, the strong reference from the user agent itself to the browsing context must be severed, 
+				 * and all the Document objects for all the entries in the browsing context's session history must be discarded as well.
+				 */
+				
 				navigationController.cancelAllNavigationAttempts();
 				sessionHistory.discard();
-				
+					
 				if (parentContext != null) {
 					parentContext.removeChildContext(this);
 				}
-				
+					
 				browsingUnit = null;
 				parentContext = null;
 				sessionHistory = null;
-				
+					
 				discarded = true;
 			}			
-			
+		}
+		
+		if (!wasDiscarded) {
 			fireBrowsingContextDestroyed();
 		}
 	}
@@ -740,11 +760,12 @@ public class BrowsingContext {
 	 * Chooses browsing context for a given browsing context name or keyword.
 	 * 
 	 * @param name Browsing context name or keyword.
+	 * @param calledByScript Specifies whether this method has been called by a script or not.
 	 * @return Resulted browsing context for a given browsing context name or keyword.
 	 * @see #isBlankBrowsingContext(String)
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name">Choosing browsing context given a browsing context name or keyword</a>
 	 */
-	public BrowsingContext chooseBrowsingContextByName(String name) {
+	public BrowsingContext chooseBrowsingContextByName(String name, boolean calledByScript) {
 		BrowsingUnit browsingUnit = getBrowsingUnit();
 		BrowsingContext context = null;
 		
@@ -795,7 +816,7 @@ public class BrowsingContext {
 			/*
 			 * FIXME: Replace for null and implement above TODOs.
 			 */
-			return browsingUnit.getUserAgent().openBrowsingUnit().getWindowBrowsingContext();
+			return browsingUnit.openAuxiliaryBrowsingContext(this, name, calledByScript);
 		}
 	}
 	
@@ -855,6 +876,15 @@ public class BrowsingContext {
 	}
 	
 	/**
+	 * Returns associated user agent.
+	 * 
+	 * @return Associated user agent.
+	 */
+	public UserAgent getUserAgent() {
+		return getBrowsingUnit().getUserAgent();
+	}
+	
+	/**
 	 * Returns event loop.
 	 * 
 	 * @return Event loop.
@@ -863,32 +893,6 @@ public class BrowsingContext {
 	public EventLoop getEventLoop() {
 		BrowsingUnit browsingUnit = getBrowsingUnit();
 		return (browsingUnit != null)? browsingUnit.getEventLoop() : null;
-	}
-	
-	/**
-	 * Tries to scroll to fragment.
-	 * 
-	 * @param fragment Fragment where to scroll the document view.
-	 * @return True if scroll was successful, otherwise false.
-	 */
-	public boolean scrollToFragment(String fragment) {
-		BrowsingUnit browsingUnit = getBrowsingUnit();
-		ScrollBarsProp scrollbars = browsingUnit.getScrollbars();
-		
-		return scrollbars.scrollToFragment(fragment);
-	}
-	
-	/**
-	 * Scroll to given coordinates.
-	 * 
-	 * @param x X coordinate.
-	 * @param y Y coordinate.
-	 */
-	public void scroll(int x, int y) {
-		BrowsingUnit browsingUnit = getBrowsingUnit();
-		ScrollBarsProp scrollbars = browsingUnit.getScrollbars();
-		
-		scrollbars.scroll(x, y);
 	}
 	
 	/**
@@ -901,7 +905,7 @@ public class BrowsingContext {
 	}
 	
 	/**
-	 * Method which should be called for removing a child context from this browsing context.
+	 * Method which should be called for removing a child context of this browsing context.
 	 * 
 	 * @param child Child browsing context which should be removed.
 	 */
@@ -914,7 +918,7 @@ public class BrowsingContext {
 	}
 	
 	/**
-	 * Method which should be called for adding a child context from this browsing context.
+	 * Method which should be called for adding a child context of this browsing context.
 	 * 
 	 * @param child Child browsing context which should be added.
 	 */
@@ -924,6 +928,32 @@ public class BrowsingContext {
 		}
 		
 		fireBrowsingContextInserted(child);
+	}
+	
+	/**
+	 * Method which should be called for removing a child context of this browsing context.
+	 * 
+	 * @param child Auxiliary browsing context which should be removed.
+	 */
+	protected void removeAuxiliaryContext(AuxiliaryBrowsingContext auxiliaryContext) {
+		synchronized (this) {
+			auxiliaryContexts.remove(auxiliaryContext);
+		}
+
+		fireBrowsingContextRemoved(auxiliaryContext);
+	}
+	
+	/**
+	 * Method which should be called for adding a auxiliary context of this browsing context.
+	 * 
+	 * @param auxiliaryContext Auxiliary browsing context which should be added.
+	 */
+	protected void addAuxiliaryContext(AuxiliaryBrowsingContext auxiliaryContext) {
+		synchronized (this) {
+			auxiliaryContexts.add(auxiliaryContext);
+		}
+		
+		fireBrowsingContextInserted(auxiliaryContext);
 	}
 	
 	private BrowsingContext getFirstFamiliar(String name) {

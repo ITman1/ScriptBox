@@ -3,14 +3,14 @@ package org.fit.cssbox.scriptbox.demo.tester;
 import javax.swing.UIManager;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
-import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowsingUnit;
+import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowserUiController;
 import org.fit.cssbox.scriptbox.demo.browser.SimpleUserAgent;
 
 /**
  * Represents main class with the JavaScript tester user agent.
  * This class constructs {@link JavaScriptTesterBrowsingUnit} browsing unit
  * as the main browsing unit and for additional blank browsing units
- * it constructs {@link SimpleBrowsingUnit}.
+ * it constructs {@link SimpleBrowserUiController}.
  *
  * @author Radim Loskot
  * @version 0.9
@@ -21,11 +21,7 @@ public class JavaScriptTesterUserAgent extends SimpleUserAgent {
 	
 	@Override
 	protected BrowsingUnit createBrowsingUnit() {
-		if (testerBrowsingUnit == null) {
-			return testerBrowsingUnit = new JavaScriptTesterBrowsingUnit(this);
-		} else {
-			return new SimpleBrowsingUnit(this);
-		}
+		return testerBrowsingUnit = new JavaScriptTesterBrowsingUnit(this);
 	}
 	
 	/**

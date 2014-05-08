@@ -1,356 +1,129 @@
-/**
- * JavaScriptTester.java
- * (c) Radim Loskot and Radek Burget, 2013-2014
- *
- * ScriptBox is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *  
- * ScriptBox is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *  
- * You should have received a copy of the GNU Lesser General Public License
- * along with ScriptBox. If not, see <http://www.gnu.org/licenses/>.
- * 
- */
-
 package org.fit.cssbox.scriptbox.demo.browser;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
+import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
-import org.fit.cssbox.scriptbox.history.JointSessionHistoryEvent;
-import org.fit.cssbox.scriptbox.history.JointSessionHistoryListener;
-import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
-import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
-import org.fit.cssbox.scriptbox.navigation.NavigationController;
-import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
-import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
+import org.fit.cssbox.scriptbox.browser.BrowsingContextEvent;
+import org.fit.cssbox.scriptbox.browser.BrowsingContextListener;
+import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserBrowsingUnit;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserUserAgent;
 
-/**
- * Browsing unit with simple user interface which contains navigation
- * field and history traversal buttons.
- * 
- * @author Radim Loskot
- * @version 0.9
- * @since 0.9 - 21.4.2014
- */
 public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
-	protected JFrame frame;
-	protected JTextField navigationField;
-	protected JButton navigateButton;
-	protected JButton historyBackButton;
-	protected JButton historyForwardButton;
-	
-	protected NavigationController navigationController;
-	protected NavigationAttempt navigationAttempt;
 
-	protected SessionHistoryEntry currentEntry;
-	protected boolean navigationFieldSetByUser;
+	private BrowsingContextListener contextListener = new BrowsingContextListener() {
 
-	private WindowListener frameListener = new WindowAdapter() {
-		public void windowClosing(WindowEvent e) {
-			frame.dispose();
-			userAgent.destroyBrowsingUnit(SimpleBrowsingUnit.this);
-		};
-	};
-	
-	private NavigationControllerListener navigationControllerListener = new NavigationControllerListener() {
 		@Override
-		public void onNavigationEvent(final NavigationControllerEvent event) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					switch (event.getEventType()) {
-						case NAVIGATION_MATURED:
-							break;
-						case DESTROYED:
-						case NAVIGATION_CANCELLED:
-							navigationAttempt = null;
-							break;
-						case NAVIGATION_COMPLETED:
-							navigationAttempt = null;
-							updateScriptBox();
-							break;
-						case NAVIGATION_NEW:
-							NavigationAttempt attempt = event.getNavigationAttempt();
-							navigationAttempt = attempt;
-							break;
-					}
-
-					updateUi();
-				}
-			});
-		}
-    };
-	
-	private JointSessionHistoryListener jointSessionHistoryListener = new JointSessionHistoryListener() {
-		@Override
-		public void onHistoryEvent(final JointSessionHistoryEvent event) {
-			SessionHistoryEntry _whereTraversed = null;
-			if (event.getEventType() == JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
-				_whereTraversed = jointSessionHistory.getCurrentEntry();
-			} else if (event.getEventType() == JointSessionHistoryEvent.EventType.TRAVERSED) {
-				_whereTraversed = event.getRelatedTarget();
-			} else {
-				return;
-			}
-						
-			if (_whereTraversed == null) {
+		public void onBrowsingContextEvent(BrowsingContextEvent event) {
+			BrowsingContext target = event.getTarget();
+			
+			if (!(target instanceof AuxiliaryBrowsingContext)) {
 				return;
 			}
 			
-			final SessionHistoryEntry whereTraversed = _whereTraversed;
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					Html5DocumentImpl newDocument = whereTraversed.getDocument();
-					BrowsingContext browsingContext = newDocument.getBrowsingContext();
-					
-					if (newDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE && browsingContext.isTopLevelBrowsingContext() && newDocument.isActiveDocument() && currentEntry != whereTraversed) {
-						updateScriptBox();
-					}
-					
-					if (browsingContext.isTopLevelBrowsingContext()) {
-						currentEntry = whereTraversed;
-						navigationFieldSetByUser = false;
-					}
-					
-					
-					updateUi();
-				}
-			});
+			AuxiliaryBrowsingContext windowContext = (AuxiliaryBrowsingContext)target;
 			
-		}
-    };
-	
-	private DocumentListener onNavigationFieldChangedListener = new DocumentListener() {
-		
-		@Override
-		public void removeUpdate(DocumentEvent e) {
-			navigationFieldSetByUser = true;
-		}
-		
-		@Override
-		public void insertUpdate(DocumentEvent e) {
-			navigationFieldSetByUser = true;
-		}
-		
-		@Override
-		public void changedUpdate(DocumentEvent e) {
-			navigationFieldSetByUser = true;
-		}
-	};
-	
-	private ActionListener onNavigationFieldActionListener = new ActionListener() {
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			onNavigateListener.actionPerformed(e);
-		}
-	};
-	
-	private ActionListener onNavigateListener = new ActionListener() {
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			String navigationUrl = navigationField.getText();
-			
-			boolean hasScheme = navigationUrl.matches("\\w+:.*");
-			
-			if (!hasScheme) {
-				navigationUrl = "http://" + navigationUrl;
-			}
-			
-			if (navigationAttempt != null) {
-				navigationController.cancelAllNavigationAttempts();
-			} else {
-				try {
-					navigate(navigationUrl);
-				} catch (MalformedURLException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(frame,
-						    "Please fix typed URL address.",
-						    "Malformed URL",
-						    JOptionPane.INFORMATION_MESSAGE);
-				}
+			switch (event.getEventType()) {
+				case INSERTED:
+					onAuxiliaryBrowsingContextInserted(windowContext);
+					break;
+				case REMOVED:
+					onAuxiliaryBrowsingContextRemoved(windowContext);
+					break;
+				case DESTROYED:
+					onAuxiliaryBrowsingContextDestroyed(windowContext);
+					break;
+				default:
+					break;
 			}
 		}
 	};
 	
-	private ActionListener onHistoryBackListener = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			jointSessionHistory.traverse(-1);
-		}
-	};
-	
-	private ActionListener onHistoryForwardListener = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			jointSessionHistory.traverse(1);
-		}
-	};
+	protected BrowserUiController windowContextUiController;
+	protected Map<WindowBrowsingContext, BrowserUiController> auxiliaryUiControllers;
 	
 	public SimpleBrowsingUnit(ScriptBrowserUserAgent userAgent) {
 		super(userAgent);
 		
-		initializeComponents();
-
-		navigationController = windowBrowsingContext.getNavigationController();
+		auxiliaryUiControllers = new HashMap<WindowBrowsingContext, BrowserUiController>();
 		
-		registerEventListeners();
-		
-		updateUi();
-		
-		showWindow();
-	}
-
-	private void initializeComponents() {
-		frame = new JFrame();
-		frame.setMinimumSize(new Dimension(700, 500));
-		frame.setBounds(100, 100, 1024, 780);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new BorderLayout(0, 0));
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-		JPanel containerPanel = new JPanel();
-		containerPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		frame.getContentPane().add(containerPanel, BorderLayout.CENTER);
-		containerPanel.setLayout(new BorderLayout(0, 0));
-
-		JPanel navigationPanel = new JPanel();
-		containerPanel.add(navigationPanel, BorderLayout.NORTH);
-		navigationPanel.setBorder(new EmptyBorder(0, 0, 2, 0));
-		navigationPanel.setLayout(new BorderLayout(0, 0));
-
-		JLabel navigationLabel = new JLabel("URL:");
-		navigationLabel.setPreferredSize(new Dimension(30, 18));
-		navigationPanel.add(navigationLabel, BorderLayout.WEST);
-
-		navigationField = new JTextField();
-		navigationField.setToolTipText("Please type URL to navigate");
-		navigationLabel.setLabelFor(navigationField);
-		navigationField
-				.setText("http://www.stud.fit.vutbr.cz/~xlosko01/CSSBox/tests/window_properties.html");
-		navigationPanel.add(navigationField, BorderLayout.CENTER);
-		navigationField.setColumns(10);
-
-		JPanel navigationButtonsPanel = new JPanel();
-		navigationPanel.add(navigationButtonsPanel, BorderLayout.EAST);
-		navigationButtonsPanel
-				.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 0));
-
-		navigateButton = new JButton("navigate");
-		navigationButtonsPanel.add(navigateButton);
-
-		historyBackButton = new JButton("<-");
-		navigationButtonsPanel.add(historyBackButton);
-
-		historyForwardButton = new JButton("->");
-		navigationButtonsPanel.add(historyForwardButton);
-		
-		JScrollPane scriptBrowserScrollPane = new JScrollPane();
-		containerPanel.add(scriptBrowserScrollPane, BorderLayout.CENTER);
-
-		scriptBrowserScrollPane.setViewportView(scriptBrowser);	
+		windowContextUiController = constructWindowTopLevelBrowsingContextUiController(windowBrowsingContext);
+		if (windowContextUiController != null) {
+			windowContextUiController.showUI();
+		}
 	}
 	
-	public void showWindow() {
+	@Override
+	public void discard() {
+		super.discard();
+		
+		windowContextUiController = null;
+		auxiliaryUiControllers.clear();
+		contextListener = null;
+	}
+	
+	@Override
+	public AuxiliaryBrowsingContext openAuxiliaryBrowsingContext(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
+		AuxiliaryBrowsingContext auxiliaryContext = super.openAuxiliaryBrowsingContext(openerBrowsingContext, name, createdByScript);
+		auxiliaryContext.addListener(contextListener);
+		return auxiliaryContext;
+	}
+	
+	/**
+	 * Constructs UI controller for given window context.
+	 * 
+	 * @param windowContext Window context.
+	 * @return Constructed UI controller.
+	 */
+	protected BrowserUiController constructAuxiliaryBrowsingContextUiController(WindowBrowsingContext windowContext) {
+		return new SimpleBrowserUiController(windowContext);
+	}
+	
+	/**
+	 * Constructs UI controller for given window context.
+	 * 
+	 * @param windowContext Window context.
+	 * @return Constructed UI controller.
+	 */
+	protected BrowserUiController constructWindowTopLevelBrowsingContextUiController(WindowBrowsingContext windowContext) {
+		return new SimpleBrowserUiController(windowContext);
+	}
+	
+	private void onAuxiliaryBrowsingContextInserted(AuxiliaryBrowsingContext windowContext) {
+		BrowserUiController controller = auxiliaryUiControllers.get(windowContext);
+		
+		if (controller == null) {
+			controller = constructAuxiliaryBrowsingContextUiController(windowContext);
+			auxiliaryUiControllers.put(windowContext, controller);
+		}
+		
+		final BrowserUiController _controller = controller;
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(frame,
-						    "Unable to run application.",
-						    "Internal error",
-						    JOptionPane.ERROR_MESSAGE);
-				}
+				_controller.showUI();
 			}
 		});
+		
 	}
 	
-	private void updateScriptBox() {
-		scriptBrowser.refresh();
-	}
-	
-	private void updateUi() {
-		if (navigationAttempt != null) {
-			navigateButton.setText("Cancel");
-		} else {
-			navigateButton.setText("Navigate");
-		}
+	private void onAuxiliaryBrowsingContextRemoved(AuxiliaryBrowsingContext windowContext) {
+		BrowserUiController controller = auxiliaryUiControllers.get(windowContext);
 		
-		int historyPosition = jointSessionHistory.getPosition();
-		int historyLength = jointSessionHistory.getLength();
-		
-		historyBackButton.setEnabled(historyPosition != - 1 && historyPosition != 0);
-		historyForwardButton.setEnabled(historyPosition != historyLength - 1);
-		
-		if (currentEntry != null && !navigationFieldSetByUser) {
-			final String urlString = currentEntry.getURL().toExternalForm();
-			navigationField.setText(urlString);
+		if (controller != null) {
+			final BrowserUiController _controller = controller;
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					_controller.hideUI();
+				}
+			});
 		}
 	}
 	
-	private void registerEventListeners() {		
-		historyBackButton.addActionListener(onHistoryBackListener);
-		historyForwardButton.addActionListener(onHistoryForwardListener);
-		navigateButton.addActionListener(onNavigateListener);
-		frame.addWindowListener(frameListener);
-		
-		jointSessionHistory.addListener(jointSessionHistoryListener);
-		navigationController.addListener(navigationControllerListener);
-		
-		navigationField.getDocument().addDocumentListener(onNavigationFieldChangedListener);
-		navigationField.addActionListener(onNavigationFieldActionListener);
+	private void onAuxiliaryBrowsingContextDestroyed(AuxiliaryBrowsingContext windowContext) {
+		auxiliaryUiControllers.remove(windowContext);
 	}
 
-	public JFrame getWindow() {
-		return frame;
-	}
-
-	public JButton getNavigateButton() {
-		return navigateButton;
-	}
-
-	public JTextField getNavigationField() {
-		return navigationField;
-	}
-	
-	public JButton getHistoryBackButton() {
-		return historyBackButton;
-	}
-
-	public JButton getHistoryForwardButton() {
-		return historyForwardButton;
-	}
 }

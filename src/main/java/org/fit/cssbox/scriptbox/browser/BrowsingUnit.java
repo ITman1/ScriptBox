@@ -22,14 +22,12 @@ package org.fit.cssbox.scriptbox.browser;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.fit.cssbox.scriptbox.dom.Html5IFrameElementImpl;
 import org.fit.cssbox.scriptbox.events.EventLoop;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.JointSessionHistory;
 import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.script.ScriptSettingsStack;
-import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
-import org.fit.cssbox.scriptbox.ui.BarProp;
-import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
 
 /**
  * Default class for creating custom browsing unit. 
@@ -43,54 +41,6 @@ import org.fit.cssbox.scriptbox.ui.ScrollBarsProp;
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#unit-of-related-browsing-contexts">Unit of related browsing contexts</a>
  */
 public class BrowsingUnit {
-	/**
-	 * Default class for bar properties which are not presented by this browsing unit. 
-	 * 
-	 * @author Radim Loskot
-	 */
-	public static class NoBarProp extends BarProp {
-		@ScriptGetter
-		@Override
-		public boolean getVisible() {
-			return false;
-		}
-	}
-	
-	/**
-	 * Default class for scrollbar properties which are not presented by this browsing unit. 
-	 * 
-	 * @author Radim Loskot
-	 */
-	public static class NoScrollBarsProp extends ScrollBarsProp {
-		@ScriptGetter
-		@Override
-		public boolean getVisible() {
-			return false;
-		}
-		
-		@Override
-		public void scroll(int xCoord, int yCoord) {
-		}
-
-		@Override
-		public boolean scrollToFragment(String fragment) {
-			return true;
-		}
-
-		@Override
-		public int getScrollPositionX() {
-			return -1;
-		}
-
-		@Override
-		public int getScrollPositionY() {
-			return -1;
-		}
-	}
-	
-	private static BarProp noBarAvailable = new NoBarProp();
-	private static NoScrollBarsProp noScrollBarsAvailable = new NoScrollBarsProp();
-	
 	protected UserAgent userAgent;
 	protected EventLoop eventLoop;
 	protected JointSessionHistory jointSessionHistory;
@@ -109,7 +59,7 @@ public class BrowsingUnit {
 		
 		this.eventLoop = new EventLoop(this);
 		this.scriptSettingsStack = new ScriptSettingsStack();
-		this.windowBrowsingContext = new WindowBrowsingContext(this);
+		this.windowBrowsingContext = constructWindowBrowsingContext();
 		
 		// Has to be after windowBrowsingContext - because it registers event listeners above it
 		this.jointSessionHistory = new JointSessionHistory(this);
@@ -122,6 +72,38 @@ public class BrowsingUnit {
 	 */
 	public UserAgent getUserAgent() {
 		return userAgent;
+	}
+	
+	/**
+	 * Opens new top-level auxiliary browsing context.
+	 * 
+	 * @param openerBrowsingContext Browsing context from which the auxiliary browsing context was created.
+	 * @param name Name of the browsing context.
+	 * @param createdByScript Specifies whether this context has been created by a script or not.
+	 * @return New top-level auxiliary browsing context
+	 */
+	public AuxiliaryBrowsingContext openAuxiliaryBrowsingContext(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
+		return new AuxiliaryBrowsingContext(this, openerBrowsingContext, name, createdByScript);
+	}
+	
+	/**
+	 * Opens new IFRAME browsing context.
+	 * 
+	 * @param container Container browsing context.
+	 * @param iframeElement IFRAME element which represents the container of the new browsing context.
+	 * @return New nested IFRAME browsing context.
+	 */
+	public IFrameBrowsingContext openIFrameBrowsingContext(IFrameContainerBrowsingContext container, Html5IFrameElementImpl iframeElement) {
+		return new IFrameBrowsingContext(container, iframeElement);
+	}
+	
+	/**
+	 * Constructs top level window browsing context.
+	 * 
+	 * @return Top level window browsing context.
+	 */
+	protected WindowBrowsingContext constructWindowBrowsingContext() {
+		return new WindowBrowsingContext(this);
 	}
 	
 	/**
@@ -220,60 +202,6 @@ public class BrowsingUnit {
 			
 			_discarded = true;
 		}
-	}
-	
-	/**
-	 * Returns menu bar properties.
-	 * 
-	 * @return Menu bar properties
-	 */
-	public BarProp getMenubar() {
-		return noBarAvailable;
-	}
-
-	/**
-	 * Returns personal bar properties.
-	 * 
-	 * @return Personal bar properties
-	 */
-	public BarProp getPersonalbar() {
-		return noBarAvailable;
-	}
-
-	/**
-	 * Returns scroll bar properties.
-	 * 
-	 * @return Scroll bar properties
-	 */
-	public ScrollBarsProp getScrollbars() {
-		return noScrollBarsAvailable;
-	}
-
-	/**
-	 * Returns status bar properties.
-	 * 
-	 * @return Status bar properties
-	 */
-	public BarProp getStatusbar() {
-		return noBarAvailable;
-	}
-
-	/**
-	 * Returns tool bar properties.
-	 * 
-	 * @return Tool bar properties
-	 */
-	public BarProp getToolbar() {
-		return noBarAvailable;
-	}
-	
-	/**
-	 * Returns location bar properties.
-	 * 
-	 * @return Location bar properties
-	 */
-	public BarProp getLocationbar() {
-		return noBarAvailable;
 	}
 	
 	/**

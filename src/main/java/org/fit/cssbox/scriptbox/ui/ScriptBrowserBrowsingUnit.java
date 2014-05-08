@@ -39,9 +39,7 @@ import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
  * @since 0.9 - 21.4.2014
  */
 public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
-	protected LocationBarProp locationBarProp;
-	protected UiScrollBarsProp uiScrollBarsProp;
-	
+
 	public static class LocationBarProp extends BarProp {
 		@ScriptGetter
 		@Override
@@ -158,7 +156,7 @@ public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 		super(userAgent);
 		
 		if (constructScriptBrowser) {
-			this.scriptBrowser = new ScriptBrowser(this);
+			this.scriptBrowser = new ScriptBrowser(windowBrowsingContext);
 			initialize();
 		}
 	}
@@ -209,24 +207,20 @@ public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 	 * Initializes this browsing unit.
 	 */
 	protected void initialize() {
-		if (scriptBrowser.getBrowsingUnit() != this) {
-			scriptBrowser.setBrowsingUnit(this);
+
+		if (scriptBrowser.getWindowBrowsingContext() != windowBrowsingContext) {
+			scriptBrowser.setWindowBrowsingContext(windowBrowsingContext);
 		}
 		
-		this.locationBarProp = new LocationBarProp();
-		this.uiScrollBarsProp = new UiScrollBarsProp(scriptBrowser);
+		LocationBarProp locationBarProp = new LocationBarProp();
+		UiScrollBarsProp uiScrollBarsProp = new UiScrollBarsProp(scriptBrowser);
+		
+		/* We have global bars only, there is no support for nested contexts now */
+		
+		windowBrowsingContext.setLocationbar(locationBarProp);
+		windowBrowsingContext.setScrollbar(uiScrollBarsProp);
 	}
 		
-	@Override
-	public BarProp getLocationbar() {
-		return locationBarProp;
-	}
-	
-	@Override
-	public ScrollBarsProp getScrollbars() {
-		return uiScrollBarsProp;
-	}
-	
 	@Override
 	public void showAlertDialog(String message) {
 		JOptionPane.showMessageDialog(scriptBrowser, message, "Alert dialog", JOptionPane.INFORMATION_MESSAGE);
