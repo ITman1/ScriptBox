@@ -4,6 +4,11 @@ public abstract class BrowserUiController {
 	/**
 	 * Makes UI visible.
 	 */
+	public abstract BrowserUi getUI();
+	
+	/**
+	 * Makes UI visible.
+	 */
 	public abstract void showUI();
 	
 	/**

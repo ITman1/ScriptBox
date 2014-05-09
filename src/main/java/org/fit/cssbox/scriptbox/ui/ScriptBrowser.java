@@ -170,7 +170,6 @@ public class ScriptBrowser extends BrowserPane {
 						}
 					});
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				

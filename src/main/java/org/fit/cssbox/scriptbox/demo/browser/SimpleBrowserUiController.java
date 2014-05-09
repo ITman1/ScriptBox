@@ -349,4 +349,9 @@ public class SimpleBrowserUiController extends BrowserUiController {
 	protected void onNavigationCompleted() {	
 		updateScriptBox();
 	}
+
+	@Override
+	public BrowserUi getUI() {
+		return ui;
+	}
 }

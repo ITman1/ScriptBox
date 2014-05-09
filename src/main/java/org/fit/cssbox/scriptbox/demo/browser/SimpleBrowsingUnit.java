@@ -46,7 +46,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	protected Map<WindowBrowsingContext, BrowserUiController> auxiliaryUiControllers;
 	
 	public SimpleBrowsingUnit(ScriptBrowserUserAgent userAgent) {
-		super(userAgent);
+		super(userAgent, false);
 		
 		auxiliaryUiControllers = new HashMap<WindowBrowsingContext, BrowserUiController>();
 		
@@ -54,6 +54,9 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		if (windowContextUiController != null) {
 			windowContextUiController.showUI();
 		}
+		
+		BrowserUi browserUI = windowContextUiController.getUI();
+		setScriptBrowser(browserUI.getScriptBrowser());
 	}
 	
 	@Override

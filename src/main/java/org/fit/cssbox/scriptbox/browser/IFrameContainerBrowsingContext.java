@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class IFrameContainerBrowsingContext extends BrowsingContext {
+public abstract class IFrameContainerBrowsingContext extends BrowsingContext {
 	
 	/**
 	 * Default class for bar properties which are not presented by this browsing unit. 

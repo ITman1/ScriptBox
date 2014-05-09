@@ -47,7 +47,7 @@ import org.w3c.dom.Node;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class BrowsingContext {
+public abstract class BrowsingContext {
 	public static final String DEFAULT_NAME =  "";
 	
 	public static final String BLANK_KEYWORD =  "_blank";
