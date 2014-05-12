@@ -1,0 +1,1 @@
+console.info('<script> src set execution');

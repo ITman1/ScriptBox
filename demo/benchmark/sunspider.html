@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Engine Demos - SunSpider benchmark</title>
+<style media='all' type='text/css'>
+@import "../style.css";
+</style>
+</head>
+<body>
+    <script type="text/javascript" src="../global.js"></script>
+    <div id="header">
+        <div>
+            <a href="javascript:go_back()">back</a> | <a
+                href="javascript:go_forward()">forward</a>
+        </div>
+        <h1 id="location-interface">
+            JavaScript Engine Demos<span>SunSpider benchmark</span>
+        </h1>
+    </div>
+    <div id="content">
+        <iframe src="sunspider_list.html">
+
+        </iframe>
+        <div id="script-container"></div>
+        <script type="text/javascript">
+           var script_container = document.getElementById("script-container");
+           var test_cases = new Array();
+           var test_base_url = "https://raw.githubusercontent.com/WebKit/webkit/master/PerformanceTests/SunSpider/tests/sunspider-1.0.2/";
+           var number_test_iterations = 5;
+           var test_iterations = new Object();
+           
+           function test_started(evt) {
+        	   var test = evt.target.id;
+        	   
+        	   if (!test_iterations[test]) {
+        		   test_iterations[test] = 0;
+        		   console.time(test);
+        	   }
+        	   test_iterations[test] = test_iterations[test] + 1;;
+           }
+           
+           function test_fihisned(evt) {
+        	   var test = evt.target.id;
+        	   
+        	   if (test_iterations[test] > 4) {
+        		   console.timeEnd(test);
+        	   }
+           }
+           
+           function initializeTestCases() {
+        	   console.info("load");
+               var listWindow = window[0];
+               var testListElement = listWindow.document.getElementById("list");
+
+               if (testListElement == null) {
+            	   return;
+               }
+               
+               var node = testListElement.firstChild;
+               var i = 0;
+               while (node) {
+                   var nodeChild = node.firstChild;
+                   if (node.nodeType == 1 && nodeChild != null && nodeChild.nodeType == 3) {
+                	   test_cases[i] = nodeChild.nodeValue;
+                       i++;
+                   }
+                  
+                   node = node.nextSibling;
+               }
+              
+
+            }
+           
+            function run_testcase(test) {
+            	var url = test_base_url + test + ".js";
+            	var script = document.createElement("script");
+               
+            	script.id = test;
+            	
+            	script.addEventListener("beforescriptexecute", test_started, false);
+            	script.addEventListener("afterscriptexecute", test_fihisned, false);
+            	
+                script_container.appendChild(script);
+                script.setAttribute("src", url);
+            }
+           
+            function run_benchmark() {
+                for (var i = 0; i <test_cases.length; i++) {
+                	for (var j = 0; j < number_test_iterations; j++) {
+                		run_testcase(test_cases[i]);
+                	}
+                }
+            }
+           
+            onload = function () {
+            	initializeTestCases();
+            }
+        </script>
+        
+        <p>This page includes SunSpider 1.0.2 JavaScript <a href="https://www.webkit.org/perf/sunspider/sunspider.html">benchmark</a> that allows to test
+        the core of JavaScript language, without the DOM or other browser APIs. If you wish
+        to run benchmark click <a href="javascript:run_benchmark()">run</a>. 
+        Each test of the benchmark will be run 5 times and total time of each test
+        will be printed into console.
+        </p>
+        <p>On this page you can also try traversing <a href="javascript:go_back()">back</a>
+        during running benchmark. This action should cause removing all planned scripts 
+        from the task queue and immediate traversing back without scripts completion.
+        </p>
+    </div>
+    <div id="footer">
+        <p>
+            Author: Radim Loskot | Contact (Gmail): radim.loskot | Project pages:
+            <a href="https://github.com/ITman1/ScriptBox">ScriptBox</a>
+        </p>
+    </div>
+</body>
+</html>

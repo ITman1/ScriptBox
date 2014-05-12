@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Engine Demos - History interface</title>
+<style media='all' type='text/css'>
+@import "style.css";
+</style>
+</head>
+<body>
+    <script type="text/javascript" src="global.js"></script>
+    <div id="header">
+        <div>
+            <a href="javascript:go_back()">back</a> | <a
+                href="javascript:go_forward()">forward</a>
+        </div>
+        <h1>
+            JavaScript Engine Demos<span>History interface</span>
+        </h1>
+    </div>
+    <div id="content">
+        <script type="text/javascript">
+        var testtes = eval(11);
+            function init_forward() {
+                location = "redirected_page_A.html";
+            }
+            
+            function test_go() {
+            	var steps = prompt("Type number of the traversing steps. Positive number means traversing forward and negative number traversing back.");
+                
+            	if (!isNaN(steps)) {
+            		steps = parseInt(steps);
+            		history.go(steps);
+            	} else {
+            		alert("Typed expression is not a number!");
+            	}
+            }
+            
+            var currentPosition = 5; // prefilled by server
+            function go_pos(d) {
+                setupPosition(currentPosition + d);
+                history.pushState(currentPosition, "JavaScript Engine Demos - History interface (" + currentPosition + ")", '?position=' + currentPosition);
+            }
+           
+            onpopstate = function(event) {
+                setupPosition(event.state);
+            }
+           
+            function setupPosition(position) {
+                currentPosition = position;
+                console.info("Current position: ", position);
+            }
+        </script>
+        <p>Global <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#window">Window</a> object
+        contains readonly property <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-history">history</a> that should implement the 
+        <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#history-1">History</a> interface.
+        This interface is fully supported. Properties and functions that are contained in this interface are mentioned bellow:</p>
+        <div class="code">
+            <span>readonly attribute long length;</span>
+            <span>readonly attribute any state;</span>
+            <span>void go(optional long delta);</span>
+            <span>void back();</span>
+            <span>void forward();</span>
+            <span>void pushState(any data, DOMString title, optional DOMString? url = null);</span>
+            <span>void replaceState(any data, DOMString title, optional DOMString? url = null);</span>
+        </div>
+        <h2>History interface tests</h2>
+        <p>
+            To test the traversing functions firstly click on <a href="javascript:init_forward()">this</a> that initializes 
+            the history by some forward navigations.      
+            Functions back() and forward() can be tested by clicking on these links: <a href="javascript:go_back()">back</a> and <a
+                href="javascript:go_forward()">forward</a>.
+            Function go() can be tested by typing the proper number
+            of the traversal steps into <a href="javascript:test_go()">this</a> prompt. During traversing persisted user state is
+            also stored. This state ensures e.g. scrolling back to the given location inside
+            document when we traverse the history and then go back to the same session history entry with the given document. 
+        </p>
+        <p>
+            For state related functions simple test was created that increments number and pushes it into 
+            session history. By traversing the history back you can notice that decremented numbers are written into console 
+            and by traversing forward numbers are incremented. URL page and title are also affected
+            without new navigation being started and without communication with the server. To push new incremented 
+            number into history click <a href="javascript:go_pos(1)">PUSH</a>, to go back click 
+            <a href="javascript:go_back()">BACKWARD</a>, to go forward <a href="javascript:go_forward()">FORWARD</a>.
+        </p>
+    </div>
+    <div id="footer">
+        <p>
+            Author: Radim Loskot | Contact (Gmail): radim.loskot | Project pages:
+            <a href="https://github.com/ITman1/ScriptBox">ScriptBox</a>
+        </p>
+    </div>
+</body>
+</html>

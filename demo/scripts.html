@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Engine Demos - Loading scripts</title>
+<style media='all' type='text/css'>
+@import "style.css";
+</style>
+</head>
+<body>
+    <script type="text/javascript" src="global.js"></script>
+    <div id="header">
+        <div>
+            <a href="javascript:go_back()">back</a> | <a
+                href="javascript:go_forward()">forward</a>
+        </div>
+        <h1 id="location-interface">
+            JavaScript Engine Demos<span>Loading scripts</span>
+        </h1>
+    </div>
+    <div id="content">
+        <script type="text/javascript" async="" src="busy_script.js">           
+        </script>
+        <script type="text/javascript" async="" src="lightweight_script.js">           
+        </script>
+        <script type="text/javascript">           
+            onload = function () {
+            	console.info("onload event handler script");
+            }
+        </script>
+        <script type="text/javascript" defer="" src="defer_busy_script.js">   
+        </script>
+        <script type="text/javascript" defer="" src="defer_lightweight_script.js">    
+        </script>
+        <script type="text/javascript">   
+            for (var i = 0; i < 1000000; i++) {
+            }
+            console.info("in order parsing script 1");
+        </script>
+        <script type="text/javascript">    
+            console.info("in order parsing script 2");
+        </script>
+        <div id="script-container"></div>
+        <script type="text/javascript">
+        
+        var script_A, script_B, content_B, script_C;
+        
+        var script_container = document.getElementById("script-container");
+        
+        function script_A_construct() {
+            var content_A = document.createTextNode("console.info('<script> inserted execution');");
+            
+        	script_A = document.createElement("script");
+            script_A.appendChild(content_A);
+        }
+        
+        function script_A_execute() {
+        	script_container.appendChild(script_A);
+        }
+        
+        function script_B_construct() {
+            content_B = document.createTextNode("console.info('<script> content inserted execution');");
+            script_B = document.createElement("script");
+            
+            script_container.appendChild(script_B);
+        }
+        
+        function script_B_execute() {
+        	script_B.appendChild(content_B);
+        }
+        
+        function script_C_construct() {
+            script_C = document.createElement("script");
+            
+            script_container.appendChild(script_C);
+        }
+        
+        function script_C_execute() {
+        	script_C.setAttribute("src", "dynamic_script_C.js");
+        }
+        
+        </script>
+        <p>Loading scripts is <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html">HTML 5.1 compliant</a>. 
+        There are supported deferred, asynchronous and parser blocking scripts (all of this occured during loading this page).
+         When page is loaded, or also during loading pages, we can add scripts dynamically into this page and cause 
+         their execution. There are 3 situations when this can happen:</p>
+        <ul>
+        <li>When script element gets inserted into a document</li>
+        <li>When script element is in a document and a text node is inserted into this element</li>
+        <li>When script element is in a document and has a src attribute set where previously the element had no such attribute</li>
+        </ul>
+        
+        <p>
+        If you look into console there should be the output for 8 script loads in the correct order. On this page
+        2 scripts were loaded and executed in asynchronous mode. This execution is not purely asynchronous, 
+        because scripts are executed in the same event loop as the other tasks that belong to the current browsing unit. 
+        But by term 'asynchronous' is meant that scripts might be executed in random time as there are fetched
+        from the resource. Except of these kinds of scripts there are also 2 parsing scripts that should be executed in order
+        during the parsing the page. These kind of scripts can also block parsing if they are not available.
+        Final 2 presented scripts are deferred scripts that are deferred until page loads and then they are executed.
+        These scripts have to be executed before dispatching event 'load' that is also displayed inside console.</p>
+        
+        <p>In order scripts executions should occur in the following order (asynchronous script might be in the middle):
+        </p>
+        
+        <div class="code">
+            <span>INFO  - in order parsing script 1</span>
+            <span>INFO  - in order parsing script 2</span>
+            <span>INFO  - in order defer script 1</span>
+            <span>INFO  - in order defer script 2</span>
+        </div>
+        
+        <p>Even if scripts logged with number 1 are busy scripts they always have to complete execution in order 
+        as they are placed in DOM.</p>
+        
+        <h2>Dynamic script insertion tests</h2>
+        <p>As mentioned above we are allowed to insert scripts into page dynamically.</p>
+        
+        <h3>Inserting complete &lt;script&gt; elements</h3>
+        
+        <p>For preparing the script element click <a href="javascript:script_A_construct()">here</a> and for 
+        appending into container click <a href="javascript:script_A_execute()">here</a>.</p>
+        
+        <div class="code">
+            <span>container.appendChild(scriptElement);</span>
+        </div>
+        
+        <h3>Inserting &lt;script&gt; content</h3>
+        
+        <p>For preparing the script element without source block, inserting into container click 
+        <a href="javascript:script_B_construct()">here</a> and for appending the script source 
+        click <a href="javascript:script_B_execute()">here</a>.</p>
+        
+        <div class="code">
+            <span>script.appendChild(textNodeWithScript);</span>
+        </div>
+        
+        <h3>Setting &lt;script&gt;'s src attribute</h3>
+        
+        <p>For preparing the script element without src attribute, inserting into container click 
+        <a href="javascript:script_C_construct()">here</a> and for setting the script's src attribute 
+        click <a href="javascript:script_C_execute()">here</a>.</p>
+        
+        <div class="code">
+            <span>script.setAttribute("src", "external.js");</span>
+        </div>
+    </div>
+    <div id="footer">
+        <p>
+            Author: Radim Loskot | Contact (Gmail): radim.loskot | Project pages:
+            <a href="https://github.com/ITman1/ScriptBox">ScriptBox</a>
+        </p>
+    </div>
+</body>
+</html>
