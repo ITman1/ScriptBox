@@ -24,7 +24,7 @@ import java.net.URL;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadyState;
 import org.fit.cssbox.scriptbox.dom.interfaces.Html5IFrameElement;
 import org.fit.cssbox.scriptbox.events.Executable;
 import org.fit.cssbox.scriptbox.events.Task;
@@ -33,11 +33,10 @@ import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
-import org.fit.cssbox.scriptbox.navigation.NavigationController;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.scriptbox.navigation.UpdateNavigationAttempt;
-import org.fit.cssbox.scriptbox.parser.ScriptableDocumentParser;
+import org.fit.cssbox.scriptbox.parser.Html5DocumentParser;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.security.SandboxingFlag;
 import org.w3c.dom.Element;
@@ -49,7 +48,7 @@ import org.w3c.dom.Element;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public abstract class RenderedContentHandler extends ContentHandler {
+public abstract class DOMContentHandler extends ContentHandler {
 	
 	/*
 	 * Proceeds 1), 2) and 3) steps of the update session history with the new page:
@@ -126,8 +125,8 @@ public abstract class RenderedContentHandler extends ContentHandler {
 				return;
 			}
 			
-			DocumentReadiness readiness = context.getActiveDocument().getDocumentReadiness();
-			if (readiness.equals(DocumentReadiness.LOADING)) {
+			DocumentReadyState readiness = context.getActiveDocument().getDocumentReadiness();
+			if (readiness.equals(DocumentReadyState.LOADING)) {
 				context.getEventLoop().spinForAmountTime(300, this);
 			}
 		}
@@ -162,17 +161,15 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	};
 	
 	protected Html5DocumentImpl renderableDocument;
-	NavigationController navigationController;
 
 	/**
 	 * Constructs rendered content handler for a given navigation attempt.
 	 * 
 	 * @param navigationAttempt Navigation attempt which invoked this content handler.
 	 */
-	public RenderedContentHandler(NavigationAttempt navigationAttempt) {
+	public DOMContentHandler(NavigationAttempt navigationAttempt) {
 		super(navigationAttempt);
-		
-		navigationController = navigationAttempt.getNavigationController();
+
 		navigationController.addListener(abortDocumentListener);
 	}
 	
@@ -198,7 +195,7 @@ public abstract class RenderedContentHandler extends ContentHandler {
 	 * @param parser Parser which ensures parsing of the document.
 	 * @return New or already constructed document for this rendered content handler.
 	 */
-	protected Html5DocumentImpl getRenderableDocument(BrowsingContext context, URL url, String mimeType, ScriptableDocumentParser parser) {
+	protected Html5DocumentImpl getRenderableDocument(BrowsingContext context, URL url, String mimeType, Html5DocumentParser parser) {
 		if (renderableDocument != null) {
 			return renderableDocument;
 		}

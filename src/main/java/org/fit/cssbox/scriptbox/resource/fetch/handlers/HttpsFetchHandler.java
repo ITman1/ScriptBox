@@ -1,5 +1,5 @@
 /**
- * HttpsFetch.java
+ * HttpsFetchHandler.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import java.net.URL;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.events.Task;
-import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchHandlerPreamble;
 
 /**
  * Class representing fetch that handles https: protocols
@@ -33,8 +33,8 @@ import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-@FetchPreamble (protocols = {"https"})
-public class HttpsFetch extends HttpFetch {
+@FetchHandlerPreamble (protocols = {"https"})
+public class HttpsFetchHandler extends HttpFetchHandler {
 	protected class HttpsResource extends HttpResource {
 
 		public HttpsResource(BrowsingContext context, HttpURLConnection conn, boolean isSafe) {
@@ -42,11 +42,11 @@ public class HttpsFetch extends HttpFetch {
 		}
 	}
 		
-	public HttpsFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+	public HttpsFetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
-	public HttpsFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+	public HttpsFetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		super(sourceContext, destinationContext, url);
 	}
 

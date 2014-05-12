@@ -1,5 +1,5 @@
 /**
- * HttpFetch.java
+ * HttpFetchHandler.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -32,8 +32,8 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
-import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
-import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchHandler;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchHandlerPreamble;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
@@ -45,8 +45,8 @@ import org.fit.cssbox.scriptbox.url.URLUtilsHelper.UrlComponent;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-@FetchPreamble (protocols = {"http"})
-public class HttpFetch extends Fetch {
+@FetchHandlerPreamble (protocols = {"http"})
+public class HttpFetchHandler extends FetchHandler {
 	protected enum HttpMethod {
 		GET,
 		POST,
@@ -152,11 +152,11 @@ public class HttpFetch extends Fetch {
 	protected URLConnection conn;
 	protected HttpMethod method;
 
-	public HttpFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+	public HttpFetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
-	public HttpFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+	public HttpFetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		super(sourceContext, destinationContext, url);
 		
 		method = HttpMethod.GET;

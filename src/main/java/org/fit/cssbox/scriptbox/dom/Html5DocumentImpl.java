@@ -47,7 +47,7 @@ import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.history.History;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.navigation.Location;
-import org.fit.cssbox.scriptbox.parser.ScriptableDocumentParser;
+import org.fit.cssbox.scriptbox.parser.Html5DocumentParser;
 import org.fit.cssbox.scriptbox.script.Script;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
@@ -93,7 +93,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @since 0.9 - 21.4.2014
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#current-document-readiness">Document readiness</a>
 	 */
-	public enum DocumentReadiness {
+	public enum DocumentReadyState {
 		LOADING,
 		INTERACTIVE,
 		COMPLETE
@@ -146,8 +146,8 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	private SessionHistoryEntry _latestEntry;
 	private boolean _fullscreenEnabledFlag;
 	private String _contentType;
-	private DocumentReadiness _documentReadiness;
-	private ScriptableDocumentParser _parser;
+	private DocumentReadyState _documentReadiness;
+	private Html5DocumentParser _parser;
 	private Task unloadTask;
 	
 	private boolean _salvageableFlag;
@@ -225,7 +225,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#html-parser">HTML parser</a>
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#concept-document-content-type">Content type</a>
 	 */
-	protected Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, ScriptableDocumentParser parser) {	
+	protected Html5DocumentImpl(BrowsingContext browsingContext, URL address, Set<SandboxingFlag> sandboxingFlagSet, String referrer, boolean createWindow, String contentType, Html5DocumentParser parser) {	
 		listeners = new HashSet<Html5DocumentEventListener>();
 		
 		_salvageableFlag = true;
@@ -237,7 +237,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		_address = address;
 		_referrer = referrer;
 		_contentType = contentType;
-		_documentReadiness = (parser == null)? DocumentReadiness.COMPLETE : DocumentReadiness.LOADING;
+		_documentReadiness = (parser == null)? DocumentReadyState.COMPLETE : DocumentReadyState.LOADING;
 		_activeSandboxingFlagSet = new HashSet<SandboxingFlag>();
 		_parser = parser;
 		
@@ -276,13 +276,15 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 
 		_originContainer = new OriginContainer<DocumentOrigin>(documentOrigin, effectiveScriptOrigin);
 		
-		if (createWindow) {
-			_window = new Window(this);
+		if (_browsingContext != null) {
+			if (createWindow) {
+				_window = new Window(this);
+			}
+			
+			_history = new History(this);
+			_location = new Location(this);
 		}
-		
-		_history = new History(this);
-		_location = new Location(this);
-		
+				
 		addEventListener(MutationEventImpl.DOM_NODE_INSERTED, documentEventListener);
 		addEventListener(MutationEventImpl.DOM_ATTR_MODIFIED, documentEventListener);
 	}
@@ -296,7 +298,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @param contentType Content-Type of which is this Document.
 	 * @return New Document object.
 	 * 
-	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, ScriptableDocumentParser)
+	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, Html5DocumentParser)
 	 */
 	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType) {
 		return createDocument(browsingContext, address, recycleWindowDocument, contentType, null);
@@ -307,19 +309,19 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * 
 	 * @param browsingContext Associated browsing context to which belongs this instance of the Document.
 	 * @param address Address of the Document.
-	 * @param recycleWindowDocument Window of which instance is re-used for this Document.
+	 * @param recycleDocument Window of which instance is re-used for this Document.
 	 * @param contentType Content-Type of which is this Document.
 	 * @param parser Associated parser, which will parse, or parsed, or is parsing this Document.
 	 * @return New Document object.
 	 * 
-	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, ScriptableDocumentParser)
+	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, Html5DocumentParser)
 	 */
-	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleWindowDocument, String contentType, ScriptableDocumentParser parser) {
+	public static Html5DocumentImpl createDocument(BrowsingContext browsingContext, URL address, Html5DocumentImpl recycleDocument, String contentType, Html5DocumentParser parser) {
 		Html5DocumentImpl document = null;
 
-		if (recycleWindowDocument != null) {
+		if (recycleDocument != null) {
 			document = new Html5DocumentImpl(browsingContext, address, null, null, false, contentType, parser);
-			document._window = recycleWindowDocument._window;
+			document._window = recycleDocument._window;
 			document._window.setDocumentImpl(document);
 		} else {
 			document = new Html5DocumentImpl(browsingContext, address, null, null, true, contentType, parser);
@@ -334,7 +336,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @param browsingContext Associated browsing context to which belongs this instance of the Document.
 	 * @return New blank Document object.
 	 * 
-	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, ScriptableDocumentParser)
+	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, Html5DocumentParser)
 	 */
 	public static Html5DocumentImpl createBlankDocument(BrowsingContext browsingContext) {
 		String refferer = null;
@@ -364,7 +366,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @param browsingContext Associated browsing context to which belongs this instance of the Document.
 	 * @return New sandboxed Document object.
 	 * 
-	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, ScriptableDocumentParser)
+	 * @see #Html5DocumentImpl(BrowsingContext, URL, Set, String, boolean, String, Html5DocumentParser)
 	 */
 	public static Html5DocumentImpl createSandboxedDocument(BrowsingContext browsingContext) {
 		Set<SandboxingFlag> sandboxingFlagSet = new HashSet<SandboxingFlag>();
@@ -446,7 +448,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 */
 	public HTMLBaseElement getBaseElement() {
 		// FIXME: We should not wait for completeness, but try to get base address from actual loaded elements - proper synchronized section is needed.
-		if (_documentReadiness == DocumentReadiness.COMPLETE) {
+		if (_documentReadiness == DocumentReadyState.COMPLETE) {
 			HTMLElement head = getHead();
 			NodeList baseElements = head.getElementsByTagName("base");
 			
@@ -492,10 +494,12 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		 * browsing context, then return the document base URL of the creator Document, and abort these steps.
 		 */
 		
-		Html5DocumentImpl creatorDocument = _browsingContext.getCreatorDocument();
-		if (_address != null && _address.equals(DEFAULT_URL) && creatorDocument != null) {
-			URL url = creatorDocument.getBaseAddress();
-			return url;
+		if (_browsingContext != null) {
+			Html5DocumentImpl creatorDocument = _browsingContext.getCreatorDocument();
+			if (_address != null && _address.equals(DEFAULT_URL) && creatorDocument != null) {
+				URL url = creatorDocument.getBaseAddress();
+				return url;
+			}
 		}
 		
 		/*
@@ -546,6 +550,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#fully-active">Fully active</a>
 	 */
 	public boolean isFullyActive() {
+		if (_browsingContext == null) {
+			return false;
+		}
+		
 		/*
 		 * A Document is said to be fully active when it is the active document of its 
 		 * browsing context, and either its browsing context is a top-level browsing 
@@ -572,7 +580,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#active-document">Active document</a>
 	 */
 	public boolean isActiveDocument() {
-		return _browsingContext.getActiveDocument() == this;
+		return (_browsingContext != null)?_browsingContext.getActiveDocument() == this : false;
 	}
 	
 	/**
@@ -582,6 +590,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#document-family">The document family</a>
 	 */
 	public Collection<Html5DocumentImpl> getDocumentFamily() {
+		if (_browsingContext == null) {
+			return new ArrayList<Html5DocumentImpl>();
+		}
+		
 		/*
 		 * The document family of a Document object consists of the union of all 
 		 * the document families of the browsing contexts that are nested through the Document object.
@@ -889,7 +901,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @return Document's readiness.
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#current-document-readiness">Document readiness</a>
 	 */
-	public DocumentReadiness getDocumentReadiness() {
+	public DocumentReadyState getDocumentReadiness() {
 		return _documentReadiness;
 	}
 	
@@ -899,7 +911,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @param readiness New value of the Document's readiness.
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/dom.html#current-document-readiness">Document readiness</a>
 	 */
-	public void setDocumentReadiness(DocumentReadiness readiness) {
+	public void setDocumentReadiness(DocumentReadyState readiness) {
 		_documentReadiness = readiness;
 	}
 	
@@ -918,7 +930,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * 
 	 * @return Associated parser.
 	 */
-	public ScriptableDocumentParser getParser() {
+	public Html5DocumentParser getParser() {
 		return _parser;
 	}
 	
@@ -989,7 +1001,7 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 * @return Associated event loop.
 	 */
 	public EventLoop getEventLoop() {
-		return _browsingContext.getEventLoop();
+		return (_browsingContext != null)? _browsingContext.getEventLoop() : null;
 	}
 	
 	/**

@@ -1,5 +1,5 @@
 /**
- * JavascriptFetch.java
+ * JavaScriptFetchHandler.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
-import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchHandlerPreamble;
 import org.fit.cssbox.scriptbox.script.exceptions.UnknownException;
 import org.fit.cssbox.scriptbox.url.javascript.Handler.JavaScriptURLConnection;
 
@@ -39,8 +39,8 @@ import org.fit.cssbox.scriptbox.url.javascript.Handler.JavaScriptURLConnection;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-@FetchPreamble (protocols = {"javascript"})
-public class JavascriptFetch extends HttpFetch {
+@FetchHandlerPreamble (protocols = {"javascript"})
+public class JavaScriptFetchHandler extends HttpFetchHandler {
 	private class JavaScriptResource extends HttpResource {
 		
 		public JavaScriptResource(BrowsingContext context, HttpURLConnection connection) {
@@ -99,11 +99,11 @@ public class JavascriptFetch extends HttpFetch {
 		}
 	}	
 		
-	public JavascriptFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+	public JavaScriptFetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
-	public JavascriptFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+	public JavaScriptFetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		super(sourceContext, destinationContext, url);
 	}
 

@@ -26,7 +26,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.dom.DOMException;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadyState;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
@@ -97,7 +97,7 @@ public class Location extends URLUtils {
 		/*
 		 * FIXME?: Every browser replaces history if page redirects during loading, but specification tells nothing about that.
 		 */
-		if (currentDocument.getDocumentReadiness() == DocumentReadiness.LOADING) {
+		if (currentDocument.getDocumentReadiness() == DocumentReadyState.LOADING) {
 			replacementEnabled = true;
 		}
 		
@@ -257,7 +257,7 @@ public class Location extends URLUtils {
 		Html5DocumentImpl activeDocument = context.getActiveDocument();
 		
 		if (activeDocument != null) {
-			normalNavigation = activeDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE;
+			normalNavigation = activeDocument.getDocumentReadiness() == DocumentReadyState.COMPLETE;
 			//TODO: In the task in which the algorithm is running, an activation behavior is currently being processed whose click event was trusted, or
 			//TODO: In the task in which the algorithm is running, the event listener for a trusted click event is being handled.
 		

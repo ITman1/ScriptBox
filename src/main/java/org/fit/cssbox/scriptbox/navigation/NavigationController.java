@@ -54,7 +54,7 @@ public class NavigationController {
 	/*
 	 * Listener for the navigation attempt, which drives dispatching of the navigation controller events.
 	 */
-	private NavigationAttemptListener navigationAttemptListener = new NavigationAttemptListener() {
+	private NavigationAttemptCallback navigationAttemptListener = new NavigationAttemptCallback() {
 		
 		@Override
 		public void onMatured(NavigationAttempt attempt) {

@@ -1,5 +1,5 @@
 /**
- * FileFetch.java
+ * FileFetchHandler.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -27,8 +27,8 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.UrlConnectionResource;
-import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
-import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchHandler;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchHandlerPreamble;
 
 /**
  * Class representing fetch that handles file: protocols
@@ -37,8 +37,8 @@ import org.fit.cssbox.scriptbox.resource.fetch.FetchPreamble;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-@FetchPreamble (protocols = {"file"})
-public class FileFetch extends Fetch {
+@FetchHandlerPreamble (protocols = {"file"})
+public class FileFetchHandler extends FetchHandler {
 	
 	private class FileResource extends UrlConnectionResource {
 		
@@ -61,11 +61,11 @@ public class FileFetch extends Fetch {
 	protected URLConnection conn;
 	protected Resource fileResource;
 	
-	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+	public FileFetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		super(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
-	public FileFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+	public FileFetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		super(sourceContext, destinationContext, url);
 	}
 	

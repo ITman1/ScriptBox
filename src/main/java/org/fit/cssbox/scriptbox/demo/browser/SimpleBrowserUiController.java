@@ -38,7 +38,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadyState;
 import org.fit.cssbox.scriptbox.history.JointSessionHistory;
 import org.fit.cssbox.scriptbox.history.JointSessionHistoryEvent;
 import org.fit.cssbox.scriptbox.history.JointSessionHistoryListener;
@@ -139,7 +139,7 @@ public class SimpleBrowserUiController extends BrowserUiController {
 					Html5DocumentImpl newDocument = whereTraversed.getDocument();
 					BrowsingContext browsingContext = newDocument.getBrowsingContext();
 					
-					if (newDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE && browsingContext.isTopLevelBrowsingContext() && newDocument.isActiveDocument() && currentEntry != whereTraversed) {
+					if (newDocument.getDocumentReadiness() == DocumentReadyState.COMPLETE && browsingContext.isTopLevelBrowsingContext() && newDocument.isActiveDocument() && currentEntry != whereTraversed) {
 						updateScriptBox();
 					}
 					

@@ -1,5 +1,5 @@
 /**
- * NavigationAttemptListener.java
+ * NavigationAttemptCallback.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import org.fit.cssbox.scriptbox.browser.BrowsingContext;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public interface NavigationAttemptListener {
+public interface NavigationAttemptCallback {
 	/**
 	 * Called when navigation attempt cancels.
 	 * 

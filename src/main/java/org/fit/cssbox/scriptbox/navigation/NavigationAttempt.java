@@ -39,7 +39,7 @@ import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerRegistry;
 import org.fit.cssbox.scriptbox.resource.content.ErrorHandler;
-import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchHandler;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
 import org.fit.cssbox.scriptbox.security.origins.UrlOrigin;
 import org.fit.cssbox.scriptbox.url.URLUtilsHelper;
@@ -105,7 +105,7 @@ public abstract class NavigationAttempt {
 	/*
 	 * Empty navigation attempt listener.
 	 */
-	private final static NavigationAttemptListener EMPTY_NAVIGATION_ATTEMPT_LISTENER = new NavigationAttemptListener() {
+	private final static NavigationAttemptCallback EMPTY_NAVIGATION_ATTEMPT_LISTENER = new NavigationAttemptCallback() {
 		
 		@Override
 		public void onMatured(NavigationAttempt attempt) {}
@@ -155,11 +155,11 @@ public abstract class NavigationAttempt {
 	private boolean isUnloadRunning;
 	private boolean runningUnloadDocument;
 	private boolean goneAsync;
-	private List<Fetch> fetches;
+	private List<FetchHandler> fetches;
 	private FetchRegistry fetchRegistry;
 	private ContentHandlerRegistry resourceHandlerRegistry;
 	private Resource resource;
-	private NavigationAttemptListener listener;
+	private NavigationAttemptCallback listener;
 	
 	/**
 	 * Creates new navigation attempt.
@@ -180,7 +180,7 @@ public abstract class NavigationAttempt {
 		this.exceptionEnabled = exceptionEnabled;
 		this.explicitSelfNavigationOverride = explicitSelfNavigationOverride;
 		this.replacementEnabled = replacementEnabled;
-		this.fetches = new ArrayList<Fetch>();
+		this.fetches = new ArrayList<FetchHandler>();
 		this.fetchRegistry = FetchRegistry.getInstance();
 		this.resourceHandlerRegistry = ContentHandlerRegistry.getInstance();
 		this.listener = EMPTY_NAVIGATION_ATTEMPT_LISTENER;
@@ -359,7 +359,7 @@ public abstract class NavigationAttempt {
 				onCancelled();
 			}
 			
-			for (Fetch fetch : fetches) {
+			for (FetchHandler fetch : fetches) {
 				try {
 					fetch.close();
 				} catch (IOException e) {
@@ -393,7 +393,7 @@ public abstract class NavigationAttempt {
 	 * 
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">Navigate algorithm</a>
 	 */
-	public void perform(NavigationAttemptListener listener) {
+	public void perform(NavigationAttemptCallback listener) {
 		if (cancelled) {
 			return;
 		}
@@ -687,7 +687,7 @@ public abstract class NavigationAttempt {
 	 * @return Obtained resource.
 	 */
 	protected Resource obtainResource() {
-		Fetch fetch = fetchRegistry.getFetch(sourceBrowsingContext, destinationBrowsingContext, url, true, true, true, null);
+		FetchHandler fetch = fetchRegistry.getFetch(sourceBrowsingContext, destinationBrowsingContext, url, true, true, true, null);
 		
 		if (fetch == null) {
 			return null;

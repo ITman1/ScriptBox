@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 
 
 /**
- * Class annotation which should have every class that extends from {@link Fetch}.
+ * Class annotation which should have every class that extends from {@link FetchHandler}.
  * 
  * @author Radim Loskot
  * @version 0.9
@@ -34,6 +34,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface FetchPreamble {
+public @interface FetchHandlerPreamble {
 	String[] protocols();
 }

@@ -20,7 +20,6 @@
 package org.fit.cssbox.scriptbox.demo.tester;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,8 +29,6 @@ import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;

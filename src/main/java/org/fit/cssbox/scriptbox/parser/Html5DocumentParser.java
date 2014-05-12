@@ -31,7 +31,7 @@ import java.util.List;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadyState;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
 import org.fit.cssbox.scriptbox.exceptions.LifetimeEndedException;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
@@ -58,7 +58,7 @@ import org.xml.sax.SAXException;
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#html-parser">HTML parser</a>
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#parsing">Parsing</a>
  */
-public class ScriptableDocumentParser {
+public class Html5DocumentParser {
 	
 	/*
 	 * Injects exception information into already existing instance of ParserFinishedTask
@@ -136,7 +136,7 @@ public class ScriptableDocumentParser {
 	/**
 	 * Creates parser.
 	 */
-	public ScriptableDocumentParser() {
+	public Html5DocumentParser() {
 		this(null);
 	}
 	
@@ -145,7 +145,7 @@ public class ScriptableDocumentParser {
 	 * 
 	 * @param charset Encoding of the input stream.
 	 */
-	public ScriptableDocumentParser(String charset) {
+	public Html5DocumentParser(String charset) {
 		_charset = charset;
 		
 		_onFinishScripts = new ArrayList<Html5ScriptElementImpl>();
@@ -466,7 +466,7 @@ public class ScriptableDocumentParser {
 	 */
 	protected void beforeParserStarted() {
 		// Expected to be called from Event loop thread
-		_document.setDocumentReadiness(DocumentReadiness.LOADING);
+		_document.setDocumentReadiness(DocumentReadyState.LOADING);
 	}
 
 	/**

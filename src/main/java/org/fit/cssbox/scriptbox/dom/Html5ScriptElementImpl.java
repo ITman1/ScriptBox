@@ -38,9 +38,9 @@ import org.fit.cssbox.scriptbox.dom.interfaces.Html5ScriptElement;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
-import org.fit.cssbox.scriptbox.parser.ScriptableDocumentParser;
+import org.fit.cssbox.scriptbox.parser.Html5DocumentParser;
 import org.fit.cssbox.scriptbox.resource.Resource;
-import org.fit.cssbox.scriptbox.resource.fetch.Fetch;
+import org.fit.cssbox.scriptbox.resource.fetch.FetchHandler;
 import org.fit.cssbox.scriptbox.resource.fetch.FetchRegistry;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineManager;
 import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
@@ -168,9 +168,9 @@ public class Html5ScriptElementImpl extends HTMLScriptElementImpl implements Htm
 	private boolean _readyToBeASAPExecuted;
 	
 	private Html5DocumentImpl _creatorDocument;
-	private ScriptableDocumentParser _creatorParser;
+	private Html5DocumentParser _creatorParser;
 	private BrowserScriptEngineManager _browserScriptEngineManager;
-	private Fetch scriptFetch;
+	private FetchHandler scriptFetch;
 	private FetchRegistry _fetchRegistry;
 	
 	/**

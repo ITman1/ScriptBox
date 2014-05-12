@@ -83,19 +83,19 @@
         <p>Loading scripts is <a href="http://www.w3.org/html/wg/drafts/html/master/scripting-1.html">HTML 5.1 compliant</a>. 
         There are supported deferred, asynchronous and parser blocking scripts (all of this occured during loading this page).
          When page is loaded, or also during loading pages, we can add scripts dynamically into this page and cause 
-         their execution. There 3 situations when this can happen:</p>
+         their execution. There are 3 situations when this can happen:</p>
         <ul>
         <li>When script element gets inserted into a document</li>
-        <li>When script element is in a Document and a text node is inserted into this element</li>
-        <li>When script element is in a Document and has a src attribute set where previously the element had no such attribute</li>
+        <li>When script element is in a document and a text node is inserted into this element</li>
+        <li>When script element is in a document and has a src attribute set where previously the element had no such attribute</li>
         </ul>
         
         <p>
         If you look into console there should be the output for 8 script loads in the correct order. On this page
-        were loaded and executed 2 scripts in asynchronous mode. This execution is not purely asynchronous, 
-        because scripts are executed in one event loop as the other tasks that belongs to the current browsing unit. 
+        2 scripts were loaded and executed in asynchronous mode. This execution is not purely asynchronous, 
+        because scripts are executed in the same event loop as the other tasks that belong to the current browsing unit. 
         But by term 'asynchronous' is meant that scripts might be executed in random time as there are fetched
-        from the resource. Except of these scripts there are also 2 parsing scripts that should be executed in order
+        from the resource. Except of these kinds of scripts there are also 2 parsing scripts that should be executed in order
         during the parsing the page. These kind of scripts can also block parsing if they are not available.
         Final 2 presented scripts are deferred scripts that are deferred until page loads and then they are executed.
         These scripts have to be executed before dispatching event 'load' that is also displayed inside console.</p>

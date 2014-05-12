@@ -84,7 +84,7 @@ public class MimeContentRegistryBase<MimeContentFactory extends MimeContentFacto
 	 * 
 	 * @param factoryClass Class of the MIME content factory which should be unregistered.
 	 */
-	public void unregisterMimeContentFactory(Class<? extends MimeContentFactoryBase<?>> factoryClass) {
+	public void unregisterMimeContentFactory(Class<? extends MimeContentFactory> factoryClass) {
 		synchronized (this) {
 			Set<Entry<String, Set<MimeContentFactory>>> factoriesEntrySet = registeredFactories.entrySet();
 			

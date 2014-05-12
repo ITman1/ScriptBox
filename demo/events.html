@@ -78,7 +78,7 @@
             
             onerror = errorEventHandler;
         </script>
-        <p>At this moment global window object allows registering various kind of event listeners. Window implements
+        <p>At this moment global window object allows registering various kinds of event listeners. Window implements
         <a href="http://www.w3.org/TR/dom/#interface-eventtarget">EventTarget</a> interface:</p>
         
         <div class="code">
@@ -89,20 +89,20 @@
                 
         <p>Window object is closely connected with the Document and acts as it was root element of the DOM for
         all events that are dispatched inside DOM. Except of registering many customs event listeners we can 
-        also use Window's EventHandler properties that allows registering only one event listener for some
+        also use Window's EventHandler properties that allow registering only one event listener for a
         specific event type. Window implements all event handlers according to the specification, but dozen 
-        of them is never called, because corresponding events are never dispatched due to missing implementation. For Window are implemented
+        of them is never called, because corresponding events are never dispatched due to missing implementation. For Window
         <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#globaleventhandlers">GlobalEventHandlers</a>
-        and <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#windoweventhandlers">WindowEventHandlers</a></p>
+        and <a href="http://www.w3.org/html/wg/drafts/html/CR/webappapis.html#windoweventhandlers">WindowEventHandlers</a> are implemented.</p>
     
         <h2>Event tests</h2>
         <p>The following list enumerates currently supported events:</p>
         <ul>
-        <li><strong>popstate</strong> &#8211; To test firstly initialize the session history by clicking <a href="javascript:init_states()">here</a> and then 
+        <li><strong>popstate</strong> &#8211; To test popstate firstly initialize the session history by clicking <a href="javascript:init_states()">here</a> and then 
         traverse <a href="javascript:window.history.back()">back</a> to let this event be dispatched. Navigate to the <a href="#top-title">top</a>, for
         dispatching the hashchange.</li>
-        <li><strong>load and unload</strong> &#8211; When page new page is loaded, it is generated unload
-        event for the current one page and load event for new page. To test click <a href="javascript:location.reload()">reload</a>.</li>
+        <li><strong>load and unload</strong> &#8211; When new page is loaded, unload
+        event for the current page and load event for new page are generated. To test click <a href="javascript:location.reload()">reload</a>.</li>
         <li><strong>hashchange</strong> &#8211; Navigate to the <a href="#top-title">top</a>, for dispatching the hashchange.</li>
         <li><strong>error event</strong> &#8211; To cause e.g. "Undefined reference error", click 
         <a href="javascript:undefined_ref.property">here</a>.</li>

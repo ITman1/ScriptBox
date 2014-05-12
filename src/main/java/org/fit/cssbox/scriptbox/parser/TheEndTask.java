@@ -25,7 +25,7 @@ import java.util.List;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadyState;
 import org.fit.cssbox.scriptbox.dom.Html5ScriptElementImpl;
 import org.fit.cssbox.scriptbox.dom.events.script.Event;
 import org.fit.cssbox.scriptbox.events.Executable;
@@ -45,9 +45,9 @@ import org.fit.cssbox.scriptbox.window.Window;
  */
 public class TheEndTask extends ParserFinishedTask {
 
-	protected ScriptableDocumentParser parser;
+	protected Html5DocumentParser parser;
 	
-	public TheEndTask(ScriptableDocumentParser parser) {
+	public TheEndTask(Html5DocumentParser parser) {
 		super(TaskSource.DOM_MANIPULATION, parser.getDocument());
 		
 		this.parser = parser;
@@ -58,7 +58,7 @@ public class TheEndTask extends ParserFinishedTask {
 		Html5DocumentImpl document = getDocument();
 
 		// 1) Set the current document readiness to "interactive" and the insertion point to undefined.
-		document.setDocumentReadiness(DocumentReadiness.INTERACTIVE);
+		document.setDocumentReadiness(DocumentReadyState.INTERACTIVE);
 		
 		// TODO: 2) Pop all the nodes off the stack of open elements.
 		
@@ -186,7 +186,7 @@ public class TheEndTask extends ParserFinishedTask {
 				Window window = document.getWindow();
 				
 				// 7.1) Set the current document readiness to "complete".
-				document.setDocumentReadiness(DocumentReadiness.COMPLETE);
+				document.setDocumentReadiness(DocumentReadyState.COMPLETE);
 				
 				Event event = new Event(true, document);
 				event.initEvent("load", false, false);

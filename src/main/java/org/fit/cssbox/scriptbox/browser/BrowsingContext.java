@@ -119,40 +119,40 @@ public abstract class BrowsingContext {
 		this(null, browsingUnit, name, null);
 	}
 	
-	/**
+	/* COMMENTED: Irrelevant for abstract class.
 	 * Constructs simple nested browsing context with no container.
 	 * 
 	 * @param name Name of the new browsing context.
 	 * @return New nested browsing context.
 	 * @see #createNestedContext(String, Element)
 	 */
-	public BrowsingContext createNestedContext(String name) {
+	/*public BrowsingContext createNestedContext(String name) {
 		return createNestedContext(name, null);
-	}
+	}*/
 	
-	/**
+	/* COMMENTED: Irrelevant for abstract class.
 	 * Constructs simple nested browsing context with empty name.
 	 * 
 	 * @param container Element which wraps/contains this browsing context.
 	 * @return New nested browsing context.
 	 * @see #createNestedContext(String, Element)
 	 */
-	public BrowsingContext createNestedContext(Element container) {
+	/*public BrowsingContext createNestedContext(Element container) {
 		return createNestedContext(DEFAULT_NAME, container);
-	}
+	}*/
 	
-	/**
+	/* COMMENTED: Irrelevant for abstract class.
 	 * Constructs simple nested browsing context.
 	 * 
 	 * @param name Name of the new browsing context.
 	 * @param container Element which wraps/contains this browsing context.
 	 * @return New nested browsing context.
 	 */
-	public BrowsingContext createNestedContext(String name, Element container) {
+	/*public BrowsingContext createNestedContext(String name, Element container) {
 		BrowsingContext childContext = new BrowsingContext(this, null, name, container);
 		addChildContext(childContext);
 		return childContext;
-	}
+	}*/
 
 	/**
 	 * Closes this browsing context.

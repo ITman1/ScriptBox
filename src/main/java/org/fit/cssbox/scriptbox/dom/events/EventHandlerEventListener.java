@@ -66,11 +66,11 @@ public class EventHandlerEventListener implements EventListener {
 	 * @param handler Event handler to be used for handling event of corresponding type.
 	 */
 	public void setEventHandler(EventHandler handler) {
+		deleteEventHandler();
+		
 		if (handler != null) {
 			this.handler = handler;
 			target.addEventListener(eventType, this);
-		} else {
-			deleteEventHandler();
 		}
 	}
 	

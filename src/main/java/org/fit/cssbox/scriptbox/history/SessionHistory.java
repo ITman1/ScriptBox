@@ -30,7 +30,7 @@ import org.fit.cssbox.scriptbox.browser.AuxiliaryBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
-import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadiness;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadyState;
 import org.fit.cssbox.scriptbox.dom.events.WindowEventHandlers;
 import org.fit.cssbox.scriptbox.dom.events.script.HashChangeEvent;
 import org.fit.cssbox.scriptbox.dom.events.script.PopStateEvent;
@@ -390,7 +390,7 @@ public class SessionHistory {
 			// TODO: 4.5) If the specified entry's Document has any form controls whose autofill field name is "off", invoke the reset algorithm of each of those elements.
 			
 			// 4.6) If the current document readiness of the specified entry's Document is "complete", queue a task 
-			if (specifiedDocument.getDocumentReadiness() == DocumentReadiness.COMPLETE) {
+			if (specifiedDocument.getDocumentReadiness() == DocumentReadyState.COMPLETE) {
 				specifiedBrowsingContext.getEventLoop().queueTask(new Task(TaskSource.DOM_MANIPULATION, specifiedDocument) {
 					
 					@Override

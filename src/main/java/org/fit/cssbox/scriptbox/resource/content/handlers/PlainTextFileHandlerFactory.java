@@ -27,7 +27,7 @@ import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
-import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
+import org.fit.cssbox.scriptbox.resource.content.DOMContentHandler;
 
 /*
  * TODO: Implement.
@@ -42,7 +42,7 @@ import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
  * @since 0.9 - 21.4.2014
  */
 public class PlainTextFileHandlerFactory extends ContentHandlerFactory {
-	private class PlainTextFileHandler extends RenderedContentHandler {
+	private class PlainTextFileHandler extends DOMContentHandler {
 
 		public PlainTextFileHandler(NavigationAttempt navigationAttempt) {
 			super(navigationAttempt);

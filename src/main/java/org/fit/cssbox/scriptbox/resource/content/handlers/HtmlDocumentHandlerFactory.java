@@ -32,11 +32,11 @@ import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
 import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.parser.ParserFinishedTask;
-import org.fit.cssbox.scriptbox.parser.ScriptableDocumentParser;
+import org.fit.cssbox.scriptbox.parser.Html5DocumentParser;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
-import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
+import org.fit.cssbox.scriptbox.resource.content.DOMContentHandler;
 
 /**
  * Content handler factory for handlers following the processing model for HTML files.
@@ -48,7 +48,7 @@ import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
  * @since 0.9 - 21.4.2014
  */
 public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
-	private class HtmlDocumentHandler extends RenderedContentHandler {
+	private class HtmlDocumentHandler extends DOMContentHandler {
 
 		public HtmlDocumentHandler(NavigationAttempt navigationAttempt) {
 			super(navigationAttempt);
@@ -61,6 +61,10 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 
 			@Override
 			public void execute() throws InterruptedException {
+				if (navigationAttempt == null) {
+					return;
+				}
+				
 				if (exception != null) {
 					navigationAttempt.cancel();
 				} else {
@@ -72,10 +76,10 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 		private class ParseDocumentExecutable implements Executable {			
 
 			private Html5DocumentImpl document;
-			private ScriptableDocumentParser scripDomParser;
+			private Html5DocumentParser scripDomParser;
 			private Resource resource;
 			
-			public ParseDocumentExecutable(Html5DocumentImpl document, ScriptableDocumentParser scripDomParser, Resource resource) {
+			public ParseDocumentExecutable(Html5DocumentImpl document, Html5DocumentParser scripDomParser, Resource resource) {
 				this.document = document;
 				this.scripDomParser = scripDomParser;
 				this.resource = resource;
@@ -102,7 +106,7 @@ public class HtmlDocumentHandlerFactory extends ContentHandlerFactory {
 				String encoding = resource.getContentEncoding();
 				URL address = (resource.getOverrideAddress() != null)? resource.getOverrideAddress() : resource.getAddress();
 				
-				final ScriptableDocumentParser scripDomParser = new ScriptableDocumentParser(encoding);
+				final Html5DocumentParser scripDomParser = new Html5DocumentParser(encoding);
 				Html5DocumentImpl document = getRenderableDocument(resource.getBrowsingContext(), address, "text/html", scripDomParser);
 				updateSessionHistory(document);
 				

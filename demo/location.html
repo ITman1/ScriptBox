@@ -53,17 +53,17 @@
             	console.info("completed loading of location.html");
             }
         </script>
-        <p>Global <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#location">Location</a> object
+        <p>Global <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#window">Window</a> object
         contains property <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#dom-location">location</a> that should implement the 
         <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#location">Location</a> interface.
         This interface is fully supported, including its super interface <a href="http://url.spec.whatwg.org/#urlutils">URLUtils</a> 
-        except the origin and searchParams attributes. It has been also partially implemented the URL interface that implements
-        also the <a href="http://url.spec.whatwg.org/#urlutils">URLUtils</a> interface.</p>
+        except the origin and searchParams attributes. URL interface, implementing also the <a href="http://url.spec.whatwg.org/#urlutils">URLUtils</a>, has been implemented.
+        </p>
         
         <p>Navigation is accomplished to the <a href="http://www.w3.org/html/wg/drafts/html/master/browsers.html#navigate">navigation</a>
-         algorithm according the specification. At this moment are supported following schemas: "http", "file", 
-         "javascript" and "https". Even if we can now handle only text/html content type, it has been implemented
-         general mechanism for handling also such contents like are: plain text, multipart, media, plugin, XML, etc.
+         algorithm according to the specification. At this moment the following schemas: "http", "file", 
+         "javascript" and "https" are supported. Even if we can handle only text/html content type now, general mechanism for handling such contents as: plain text, multipart, media, plugin, XML, etc. has been also implemented
+          
          </p>
         
         <h3>Location interface</h3>
@@ -101,12 +101,12 @@
         </p>
         <p>
             For testing the URLUtils and URL interface click on <a href="javascript:urlutils_test()">this</a>. 
-            The corresponding attributes will be printed into the console.
+            The corresponding URL's attributes will be printed into the console.
         </p>
         <p>
             For testing the fragment navigation click on <a href="#location-interface">this</a>
-            and you should be navigated to the page title. To test new navigation with the bookmarklet test
-            by clicking on <a href="javascript:'Bookmarklet content'">this</a> or simply write custom 
+            and you should be navigated to the page title. To test new navigation with the bookmarklet
+            click on <a href="javascript:'Bookmarklet content'">this</a> or simply write custom 
             JavaScript code into navigation panel with the 'javascript:' scheme.
         </p>
         

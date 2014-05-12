@@ -63,7 +63,7 @@ import org.xml.sax.SAXException;
  * @see <a href="http://www.w3.org/html/wg/drafts/html/master/syntax.html#parsing">Parsing</a>
  */
 public class ScriptDOMParser extends DOMParser {
-	private ScriptableDocumentParser _parser;
+	private Html5DocumentParser _parser;
 
 	private boolean aborted;
 	private Html5DocumentImpl _document;
@@ -74,7 +74,7 @@ public class ScriptDOMParser extends DOMParser {
 		return fDocument;
 	}
 
-	public ScriptDOMParser(ScriptableDocumentParser parser, String charset) {
+	public ScriptDOMParser(Html5DocumentParser parser, String charset) {
 		_parser = parser;
 		_document = parser.getDocument();
 		_charset = charset;

@@ -27,7 +27,7 @@ import org.fit.cssbox.scriptbox.navigation.NavigationAttempt;
 import org.fit.cssbox.scriptbox.resource.Resource;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandler;
 import org.fit.cssbox.scriptbox.resource.content.ContentHandlerFactory;
-import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
+import org.fit.cssbox.scriptbox.resource.content.DOMContentHandler;
 
 /*
  * TODO: Implement.
@@ -42,7 +42,7 @@ import org.fit.cssbox.scriptbox.resource.content.RenderedContentHandler;
  * @since 0.9 - 21.4.2014
  */
 public class XmlDocumentHandlerFactory extends ContentHandlerFactory {
-	private class XmlDocumentHandler extends RenderedContentHandler {
+	private class XmlDocumentHandler extends DOMContentHandler {
 
 		public XmlDocumentHandler(NavigationAttempt navigationAttempt) {
 			super(navigationAttempt);

@@ -39,6 +39,15 @@ public abstract class ContentHandler {
 	protected BrowsingContext context;
 	
 	/**
+	 * Constructs content handler for a given browsing context.
+	 * 
+	 * @param context Browsing context that constructed this content handler.
+	 */
+	public ContentHandler(BrowsingContext context) {
+		this.context = context;
+	}
+	
+	/**
 	 * Constructs content handler for a given navigation attempt.
 	 * 
 	 * @param navigationAttempt Navigation attempt which invoked this content handler.

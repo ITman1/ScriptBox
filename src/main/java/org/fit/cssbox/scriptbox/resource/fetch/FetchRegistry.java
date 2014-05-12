@@ -30,10 +30,10 @@ import java.util.Set;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.events.Task;
-import org.fit.cssbox.scriptbox.resource.fetch.handlers.FileFetch;
-import org.fit.cssbox.scriptbox.resource.fetch.handlers.HttpFetch;
-import org.fit.cssbox.scriptbox.resource.fetch.handlers.HttpsFetch;
-import org.fit.cssbox.scriptbox.resource.fetch.handlers.JavascriptFetch;
+import org.fit.cssbox.scriptbox.resource.fetch.handlers.FileFetchHandler;
+import org.fit.cssbox.scriptbox.resource.fetch.handlers.HttpFetchHandler;
+import org.fit.cssbox.scriptbox.resource.fetch.handlers.HttpsFetchHandler;
+import org.fit.cssbox.scriptbox.resource.fetch.handlers.JavaScriptFetchHandler;
 
 /**
  * Fetch registry which collects all kinds of the fetches.
@@ -46,15 +46,15 @@ public class FetchRegistry {
 	
 	static private FetchRegistry instance;
 
-	private Map<String, Set<Class<? extends Fetch>>> registeredFetchHandlers;
+	private Map<String, Set<Class<? extends FetchHandler>>> registeredFetchHandlers;
 	
 	private FetchRegistry() {
-		registeredFetchHandlers = new HashMap<String, Set<Class<? extends Fetch>>>();
+		registeredFetchHandlers = new HashMap<String, Set<Class<? extends FetchHandler>>>();
 		
-		registerFetchHandler(FileFetch.class);
-		registerFetchHandler(HttpFetch.class);
-		registerFetchHandler(HttpsFetch.class);
-		registerFetchHandler(JavascriptFetch.class);
+		registerFetchHandler(FileFetchHandler.class);
+		registerFetchHandler(HttpFetchHandler.class);
+		registerFetchHandler(HttpsFetchHandler.class);
+		registerFetchHandler(JavaScriptFetchHandler.class);
 	}
 	
 	/**
@@ -89,7 +89,7 @@ public class FetchRegistry {
 	 * @param url URL which is being fetched.
 	 * @return Constructed fetch if there exists appropriate fetch, otherwise null.
 	 */
-	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+	public FetchHandler getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		return getFetchPrivate(sourceContext, destinationContext, url, null, null, null, null);
 	}
 	
@@ -105,7 +105,7 @@ public class FetchRegistry {
 	 * @param onFinishTask Task that should be called after fetch is complete.
 	 * @return Constructed fetch if there exists appropriate fetch, otherwise null.
 	 */
-	public Fetch getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+	public FetchHandler getFetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		return getFetchPrivate(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 	}
 	
@@ -114,13 +114,13 @@ public class FetchRegistry {
 	 * 
 	 * @param fetchClass New fetch class.
 	 */
-	public void registerFetchHandler(Class<? extends Fetch> fetchClass) {
+	public void registerFetchHandler(Class<? extends FetchHandler> fetchClass) {
 		String[] protocols = null;
 		Annotation[] annotations = fetchClass.getAnnotations();
 
 		for(Annotation annotation : annotations){
-		    if(annotation instanceof FetchPreamble){
-		    	FetchPreamble fetchPreamble = (FetchPreamble) annotation;
+		    if(annotation instanceof FetchHandlerPreamble){
+		    	FetchHandlerPreamble fetchPreamble = (FetchHandlerPreamble) annotation;
 		        protocols = fetchPreamble.protocols();
 		    }
 		}
@@ -131,10 +131,10 @@ public class FetchRegistry {
 		}
 		
 		for (String protocol : protocols) {
-			Set<Class<? extends Fetch>> fetchHandlers = registeredFetchHandlers.get(protocol);
+			Set<Class<? extends FetchHandler>> fetchHandlers = registeredFetchHandlers.get(protocol);
 			
 			if (fetchHandlers == null) {
-				fetchHandlers = new HashSet<Class<? extends Fetch>>();
+				fetchHandlers = new HashSet<Class<? extends FetchHandler>>();
 			}
 			
 			fetchHandlers.add(fetchClass);
@@ -142,15 +142,15 @@ public class FetchRegistry {
 		}
 	}
 	
-	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
-		Fetch fetch = null;
+	private FetchHandler instantizeFetch(Class<? extends FetchHandler> fetchClass, BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+		FetchHandler fetch = null;
 		
 		try {
-			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, BrowsingContext.class, URL.class, boolean.class, boolean.class, boolean.class, Task.class);
+			Constructor<? extends FetchHandler> contructor = fetchClass.getConstructor(BrowsingContext.class, BrowsingContext.class, URL.class, boolean.class, boolean.class, boolean.class, Task.class);
 			Object newInstance = contructor.newInstance(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 			
-			if (newInstance instanceof Fetch) {
-				fetch = (Fetch)newInstance;
+			if (newInstance instanceof FetchHandler) {
+				fetch = (FetchHandler)newInstance;
 			}
 		} catch (Exception e) {
 		}
@@ -158,15 +158,15 @@ public class FetchRegistry {
 		return fetch;
 	}
 	
-	private Fetch instantizeFetch(Class<? extends Fetch> fetchClass, BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
-		Fetch fetch = null;
+	private FetchHandler instantizeFetch(Class<? extends FetchHandler> fetchClass, BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+		FetchHandler fetch = null;
 		
 		try {
-			Constructor<? extends Fetch> contructor = fetchClass.getConstructor(BrowsingContext.class, BrowsingContext.class, URL.class);
+			Constructor<? extends FetchHandler> contructor = fetchClass.getConstructor(BrowsingContext.class, BrowsingContext.class, URL.class);
 			Object newInstance = contructor.newInstance(sourceContext, destinationContext, url);
 			
-			if (newInstance instanceof Fetch) {
-				fetch = (Fetch)newInstance;
+			if (newInstance instanceof FetchHandler) {
+				fetch = (FetchHandler)newInstance;
 			}
 		} catch (Exception e) {
 		}
@@ -174,12 +174,12 @@ public class FetchRegistry {
 		return fetch;
 	}
 	
-	private Fetch getFetchPrivate(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, Boolean synchronous, Boolean manualRedirect, Boolean isSafe, Task onFinishTask) {
-		Set<Class<? extends Fetch>> fetchHandlers = registeredFetchHandlers.get(url.getProtocol());
+	private FetchHandler getFetchPrivate(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, Boolean synchronous, Boolean manualRedirect, Boolean isSafe, Task onFinishTask) {
+		Set<Class<? extends FetchHandler>> fetchHandlers = registeredFetchHandlers.get(url.getProtocol());
 		
 		if (fetchHandlers != null) {
-			for (Class<? extends Fetch> fetchClass : fetchHandlers) {
-				Fetch fetch = null;
+			for (Class<? extends FetchHandler> fetchClass : fetchHandlers) {
+				FetchHandler fetch = null;
 				
 				if (synchronous != null) {
 					fetch = instantizeFetch(fetchClass, sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);

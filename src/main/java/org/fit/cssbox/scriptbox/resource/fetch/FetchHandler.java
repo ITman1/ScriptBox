@@ -1,5 +1,5 @@
 /**
- * Fetch.java
+ * FetchHandler.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import org.fit.cssbox.scriptbox.resource.Resource;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public abstract class Fetch implements Closeable {
+public abstract class FetchHandler implements Closeable {
 	private class AsyncFetchThread extends Thread {
 		@Override
 		public void run() {
@@ -77,7 +77,7 @@ public abstract class Fetch implements Closeable {
 	 * @param isSafe Should be set to true, if was invoked by user agent and is secure.
 	 * @param onFinishTask Task that should be called after fetch is complete.
 	 */
-	public Fetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
+	public FetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url, boolean synchronous, boolean manualRedirect, boolean isSafe, Task onFinishTask) {
 		this.fetchRegistry = FetchRegistry.getInstance();
 		
 		this.sourceContext = sourceContext;
@@ -96,7 +96,7 @@ public abstract class Fetch implements Closeable {
 	 * @param destinationContext Destination browsing context where is new resource being fetched.
 	 * @param url URL which is being fetched.
 	 */
-	public Fetch(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
+	public FetchHandler(BrowsingContext sourceContext, BrowsingContext destinationContext, URL url) {
 		this(sourceContext, destinationContext, url, true, true, false, null);
 	}
 	
@@ -208,7 +208,7 @@ public abstract class Fetch implements Closeable {
 				boolean isRedirectValid = resource.isRedirectValid();
 				if (isRedirectValid) {
 					url = resource.getRedirectUrl();
-					Fetch newFetch = fetchRegistry.getFetch(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
+					FetchHandler newFetch = fetchRegistry.getFetch(sourceContext, destinationContext, url, synchronous, manualRedirect, isSafe, onFinishTask);
 					if (newFetch != null) {
 						try {
 							newFetch.fetch();

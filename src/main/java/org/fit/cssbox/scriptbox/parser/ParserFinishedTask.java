@@ -53,7 +53,7 @@ public abstract class ParserFinishedTask extends Task {
 	 * 
 	 * @return Parsing exception if there is any.
 	 */
-	public Exception getException() {
+	public Exception getParserException() {
 		return exception;
 	}
 }
