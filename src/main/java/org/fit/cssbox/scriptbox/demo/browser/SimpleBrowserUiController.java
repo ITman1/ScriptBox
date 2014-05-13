@@ -243,6 +243,8 @@ public class SimpleBrowserUiController extends BrowserUiController {
 		registerEventListeners();
 		
 		updateUI();
+		
+		navigationField.setText("http://itman1.github.io/ScriptBox/demo/index.html");
 	}
 	
 	protected void updateScriptBox() {
