@@ -2,8 +2,10 @@ package org.fit.cssbox.scriptbox.demo.tester;
 
 import javax.swing.UIManager;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowserUiController;
+import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowsingUnit;
 import org.fit.cssbox.scriptbox.demo.browser.SimpleUserAgent;
 
 /**

@@ -192,14 +192,15 @@ public abstract class BrowsingContext {
 	}
 	
 	/**
-	 * Opens new top-level auxiliary browsing context.
+	 * Opens new top-level auxiliary browsing context. This method is called
+	 * from the browsing unit for creating new auxiliary browsing context.
 	 * 
 	 * @param name Name of the browsing context.
 	 * @param createdByScript Specifies whether this context has been created by a script or not.
 	 * @return New top-level auxiliary browsing context
 	 */
 	public AuxiliaryBrowsingContext openAuxiliaryBrowsingContext(String name, boolean createdByScript) {
-		AuxiliaryBrowsingContext auxiliaryContext = getBrowsingUnit().openAuxiliaryBrowsingContext(this, name, createdByScript);
+		AuxiliaryBrowsingContext auxiliaryContext = getBrowsingUnit().constructAuxiliaryBrowsingContext(this, name, createdByScript);
 		addAuxiliaryContext(auxiliaryContext);
 		return auxiliaryContext;
 	}
@@ -767,6 +768,7 @@ public abstract class BrowsingContext {
 	 */
 	public BrowsingContext chooseBrowsingContextByName(String name, boolean calledByScript) {
 		BrowsingUnit browsingUnit = getBrowsingUnit();
+		UserAgent userAgent = browsingUnit.getUserAgent();
 		BrowsingContext context = null;
 		
 		if (name == null) {
@@ -816,7 +818,8 @@ public abstract class BrowsingContext {
 			/*
 			 * FIXME: Replace for null and implement above TODOs.
 			 */
-			return browsingUnit.openAuxiliaryBrowsingContext(this, name, calledByScript);
+			BrowsingUnit newUnit = userAgent.openAuxiliaryBrowsingUnit(this, name, calledByScript);
+			return newUnit.getWindowBrowsingContext();
 		}
 	}
 	
@@ -953,7 +956,7 @@ public abstract class BrowsingContext {
 			auxiliaryContexts.add(auxiliaryContext);
 		}
 		
-		fireBrowsingContextInserted(auxiliaryContext);
+		//fireBrowsingContextInserted(auxiliaryContext);
 	}
 	
 	private BrowsingContext getFirstFamiliar(String name) {

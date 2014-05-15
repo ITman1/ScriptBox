@@ -2,6 +2,7 @@ package org.fit.cssbox.scriptbox.demo.browser;
 
 import javax.swing.UIManager;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowserUiController;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowserUserAgent;
@@ -20,6 +21,11 @@ public class SimpleUserAgent extends ScriptBrowserUserAgent {
 	@Override
 	protected BrowsingUnit createBrowsingUnit() {
 		return new SimpleBrowsingUnit(this);
+	}
+	
+	@Override
+	protected BrowsingUnit createAuxiliaryBrowsingUnit(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
+		return new SimpleBrowsingUnit(openerBrowsingContext, name, createdByScript);
 	}
 	
 	@Override

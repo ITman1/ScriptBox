@@ -185,6 +185,7 @@ public class JavaScriptTesterUiController extends SimpleBrowserUiController {
 	public JavaScriptTesterUiController(WindowBrowsingContext windowBrowsingContext) {
 		super(windowBrowsingContext, new JavaScriptTesterUi());
 		
+		registerEventListeners();
 		registerJavaScriptInjectors();
 	}
 	
@@ -275,8 +276,26 @@ public class JavaScriptTesterUiController extends SimpleBrowserUiController {
 	}
 	
 	@Override
-	protected void registerEventListeners() {
-		super.registerEventListeners();
+	protected void unregisterEventListeners() {
+		super.unregisterEventListeners();
+		
+		sourceCodeTabbedPane.removeChangeListener(onTabChangedListener);
+		
+		navigateSourceCodeButton.removeActionListener(onNavigateSourceCodeButton);
+		openSourceCodeButton.removeActionListener(onOpenSourceCodeListener);
+		saveSourceCodeButton.removeActionListener(onSaveSourceCodeListener);
+		saveAsSourceCodeButton.removeActionListener(onSaveAsSourceCodeListener);
+		closeSourceCodeButton.removeActionListener(onCloseSourceCodeListener);
+		newSourceCodeButton.removeActionListener(onNewSourceCodeListener);
+		objectViewerRefreshButton.removeActionListener(onObjectViewerRefresh);
+		objectsWatchListRefreshButton.removeActionListener(onObjectsWatchListRefresh);
+		consoleClearButton.removeActionListener(onConsoleClear);
+		
+		newWatchedVariableField.removeActionListener(onNewVariableEntered);
+		scriptObjectsWatchList.removeKeyListener(scriptObjectsWatchListKeyListener);
+	}
+	
+	private void registerEventListeners() {
 		sourceCodeTabbedPane.addChangeListener(onTabChangedListener);
 		
 		navigateSourceCodeButton.addActionListener(onNavigateSourceCodeButton);

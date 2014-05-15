@@ -27,12 +27,6 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 			AuxiliaryBrowsingContext windowContext = (AuxiliaryBrowsingContext)target;
 			
 			switch (event.getEventType()) {
-				case INSERTED:
-					onAuxiliaryBrowsingContextInserted(windowContext);
-					break;
-				case REMOVED:
-					onAuxiliaryBrowsingContextRemoved(windowContext);
-					break;
 				case DESTROYED:
 					onAuxiliaryBrowsingContextDestroyed(windowContext);
 					break;
@@ -48,15 +42,13 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 	public SimpleBrowsingUnit(ScriptBrowserUserAgent userAgent) {
 		super(userAgent, false);
 		
-		auxiliaryUiControllers = new HashMap<WindowBrowsingContext, BrowserUiController>();
+		initializeBrowsingUnit();
+	}
+	
+	public SimpleBrowsingUnit(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
+		super(openerBrowsingContext, name, createdByScript, false);
 		
-		windowContextUiController = constructWindowTopLevelBrowsingContextUiController(windowBrowsingContext);
-		if (windowContextUiController != null) {
-			windowContextUiController.showUI();
-		}
-		
-		BrowserUi browserUI = windowContextUiController.getUI();
-		setScriptBrowser(browserUI.getScriptBrowser());
+		initializeBrowsingUnit();
 	}
 	
 	@Override
@@ -68,11 +60,21 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		contextListener = null;
 	}
 	
-	@Override
-	public AuxiliaryBrowsingContext openAuxiliaryBrowsingContext(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
-		AuxiliaryBrowsingContext auxiliaryContext = super.openAuxiliaryBrowsingContext(openerBrowsingContext, name, createdByScript);
-		auxiliaryContext.addListener(contextListener);
-		return auxiliaryContext;
+	/**
+	 * Initializes this browsing unit.
+	 */
+	protected void initializeBrowsingUnit() {
+		windowBrowsingContext.addListener(contextListener);
+		
+		auxiliaryUiControllers = new HashMap<WindowBrowsingContext, BrowserUiController>();
+		
+		windowContextUiController = constructWindowTopLevelBrowsingContextUiController(windowBrowsingContext);
+		if (windowContextUiController != null) {
+			windowContextUiController.showUI();
+		}
+		
+		BrowserUi browserUI = windowContextUiController.getUI();
+		setScriptBrowser(browserUI.getScriptBrowser());
 	}
 	
 	/**
@@ -95,7 +97,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		return new SimpleBrowserUiController(windowContext);
 	}
 	
-	private void onAuxiliaryBrowsingContextInserted(AuxiliaryBrowsingContext windowContext) {
+	private void onAuxiliaryBrowsingContextShow(AuxiliaryBrowsingContext windowContext) {
 		BrowserUiController controller = auxiliaryUiControllers.get(windowContext);
 		
 		if (controller == null) {
@@ -112,7 +114,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		
 	}
 	
-	private void onAuxiliaryBrowsingContextRemoved(AuxiliaryBrowsingContext windowContext) {
+	private void onAuxiliaryBrowsingContextDestroyed(AuxiliaryBrowsingContext windowContext) {
 		BrowserUiController controller = auxiliaryUiControllers.get(windowContext);
 		
 		if (controller != null) {
@@ -123,9 +125,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 				}
 			});
 		}
-	}
-	
-	private void onAuxiliaryBrowsingContextDestroyed(AuxiliaryBrowsingContext windowContext) {
+		
 		auxiliaryUiControllers.remove(windowContext);
 	}
 

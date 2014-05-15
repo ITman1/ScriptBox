@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public interface FieldMember extends Member<Field> {
+public interface FieldMember extends JavaMember<Field> {
 	/**
 	 * Returns field getter method.
 	 * 

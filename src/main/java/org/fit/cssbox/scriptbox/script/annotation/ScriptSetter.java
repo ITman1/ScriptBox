@@ -25,6 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
+
 /**
  * Annotation for methods which makes them visible from the script as a modifiable fields.
  * 
@@ -36,7 +38,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Inherited
 public @interface ScriptSetter  {
-	public static final String ENUMERABLE_FIELD = "enumerable";
+	public static final String ENUMERABLE_FIELD = ClassMember.ENUMERABLE;
 	public static final String CALLABLE_SETTER = "callable";
 	public static final String CALLABLE_ENUMERABLE_SETTER = "enum_callable";
 	public static final String FIELD_SET_OVERRIDE = "field_override";

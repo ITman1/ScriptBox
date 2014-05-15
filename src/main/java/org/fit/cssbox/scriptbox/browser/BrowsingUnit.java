@@ -53,18 +53,29 @@ public class BrowsingUnit {
 	 * Constructs new browsing unit of the user agent.
 	 * 
 	 * @param userAgent User agent which owns this browsing unit.
+	 * @param windowBrowsingContext Window browsing context to be top level browsing context of this browsing unit
 	 */
 	public BrowsingUnit(UserAgent userAgent) {
 		this.userAgent = userAgent;
-		
-		this.eventLoop = new EventLoop(this);
-		this.scriptSettingsStack = new ScriptSettingsStack();
 		this.windowBrowsingContext = constructWindowBrowsingContext();
 		
-		// Has to be after windowBrowsingContext - because it registers event listeners above it
-		this.jointSessionHistory = new JointSessionHistory(this);
+		initializeManagedObjects();
 	}
 	
+	/**
+	 * Constructs new auxiliary browsing unit of the user agent.
+	 * 
+	 * @param openerBrowsingContext Browsing context that caused creation of this browsing unit.
+	 * @param name Name of the top level auxiliary browsing context.
+	 * @param createdByScript Specifies if this browsing unit was created for the script.
+	 */
+	public BrowsingUnit(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
+		this.userAgent = openerBrowsingContext.getUserAgent();
+		this.windowBrowsingContext = constructAuxiliaryBrowsingContext(openerBrowsingContext, name, createdByScript);
+		
+		initializeManagedObjects();
+	}
+		
 	/**
 	 * Returns the user agent which owns and opened this browsing unit.
 	 * 
@@ -82,7 +93,7 @@ public class BrowsingUnit {
 	 * @param createdByScript Specifies whether this context has been created by a script or not.
 	 * @return New top-level auxiliary browsing context
 	 */
-	public AuxiliaryBrowsingContext openAuxiliaryBrowsingContext(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
+	public AuxiliaryBrowsingContext constructAuxiliaryBrowsingContext(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
 		return new AuxiliaryBrowsingContext(this, openerBrowsingContext, name, createdByScript);
 	}
 	
@@ -93,7 +104,7 @@ public class BrowsingUnit {
 	 * @param iframeElement IFRAME element which represents the container of the new browsing context.
 	 * @return New nested IFRAME browsing context.
 	 */
-	public IFrameBrowsingContext openIFrameBrowsingContext(IFrameContainerBrowsingContext container, Html5IFrameElementImpl iframeElement) {
+	public IFrameBrowsingContext constructIFrameBrowsingContext(IFrameContainerBrowsingContext container, Html5IFrameElementImpl iframeElement) {
 		return new IFrameBrowsingContext(container, iframeElement);
 	}
 	
@@ -232,5 +243,16 @@ public class BrowsingUnit {
 	 */
 	public String showPromptDialog(String message, String defaultChoice) {
 		return null;
+	}
+	
+	/**
+	 * Initializes event loop, script settings stack and joint session history.
+	 */
+	protected void initializeManagedObjects() {
+		this.eventLoop = new EventLoop(this);
+		this.scriptSettingsStack = new ScriptSettingsStack();
+		
+		// Has to be after windowBrowsingContext - because it registers event listeners above it
+		this.jointSessionHistory = new JointSessionHistory(this);
 	}
 }

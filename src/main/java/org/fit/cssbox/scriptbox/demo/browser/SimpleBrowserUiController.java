@@ -79,6 +79,7 @@ public class SimpleBrowserUiController extends BrowserUiController {
 	
 	private WindowListener frameListener = new WindowAdapter() {
 		public void windowClosing(WindowEvent e) {
+			unregisterEventListeners();
 			closeUI();
 		};
 	};
@@ -318,7 +319,7 @@ public class SimpleBrowserUiController extends BrowserUiController {
 		navigateButton = ui.getNavigateButton();
 	}
 	
-	protected void registerEventListeners() {		
+	private void registerEventListeners() {		
 		historyBackButton.addActionListener(onHistoryBackListener);
 		historyForwardButton.addActionListener(onHistoryForwardListener);
 		navigateButton.addActionListener(onNavigateListener);
@@ -329,6 +330,22 @@ public class SimpleBrowserUiController extends BrowserUiController {
 		
 		navigationField.getDocument().addDocumentListener(onNavigationFieldChangedListener);
 		navigationField.addActionListener(onNavigationFieldActionListener);
+	}
+	
+	/**
+	 * Unregisters all registered events listeners.
+	 */
+	protected void unregisterEventListeners() {		
+		historyBackButton.removeActionListener(onHistoryBackListener);
+		historyForwardButton.removeActionListener(onHistoryForwardListener);
+		navigateButton.removeActionListener(onNavigateListener);
+		frame.removeWindowListener(frameListener);
+		
+		getJointSessionHistory().removeListener(jointSessionHistoryListener);
+		navigationController.removeListener(navigationControllerListener);
+		
+		navigationField.getDocument().removeDocumentListener(onNavigationFieldChangedListener);
+		navigationField.removeActionListener(onNavigationFieldActionListener);
 	}
 
 	protected JointSessionHistory getJointSessionHistory() {
@@ -351,7 +368,7 @@ public class SimpleBrowserUiController extends BrowserUiController {
 	protected void onNavigationCompleted() {	
 		updateScriptBox();
 	}
-
+	
 	@Override
 	public BrowserUi getUI() {
 		return ui;

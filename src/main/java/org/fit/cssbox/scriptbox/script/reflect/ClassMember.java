@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class ClassMember<MemberType extends java.lang.reflect.Member> implements Member<MemberType> {
+public abstract class ClassMember<MemberType extends java.lang.reflect.Member> implements JavaMember<MemberType> {
 	public final static String ENUMERABLE = "enumerable";
 	public final static String PERNAMENT = "pernament";
 	public final static String DEFAULT_OPTIONS[] = {ENUMERABLE, PERNAMENT};
