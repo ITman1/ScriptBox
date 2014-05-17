@@ -55,4 +55,11 @@ public interface JavaMember<MemberType extends java.lang.reflect.Member> {
 	 * @return True if has this member the given option, otherwise false.
 	 */
 	boolean hasOption(String option);
+	
+	/**
+	 * Returns options.
+	 * 
+	 * @return Array with the options.
+	 */
+	String[] getOptions();
 }

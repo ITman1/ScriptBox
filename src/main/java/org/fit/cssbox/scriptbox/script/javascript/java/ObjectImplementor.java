@@ -30,8 +30,10 @@ import org.fit.cssbox.scriptbox.script.reflect.ClassField;
 import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
 import org.fit.cssbox.scriptbox.script.reflect.ClassMembersResolverFactory;
+import org.fit.cssbox.scriptbox.script.reflect.ObjectField;
 import org.fit.cssbox.scriptbox.script.reflect.ObjectFunction;
 import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
+import org.fit.cssbox.scriptbox.script.reflect.ObjectMembers;
 import org.mozilla.javascript.ScriptableObject;
 
 /**
@@ -45,7 +47,7 @@ import org.mozilla.javascript.ScriptableObject;
 public class ObjectImplementor {
 	protected Object implementedObject;
 	protected Class<?> implementedObjectType;
-	protected DefaultObjectMembers objectMembers;
+	protected ObjectMembers objectMembers;
 	protected Set<String> definedProperties;
 	
 	/**
@@ -54,7 +56,7 @@ public class ObjectImplementor {
 	 * @param objectMembers Object members that should be implemented.
 	 * @param scriptEngine Script engine that owns this implementor.
 	 */
-	public ObjectImplementor(DefaultObjectMembers objectMembers, BrowserScriptEngine scriptEngine) {
+	public ObjectImplementor(ObjectMembers objectMembers, BrowserScriptEngine scriptEngine) {
 		this.objectMembers = objectMembers;
 		this.implementedObject = objectMembers.getObject();
 		this.implementedObjectType = this.implementedObject.getClass();
@@ -85,7 +87,7 @@ public class ObjectImplementor {
 	 * 
 	 * @return Members of the implemented object.
 	 */
-	public DefaultObjectMembers getObjectMembers() {
+	public ObjectMembers getObjectMembers() {
 		return objectMembers;
 	}
 	
@@ -172,7 +174,7 @@ public class ObjectImplementor {
 	 * @param classField Field member wrapper.
 	 */
 	protected void defineObjectField(ScriptableObject destinationScope, String fieldName, ClassField classField) {
-		ObjectJSField objectField = new ObjectJSField(implementedObject, classField);
+		ObjectField objectField = new ObjectField(implementedObject, classField);
 		ObjectScriptable.defineObjectField(destinationScope, fieldName, objectField);
 		definedProperties.add(fieldName);
 	}

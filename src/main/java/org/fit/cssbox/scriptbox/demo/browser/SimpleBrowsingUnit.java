@@ -97,6 +97,7 @@ public class SimpleBrowsingUnit extends ScriptBrowserBrowsingUnit {
 		return new SimpleBrowserUiController(windowContext);
 	}
 	
+	@SuppressWarnings("unused")
 	private void onAuxiliaryBrowsingContextShow(AuxiliaryBrowsingContext windowContext) {
 		BrowserUiController controller = auxiliaryUiControllers.get(windowContext);
 		

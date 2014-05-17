@@ -84,6 +84,11 @@ public abstract class ClassMember<MemberType extends java.lang.reflect.Member> i
 	}
 	
 	@Override
+	public String[] getOptions() {
+		return options;
+	}
+	
+	@Override
 	public int hashCode() {
 		return new HashCodeBuilder(7, 43).
 			append(clazz).

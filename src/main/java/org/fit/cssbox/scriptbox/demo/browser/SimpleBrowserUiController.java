@@ -141,7 +141,7 @@ public class SimpleBrowserUiController extends BrowserUiController {
 					BrowsingContext browsingContext = newDocument.getBrowsingContext();
 					
 					if (newDocument.getDocumentReadiness() == DocumentReadyState.COMPLETE && browsingContext.isTopLevelBrowsingContext() && newDocument.isActiveDocument() && currentEntry != whereTraversed) {
-						updateScriptBox();
+						onDocumentChanged();
 					}
 					
 					if (browsingContext.isTopLevelBrowsingContext()) {
@@ -248,10 +248,8 @@ public class SimpleBrowserUiController extends BrowserUiController {
 		navigationField.setText("http://itman1.github.io/ScriptBox/demo/index.html");
 	}
 	
-	protected void updateScriptBox() {
+	protected void onDocumentChanged() {
 		loadedDocument = windowBrowsingContext.getActiveDocument();	
-		
-		scriptBrowser.refresh();
 	}
 	
 	@Override
@@ -366,7 +364,7 @@ public class SimpleBrowserUiController extends BrowserUiController {
 	}
 	
 	protected void onNavigationCompleted() {	
-		updateScriptBox();
+		onDocumentChanged();
 	}
 	
 	@Override

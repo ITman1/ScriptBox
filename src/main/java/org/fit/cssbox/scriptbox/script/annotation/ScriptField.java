@@ -40,8 +40,10 @@ import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
 @Inherited
 public @interface ScriptField {
 	public static final String ENUMERABLE = ClassMember.ENUMERABLE;
+	public static final String EMPTY = "";
 	public static final String[] DEFAULT_OPTIONS = {ENUMERABLE};
 	
 	String[] engines() default {};
 	String[] options() default {ENUMERABLE};
+	String field() default EMPTY;
 }

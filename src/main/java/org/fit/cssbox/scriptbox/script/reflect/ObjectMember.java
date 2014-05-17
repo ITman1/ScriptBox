@@ -72,5 +72,14 @@ public abstract class ObjectMember<ClassMemberType extends ClassMember<MemberTyp
 	public Class<?> getObjectType() {
 		return clazz;
 	}
+	
+	/**
+	 * Returns wrapped class member.
+	 * 
+	 * @return Wrapped class member.
+	 */
+	public ClassMemberType getClassMember() {
+		return classMember;
+	}
 
 }

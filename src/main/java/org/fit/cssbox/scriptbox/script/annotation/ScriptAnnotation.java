@@ -171,9 +171,11 @@ public class ScriptAnnotation {
 			ScriptField scriptClass = (ScriptField)annotation;
 			engines = scriptClass.engines();
 		} else if (annotation instanceof InvisibleField) {
-			return false;
+			InvisibleField scriptClass = (InvisibleField)annotation;
+			engines = scriptClass.engines();
 		} else if (annotation instanceof InvisibleFunction) {
-			return false;
+			InvisibleFunction scriptClass = (InvisibleFunction)annotation;
+			engines = scriptClass.engines();
 		} else {
 			throw new ScriptAnnotationException("Passed annotation is not script annotation!");
 		}
@@ -431,6 +433,17 @@ public class ScriptAnnotation {
 	 * @return Name of the script field.
 	 */
 	public static String extractFieldName(Field field) {
+		String fieldName = null;
+		Annotation annotation = getMemberScriptAnnotation(field);
+		
+		if (annotation instanceof ScriptField) {
+			ScriptField fieldAnnotation = (ScriptField) annotation;
+			fieldName = fieldAnnotation.field();
+			if (!fieldName.equals(ScriptField.EMPTY)) {
+				return fieldName;
+			}
+		}
+		
 		return ClassField.extractFieldName(field);
 	}
 

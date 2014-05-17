@@ -19,6 +19,7 @@
 
 package org.fit.cssbox.scriptbox.ui;
 
+import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -28,15 +29,23 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.IFrameContainerBrowsingContext;
 import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
+import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl.DocumentReadyState;
 import org.fit.cssbox.scriptbox.events.Task;
 import org.fit.cssbox.scriptbox.events.TaskSource;
 import org.fit.cssbox.scriptbox.exceptions.TaskAbortedException;
+import org.fit.cssbox.scriptbox.history.JointSessionHistory;
+import org.fit.cssbox.scriptbox.history.JointSessionHistoryEvent;
+import org.fit.cssbox.scriptbox.history.JointSessionHistoryListener;
 import org.fit.cssbox.scriptbox.history.SessionHistory;
 import org.fit.cssbox.scriptbox.history.SessionHistoryEntry;
+import org.fit.cssbox.scriptbox.navigation.NavigationController;
+import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
+import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.swingbox.BrowserPane;
 import org.fit.cssbox.swingbox.util.CSSBoxAnalyzer;
 
@@ -44,7 +53,7 @@ public class ScriptBrowser extends BrowserPane {
 	private static final long serialVersionUID = -7720839593115478393L;
 
 	protected CSSBoxAnalyzer analyzer;
-	protected MouseEventsDispatcher mouseDispatcher = new MouseEventsDispatcher();
+	protected MouseEventsDispatcher mouseDispatcher;
 	protected ScriptBrowserHyperlinkHandler hyperlinkHandler;
 	
 	protected UserAgent userAgent;
@@ -53,6 +62,63 @@ public class ScriptBrowser extends BrowserPane {
 	protected SessionHistoryEntry visibleSessionHistoryEntry;
 	protected Rectangle delayedScrollRect;
 	
+	protected SessionHistoryEntry currentEntry;
+	
+	protected JointSessionHistoryListener jointSessionHistoryListener = new JointSessionHistoryListener() {
+		@Override
+		public void onHistoryEvent(final JointSessionHistoryEvent event) {
+			JointSessionHistory jointSessionHistory = (JointSessionHistory)event.getSource();
+			SessionHistoryEntry _whereTraversed = null;
+			int position = jointSessionHistory.getPosition();
+			
+			if (position == -1) {
+				return;
+			}
+			
+			if (event.getEventType() == JointSessionHistoryEvent.EventType.POSITION_CHANGED) {
+				_whereTraversed = jointSessionHistory.getCurrentEntry();
+			} else if (event.getEventType() == JointSessionHistoryEvent.EventType.TRAVERSED) {
+				_whereTraversed = event.getRelatedTarget();
+			} else {
+				return;
+			}
+						
+			final SessionHistoryEntry whereTraversed = _whereTraversed;
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					Html5DocumentImpl newDocument = whereTraversed.getDocument();
+					BrowsingContext browsingContext = newDocument.getBrowsingContext();
+					
+					if (newDocument.getDocumentReadiness() == DocumentReadyState.COMPLETE && browsingContext.isTopLevelBrowsingContext() && newDocument.isActiveDocument() && currentEntry != whereTraversed) {
+						refresh();
+					}
+					
+					if (browsingContext.isTopLevelBrowsingContext()) {
+						currentEntry = (whereTraversed != null)? whereTraversed : currentEntry;
+					}
+				}
+			});
+			
+		}
+    };
+	
+	protected NavigationControllerListener navigationControllerListener = new NavigationControllerListener() {
+		@Override
+		public void onNavigationEvent(final NavigationControllerEvent event) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					switch (event.getEventType()) {
+						case NAVIGATION_COMPLETED:
+							refresh();
+							break;
+						default:
+							break;
+					}
+				}
+			});
+		}
+    };
+    
 	public ScriptBrowser() {}
 	
 	/**
@@ -81,6 +147,16 @@ public class ScriptBrowser extends BrowserPane {
 	 * @param windowContext Window browsing context to be associated with this browser.
 	 */
 	public void setWindowBrowsingContext(IFrameContainerBrowsingContext windowContext) {
+		
+		if (this.windowContext != null) {
+			BrowsingUnit browsingUnit = this.windowContext.getBrowsingUnit();
+			JointSessionHistory jointSessionHistory = browsingUnit.getJointSessionHistory();
+			NavigationController navigationController = this.windowContext.getNavigationController();
+			
+			jointSessionHistory.removeListener(jointSessionHistoryListener);
+			navigationController.removeListener(navigationControllerListener);
+		}
+		
 		this.windowContext = windowContext;
 		this.userAgent = windowContext.getUserAgent();
 		
@@ -91,17 +167,30 @@ public class ScriptBrowser extends BrowserPane {
 	 * Initializes this component.
 	 */
 	protected void initialize() {
-		this.analyzer = new ScriptAnalyzer();
-
-		if (hyperlinkHandler != null) {
-			removeHyperlinkListener(hyperlinkHandler);
+		if (analyzer == null) {
+			analyzer = new ScriptAnalyzer();
 		}
-		hyperlinkHandler = new ScriptBrowserHyperlinkHandler();
 		
-		addHyperlinkListener(hyperlinkHandler);
+		if (hyperlinkHandler == null) {
+			hyperlinkHandler = new ScriptBrowserHyperlinkHandler();
+			addHyperlinkListener(hyperlinkHandler);
+		}
+
+		if (mouseDispatcher == null) {
+			mouseDispatcher = new MouseEventsDispatcher();
+			addMouseListener(mouseDispatcher);
+			addMouseMotionListener(mouseDispatcher);
+		}
+
+		BrowsingUnit browsingUnit = windowContext.getBrowsingUnit();
+		JointSessionHistory jointSessionHistory = browsingUnit.getJointSessionHistory();
+		NavigationController navigationController = windowContext.getNavigationController();
+		
+		jointSessionHistory.addListener(jointSessionHistoryListener);
+		navigationController.addListener(navigationControllerListener);
+				
 		setCSSBoxAnalyzer(this.analyzer);
-		addMouseListener(mouseDispatcher);
-		addMouseMotionListener(mouseDispatcher);
+
 	}
 	
 	/**

@@ -217,8 +217,8 @@ public class JavaScriptTesterUiController extends SimpleBrowserUiController {
 	};
 		
 	@Override
-	protected void updateScriptBox() {
-		super.updateScriptBox();
+	protected void onDocumentChanged() {
+		super.onDocumentChanged();
 		
 		String sourceCode = loadedDocument.getParserSource();
 		sourceCodeEditorPane.setText(sourceCode);
