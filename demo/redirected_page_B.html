@@ -20,13 +20,11 @@
 	</div>
 	<div id="content">
 		<script type="text/javascript">
-		    var loaded = false;
-        
 		    onload = function () {
-                if (!loaded) {
-                	history.go(-2);
-                }
-                loaded = true;
+	            if (location.hash == "#redirect") {
+	                history.replaceState(null, document.title, "redirected_page_B.html");
+	                history.go(-2);
+	            }
 	        }
 		</script>
         <p style="text-align: center">

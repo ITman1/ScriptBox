@@ -19,14 +19,12 @@
         </h1>
     </div>
     <div id="content">
-        <script type="text/javascript">
-            var loaded = false;
-            
+        <script type="text/javascript">            
             function timeoutCallback() {
-            	if (!loaded) {
-                    location = "redirected_page_B.html";
+            	if (location.hash == "#redirect") {
+            		history.replaceState(null, document.title, "redirected_page_A.html");
+                    location = "redirected_page_B.html#redirect";
             	}
-            	loaded = true;
             }
             onload = function () {
             	setTimeout(timeoutCallback, 500);

@@ -220,8 +220,9 @@ public class HostedJavaMethod extends FunctionObject {
 					
 					boolean maybeVarargs = true;
 					if (expectedTypes.length == args.length) {
-						Class<?> lastArg = args[args.length - 1].getClass();
-						maybeVarargs = !ClassUtils.isAssignable(lastArg, lastType);
+						Object lastArg = args[args.length - 1];
+						Class<?> lastArgClass = (lastArg != null)? lastArg.getClass() : null;
+						maybeVarargs = lastArgClass != null && !ClassUtils.isAssignable(lastArgClass, lastType);
 					}
 					
 					if (maybeVarargs) {

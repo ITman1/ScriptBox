@@ -327,7 +327,8 @@ public class SessionHistory {
 	public static void traverseHistory(final BrowsingContext specifiedBrowsingContext, SessionHistoryEntry specifiedEntry, boolean replacementEnabled, boolean asynchronousEvents ) {
 		// 1) If there is no longer a Document object for the entry in question, 
 		// navigate the browsing context to the resource and abort.
-		if (specifiedEntry.getDocument() == null) {
+		Html5DocumentImpl specifiedDocument = specifiedEntry.getDocument();
+		if (specifiedDocument == null || specifiedDocument.isUnloaded()) {
 			BrowsingContext context = specifiedEntry.getSessionHistory().getBrowsingContext();
 			context.getNavigationController().update(specifiedEntry);
 			return;
@@ -336,8 +337,7 @@ public class SessionHistory {
 		SessionHistory sessionHistory = specifiedEntry.getSessionHistory();
 		SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 		Html5DocumentImpl currentDocument = currentEntry.getDocument();
-		Html5DocumentImpl specifiedDocument = specifiedEntry.getDocument();
-		
+				
 		// 2) If the current entry's title was not set by the pushState() or replaceState() methods, 
 		// then set its title to document.title IDL attribute. 	
 		if (!currentEntry.hasPushedStateTitle()) {
@@ -407,10 +407,10 @@ public class SessionHistory {
 						
 						// TODO: Run any session history document visibility change steps for Document that are defined by other applicable specifications
 						// FIXME?: Should be load fired here?
-						org.fit.cssbox.scriptbox.dom.events.script.Event event = new org.fit.cssbox.scriptbox.dom.events.script.Event(true, document);
+						/*org.fit.cssbox.scriptbox.dom.events.script.Event event = new org.fit.cssbox.scriptbox.dom.events.script.Event(true, document);
 						Window window = document.getWindow();
 						event.initEvent("load", false, false);
-						window.dispatchEvent(event);
+						window.dispatchEvent(event);*/
 						
 						// TODO: Fire a trusted event with the name pageshow at the Window
 					}

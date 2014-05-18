@@ -19,5 +19,9 @@ function go_forward() {
 }
 
 onerror = function (e) {
-	console.error(e.message);
+	if (e.message == null) {
+		console.error("[no message]");
+	} else {
+		console.error(e.message);
+	}
 }
