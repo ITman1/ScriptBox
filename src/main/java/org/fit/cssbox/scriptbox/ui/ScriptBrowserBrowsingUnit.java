@@ -27,6 +27,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.script.annotation.ScriptGetter;
 
@@ -155,6 +156,22 @@ public class ScriptBrowserBrowsingUnit extends BrowsingUnit {
 	protected ScriptBrowserBrowsingUnit(ScriptBrowserUserAgent userAgent, boolean constructScriptBrowser) {
 		super(userAgent);
 		
+		if (constructScriptBrowser) {
+			this.scriptBrowser = new ScriptBrowser(windowBrowsingContext);
+			initialize();
+		}
+	}
+	
+	/**
+	 * Constructs new auxiliary browsing unit of the user agent.
+	 * 
+	 * @param openerBrowsingContext Browsing context that caused creation of this browsing unit.
+	 * @param name Name of the top level auxiliary browsing context.
+	 * @param createdByScript Specifies if this browsing unit was created for the script.
+	 */
+	protected ScriptBrowserBrowsingUnit(BrowsingContext openerBrowsingContext, String name, boolean createdByScript, boolean constructScriptBrowser) {
+		super(openerBrowsingContext, name, createdByScript);
+	
 		if (constructScriptBrowser) {
 			this.scriptBrowser = new ScriptBrowser(windowBrowsingContext);
 			initialize();

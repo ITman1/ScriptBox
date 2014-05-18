@@ -115,8 +115,6 @@ public class JavaScriptTesterUi implements BrowserUi {
 		navigationField = new JTextField();
 		navigationField.setToolTipText("Please type URL to navigate");
 		navigationLabel.setLabelFor(navigationField);
-		navigationField
-				.setText("file:///Z:/VUTBR_FIT/2MIS/DIP/ScriptBox/demo/index.html");
 		navigationPanel.add(navigationField, BorderLayout.CENTER);
 		navigationField.setColumns(10);
 

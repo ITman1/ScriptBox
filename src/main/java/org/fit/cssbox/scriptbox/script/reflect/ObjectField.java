@@ -70,11 +70,6 @@ public class ObjectField extends ObjectMember<ClassField, Field> implements Fiel
 	}	
 
 	@Override
-	public Object getObject() {
-		return null;
-	}
-
-	@Override
 	public Method getFieldGetterMethod() {
 		return classMember.getFieldGetterMethod();
 	}

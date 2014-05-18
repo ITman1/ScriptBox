@@ -69,6 +69,7 @@ import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.html.HTMLBaseElement;
 import org.w3c.dom.html.HTMLElement;
+import org.w3c.dom.html.HTMLTitleElement;
 import org.w3c.dom.views.AbstractView;
 import org.w3c.dom.views.DocumentView;
 
@@ -157,6 +158,8 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	private Set<Html5DocumentEventListener> listeners;
 	
 	private boolean errorReportingMode;
+	
+	private boolean unloaded;
 	
 	/*
 	 * Document event listener which captures events and runs prepare script
@@ -431,6 +434,12 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 		
 		return super.createElement(tagName);
 	}
+	
+	@ScriptGetter
+	@Override
+    public synchronized String getTitle() {
+		return super.getTitle();
+    }
 	
 	/**
 	 * Returns associated browsing context.
@@ -831,6 +840,8 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 			unloadTask = getEventLoop().getRunningTask();
 		}
 		
+		unloaded = true;
+		
 		_pageShowingFlag = false;
 		
 		if (!_firedUnloadFlag) {
@@ -1190,6 +1201,10 @@ public class Html5DocumentImpl extends HTMLDocumentImpl implements EventTarget, 
 	 */
 	public synchronized void decrementIgnoreDestructiveWritesCounter() {
 		_ignoreDestructiveWritesCounter--;
+	}
+	
+	public synchronized boolean isUnloaded() {
+		return unloaded;
 	}
 	
 	@ScriptFunction

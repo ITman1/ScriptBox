@@ -31,7 +31,7 @@ import org.fit.cssbox.scriptbox.script.exceptions.MemberException;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class ObjectMember<ClassMemberType extends ClassMember<MemberType>, MemberType extends Member> extends ClassMember<MemberType> {
+public abstract class ObjectMember<ClassMemberType extends ClassMember<MemberType>, MemberType extends Member> extends ClassMember<MemberType> {
 
 	protected Object object;
 	protected ClassMemberType classMember;
@@ -71,6 +71,15 @@ public class ObjectMember<ClassMemberType extends ClassMember<MemberType>, Membe
 	 */
 	public Class<?> getObjectType() {
 		return clazz;
+	}
+	
+	/**
+	 * Returns wrapped class member.
+	 * 
+	 * @return Wrapped class member.
+	 */
+	public ClassMemberType getClassMember() {
+		return classMember;
 	}
 
 }

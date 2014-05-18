@@ -1,5 +1,5 @@
 /**
- * Member.java
+ * JavaMember.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ package org.fit.cssbox.scriptbox.script.reflect;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public interface Member<MemberType> {
+public interface JavaMember<MemberType extends java.lang.reflect.Member> {
 	/**
 	 * Returns class that owns this member.
 	 * 
@@ -55,4 +55,11 @@ public interface Member<MemberType> {
 	 * @return True if has this member the given option, otherwise false.
 	 */
 	boolean hasOption(String option);
+	
+	/**
+	 * Returns options.
+	 * 
+	 * @return Array with the options.
+	 */
+	String[] getOptions();
 }

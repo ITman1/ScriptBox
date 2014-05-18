@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Engine Demos - Events</title>
+<style media='all' type='text/css'>
+@import "style.css";
+</style>
+</head>
+<body>
+    <script type="text/javascript" src="global.js"></script>
+    <div id="header">
+        <div>
+            <a href="javascript:go_back()">back</a> | <a
+                href="javascript:go_forward()">forward</a>
+        </div>
+        <h1 id="top-title">
+            JavaScript Engine Demos<span>Events</span>
+        </h1>
+    </div>
+    <div id="content">
+        <script type="text/javascript">
+        
+            var mouse_events_enabled = true;
+        
+            function enable_mouse_events() {
+            	mouse_events_enabled=true;
+            }
+            
+            function disable_mouse_events() {
+                mouse_events_enabled=false;
+            }
+            
+            function mouseEventHandler(event) {
+            	if (mouse_events_enabled) {
+            		var id = event.target.id;
+            		if (id) {
+            			console.info("event " + event.type + ":" + id);
+            		}
+            	}
+            }
+            
+            function simpleEventHandler(event) {
+                console.info("event " + event.type);
+            }
+        
+            function hashChangeEventHandler(event) {
+            	console.info("event " + event.type + ": " + event.oldURL + " -> " + event.newURL);
+            }
+            
+            function popStateEventHandler(event) {
+            	console.info("event " + event.type + ": " + event.state);
+            }
+            
+            function errorEventHandler(event) {
+            	console.error("event " + event.type + ": " + event.message);
+            }
+            
+            function init_states() {
+            	for (var position = 1; position < 5; position++) {
+            		history.pushState(position, "JavaScript Engine Demos - Events (" + position + ")", '?position=' + position + "#" + position);
+            	}
+            }
+            
+            ondblclick = mouseEventHandler;
+            onclick = mouseEventHandler;
+            onmousedown = mouseEventHandler;
+            onmouseup = mouseEventHandler;
+            onmouseenter = mouseEventHandler;
+            onmouseover = mouseEventHandler;
+            
+            onload = simpleEventHandler;
+            onabort = simpleEventHandler;
+            
+            onhashchange = hashChangeEventHandler;
+        
+            onpopstate = popStateEventHandler;
+            
+            onerror = errorEventHandler;
+        </script>
+		<div id="red" style="margin-top:20px; margin-left:auto; margin-right:auto; padding:20px; width:80px; height:80px; background-color:#ff0000;">
+		  <div id="green" style="padding:20px; width:40px; height:40px; background-color:#00ff00;">
+		      <div id="blue" style="padding:0; width:40px; height:40px; background-color:#0000ff;"></div>
+		  </div>
+		</div>
+    </div>
+    <div id="footer">
+        <p>
+            Author: Radim Loskot | Contact (Gmail): radim.loskot | Project pages:
+            <a href="https://github.com/ITman1/ScriptBox">ScriptBox</a>
+        </p>
+    </div>
+</body>
+</html>

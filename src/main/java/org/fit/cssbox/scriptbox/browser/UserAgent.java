@@ -112,6 +112,20 @@ public class UserAgent {
 	}
 	
 	/**
+	 * Opens new auxiliary browsing unit that have an opener browsing context.
+	 * 
+	 * @param opener Browsing context that opened this auxiliary browsing context.
+	 * @return New constructed browsing unit.
+	 */
+	public BrowsingUnit openAuxiliaryBrowsingUnit(BrowsingContext opener, String name, boolean createdByScript) {
+		BrowsingUnit browsingUnit = createAuxiliaryBrowsingUnit(opener, name, createdByScript);
+		
+		browsingUnits.add(browsingUnit);
+		
+		return browsingUnit;
+	}
+	
+	/**
 	 * Closes/Destroys passed browsing unit and removes it from the list of opened browsing units.
 	 * 
 	 * @param browsingUnit Browsing unit to be closed.
@@ -166,5 +180,16 @@ public class UserAgent {
 	 */
 	protected BrowsingUnit createBrowsingUnit() {
 		return new BrowsingUnit(this);
+	}
+	
+	/**
+	 * Constructs new auxiliary browsing unit of the user agent.
+	 * 
+	 * @param openerBrowsingContext Browsing context that caused creation of this browsing unit.
+	 * @param name Name of the top level auxiliary browsing context.
+	 * @param createdByScript Specifies if this browsing unit was created for the script.
+	 */
+	protected BrowsingUnit createAuxiliaryBrowsingUnit(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
+		return new BrowsingUnit(openerBrowsingContext, name, createdByScript);
 	}
 }

@@ -7,7 +7,7 @@ package org.fit.cssbox.scriptbox.script.reflect;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public interface InvocableMember<MemberType extends java.lang.reflect.Member> extends Member<MemberType> {
+public interface InvocableMember<MemberType extends java.lang.reflect.Member> extends JavaMember<MemberType> {
 	/**
 	 * Returns invokable parameters types.
 	 * 

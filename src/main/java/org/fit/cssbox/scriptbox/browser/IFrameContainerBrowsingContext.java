@@ -135,7 +135,7 @@ public abstract class IFrameContainerBrowsingContext extends BrowsingContext {
 	 */
 	public IFrameBrowsingContext createIFrameContext(Html5IFrameElementImpl iframeElement) {
 		Document document = iframeElement.getOwnerDocument();
-		IFrameBrowsingContext childContext = getBrowsingUnit().openIFrameBrowsingContext(this, iframeElement);
+		IFrameBrowsingContext childContext = getBrowsingUnit().constructIFrameBrowsingContext(this, iframeElement);
 		
 		List<IFrameBrowsingContext> iframes = documentIframes.get(document);
 		if (iframes == null) {

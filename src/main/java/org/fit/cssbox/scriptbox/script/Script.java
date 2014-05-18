@@ -35,12 +35,12 @@ import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public abstract class Script<Source, CodeEntryPoint, ScriptSettingsTemplate extends ScriptSettings<?>> {
+public abstract class Script<Source, CodeEntryPoint, ScriptSettingsType extends ScriptSettings<?>> {
 	protected Source source;
 	protected URL sourceURL;
 	protected String language;
 	protected boolean mutedErrorsFlag;
-	protected ScriptSettingsTemplate settings;
+	protected ScriptSettingsType settings;
 	protected Object result;
 	protected ScriptException exception;
 
@@ -55,7 +55,7 @@ public abstract class Script<Source, CodeEntryPoint, ScriptSettingsTemplate exte
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#create-a-script">Create a script</a>
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#muted-errors">Muted errors flag</a>
 	 */
-	public Script(Source source, URL sourceURL, String language, ScriptSettingsTemplate settings, boolean mutedErrorsFlag) {
+	public Script(Source source, URL sourceURL, String language, ScriptSettingsType settings, boolean mutedErrorsFlag) {
 		this.source = source;
 		this.sourceURL = sourceURL;
 		this.language = language;
@@ -106,7 +106,7 @@ public abstract class Script<Source, CodeEntryPoint, ScriptSettingsTemplate exte
 	 * 
 	 * @return Associated script settings.
 	 */
-	public ScriptSettingsTemplate getScriptSettings() {
+	public ScriptSettingsType getScriptSettings() {
 		return settings;
 	}
 	
@@ -164,7 +164,7 @@ public abstract class Script<Source, CodeEntryPoint, ScriptSettingsTemplate exte
 	 * @return Either "run" or "do not run" as boolean values.
 	 * @see <a href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#prepare-to-run-a-callback">Prepare to run a callback</a>
 	 */
-	protected boolean prepareRunCallback(ScriptSettingsTemplate context) {	
+	protected boolean prepareRunCallback(ScriptSettingsType context) {	
 		if (isScriptingDisabled()) {
 			return false;
 		}
@@ -253,7 +253,7 @@ public abstract class Script<Source, CodeEntryPoint, ScriptSettingsTemplate exte
 	 * @param settings Settings used for obtaining the execution environment.
 	 * @return Execution environment where to run this script
 	 */
-	protected BrowserScriptEngine obtainExecutionEnviroment(ScriptSettingsTemplate settings) {
+	protected BrowserScriptEngine obtainExecutionEnviroment(ScriptSettingsType settings) {
 		return settings.getExecutionEnviroment(this);
 	}
 	

@@ -36,4 +36,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Inherited
 public @interface InvisibleField {
+	String[] engines() default {};
 }

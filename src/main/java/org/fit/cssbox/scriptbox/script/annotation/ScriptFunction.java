@@ -25,6 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.fit.cssbox.scriptbox.script.reflect.ClassMember;
+
 /**
  * Annotation for methods which makes them visible from the script.
  * 
@@ -36,7 +38,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Inherited
 public @interface ScriptFunction  {
-	public static final String ENUMERABLE = "enumerable";
+	public static final String ENUMERABLE = ClassMember.ENUMERABLE;
 	public static final String[] DEFAULT_OPTIONS = {};
 	
 	String[] engines() default {};

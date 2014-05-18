@@ -61,6 +61,17 @@ public class ClassField extends ClassMember<Field> implements FieldMember {
 	 * Constructs class field wrapper.
 	 * 
 	 * @param clazz Class to which belongs the wrapped field.
+	 * @param field Wrapped field.
+	 * @param options Array with options.
+	 */
+	public ClassField(Class<?> clazz, Field field, String ...options) {
+		this(clazz, null, null, field, false, false, options);
+	}
+	
+	/**
+	 * Constructs class field wrapper.
+	 * 
+	 * @param clazz Class to which belongs the wrapped field.
 	 * @param fieldGetterMethod Field getter that mediates the field.
 	 * @param fieldSetterMethod Field setter that modifies the field.
 	 */

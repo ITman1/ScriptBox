@@ -19,6 +19,7 @@
 
 package org.fit.cssbox.scriptbox.demo.tester;
 
+import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
 import org.fit.cssbox.scriptbox.demo.browser.BrowserUiController;
 import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowsingUnit;
@@ -36,6 +37,10 @@ import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowsingUnit;
 public class JavaScriptTesterBrowsingUnit extends SimpleBrowsingUnit {
 	public JavaScriptTesterBrowsingUnit(JavaScriptTesterUserAgent userAgent) {
 		super(userAgent);
+	}
+	
+	public JavaScriptTesterBrowsingUnit(BrowsingContext openerBrowsingContext, String name, boolean createdByScript) {
+		super(openerBrowsingContext, name, createdByScript);
 	}
 	
 	/**

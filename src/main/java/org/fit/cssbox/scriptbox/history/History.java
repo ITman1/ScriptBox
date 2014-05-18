@@ -224,7 +224,7 @@ public class History {
 		ScriptSettings<?> settings = window.getScriptSettings();
 		
 		// 1) Let cloned data be a structured clone of the specified data
-		StateObject clonedDate = data.clone();
+		StateObject clonedDate = (data != null)? data.clone() : null;
 		
 		// 2) If the third argument is not null, run these substeps
 		URL newURL = null;

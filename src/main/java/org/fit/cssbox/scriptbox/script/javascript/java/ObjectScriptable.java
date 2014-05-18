@@ -120,11 +120,15 @@ public class ObjectScriptable extends ScriptableObject  {
 	 * @param objectField Field to be defined into passed scope.
 	 */
 	public static void defineObjectField(ScriptableObject fieldScopeObject, String fieldName, ObjectField objectField) {
+		if (!(objectField instanceof HostedJavaField)) {
+			objectField = new HostedJavaField(objectField);
+		}
+				
 		Method fieldGetterMethod = objectField.getFieldGetterMethod();
 		Method fieldSetterMethod = objectField.getFieldSetterMethod();
 		Field field = objectField.getMember();
-		Method wrappedFieldGetterMethod = (fieldGetterMethod == null && field == null)? null : ObjectJSField.GETTER_METHOD;
-		Method wrappedFieldSetterMethod = (fieldSetterMethod == null && field == null)? null : ObjectJSField.SETTER_METHOD;
+		Method wrappedFieldGetterMethod = (fieldGetterMethod == null && field == null)? null : HostedJavaField.GETTER_METHOD;
+		Method wrappedFieldSetterMethod = (fieldSetterMethod == null && field == null)? null : HostedJavaField.SETTER_METHOD;
 		
 		int attributes = ScriptableObject.DONTENUM;
 		attributes = (fieldSetterMethod == null && field == null)? attributes | ScriptableObject.READONLY : attributes;
