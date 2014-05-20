@@ -1,9 +1,24 @@
+var _times = new Object();
+
 if (console === undefined) {
 	var console = new Object();
 	console.log = new Function();
 	console.info = new Function();
 	console.warn = new Function();
 	console.error = new Function();
+}
+
+if(window.opera || window.chrome){
+	console.time = function (label) {
+		_times[label] = new Date();
+	}
+	
+	console.timeEnd = function (label) {
+		if (_times[label] !== undefined) {
+			var diff = new Date() - _times[label];
+			console.log(diff + " ms");
+		}
+	}
 }
 
 function go_back() {

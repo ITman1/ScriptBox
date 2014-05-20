@@ -17,7 +17,7 @@ on [SwingBox](https://github.com/radkovo/SwingBox) rendering component .
 
 ### Requirements
 
-1. Have installed JDK 1.6 or newer 1.7 (recommended)
+1. Have installed JDK 1.6 or newer - JDK 1.8 is recommended
 2. Have installed [Maven build manager](http://maven.apache.org/download.cgi#Installation_Instructions)
 3. Have set system variable `JAVA_HOME` to directory with installed JDK and have
   in the system variable `PATH` its binary directory - eg. on Windows add to `PATH` variable `%JAVA_HOME%\bin` (more [here](http://maven.apache.org/download.cgi))

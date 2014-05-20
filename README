@@ -25,7 +25,7 @@ Development suite: Eclipse (Kepler Service Release 1)
 
 REQUIREMENTS:
 
-  1) Have installed JDK 1.6 or newer 1.7 (recommended)
+  1) Have installed JDK 1.6 or newer - JDK 1.8 is recommended
   2) Have installed Maven build manager [1]
   3) Have set system variable JAVA_HOME to directory with installed JDK and have
      in the system variable PATH its binary directory [2]

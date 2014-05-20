@@ -1,3 +1,22 @@
+/**
+ * JavaScriptTesterUiController.java
+ * (c) Radim Loskot and Radek Burget, 2013-2014
+ *
+ * ScriptBox is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ScriptBox is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ScriptBox. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package org.fit.cssbox.scriptbox.demo.tester;
 
 import java.awt.EventQueue;
@@ -33,10 +52,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.fit.cssbox.scriptbox.browser.BrowsingUnit;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
-import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowserUiController;
+import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowserUIPresenter;
 import org.fit.cssbox.scriptbox.navigation.NavigationControllerEvent;
 
-public class JavaScriptTesterUiController extends SimpleBrowserUiController {
+/**
+ * Class of the presenter of the view.
+ * 
+ * @author Radim Loskot
+ * @version 0.9
+ * @since 0.9 - 21.4.2014
+ */
+public class JavaScriptTesterUIPresenter extends SimpleBrowserUIPresenter {
 	private static ConsoleInjector consoleInjector;
 	private static int NEW_COUNTER = 0;
 	
@@ -182,7 +208,7 @@ public class JavaScriptTesterUiController extends SimpleBrowserUiController {
 		}
 	};
 	
-	public JavaScriptTesterUiController(WindowBrowsingContext windowBrowsingContext) {
+	public JavaScriptTesterUIPresenter(WindowBrowsingContext windowBrowsingContext) {
 		super(windowBrowsingContext, new JavaScriptTesterUi());
 		
 		registerEventListeners();

@@ -72,15 +72,16 @@ public abstract class DOMContentHandler extends ContentHandler {
 			navigationAttempt.unloadDocument(oldDocument);
 
 			// 2) If the navigation was initiated for entry update then update otherwise insert new one
+			SessionHistory sessionHistory = null;
 			if (navigationAttempt instanceof UpdateNavigationAttempt) {
 				SessionHistoryEntry updateEntry = ((UpdateNavigationAttempt)navigationAttempt).getSessionHistoryEntry();
-				SessionHistory sessionHistory = updateEntry.getSessionHistory();
+				sessionHistory = updateEntry.getSessionHistory();
 						
 				// TODO?: Update also any other entries that referenced the same document as that entry
 				updateEntry.setDocument(newDocument);
 				sessionHistory.traverseHistory(updateEntry);
 			} else {
-				SessionHistory sessionHistory = context.getSesstionHistory();
+				sessionHistory = context.getSesstionHistory();
 				SessionHistoryEntry currentEntry = sessionHistory.getCurrentEntry();
 				
 				sessionHistory.removeAllAfter(currentEntry);
@@ -99,8 +100,11 @@ public abstract class DOMContentHandler extends ContentHandler {
 			// 3) The navigation algorithm has now matured
 			navigationAttempt.mature();
 			
-			ScrollToFragmentRunnable performScrolling = new ScrollToFragmentRunnable();
-			performScrolling.execute();
+			SessionHistoryEntry newEntry = sessionHistory.getCurrentEntry();
+			if (!newEntry.hasPersistedUserState()) {
+				ScrollToFragmentRunnable performScrolling = new ScrollToFragmentRunnable();
+				performScrolling.execute();
+			}
 		}
 	}
 	

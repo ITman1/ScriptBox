@@ -69,7 +69,6 @@ import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.html.HTMLBaseElement;
 import org.w3c.dom.html.HTMLElement;
-import org.w3c.dom.html.HTMLTitleElement;
 import org.w3c.dom.views.AbstractView;
 import org.w3c.dom.views.DocumentView;
 

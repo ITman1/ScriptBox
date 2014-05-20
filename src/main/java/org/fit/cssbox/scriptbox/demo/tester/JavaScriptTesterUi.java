@@ -1,5 +1,5 @@
 /**
- * JavaScriptTester.java
+ * JavaScriptTesterUi.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -109,7 +109,7 @@ public class JavaScriptTesterUi implements BrowserUi {
 		navigationPanel.setLayout(new BorderLayout(0, 0));
 
 		JLabel navigationLabel = new JLabel("URL:");
-		navigationLabel.setPreferredSize(new Dimension(30, 18));
+		navigationLabel.setBorder(new EmptyBorder(0, 3, 0, 13));
 		navigationPanel.add(navigationLabel, BorderLayout.WEST);
 
 		navigationField = new JTextField();
@@ -148,6 +148,7 @@ public class JavaScriptTesterUi implements BrowserUi {
 		scriptBrowserPanel.setLayout(new BorderLayout(0, 0));
 
 		JLabel displayedPageLabel = new JLabel("Displayed page");
+		displayedPageLabel.setBorder(new EmptyBorder(0, 3, 0, 0));
 		displayedPageLabel.setPreferredSize(new Dimension(73, 18));
 		scriptBrowserPanel.add(displayedPageLabel, BorderLayout.NORTH);
 
@@ -169,6 +170,7 @@ public class JavaScriptTesterUi implements BrowserUi {
 		sourceCodePanel.setLayout(new BorderLayout(0, 0));
 
 		JLabel sourceCodeLabel = new JLabel("Source code");
+		sourceCodeLabel.setBorder(new EmptyBorder(0, 3, 0, 0));
 		sourceCodeLabel.setPreferredSize(new Dimension(59, 18));
 		sourceCodePanel.add(sourceCodeLabel, BorderLayout.NORTH);
 
@@ -187,8 +189,8 @@ public class JavaScriptTesterUi implements BrowserUi {
 		sourceCodeLabel.setLabelFor(sourceCodeEditorPane);
 
 		JPanel sourceCodeToolsPanel = new JPanel();
-		sourceCodeToolsPanel.setPreferredSize(new Dimension(210, 10));
-		sourceCodeToolsPanel.setMinimumSize(new Dimension(210, 10));
+		sourceCodeToolsPanel.setPreferredSize(new Dimension(220, 10));
+		sourceCodeToolsPanel.setMinimumSize(new Dimension(220, 10));
 		sourceCodeContainerPanel.add(sourceCodeToolsPanel, BorderLayout.EAST);
 		sourceCodeToolsPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
 		sourceCodeToolsPanel.setLayout(new BorderLayout(0, 0));
@@ -205,9 +207,6 @@ public class JavaScriptTesterUi implements BrowserUi {
 		sourceCodeToolOptionsPanel.add(newOpenCloseButtonsPanel);
 
 		newSourceCodeButton = new JButton("New");
-		newSourceCodeButton.setMaximumSize(new Dimension(59, 23));
-		newSourceCodeButton.setMinimumSize(new Dimension(59, 23));
-		newSourceCodeButton.setPreferredSize(new Dimension(59, 23));
 		newOpenCloseButtonsPanel.add(newSourceCodeButton);
 		newSourceCodeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -223,9 +222,6 @@ public class JavaScriptTesterUi implements BrowserUi {
 		sourceCodeToolOptionsPanel.add(saveButtonsPanel);
 
 		saveSourceCodeButton = new JButton("Save");
-		saveSourceCodeButton.setMinimumSize(new Dimension(71, 23));
-		saveSourceCodeButton.setMaximumSize(new Dimension(71, 23));
-		saveSourceCodeButton.setPreferredSize(new Dimension(71, 23));
 		saveButtonsPanel.add(saveSourceCodeButton);
 
 		saveAsSourceCodeButton = new JButton("Save As");
@@ -270,6 +266,7 @@ public class JavaScriptTesterUi implements BrowserUi {
 		objectViewerHeaderPanel.setLayout(new BorderLayout(0, 0));
 		
 		JLabel objectViewerLabel = new JLabel("Window object");
+		objectViewerLabel.setBorder(new EmptyBorder(0, 3, 0, 0));
 		objectViewerHeaderPanel.add(objectViewerLabel);
 		objectViewerLabel.setPreferredSize(new Dimension(71, 18));
 				
@@ -299,6 +296,7 @@ public class JavaScriptTesterUi implements BrowserUi {
 		objectsWatchListHeaderPanel.setLayout(new BorderLayout(0, 0));
 		
 		JLabel objectsWatchListlabel = new JLabel("Watch list");
+		objectsWatchListlabel.setBorder(new EmptyBorder(0, 3, 0, 0));
 		objectsWatchListHeaderPanel.add(objectsWatchListlabel);
 		objectsWatchListlabel.setPreferredSize(new Dimension(47, 18));
 				
@@ -324,6 +322,7 @@ public class JavaScriptTesterUi implements BrowserUi {
 		consoleHeaderPanel.setLayout(new BorderLayout(0, 0));
 		
 		JLabel consoleLabel = new JLabel("Console");
+		consoleLabel.setBorder(new EmptyBorder(0, 3, 0, 0));
 		consoleHeaderPanel.add(consoleLabel);
 		consoleLabel.setPreferredSize(new Dimension(38, 18));
 		consoleLabel.setLabelFor(consolePane);
