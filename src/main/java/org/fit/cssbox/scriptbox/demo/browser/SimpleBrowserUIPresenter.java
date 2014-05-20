@@ -1,5 +1,5 @@
 /**
- * JavaScriptTester.java
+ * SimpleBrowserUiController.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -50,14 +50,13 @@ import org.fit.cssbox.scriptbox.navigation.NavigationControllerListener;
 import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
 
 /**
- * Browsing unit with simple user interface which contains navigation
- * field and history traversal buttons.
+ * Controller of the simple browser.
  * 
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public class SimpleBrowserUiController extends BrowserUiController {
+public class SimpleBrowserUIPresenter implements BrowserUIPresenter {
 	protected BrowserUi ui;
 	
 	protected ScriptBrowser scriptBrowser;
@@ -226,11 +225,11 @@ public class SimpleBrowserUiController extends BrowserUiController {
 		}
 	};
 	
-	public SimpleBrowserUiController(IFrameContainerBrowsingContext windowBrowsingContext) {
+	public SimpleBrowserUIPresenter(IFrameContainerBrowsingContext windowBrowsingContext) {
 		this(windowBrowsingContext, new SimpleBrowserUi());
 	}	
 	
-	public SimpleBrowserUiController(IFrameContainerBrowsingContext windowBrowsingContext, BrowserUi ui) {
+	public SimpleBrowserUIPresenter(IFrameContainerBrowsingContext windowBrowsingContext, BrowserUi ui) {
 		this.windowBrowsingContext = windowBrowsingContext;
 
 		this.ui = ui;

@@ -35,6 +35,7 @@ import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
 import org.fit.cssbox.scriptbox.script.reflect.DefaultObjectMembers;
 import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Undefined;
 
 /**
  * Class representing tree node which is constructed from the given object.
@@ -245,7 +246,7 @@ public class ObjectFieldTreeNode extends DefaultMutableTreeNode implements Compa
 	public String toString() {
 		if (exception != null) {
 			return fieldName + " - (exception occured)";
-		} else if (fieldTypeStr == null) {
+		} else if (fieldTypeStr == null || fieldValue == Undefined.instance) {
 			return fieldName + " - (undefined property)";
 		} else {
 			return fieldName + ": " + fieldTypeStr + " = " + fieldValueStr;

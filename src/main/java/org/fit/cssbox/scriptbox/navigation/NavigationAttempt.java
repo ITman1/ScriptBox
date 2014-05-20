@@ -669,6 +669,7 @@ public abstract class NavigationAttempt {
 		
 		// 4) Traverse the history to the new entry
 		
+		newEntry.setPpersistedUserState(null);
 		sessionHistory.traverseHistory(newEntry, false, true);
 	}
 	
@@ -726,6 +727,11 @@ public abstract class NavigationAttempt {
 	 */
 	protected boolean shouldBeFragmentNavigated() {
 		Html5DocumentImpl currentDocument = destinationBrowsingContext.getActiveDocument();
+		
+		if (currentDocument == null || currentDocument.isUnloaded()) {
+			return false;
+		}
+		
 		URL currentURL = currentDocument.getAddress();
 		boolean identicalUrls = URLUtilsHelper.identicalComponents(url, currentURL, UrlComponent.PROTOCOL, UrlComponent.HOST, UrlComponent.PORT, UrlComponent.PATH, UrlComponent.QUERY);
 				

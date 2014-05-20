@@ -1,5 +1,5 @@
 /**
- * BrowserUi.java
+ * BrowserUiController.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -19,24 +19,36 @@
 
 package org.fit.cssbox.scriptbox.demo.browser;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-
-import org.fit.cssbox.scriptbox.ui.ScriptBrowser;
-
 /**
- * Interface for all UI views.
+ * Interface for all UI presenters.
  * 
  * @author Radim Loskot
  * @version 0.9
  * @since 0.9 - 21.4.2014
  */
-public interface BrowserUi {
-	public JFrame getWindow();
-	public JButton getNavigateButton();
-	public JTextField getNavigationField();
-	public JButton getHistoryBackButton();
-	public JButton getHistoryForwardButton();
-	public ScriptBrowser getScriptBrowser();
+public interface BrowserUIPresenter {
+	/**
+	 * Makes UI visible.
+	 */
+	public BrowserUi getUI();
+	
+	/**
+	 * Makes UI visible.
+	 */
+	public void showUI();
+	
+	/**
+	 * Makes UI invisible.
+	 */
+	public void hideUI();
+	
+	/**
+	 * Updates UI components.
+	 */
+	public void updateUI();
+	
+	/**
+	 * Destroys UI.
+	 */
+	public void closeUI();
 }

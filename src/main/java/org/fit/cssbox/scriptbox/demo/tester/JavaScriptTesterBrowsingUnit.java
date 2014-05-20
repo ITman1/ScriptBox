@@ -1,5 +1,5 @@
 /**
- * JavaScriptTesterController.java
+ * JavaScriptTesterBrowsingUnit.java
  * (c) Radim Loskot and Radek Burget, 2013-2014
  *
  * ScriptBox is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ package org.fit.cssbox.scriptbox.demo.tester;
 
 import org.fit.cssbox.scriptbox.browser.BrowsingContext;
 import org.fit.cssbox.scriptbox.browser.WindowBrowsingContext;
-import org.fit.cssbox.scriptbox.demo.browser.BrowserUiController;
+import org.fit.cssbox.scriptbox.demo.browser.BrowserUIPresenter;
 import org.fit.cssbox.scriptbox.demo.browser.SimpleBrowsingUnit;
 
 /**
@@ -49,7 +49,7 @@ public class JavaScriptTesterBrowsingUnit extends SimpleBrowsingUnit {
 	 * @param windowContext Window context.
 	 * @return Constructed UI controller.
 	 */
-	protected BrowserUiController constructWindowTopLevelBrowsingContextUiController(WindowBrowsingContext windowContext) {
-		return new JavaScriptTesterUiController(windowContext);
+	protected BrowserUIPresenter constructWindowTopLevelBrowsingContextUiController(WindowBrowsingContext windowContext) {
+		return new JavaScriptTesterUIPresenter(windowContext);
 	}
 }

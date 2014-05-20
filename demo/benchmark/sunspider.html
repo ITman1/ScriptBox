@@ -12,7 +12,7 @@
     <div id="header">
         <div>
             <a href="javascript:go_back()">back</a> | <a
-                href="/index.html">index</a> | <a
+                href="/ScriptBox/demo/index.html">index</a> | <a
                 href="javascript:go_forward()">forward</a>
         </div>
         <h1 id="location-interface">
@@ -34,8 +34,9 @@
            function test_started(evt) {
         	   var test = evt.target.id;
         	   
-        	   if (!test_iterations[test]) {
+        	   if (test_iterations[test] === undefined) {
         		   test_iterations[test] = 0;
+        		   console.info("Started test " + test);
         		   console.time(test);
         	   }
         	   test_iterations[test] = test_iterations[test] + 1;;
@@ -46,6 +47,7 @@
         	   
         	   if (test_iterations[test] > 4) {
         		   console.timeEnd(test);
+        		   test_iterations[test] = undefined;
         	   }
            }
            
@@ -105,10 +107,10 @@
         Each test of the benchmark will be run 5 times and total time of each test
         will be printed into console.
         </p>
-        <p>On this page you can also try traversing <a href="javascript:go_back()">back</a>
+        <!-- <p>On this page you can also try traversing <a href="javascript:go_back()">back</a>
         during running benchmark. This action should cause removing all planned scripts 
         from the task queue and immediate traversing back without scripts completion.
-        </p>
+        </p> -->
     </div>
     <div id="footer">
         <p>
