@@ -62,6 +62,7 @@ public class ConsoleInjector extends JavaScriptInjector {
 		private StyledDocument doc;
 		private JTextPane textPane;
 		private Map<String, Date> namedStartTimes;
+		private Map<String, Long> namedDiffs;
 		
 		private final static SimpleAttributeSet warningKeyword;
 		private final static SimpleAttributeSet errorKeyword;
@@ -87,6 +88,7 @@ public class ConsoleInjector extends JavaScriptInjector {
 		Console(JTextPane textPane) {
 			this.doc = textPane.getStyledDocument();
 			this.namedStartTimes = new HashMap<String, Date>();
+			this.namedDiffs = new HashMap<String, Long>();
 			this.textPane = textPane;
 		}
 		
@@ -101,11 +103,44 @@ public class ConsoleInjector extends JavaScriptInjector {
 			Date currentDate = new Date();
 			
 			if (previousDate != null) {
-				long diffInMillies = currentDate.getTime() - previousDate.getTime();			
+				long diffInMillies = currentDate.getTime() - previousDate.getTime();	
+				
+				Long namedDiff = namedDiffs.get(name);
+				if (namedDiff != null) {
+					diffInMillies += namedDiff;
+				}
+				
 				log("Time for '" + name + "': " + Long.toString(diffInMillies) + " ms");
 			} else {			
 				log("Time for '" + name + "': " + "undefined name");
 			}
+		}
+		
+		@ScriptFunction
+		public void timeContinue(String name) {
+			namedStartTimes.put(name, new Date());
+		}
+		
+		@ScriptFunction
+		public void timePause(String name) {
+			Date previousDate = namedStartTimes.get(name);
+			Date currentDate = new Date();
+			long diff = 0;
+			
+			if (previousDate != null) {
+				diff = currentDate.getTime() - previousDate.getTime();	
+			} else {
+				return;
+			}
+			
+			Long namedDiff = namedDiffs.get(name);
+			if (namedDiff == null) {
+				namedDiff = Long.valueOf(0);
+			}
+			
+			namedDiff = namedDiff + diff;
+			
+			namedDiffs.put(name, namedDiff);
 		}
 		
 		@ScriptFunction

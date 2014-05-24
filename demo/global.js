@@ -1,4 +1,5 @@
 var __times = new Object();
+var __diffs = new Object();
 var __wasUndefined = false;
 
 if (console === undefined) {
@@ -42,8 +43,33 @@ if(window.opera || window.chrome || __wasUndefined){
 	console.timeEnd = function (label) {
 		if (__times[label] !== undefined) {
 			var diff = new Date() - __times[label];
+			
+			if (__diffs[label] !== undefined) {
+				diff = diff + __diffs[label];
+			}
+			
 			console.log("Time for '" + label + "': " + diff + " ms");
 		}
+	}
+	
+	console.timeContinue = function (label) {
+		__times[label] = new Date();
+	}
+	
+	console.timePause = function (label) {
+		var diff = 0;
+		
+		if (__times[label] !== undefined) {
+			diff = new Date() - __times[label];
+		} else {
+			return
+		}
+		
+		if (__diffs[label] === undefined) {
+			__diffs[label] = 0;
+		}
+		
+		__diffs[label] = __diffs[label] + diff;
 	}
 }
 

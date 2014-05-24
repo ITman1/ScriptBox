@@ -39,6 +39,8 @@
                    test_iterations[test] = 0;
                    console.info("Started test " + test);
                    console.time(test);
+               } else {
+            	   console.timeContinue(test);
                }
                test_iterations[test] = test_iterations[test] + 1;;
            }
@@ -56,6 +58,8 @@
                    } else {
                    run_benchmark();
                    }
+               } else {
+            	   console.timePause(test);
                }
            }
            
