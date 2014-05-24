@@ -23,7 +23,9 @@ import org.fit.cssbox.scriptbox.script.javascript.WindowJavaScriptEngine;
 import org.fit.cssbox.scriptbox.script.reflect.ClassFunction;
 import org.fit.cssbox.scriptbox.script.reflect.ObjectGetter;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.TopLevel;
 
 /**
@@ -172,8 +174,18 @@ public class ObjectTopLevel extends TopLevel {
 	 * Defines builtin functions into this top level scope.
 	 */
 	protected void defineBuiltinFunctions() {
-
+		String builtinFunctions[] = {"__debug"};
+		defineFunctionProperties(builtinFunctions, ObjectTopLevel.class, ScriptableObject.DONTENUM | ScriptableObject.PERMANENT);
 	}
+	
+	public static Object __debug(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+		if (args.length > 0) {
+			System.out.println(args[0]);
+		}
+		
+		return Context.getUndefinedValue();
+	}
+
 	
     private void deleteRhinoUnsafeProperties() {
         delete("JavaAdapter");

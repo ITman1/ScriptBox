@@ -22,6 +22,8 @@ package tests.script;
 import java.net.MalformedURLException;
 import java.util.List;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -30,7 +32,9 @@ import org.fit.cssbox.scriptbox.browser.UserAgent;
 import org.fit.cssbox.scriptbox.dom.Html5DocumentImpl;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
 import org.fit.cssbox.scriptbox.script.BrowserScriptEngineFactory;
+import org.fit.cssbox.scriptbox.script.ScriptContextInject;
 import org.fit.cssbox.scriptbox.script.ScriptSettings;
+import org.fit.cssbox.scriptbox.script.annotation.ScriptFunction;
 import org.fit.cssbox.scriptbox.window.Window;
 import org.mozilla.javascript.Undefined;
 
@@ -50,12 +54,41 @@ public class TestUtils {
 		public void assertResult(GlobalObjectType globalObject, Object resultValue);
 	}
 	
+	public static class DebugInject extends Object {
+		@ScriptFunction
+		public void println(String arg) {
+			System.out.println(arg);
+		}
+	}
+	
 	public static abstract class AbstractGlobalObjectScriptEngineFactory extends BrowserScriptEngineFactory {
 		
 		private static final String ENGINE_SHORTNAME = "javascript";
 		
-		public abstract BrowserScriptEngine getScriptEngine(final Object object);
+		public BrowserScriptEngine getScriptEngine(final Object object) {
+			ScriptContextInject inject = new ScriptContextInject() {
 				
+				@Override
+				public boolean inject(ScriptContext context) {
+					Bindings b = context.getBindings(ScriptContext.ENGINE_SCOPE);
+					b = context.getBindings(ScriptContext.ENGINE_SCOPE);
+					
+					b.put("debug", new DebugInject());
+					
+					return true;
+				}
+			};
+			
+			BrowserScriptEngine engine = getScriptEngineProtected(object);
+			
+			ScriptContext cx = engine.getContext();
+			inject.inject(cx);
+			
+			return engine;
+		}
+		
+		public abstract BrowserScriptEngine getScriptEngineProtected(final Object object);
+		
 		@Override
 		public List<String> getExplicitlySupportedMimeTypes() {
 			return null;
@@ -63,7 +96,12 @@ public class TestUtils {
 
 		@Override
 		protected BrowserScriptEngine getBrowserScriptEngineProtected(ScriptSettings<?> scriptSettings) {
-			return null;
+			if (scriptSettings == null) {
+				return null;
+			} else {
+				return getScriptEngine(scriptSettings.getGlobalObject());
+			}
+			
 		}
 
 		@Override

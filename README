@@ -4,8 +4,8 @@
 
 This project implements the extension for scripting inside (X)HTML documents [1]. 
 It introduces simple non-UI user agent [2] which implements general scripting 
-support for arbitrary scripting language. In the basic implementation is 
-included scripting support for JavaScript scripting language which is ensured 
+support for arbitrary scripting language. Basic implementation 
+includes scripting support for JavaScript scripting language which is ensured 
 by Rhino [5]. In addition to that project implements also UI user agent based 
 on SwingBox rendering component [4].
 

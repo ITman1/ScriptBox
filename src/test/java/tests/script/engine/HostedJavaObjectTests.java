@@ -62,9 +62,9 @@ public class HostedJavaObjectTests {
 	}
 
 	public static class HostedJavaObjectEngineFactory extends AbstractGlobalObjectScriptEngineFactory {
-
+		
 		@Override
-		public BrowserScriptEngine getScriptEngine(final Object object) {
+		public BrowserScriptEngine getScriptEngineProtected(final Object object) {
 			return new WindowJavaScriptEngine(null, null, new DefaultContextFactory()) {
 				@Override
 				protected TopLevel initializeTopLevel() {
@@ -287,8 +287,8 @@ public class HostedJavaObjectTests {
 	
 	@Test
 	public void TestEnumerableProperties() {
-		tester.assertEquals(topLevelCountOfEnumerablePropertiesScript, "count", 26);
-		tester.assertEquals(hostedCountOfEnumerablePropertiesScript, "count", 28);
+		tester.assertEquals(topLevelCountOfEnumerablePropertiesScript, "count", 27);
+		tester.assertEquals(hostedCountOfEnumerablePropertiesScript, "count", 24);
 		
 		TestEnumerableProperties("this");
 		TestEnumerableProperties("publicNestedObject");
