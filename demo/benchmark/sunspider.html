@@ -20,7 +20,7 @@
         </h1>
     </div>
     <div id="content">
-        <iframe src="sunspider_list.html">
+        <iframe style="visibility:hidden;display:none" src="sunspider_list.html">
 
         </iframe>
         <div id="script-container"></div>
@@ -30,34 +30,42 @@
            var test_base_url = "https://raw.githubusercontent.com/WebKit/webkit/master/PerformanceTests/SunSpider/tests/sunspider-1.0.2/";
            var number_test_iterations = 5;
            var test_iterations = new Object();
+           var current_test_case = 0;
            
            function test_started(evt) {
-        	   var test = evt.target.id;
-        	   
-        	   if (test_iterations[test] === undefined) {
-        		   test_iterations[test] = 0;
-        		   console.info("Started test " + test);
-        		   console.time(test);
-        	   }
-        	   test_iterations[test] = test_iterations[test] + 1;;
+               var test = evt.target.id;
+
+               if (test_iterations[test] === undefined) {
+                   test_iterations[test] = 0;
+                   console.info("Started test " + test);
+                   console.time(test);
+               }
+               test_iterations[test] = test_iterations[test] + 1;;
            }
            
            function test_fihisned(evt) {
-        	   var test = evt.target.id;
-        	   
-        	   if (test_iterations[test] > 4) {
-        		   console.timeEnd(test);
-        		   test_iterations[test] = undefined;
-        	   }
+               var test = evt.target.id;
+               
+               if (test_iterations[test] > 4) {
+                   console.timeEnd(test);
+                   test_iterations[test] = undefined;
+                   current_test_case++;
+                   
+                   if (current_test_case == test_cases.length) {
+                    current_test_case = 0;
+                   } else {
+                   run_benchmark();
+                   }
+               }
            }
            
            function initializeTestCases() {
-        	   console.info("load");
+               console.info("load");
                var listWindow = window[0];
                var testListElement = listWindow.document.getElementById("list");
 
                if (testListElement == null) {
-            	   return;
+                   return;
                }
                
                var node = testListElement.firstChild;
@@ -65,7 +73,7 @@
                while (node) {
                    var nodeChild = node.firstChild;
                    if (node.nodeType == 1 && nodeChild != null && nodeChild.nodeType == 3) {
-                	   test_cases[i] = nodeChild.nodeValue;
+                       test_cases[i] = nodeChild.nodeValue;
                        i++;
                    }
                   
@@ -76,28 +84,26 @@
             }
            
             function run_testcase(test) {
-            	var url = test_base_url + test + ".js";
-            	var script = document.createElement("script");
+                var url = test_base_url + test + ".js";
+                var script = document.createElement("script");
                
-            	script.id = test;
-            	
-            	script.addEventListener("beforescriptexecute", test_started, false);
-            	script.addEventListener("afterscriptexecute", test_fihisned, false);
-            	
+                script.id = test;
+                
+                script.addEventListener("beforescriptexecute", test_started, false);
+                script.addEventListener("afterscriptexecute", test_fihisned, false);
+                
                 script_container.appendChild(script);
                 script.setAttribute("src", url);
             }
            
             function run_benchmark() {
-                for (var i = 0; i <test_cases.length; i++) {
-                	for (var j = 0; j < number_test_iterations; j++) {
-                		run_testcase(test_cases[i]);
-                	}
+                for (var j = 0; j < number_test_iterations; j++) {
+                    run_testcase(test_cases[current_test_case]);
                 }
             }
            
             onload = function () {
-            	initializeTestCases();
+                initializeTestCases();
             }
         </script>
         

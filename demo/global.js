@@ -1,22 +1,48 @@
-var _times = new Object();
+var __times = new Object();
+var __wasUndefined = false;
 
 if (console === undefined) {
+	__wasUndefined = true;
 	var console = new Object();
 	console.log = new Function();
 	console.info = new Function();
 	console.warn = new Function();
 	console.error = new Function();
+	console.time = new Function();
+	console.timeEnd = new Function();
 }
 
-if(window.opera || window.chrome){
+if (__wasUndefined && !window.opera && !window.chrome && __debug !== undefined) {
+	console.log = function (arg) {
+		__debug(" LOG  - " + arg);
+	}
+	console.info = function (arg) {
+		__debug(" INFO - " + arg);
+	}
+	console.warn = function (arg) {
+		__debug(" WARN - " + arg);
+	}
+	console.error = function (arg) {
+		__debug(" ERR - " + arg);
+	}
+	console.time = function (arg) {
+		__debug(arg);
+	}
+	console.timeEnd = function (arg) {
+		__debug(arg);
+	}
+}
+
+if(window.opera || window.chrome || __wasUndefined){
+
 	console.time = function (label) {
-		_times[label] = new Date();
+		__times[label] = new Date();
 	}
 	
 	console.timeEnd = function (label) {
-		if (_times[label] !== undefined) {
-			var diff = new Date() - _times[label];
-			console.log(diff + " ms");
+		if (__times[label] !== undefined) {
+			var diff = new Date() - __times[label];
+			console.log("Time for '" + label + "': " + diff + " ms");
 		}
 	}
 }

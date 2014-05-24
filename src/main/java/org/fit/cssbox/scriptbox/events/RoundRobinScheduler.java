@@ -131,9 +131,9 @@ public class RoundRobinScheduler extends TaskQueuesScheduler {
 				return null;
 			}
 			
-			if (scheduledTasks.size() > 2) { // FIXME?: This ensures forward planning only of two tasks
+			/*if (scheduledTasks.size() > 2) { // FIXME?: This ensures forward planning only of two tasks
 				wait();
-			}
+			}*/
 			
 			sourcesListPosition = (sourcesListPosition + 1) % queuedTaskSources.size();
 			TaskSource scheduledTaskSource = queuedTaskSources.get(sourcesListPosition);

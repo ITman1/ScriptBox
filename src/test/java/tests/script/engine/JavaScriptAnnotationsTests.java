@@ -56,7 +56,7 @@ public class JavaScriptAnnotationsTests {
 	public static class JavaScriptAnnotationsEngineFactory extends AbstractGlobalObjectScriptEngineFactory {
 
 		@Override
-		public BrowserScriptEngine getScriptEngine(final Object object) {
+		public BrowserScriptEngine getScriptEngineProtected(final Object object) {
 			return new WindowJavaScriptEngine(this, null) {
 				@Override
 				protected TopLevel initializeTopLevel() {

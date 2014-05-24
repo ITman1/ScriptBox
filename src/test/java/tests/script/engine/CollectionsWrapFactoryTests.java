@@ -67,7 +67,7 @@ public class CollectionsWrapFactoryTests {
 	public static class CollectionsWrapFactoryEngineFactory extends AbstractGlobalObjectScriptEngineFactory {
 
 		@Override
-		public BrowserScriptEngine getScriptEngine(final Object object) {
+		public BrowserScriptEngine getScriptEngineProtected(final Object object) {
 			return new WindowJavaScriptEngine(null, null, new CollectionsContextFactory()) {
 				@Override
 				protected TopLevel initializeTopLevel() {

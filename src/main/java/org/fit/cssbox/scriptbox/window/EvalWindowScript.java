@@ -39,7 +39,7 @@ import org.fit.cssbox.scriptbox.script.BrowserScriptEngine;
  */
 public class EvalWindowScript extends WindowScript<Reader, Object> {
 	
-	static final boolean COMPILE_SCRIPTS = false;
+	static final boolean COMPILE_SCRIPTS = true;
 	
 	public EvalWindowScript(Reader source, URL sourceURL, String language, WindowScriptSettings settings, boolean mutedErrorsFlag) {
 		super(new ResourceReader(sourceURL, source), sourceURL, language, settings, mutedErrorsFlag);

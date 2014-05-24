@@ -3,8 +3,8 @@ SCRIPTBOX LIBRARY
 
 This project implements the extension for [scripting](http://www.w3.org/html/wg/drafts/html/CR/scripting-1.html) inside (X)HTML documents . 
 It introduces simple non-UI [user agent](http://www.w3.org/html/wg/drafts/html/CR/browsers.html) which implements general scripting 
-support and [Web API](http://www.w3.org/html/wg/drafts/html/CR/webappapis.html) for arbitrary scripting language. In the basic implementation is 
-included scripting support for JavaScript scripting language which is ensured 
+support and [Web API](http://www.w3.org/html/wg/drafts/html/CR/webappapis.html) for arbitrary scripting language. Basic implementation 
+includes scripting support for JavaScript scripting language which is ensured 
 by [Rhino](https://developer.mozilla.org/en-US/docs/Rhino). In addition to that project implements also UI user agent based 
 on [SwingBox](https://github.com/radkovo/SwingBox) rendering component .
 
@@ -19,11 +19,11 @@ on [SwingBox](https://github.com/radkovo/SwingBox) rendering component .
 
 1. Have installed JDK 1.6 or newer - JDK 1.8 is recommended
 2. Have installed [Maven build manager](http://maven.apache.org/download.cgi#Installation_Instructions)
-3. Have set system variable `JAVA_HOME` to directory with installed JDK and have
-  in the system variable `PATH` its binary directory - eg. on Windows add to `PATH` variable `%JAVA_HOME%\bin` (more [here](http://maven.apache.org/download.cgi))
+3. Have set system variable `JAVA_HOME` to directory with installed JDK and have its binary directory
+  in the system variable `PATH` - e.g. on Windows add to `PATH` variable `%JAVA_HOME%\bin` (more [here](http://maven.apache.org/download.cgi))
 4. Have in the system variable `PATH` the directory with Maven installation
 5. Have cloned latest version of [CSSBox](https://github.com/radkovo/CSSBox), [CSSParser](https://github.com/radkovo/jStyleParser) and [SwingBox](https://github.com/radkovo/SwingBox) repository
-6. Have builded and installed the CSSBox, CSSParser and SwingBox packages 
+6. Have built and installed the CSSBox, CSSParser and SwingBox packages 
   into the local Maven repository (see [guide](http://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html))
   Note: Other dependency packages will be reached automatically from public repositories
 
@@ -36,7 +36,7 @@ Simply run command: `mvn package`
 
 ### Requirements
 
-Have builded library (see previous section) and have it specified on classpath
+Have built library (see previous section) and have it specified on classpath
 
 ### Demos
   
