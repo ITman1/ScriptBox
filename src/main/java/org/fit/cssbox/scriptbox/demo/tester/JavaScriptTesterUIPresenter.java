@@ -29,6 +29,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -210,6 +211,8 @@ public class JavaScriptTesterUIPresenter extends SimpleBrowserUIPresenter {
 	
 	public JavaScriptTesterUIPresenter(WindowBrowsingContext windowBrowsingContext) {
 		super(windowBrowsingContext, new JavaScriptTesterUi());
+		
+		openedFiles = new HashMap<Integer, File>();
 		
 		registerEventListeners();
 		registerJavaScriptInjectors();

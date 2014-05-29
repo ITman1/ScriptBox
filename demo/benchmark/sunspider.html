@@ -48,7 +48,7 @@
            function test_fihisned(evt) {
                var test = evt.target.id;
                
-               if (test_iterations[test] > 4) {
+               if (test_iterations[test] > number_test_iterations - 1) {
                    console.timeEnd(test);
                    test_iterations[test] = undefined;
                    current_test_case++;
