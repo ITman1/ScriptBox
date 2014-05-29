@@ -2,12 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.sf.cssbox</groupId>
-	<artifactId>scriptbox</artifactId>
+	<groupId>com.github.uacore</groupId>
+	<artifactId>user-agent-core</artifactId>
 	<version>0.9</version>
 	<packaging>jar</packaging>
 
-	<name>ScriptBox</name>
+	<name>User-agent core</name>
 	<url>https://github.com/ITman1/ScriptBox</url>
 
 	<licenses>
@@ -19,12 +19,6 @@
 	</licenses>
 
 	<developers>
-		<developer>
-			<name>Radek Burget</name>
-			<roles>
-				<role>Main developer &amp; project leader</role>
-			</roles>
-		</developer>
 		<developer>
 			<name>Radim Loskot</name>
 			<roles>
@@ -44,11 +38,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>net.sf.cssbox</groupId>
-			<artifactId>swingbox</artifactId>
-			<version>1.1-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -75,11 +64,11 @@
 		    <artifactId>commons-lang3</artifactId>
 		    <version>3.0</version>
 		</dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.4</version>
+		</dependency>
 		<dependency>
 		    <groupId>com.google.collections</groupId>
 		    <artifactId>google-collections</artifactId>
@@ -101,9 +90,17 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
-                    <excludes>
-                        <exclude>org/fit/cssbox/scriptbox/deprecied/**/*.java</exclude>
-                    </excludes>
+				    <excludes>
+				        <exclude>org/fit/cssbox/scriptbox/demo/**/*.java</exclude>
+				        <exclude>org/fit/cssbox/scriptbox/deprecied/**/*.java</exclude>
+				        <exclude>org/fit/cssbox/scriptbox/ui/ScriptAnalyzer.java</exclude>
+				        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowser.java</exclude>
+				        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserBrowsingUnit.java</exclude>
+				        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserHyperlinkHandler.java</exclude>
+				        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserUserAgent.java</exclude>
+				        <exclude>org/fit/cssbox/scriptbox/ui/MouseEventsDispatcher.java</exclude>
+				        <exclude>org/fit/cssbox/scriptbox/ui/DocumentInputStream.java</exclude>
+				    </excludes>
                 </configuration>
             </plugin>
             
@@ -120,7 +117,15 @@
                         </goals>
                         <configuration>
                             <excludes>
+		                        <exclude>org/fit/cssbox/scriptbox/demo/**/*.java</exclude>
 		                        <exclude>org/fit/cssbox/scriptbox/deprecied/**/*.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptAnalyzer.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowser.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserBrowsingUnit.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserHyperlinkHandler.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserUserAgent.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/MouseEventsDispatcher.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/DocumentInputStream.java</exclude>
 		                    </excludes>
                         </configuration>
                     </execution>
@@ -141,7 +146,15 @@
                         <configuration>
                             <show>protected</show>
                             <excludes>
+		                        <exclude>org/fit/cssbox/scriptbox/demo/**/*.java</exclude>
 		                        <exclude>org/fit/cssbox/scriptbox/deprecied/**/*.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptAnalyzer.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowser.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserBrowsingUnit.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserHyperlinkHandler.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/ScriptBrowserUserAgent.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/MouseEventsDispatcher.java</exclude>
+		                        <exclude>org/fit/cssbox/scriptbox/ui/DocumentInputStream.java</exclude>
 		                    </excludes>
                         </configuration>
                     </execution>
