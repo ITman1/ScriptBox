@@ -353,7 +353,7 @@ public class JavaScriptAnnotationsTests {
 	@Test
 	public void TestEnumerableProperties() {		
 		
-		tester.assertEquals(countOfEnumerablePropertiesScript, "count", 20);
+		tester.assertEquals(countOfEnumerablePropertiesScript, "count", 21);
 		
 		String s = enumerablePropertiesScript;
 		tester.assertFalse(s, "typeof propertyContainer['propertyWithGetter'] === 'undefined'");
@@ -555,9 +555,9 @@ public class JavaScriptAnnotationsTests {
 	
 	@Test
 	public void TestScriptClassAutomaticProperties() {	
-		allFieldsTester.assertEquals(countOfEnumerablePropertiesScript, "count", 4);
-		allMethodsTester.assertEquals(countOfEnumerablePropertiesScript, "count", 3);
-		allFieldsMethodsTester.assertEquals(countOfEnumerablePropertiesScript, "count", 4);
+		allFieldsTester.assertEquals(countOfEnumerablePropertiesScript, "count", 5);
+		allMethodsTester.assertEquals(countOfEnumerablePropertiesScript, "count", 4);
+		allFieldsMethodsTester.assertEquals(countOfEnumerablePropertiesScript, "count", 5);
 		
 		allFields(allFieldsGlobalObject, allFieldsTester);
 		visibleFunctions(allFieldsGlobalObject, allFieldsTester);

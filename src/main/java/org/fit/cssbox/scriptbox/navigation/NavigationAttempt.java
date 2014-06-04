@@ -662,6 +662,7 @@ public abstract class NavigationAttempt {
 		
 		newEntry.setDocument(currentEntry.getDocument());
 		newEntry.setURL(url);
+		newEntry.setTitle(currentEntry.getTitle());
 		newEntry.setBrowsingContextName(currentEntry.getBrowsingContextName());
 		newEntry.setPpersistedUserState(currentEntry.getPersistedUserState());
 		
